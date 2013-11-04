@@ -14,7 +14,7 @@
 
   <!-- Signing -->
   <PropertyGroup>
-    <PublicKey>$(SolutionDir)\Key.snk</PublicKey>
+    <PublicKey>$(MSBuildThisFileDirectory)\Key.snk</PublicKey>
   </PropertyGroup>
 
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
@@ -156,7 +156,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
+    <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
     <NoWarn>1591;1584;1574;444;1685;1573</NoWarn>
