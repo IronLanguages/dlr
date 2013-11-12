@@ -9,10 +9,6 @@
     <RootNamespace>Microsoft.Scripting.Silverlight</RootNamespace>
     <AssemblyName>Microsoft.Scripting.Silverlight</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight4Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight4Release|AnyCPU' ">
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SilverlightVersion.cs">
       <Link>Properties\SilverlightVersion.cs</Link>

@@ -63,7 +63,6 @@
     <Compile Include="WebScriptHost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)..\Config\Signed\App.config" />
     <None Include="MicrosoftSharedLibraries2Key.snk" />
   </ItemGroup>
   <ItemGroup>

@@ -66,7 +66,7 @@ msbuild /t:DistClean /p:BaseConfiguration=Debug /verbosity:minimal /nologo
 goto :main
 
 :main
-msbuild /t:%_target% /p:BaseConfiguration=%_flavour% /verbosity:minimal /nologo
+msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo
 goto :exit
 
 :exit

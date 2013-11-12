@@ -1,47 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <!--<Import Project="CustomBuild.proj" Condition="Exist('CustomBuild.proj')" />-->
+  <!--<Import Project="Build\Versioning.targets" />-->
 
   <PropertyGroup>
-    <BaseConfiguration Condition=" '$(BaseConfiguration)' == '' ">Debug</BaseConfiguration>
-  </PropertyGroup>
+    <BuildFlavour Condition=" '$(BuildFlavour)' == '' ">Debug</BuildFlavour>
+    <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
+    
+    <DisplayVersion>1.5.0.0</DisplayVersion>
 
+    <RootDir>$(MSBuildThisFileDirectory)</RootDir>
+    <Solution>$(RootDir)\Dlr.sln</Solution>
+    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(DisplayVersion)</StageDir>
+    <UtilDir>$(RootDir)\Util</UtilDir>
+    <BinDir>$(RootDir)\bin</BinDir>
+    
+    <BuildProperties>
+      Solution=$(Solution);
+      BuildFlavour=$(BuildFlavour);
+      BinDir=$(BinDir);
+      StageDir=$(StageDir)
+    </BuildProperties>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <BuildProject Include="Solutions\Build.IronPython.proj"/>
-    <!--<BuildProject Include="Solutions\Build.IronRuby.proj"/>-->
+    <TargetPlatform Include="$(RootDir)\Build\Build.net35.proj" />
+    <TargetPlatform Include="$(RootDir)\Build\Build.net40.proj" />
+    <TargetPlatform Include="$(RootDir)\Build\Build.net45.proj" />
   </ItemGroup>
 
   <Target Name="Build">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="Build" Properties="BaseConfiguration=$(BaseConfiguration)" />
+    <MSBuild 
+      Projects="@(TargetPlatform)" 
+      Targets="Build"
+      Properties="$(BuildProperties)" />
   </Target>
 
   <Target Name="Rebuild">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="Rebuild" Properties="BaseConfiguration=$(BaseConfiguration)" />
+    <MSBuild 
+      Projects="@(TargetPlatform)" 
+      Targets="Rebuild" 
+      Properties="$(BuildProperties)" />
   </Target>
 
   <Target Name="Clean">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="Clean" Properties="BaseConfiguration=$(BaseConfiguration)" />
+    <MSBuild 
+      Projects="@(TargetPlatform)" 
+      Targets="Clean" 
+      Properties="$(BuildProperties)" />
   </Target>
 
-  <Target Name="DistClean" DependsOnTargets="Clean">
-    <RemoveDir Directories="bin;Stage;Packages" />
-  </Target>
-
-  <Target Name="Stage">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="Stage" Properties="BaseConfiguration=$(BaseConfiguration)" />
-  </Target>
-
-  <Target Name="NuGetPackage">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="NuGetPackage" Properties="BaseConfiguration=$(BaseConfiguration)" />
-  </Target>
-
-  <Target Name="ZipPackage">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="ZipPackage" Properties="BaseConfiguration=$(BaseConfiguration)" />
+  <Target Name="StageClean">
+    <RemoveDir Directories="$(StageDir)" />
   </Target>
   
-  <Target Name="Installer">
-    <MSBuild Projects="@(BuildProject)" BuildInParallel="true" Targets="Installer" Properties="BaseConfiguration=$(BaseConfiguration)" />
+  <Target Name="Stage" DependsOnTargets="StageClean;Build">
+    <MSBuild 
+      Projects="@(TargetPlatform)" 
+      Targets="PlatformStage" 
+      Properties="$(BuildProperties)" />
+  </Target>
+  
+  <Target Name="NuGetPackage" DependsOnTargets="Stage" Condition="'$(OS)' == 'Windows_NT'">
+    <PropertyGroup>
+        <NuGetVersion Condition="'$(ReleaseLevel)' == 'final' and '$(ReleaseSerial)' == '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</NuGetVersion>
+        <NuGetVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</NuGetVersion>
+    </PropertyGroup>
+    <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
+    <Exec Command="$(UtilDir)\Misc\NuGet.exe pack -Version $(NuGetVersion) &quot;$(BaseDir)\Languages\IronPython\IronPython.nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot;" />
+    <Exec Command="$(UtilDir)\Misc\NuGet.exe pack -Version $(NuGetVersion) &quot;$(BaseDir)\Languages\IronPython\IronPython.StdLib.nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot;" />
   </Target>
 
-  <Target Name="Package" DependsOnTargets="NuGetPackage;ZipPackage;Installer" />
+  <Target Name="ZipPackage" DependsOnTargets="Stage" Condition="'$(OS)' == 'Windows_NT'">
+    <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
+    <Exec Command="$(UtilDir)\Misc\zip.exe -9 -r &quot;$(PackageDir)\IronPython-$(DisplayVersion).zip&quot; &quot;IronPython-$(DisplayVersion)&quot;" WorkingDirectory="$(StageDir)\.." />
+  </Target>
 </Project>
