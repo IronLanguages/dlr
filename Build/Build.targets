@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ArtifactDir>$(BinDir)\$(BuildConfig)</ArtifactDir>
+  </PropertyGroup>
+  
+  <Target Name="Build">
+    <MSBuild Projects="$(Solution)" Targets="Build" Properties="Configuration=$(BuildConfig)" />
+  </Target>
+  
+  <Target Name="Rebuild">
+    <MSBuild Projects="$(Solution)" Targets="Rebuild" Properties="Configuration=$(BuildConfig)" />
+  </Target>
+  
+  <Target Name="Clean">
+    <MSBuild Projects="$(Solution)" Targets="Clean" Properties="Configuration=$(BuildConfig)" />
+  </Target>
+  
+  <Target Name="PlatformStage" DependsOnTargets="Build">
+    <Copy SourceFiles="@(Libs->'$(ArtifactDir)\%(Identity).dll')" DestinationFolder="$(StageDir)\lib\$(PlatformDir)" />
+    <Copy SourceFiles="@(Libs->'$(ArtifactDir)\%(Identity).xml')" DestinationFolder="$(StageDir)\lib\$(PlatformDir)" />
+  </Target>
+</Project>

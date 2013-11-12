@@ -7,8 +7,6 @@
     <BaseConfiguration Condition=" '$(BaseConfiguration)' == '' ">Debug</BaseConfiguration>
     <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
-    <Solution>IronPython.sln</Solution>
-
     <BaseDir>$(MSBuildThisFileDirectory)</BaseDir>
     <StageDir>$(BaseDir)\Stage\$(BaseConfiguration)\IronPython-$(DisplayVersion)</StageDir>
     <PackageDir>$(BaseDir)\Packages\$(BaseConfiguration)\IronPython-$(DisplayVersion)</PackageDir>

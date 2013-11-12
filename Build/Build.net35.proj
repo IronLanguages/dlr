@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildConfig>v2$(BuildFlavour)</BuildConfig>
+    <PlatformDir>net35</PlatformDir>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Libs Include="Microsoft.Scripting.Core" />
+    <Libs Include="Microsoft.Scripting" />
+    <Libs Include="Microsoft.Dynamic" />
+    <Libs Include="Microsoft.Scripting.AspNet" />
+  </ItemGroup>
+  
+  <Import Project="$(MSBuildThisFileDirectory)\Build.targets" />
+</Project>
