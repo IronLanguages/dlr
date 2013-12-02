@@ -24,9 +24,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <TargetPlatform Include="$(RootDir)\Build\Build.net35.proj" />
+    <!--<TargetPlatform Include="$(RootDir)\Build\Build.net35.proj" />-->
     <TargetPlatform Include="$(RootDir)\Build\Build.net40.proj" />
-    <TargetPlatform Include="$(RootDir)\Build\Build.net45.proj" />
+    <!--<TargetPlatform Include="$(RootDir)\Build\Build.net45.proj" />-->
   </ItemGroup>
 
   <Target Name="Build">

@@ -441,10 +441,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
-  <ItemGroup Condition="'$(ReferencedPlatform)' == 'V4'">
+  <ItemGroup Condition="'$(ReferencedPlatform)' == 'net40'">
     <Reference Include="System.Xaml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(ReferencedPlatform)' == 'V45'">
+  <ItemGroup Condition="'$(ReferencedPlatform)' == 'net45'">
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>

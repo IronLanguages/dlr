@@ -33,19 +33,15 @@
     <ConfigurationFlavor Condition="'$(Configuration)' == 'v2Release'">Release</ConfigurationFlavor>
     <ConfigurationFlavor Condition="'$(Configuration)' == 'v45Release'">Release</ConfigurationFlavor>
     <ConfigurationFlavor Condition="'$(Configuration)' == 'Win8Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'WP7Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'Silverlight4Release'">Release</ConfigurationFlavor>
     <ConfigurationFlavor Condition="'$(Configuration)' == 'Silverlight5Release'">Release</ConfigurationFlavor>
     <ConfigurationFlavor Condition="'$(Configuration)' == 'AndroidRelease'">Release</ConfigurationFlavor>
 
-    <ReferencedPlatform>V4</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'v2Release' or '$(Configuration)' == 'v2Debug'">V2</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'v45Release' or '$(Configuration)' == 'v45Debug'">V45</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'Win8Release' or '$(Configuration)' == 'Win8Debug'">Win8</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'WP7Release' or '$(Configuration)' == 'WP7Debug'">WP75</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'Silverlight4Release' or '$(Configuration)' == 'Silverlight4Debug'">Silverlight4</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'Silverlight5Release' or '$(Configuration)' == 'Silverlight5Debug'">Silverlight5</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'AndroidRelease' or '$(Configuration)' == 'AndroidDebug'">Android</ReferencedPlatform>
+    <ReferencedPlatform>net40</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(Configuration)' == 'v2Release' or '$(Configuration)' == 'v2Debug'">net35</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(Configuration)' == 'v45Release' or '$(Configuration)' == 'v45Debug'">net45</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(Configuration)' == 'Win8Release' or '$(Configuration)' == 'Win8Debug'">wincore45</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(Configuration)' == 'Silverlight5Release' or '$(Configuration)' == 'Silverlight5Debug'">sl5</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(Configuration)' == 'AndroidRelease' or '$(Configuration)' == 'AndroidDebug'">android</ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Mono)' == 'true'">
@@ -53,17 +49,17 @@
     <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
 
     <CscToolExe>mcs$(CscToolExeSuffix)</CscToolExe>
-    <CscToolExe Condition="'$(ReferencedPlatform)' == 'V2'">gmcs$(CscToolExeSuffix)</CscToolExe>
-    <CscToolExe Condition="'$(ReferencedPlatform)' == 'V4'">dmcs$(CscToolExeSuffix)</CscToolExe>
+    <CscToolExe Condition="'$(ReferencedPlatform)' == 'net35'">gmcs$(CscToolExeSuffix)</CscToolExe>
+    <CscToolExe Condition="'$(ReferencedPlatform)' == 'net40'">dmcs$(CscToolExeSuffix)</CscToolExe>
   </PropertyGroup>
 
   <PropertyGroup>
     <CSharpTargets Condition="'$(CSharpTargets)' == ''">$(MSBuildBinPath)\Microsoft.CSharp.targets</CSharpTargets>
-    <CSharpTargets Condition="'$(CSharpTargets)' == '' and '$(ReferencedPlatform)' == 'Android'">$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets</CSharpTargets>
+    <CSharpTargets Condition="'$(CSharpTargets)' == '' and '$(ReferencedPlatform)' == 'android'">$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets</CSharpTargets>
   </PropertyGroup>
 
   <!-- References -->
-  <Import Project="Build\$(ReferencedPlatform).props" />
+  <Import Project="$(MSBuildThisFileDirectory)\$(ReferencedPlatform).props" />
   
   <PropertyGroup>
     <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
