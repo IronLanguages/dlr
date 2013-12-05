@@ -65,7 +65,7 @@
     <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
-    <NoWarn>1591;1584;1574;444;1685;1573</NoWarn>
+    <NoWarn>1591;1584;1574;1685;1573</NoWarn>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -78,7 +78,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);TRACE</DefineConstants>
+    <DefineConstants>@(Features);$(SignedSym);$(PlatformSymbols);TRACE</DefineConstants>
   </PropertyGroup>
 
   <!-- Debug -->
@@ -88,7 +88,7 @@
     <Optimize>false</Optimize>
     <!-- TODO: Python & zlib.net need some work -->
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>@(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   
