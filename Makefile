@@ -3,12 +3,10 @@
 all: ironpython
 
 ironpython:
-	xbuild Build.proj /t:Build /p:Mono=true;BaseConfiguration=Debug
-	xbuild Build.proj /t:Build /p:Mono=true;BaseConfiguration=Debug
+	xbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Debug
 
 ironpython-release:
-	xbuild Build.proj /t:Build /p:Mono=true;BaseConfiguration=Release
-	xbuild Build.proj /t:Build /p:Mono=true;BaseConfiguration=Release
+	xbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Release
 
 testrunner:
 	xbuild Test/TestRunner/TestRunner.sln	
