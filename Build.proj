@@ -14,19 +14,22 @@
     <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(DisplayVersion)</StageDir>
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
+    <BuildSysDir>$(RootDir)\Build</BuildSysDir>
     
     <BuildProperties>
       Solution=$(Solution);
       BuildFlavour=$(BuildFlavour);
       BinDir=$(BinDir);
-      StageDir=$(StageDir)
+      StageDir=$(StageDir);
+      BuildSysDir=$(BuildSysDir)
     </BuildProperties>
   </PropertyGroup>
   
   <ItemGroup>
-    <!--<TargetPlatform Include="$(RootDir)\Build\Build.net35.proj" />-->
-    <TargetPlatform Include="$(RootDir)\Build\Build.net40.proj" />
-    <!--<TargetPlatform Include="$(RootDir)\Build\Build.net45.proj" />-->
+    <TargetPlatform Include="$(BuildSysDir)\Build.net35.proj" />
+    <TargetPlatform Include="$(BuildSysDir)\Build.net40.proj" />
+    <!-- Mono 3.2 is missing necessary bits for 4.5. -->
+    <TargetPlatform Include="$(BuildSysDir)\Build.net45.proj" Condition=" '$(Mono)' != 'true' "/>
   </ItemGroup>
 
   <Target Name="Build">

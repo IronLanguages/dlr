@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BuildConfig>v2$(BuildFlavour)</BuildConfig>
-    <PlatformDir>net35</PlatformDir>
+    <ReferencedPlatform>net35</ReferencedPlatform>
   </PropertyGroup>
   
   <ItemGroup>

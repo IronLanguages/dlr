@@ -5,7 +5,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(MSBuildThisFileDirectory)</SolutionDir>
-    <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
+    <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
     
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>
@@ -26,22 +26,44 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
 
-    <ConfigurationFlavor>Debug</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'FxCop'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'v2Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'v45Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'Win8Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'Silverlight5Release'">Release</ConfigurationFlavor>
-    <ConfigurationFlavor Condition="'$(Configuration)' == 'AndroidRelease'">Release</ConfigurationFlavor>
+  <!-- Normally BuildFlavour and ReferencedPlatform are set by the build system,
+       but they are not when building in Visual Studio (because Build.proj is not
+       used). Fill then in here based on the selected configuration. -->
+  <PropertyGroup Condition=" '$(BuildFlavour)' == '' ">
+    <BuildFlavour>Debug</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'FxCop'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'v2Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'v45Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'Win8Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'Silverlight5Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'AndroidRelease'">Release</BuildFlavour>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
     <ReferencedPlatform>net40</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'v2Release' or '$(Configuration)' == 'v2Debug'">net35</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'v45Release' or '$(Configuration)' == 'v45Debug'">net45</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'Win8Release' or '$(Configuration)' == 'Win8Debug'">wincore45</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'Silverlight5Release' or '$(Configuration)' == 'Silverlight5Debug'">sl5</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(Configuration)' == 'AndroidRelease' or '$(Configuration)' == 'AndroidDebug'">android</ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'v2Release' or '$(Configuration)' == 'v2Debug'">
+      net35
+    </ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'v45Release' or '$(Configuration)' == 'v45Debug'">
+      net45
+    </ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'Win8Release' or '$(Configuration)' == 'Win8Debug'">
+      wincore45
+    </ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'Silverlight5Release' or '$(Configuration)' == 'Silverlight5Debug'">
+      sl5
+    </ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'AndroidRelease' or '$(Configuration)' == 'AndroidDebug'">
+      android
+    </ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Mono)' == 'true'">
@@ -73,7 +95,7 @@
   </PropertyGroup>
 
   <!-- Release -->
-  <PropertyGroup Condition="'$(ConfigurationFlavor)' == 'Release'">
+  <PropertyGroup Condition="'$(BuildFlavour)' == 'Release'">
     <DebugSymbols>false</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -82,7 +104,7 @@
   </PropertyGroup>
 
   <!-- Debug -->
-  <PropertyGroup Condition="'$(ConfigurationFlavor)' == 'Debug'">
+  <PropertyGroup Condition="'$(BuildFlavour)' == 'Debug'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>

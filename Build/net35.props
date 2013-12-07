@@ -32,6 +32,7 @@
     <Features>$(Features);FEATURE_REMOTING</Features>
     <Features>$(Features);FEATURE_CONFIGURATION</Features>
     <Features>$(Features);FEATURE_REFEMIT</Features>
+    <Features>$(Features);FEATURE_LCG</Features>
     <Features>$(Features);FEATURE_CODEDOM</Features>
     <Features>$(Features);FEATURE_COMPRESSION</Features>
     <Features>$(Features);FEATURE_WARNING_EXCEPTION</Features>
