@@ -78,7 +78,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>@(Features);$(SignedSym);$(PlatformSymbols);TRACE</DefineConstants>
+    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);TRACE</DefineConstants>
   </PropertyGroup>
 
   <!-- Debug -->
@@ -88,9 +88,7 @@
     <Optimize>false</Optimize>
     <!-- TODO: Python & zlib.net need some work -->
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>@(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
-  
-  
 </Project>
+
