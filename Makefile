@@ -1,18 +1,19 @@
-.PHONY: all clean ironpython
+.PHONY: debug release test stage package clean
 
-all: ironpython
-
-ironpython:
+debug:
 	xbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Debug
 
-ironpython-release:
+release:
 	xbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Release
 
-testrunner:
-	xbuild Test/TestRunner/TestRunner.sln	
+test:
+	xbuild Build.proj /t:Test /p:Mono=true;BuildFlavour=Release
 
-test-ipy: ironpython testrunner
-	mono Test/TestRunner/TestRunner/bin/Debug/TestRunner.exe Test/IronPython.tests /all
+stage:
+	xbuild Build.proj /t:Stage /p:Mono=true;BuildFlavour=Release
+
+package:
+	xbuild Build.proj /t:Package /p:Mono=true;BuildFlavour=Release
 
 clean:
 	xbuild Build.proj /t:Clean /p:Mono=true

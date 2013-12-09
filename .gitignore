@@ -5,7 +5,7 @@ obj/
 bin/
 /bin/
 /Stage
-/Packages
+/Package
 
 # Temporary VS files
 *.suo
@@ -48,3 +48,4 @@ Languages/IronPython/Tests/testfile.tmp
 Languages/IronPython/Tests/testilcode.dll
 Languages/IronPython/Tests/the_dir/
 Languages/IronPython/Tests/vbproptest0.*.dll
+

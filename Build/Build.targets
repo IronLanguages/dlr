@@ -25,17 +25,20 @@
   <ItemGroup>
     <SourceDLLs Include="@(Libs->'$(ArtifactDir)\%(Identity).dll')" />
     <SourceXMLs Include="@(Libs->'$(ArtifactDir)\%(Identity).xml')" />
-    <StageFolder Include="$(StageDir)\lib\$(ReferencedPlatform)" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <StageFolder>$(StageDir)\lib\$(ReferencedPlatform)</StageFolder>
+  </PropertyGroup>
   
   <Target Name="PlatformStage" DependsOnTargets="Build"
           Inputs="@(SourceDLLs);@(SourceXMLs)"
-          Outputs="@(SourceDLLs->'$(StageFolder)\%(Filename).%(Extension)')">
+          Outputs="@(SourceDLLs->'$(StageFolder)\%(Filename)%(Extension)')">
     <Copy 
-      SourceFiles="@(Libs->'$(ArtifactDir)\%(Identity).dll')"
+      SourceFiles="@(SourceDLLs)"
       DestinationFolder="$(StageFolder)" />
     <Copy
-      SourceFiles="@(Libs->'$(ArtifactDir)\%(Identity).xml')"
+      SourceFiles="@(SourceXMLs)"
       DestinationFolder="$(StageFolder)" />
   </Target>
 </Project>

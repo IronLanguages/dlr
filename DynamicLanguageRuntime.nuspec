@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>DynamicLanguageRuntime</id>
+    <title>Dynamic Language Runtime</title>
+    <version>1.5.0</version>
+    <authors>DLR Contributors,Microsoft</authors>
+    <owners>DLR Community</owners>
+    <projectUrl>http://ironpython.net</projectUrl>
+    <licenseUrl>http://ironpython.codeplex.com/license</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Dynamic Language Runtime</description>
+    <summary>Dynamic Language Runtime</summary>
+    <language>en-US</language>
+    <tags>dynamic dlr</tags>
+  </metadata>
+  <files>
+    <file src="lib/**/*.*" target="lib" exclude="**/Microsoft.Scripting.AspNet.*" />
+  </files>
+</package>
