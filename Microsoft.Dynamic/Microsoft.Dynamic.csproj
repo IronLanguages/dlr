@@ -463,4 +463,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(CSharpTargets)" />
+  <Import Project="$(AfterTargetFiles)" />
+  <Target Name="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>

@@ -25,55 +25,57 @@
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
     
     <BuildProperties>
+      RootDir=$(RootDir);
       Solution=$(Solution);
       BuildFlavour=$(BuildFlavour);
       BinDir=$(BinDir);
       StageDir=$(StageDir);
-      BuildSysDir=$(BuildSysDir)
+      BuildSysDir=$(BuildSysDir);
+      Mono=$(Mono)
     </BuildProperties>
   </PropertyGroup>
   
   <ItemGroup>
-    <TargetPlatform Include="$(BuildSysDir)\Build.net35.proj" />
-    <TargetPlatform Include="$(BuildSysDir)\Build.net40.proj" />
+    <ReferencedPlatform Include="net35">
+      <BuildPrefix>v2</BuildPrefix>
+    </ReferencedPlatform>
+    <ReferencedPlatform Include="net40">
+      <BuildPrefix></BuildPrefix>
+    </ReferencedPlatform>
     <!-- Mono 3.2 is missing necessary bits for 4.5. -->
-    <TargetPlatform Include="$(BuildSysDir)\Build.net45.proj" Condition=" '$(Mono)' != 'true' "/>
+    <ReferencedPlatform Include="net45" Condition=" '$(Mono)' != 'true' ">
+      <BuildPrefix>v45</BuildPrefix>
+    </ReferencedPlatform>
   </ItemGroup>
 
   <Target Name="Build">
     <MSBuild 
-      Projects="@(TargetPlatform)" 
+      Projects="$(Solution)" 
       Targets="Build"
-      Properties="$(BuildProperties)" />
+      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
   </Target>
 
   <Target Name="Rebuild">
     <MSBuild 
-      Projects="@(TargetPlatform)" 
+      Projects="$(Solution)" 
       Targets="Rebuild" 
-      Properties="$(BuildProperties)" />
+      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
   </Target>
 
   <Target Name="Clean">
     <MSBuild 
-      Projects="@(TargetPlatform)" 
+      Projects="$(Solution)" 
       Targets="Clean" 
-      Properties="$(BuildProperties)" />
+      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
   </Target>
 
-  <Target Name="StageClean">
-    <RemoveDir Directories="$(StageDir)" />
+  <Target Name="Stage">
+    <MSBuild 
+      Projects="$(Solution)" 
+      Targets="Build" 
+      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour);Staging=true" />
   </Target>
   
-  <Target Name="Stage" DependsOnTargets="StageClean;Build">
-    <MSBuild Projects="@(TargetPlatform)" 
-             Targets="PlatformStage" 
-             Properties="$(BuildProperties)">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="StageOutputs" />
-    </MSBuild>
-  </Target>
-
   <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage" />
 
   <Target Name="MakePackageDir">

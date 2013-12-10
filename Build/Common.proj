@@ -4,7 +4,9 @@
 -->
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(MSBuildThisFileDirectory)</SolutionDir>
+    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)..</RootDir>
+    <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)\Build</BuildSysDir>
+
     <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
     
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
@@ -20,7 +22,11 @@
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
     <AssemblyOriginatorKeyFile>$(PublicKey)</AssemblyOriginatorKeyFile>
     <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
-    <SignedDir>Unsigned</SignedDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AfterTargetFiles>$(BuildSysDir)\After.targets</AfterTargetFiles>
+    <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -81,10 +87,11 @@
   </PropertyGroup>
 
   <!-- References -->
-  <Import Project="$(MSBuildThisFileDirectory)\$(ReferencedPlatform).props" />
+  <Import Project="$(BuildSysDir)\$(ReferencedPlatform).props" />
   
   <PropertyGroup>
-    <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
+    <BaseOutputPath>$(RootDir)\bin\$(Configuration)</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
     <NoWarn>1591;1584;1574;1685;1573</NoWarn>
