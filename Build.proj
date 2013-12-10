@@ -13,12 +13,13 @@
     <ReleaseLevel>final</ReleaseLevel>
     <ReleaseSerial>0</ReleaseSerial>
     
-    <DisplayVersion>$(MajorVersion).$(MinorVersion).$(MicroVersion)</DisplayVersion>
+    <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
+    <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
 
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
     <Solution>$(RootDir)\Dlr.sln</Solution>
-    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(DisplayVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(DisplayVersion)</PackageDir>
+    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
+    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(PackageVersion)</PackageDir>
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
@@ -86,8 +87,6 @@
     <Zip Condition="'$(OS)' == 'Windows_NT'">$(UtilDir)\Misc\zip.exe</Zip>
     <Zip Condition="'$(OS)' != 'Windows_NT'">zip</Zip>
 
-    <PackageVersion Condition="'$(ReleaseLevel)' == 'final' and '$(ReleaseSerial)' == '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
-    <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

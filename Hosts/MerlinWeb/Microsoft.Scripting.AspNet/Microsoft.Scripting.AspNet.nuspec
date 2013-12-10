@@ -17,4 +17,7 @@
   <files>
     <file src="lib/**/Microsoft.Scripting.AspNet.*" target="lib" />
   </files>
+  <dependencies>
+    <dependency id="DynamicLanguageRuntime" version="1.5.0" />
+  </dependencies>
 </package>
