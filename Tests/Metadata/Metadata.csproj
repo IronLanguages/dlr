@@ -37,11 +37,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
+    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
       <Project>{EB66B766-6354-4208-A3D4-AACBDCB5C3B3}</Project>
       <Name>Microsoft.Dynamic</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj">
+    <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj">
       <Project>{ACDD9B9E-8FE6-439C-9521-1CCBA47F6143}</Project>
       <Name>Microsoft.Scripting.Metadata</Name>
     </ProjectReference>

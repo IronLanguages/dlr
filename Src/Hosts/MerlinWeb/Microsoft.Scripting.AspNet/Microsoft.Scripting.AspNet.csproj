@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="$(ProjectDir)..\..\..\Build\Common.proj" />
+  <Import Project="$(ProjectDir)..\..\..\..\Build\Common.proj" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3272E46C-F4D9-418D-9EE9-081A1B658EE4}</ProjectGuid>
