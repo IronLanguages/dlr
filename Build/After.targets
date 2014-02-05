@@ -20,4 +20,3 @@
     <Copy SourceFiles="$(UnsignedItems)" DestinationFolder="$(PlatformStageDir)" />
   </Target>
 </Project>
-
