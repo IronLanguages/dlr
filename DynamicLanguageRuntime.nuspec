@@ -15,6 +15,6 @@
     <tags>dynamic dlr</tags>
   </metadata>
   <files>
-    <file src="lib/**" target="lib" exclude="**/Microsoft.Scripting.AspNet.*" />
+    <file src="lib\**\*.*" target="lib" exclude="**\Microsoft.Scripting.AspNet.*" />
   </files>
 </package>
