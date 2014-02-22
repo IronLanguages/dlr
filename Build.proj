@@ -7,7 +7,7 @@
     <MajorVersion>1</MajorVersion>
     <MinorVersion>2</MinorVersion>
     <MicroVersion>0</MicroVersion>
-    <ReleaseLevel>final</ReleaseLevel>
+    <ReleaseLevel>alpha</ReleaseLevel>
     <ReleaseSerial>0</ReleaseSerial>
     
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
@@ -45,6 +45,11 @@
     </ReferencedPlatform>
   </ItemGroup>
 
+  <ItemGroup>
+    <InfoFiles Include="$(RootDir)\LICENSE" />
+    <InfoFiles Include="$(RootDir)\README" />
+  </ItemGroup>
+
   <Target Name="Build">
     <MSBuild 
       Projects="$(Solution)" 
@@ -73,9 +78,10 @@
       Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour);Staging=true">
       <Output TaskParameter="TargetOutputs" ItemName="StageOutputs" />
     </MSBuild>
+    <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
   </Target>
   
-  <Target Name="Package" DependsOnTargets="NuGetPackage" />
+  <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage" />
 
   <Target Name="MakePackageDir">
     <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
