@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <!--<Import Project="CustomBuild.proj" Condition="Exist('CustomBuild.proj')" />-->
-  <!--<Import Project="Build\Versioning.targets" />-->
-
   <PropertyGroup>
     <BuildFlavour Condition=" '$(BuildFlavour)' == '' ">Debug</BuildFlavour>
     <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
     <MajorVersion>1</MajorVersion>
-    <MinorVersion>5</MinorVersion>
+    <MinorVersion>2</MinorVersion>
     <MicroVersion>0</MicroVersion>
     <ReleaseLevel>final</ReleaseLevel>
     <ReleaseSerial>0</ReleaseSerial>

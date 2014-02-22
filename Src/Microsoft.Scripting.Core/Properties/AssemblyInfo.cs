@@ -22,14 +22,7 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Microsoft.Scripting")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Scripting")]
-[assembly: AssemblyCopyright("© Microsoft Corporation.  All rights reserved.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyTitle("Microsoft.Scripting.Core")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -41,25 +34,6 @@ using System.Security;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("cabb8088-1370-43ca-ad47-1c32d3f7bd10")]
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
 [assembly: SecurityTransparent]
 
 [assembly: System.Resources.NeutralResourcesLanguage("en-US")]
-
-#if !SILVERLIGHT
-[assembly: AssemblyVersion("1.1.0.30")]
-[assembly: AssemblyFileVersion("1.1.0.30")]
-[assembly: AssemblyInformationalVersion("1.1")]
-#endif
-
-#if !SILVERLIGHT && !WP75
-[assembly: AllowPartiallyTrustedCallers]
-#endif

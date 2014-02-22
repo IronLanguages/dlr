@@ -35,8 +35,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AndroidRelease|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Hosts\Silverlight\SilverlightVersion.cs" Condition=" '$(IsSilverlight)' == 'true' ">
-      <Link>Properties\SilverlightVersion.cs</Link>
+    <Compile Include="..\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Actions\Calls\ActualArguments.cs" />
     <Compile Include="Actions\Calls\ApplicableCandidate.cs" />

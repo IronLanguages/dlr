@@ -39,12 +39,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata", "Tests\Metadata\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFEE2666-74E5-49B0-BEB7-1F01CECD7F98}"
 	ProjectSection(SolutionItems) = preProject
+		Build.proj = Build.proj
+		DynamicLanguageRuntime.nuspec = DynamicLanguageRuntime.nuspec
+		LICENSE = LICENSE
+		make.cmd = make.cmd
+		Makefile = Makefile
+		README = README
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49-17D6-4C5C-80EC-F203BA2F7E3B}"
+	ProjectSection(SolutionItems) = preProject
 		Build\After.targets = Build\After.targets
 		Build\Common.proj = Build\Common.proj
 		Build\net35.props = Build\net35.props
 		Build\net40.props = Build\net40.props
 		Build\net45.props = Build\net45.props
-		Build\Versioning.targets = Build\Versioning.targets
 	EndProjectSection
 EndProject
 Global
@@ -309,5 +318,6 @@ Global
 		{75B776E7-2246-4E02-98A9-A99D3DA4DB54} = {9C454D45-326F-4EA1-8177-64341267A17F}
 		{BEE737B9-18D5-48D9-8672-9A896213C98B} = {9C454D45-326F-4EA1-8177-64341267A17F}
 		{848BBEB0-63E6-4736-B60C-23A9D733593D} = {9C454D45-326F-4EA1-8177-64341267A17F}
+		{60056F49-17D6-4C5C-80EC-F203BA2F7E3B} = {BFEE2666-74E5-49B0-BEB7-1F01CECD7F98}
 	EndGlobalSection
 EndGlobal

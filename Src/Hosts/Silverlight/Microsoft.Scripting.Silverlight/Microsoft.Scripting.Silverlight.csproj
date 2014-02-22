@@ -10,8 +10,8 @@
     <AssemblyName>Microsoft.Scripting.Silverlight</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\SilverlightVersion.cs">
-      <Link>Properties\SilverlightVersion.cs</Link>
+    <Compile Include="..\..\..\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="BrowserVirtualFilesystem.cs" />
     <Compile Include="BrowserScriptHost.cs" />

@@ -23,6 +23,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v45Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
     <Compile Include="MembersInjectors\DictionaryMembersInjector.cs" />
     <Compile Include="MembersInjectors\DataRowViewMembersInjector.cs" />
     <Compile Include="Configuration\WebScriptingSection.cs" />

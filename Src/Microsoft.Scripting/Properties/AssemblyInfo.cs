@@ -23,13 +23,6 @@ using System.Security;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Microsoft.Scripting")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Scripting")]
-[assembly: AssemblyCopyright("© Microsoft Corporation.  All rights reserved.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -50,14 +43,4 @@ using System.Security;
 
 #if !WIN8
 [assembly: SecurityTransparent]
-#endif
-
-#if !SILVERLIGHT
-[assembly: AssemblyVersion("1.1.0.30")]
-[assembly: AssemblyFileVersion("1.1.0.30")]
-[assembly: AssemblyInformationalVersion("1.1")]
-#endif
-
-#if !SILVERLIGHT && !WP75 && !WIN8
-[assembly: AllowPartiallyTrustedCallers]
 #endif
