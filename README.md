@@ -19,7 +19,7 @@ The best current documentation is in the Docs/ directory, in Word and PDF format
 
 Help
 ----
-If you have any questions, open an issue, even if it's not an actual bug.
+If you have any questions, [open an issue](https://github.com/IronLanguages/dlr/issues/new), even if it's not an actual bug. The issues are an acceptable discussion forum as well.
 
 History
 -------
