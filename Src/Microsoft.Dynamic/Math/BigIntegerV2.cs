@@ -41,6 +41,8 @@ namespace Microsoft.Scripting.Math {
         public static readonly BigInteger Zero = new BigInteger(0, new uint[0]);
         [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly BigInteger One = new BigInteger(+1, new uint[] { 1 });
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly BigInteger MinusOne = new BigInteger(-1, new uint[] { 1 });
         private const int bias = 1075;
 
         [CLSCompliant(false)]
