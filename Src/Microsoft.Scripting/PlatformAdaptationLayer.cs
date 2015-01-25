@@ -250,12 +250,20 @@ namespace Microsoft.Scripting {
 
         // TODO: better APIs
         public virtual Stream OpenInputFileStream(string path) {
+#if FEATURE_FILESYSTEM
             return OpenFileStream(path, FileMode.Open, FileAccess.Read, FileShare.None, 8912);
+#else
+            throw new NotImplementedException();
+#endif
         }
 
         // TODO: better APIs
         public virtual Stream OpenOutputFileStream(string path) {
+#if FEATURE_FILESYSTEM
             return OpenFileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 8912);
+#else
+            throw new NotImplementedException();
+#endif
         }
 #endif
 
@@ -337,36 +345,21 @@ namespace Microsoft.Scripting {
 
         /// <exception cref="ArgumentException">Invalid path.</exception>
         public virtual bool IsAbsolutePath(string path) {
-            if (String.IsNullOrEmpty(path)) {
-                return false;
-            }
-
-            // no drives, no UNC:
-            if (IsSingleRootFileSystem) {
-                return IsDirectorySeparator(path[0]);
-            }
-
-            if (IsDirectorySeparator(path[0])) {
-                // UNC path
-                return path.Length > 1 && IsDirectorySeparator(path[1]);
-            }
-
-            if (path.Length > 2 && path[1] == ':' && IsDirectorySeparator(path[2])) {
-                return true;
-            }
-
-            return false;
-        }
-
 #if FEATURE_FILESYSTEM
-        private bool IsDirectorySeparator(char c) {
-            return c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar;
-        }
+            // GetPathRoot returns either :
+            // "" -> relative to the current dir
+            // "\" -> relative to the drive of the current dir
+            // "X:" -> relative to the current dir, possibly on a different drive
+            // "X:\" -> absolute
+            if (IsSingleRootFileSystem) {
+                return Path.IsPathRooted(path);
+            }
+            var root = Path.GetPathRoot(path);
+            return root.EndsWith(@":\") || root.EndsWith(@":/");
 #else
-        private bool IsDirectorySeparator(char c) {
-            return c == '\\' || c == '/';
-        }
+            throw new NotImplementedException();
 #endif
+        }
 
         public virtual string CurrentDirectory {
             get {

@@ -807,6 +807,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GetTypeInfo().GetDeclaredMethods(name).WithBindingFlags(bindingFlags);
         }
 
+
         public static MethodInfo GetMethod(this Delegate d) {
             return d.GetMethodInfo();
         }
@@ -896,7 +897,7 @@ namespace Microsoft.Scripting.Utils {
         public static MethodInfo GetMethodInfo(this Delegate d) {
             return d.Method;
         }
-
+        
         public static bool IsDefined(this Assembly assembly, Type attributeType) {
             return assembly.IsDefined(attributeType, false);
         }
