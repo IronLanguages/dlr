@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(RootDir)\CurrentVersion.props" />
+  <PropertyGroup>
+    <AssemblyVersionPath>$(RootDir)\Src\AssemblyVersion.Generated.cs</AssemblyVersionPath>
+  </PropertyGroup>
+  
+  <Target Name="GenerateAssemblyFileVersion" 
+          Inputs="$(MSBuildThisFileFullPath);$(RootDir)\CurrentVersion.props"
+          Outputs="$(AssemblyVersionPath)"
+          BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <AssemblyFileVersion Condition="'$(ReleaseLevel)' == 'alpha'">000$(ReleaseSerial)</AssemblyFileVersion>
+      <AssemblyFileVersion Condition="'$(ReleaseLevel)' == 'beta'">00$(ReleaseSerial)0</AssemblyFileVersion>
+      <AssemblyFileVersion Condition="'$(ReleaseLevel)' == 'candidate'">0$(ReleaseSerial)00</AssemblyFileVersion>
+      <AssemblyFileVersion Condition="'$(ReleaseLevel)' == 'final'">1000</AssemblyFileVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <VersionLines Include="/* Generated file. Do not edit. Edit CurrentVersion.props instead. */" />
+      <VersionLines Include="[assembly: System.Reflection.AssemblyVersion(&quot;$(MajorVersion).$(MinorVersion).0.0&quot;)]" />
+      <VersionLines Include="[assembly: System.Reflection.AssemblyFileVersion(&quot;$(MajorVersion).$(MinorVersion).$(MicroVersion).$(AssemblyFileVersion)&quot;)]" />
+      <VersionLines Include="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(MajorVersion).$(MinorVersion).$(MicroVersion) $(ReleaseLevel) $(ReleaseSerial)&quot;)]" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(AssemblyVersionPath)"
+      Lines="@(VersionLines)"
+      Overwrite="true" />
+  </Target>
+</Project>
+

@@ -23,8 +23,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v45Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\AssemblyVersion.cs">
-      <Link>Properties\AssemblyVersion.cs</Link>
+    <Compile Include="..\..\..\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\AssemblyVersion.Generated.cs">
+      <Link>Properties\AssemblyVersion.Generated.cs</Link>
     </Compile>
     <Compile Include="MembersInjectors\DictionaryMembersInjector.cs" />
     <Compile Include="MembersInjectors\DataRowViewMembersInjector.cs" />

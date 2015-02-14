@@ -6,6 +6,7 @@ bin/
 /bin/
 /Stage
 /Package
+/Util/References
 
 # Temporary VS files
 *.suo
@@ -16,6 +17,7 @@ bin/
 # Generated files
 BuildInfo.Generated.cs
 CurrentVersion.Generated.cs
+AssemblyVersion.Generated.cs
 
 TestResult.xml
 Solutions/TestResults/

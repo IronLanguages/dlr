@@ -4,23 +4,25 @@
     <BuildFlavour Condition=" '$(BuildFlavour)' == '' ">Debug</BuildFlavour>
     <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
-    <MajorVersion>1</MajorVersion>
-    <MinorVersion>2</MinorVersion>
-    <MicroVersion>0</MicroVersion>
-    <ReleaseLevel>alpha</ReleaseLevel>
-    <ReleaseSerial>0</ReleaseSerial>
-    
-    <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
-    <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
-
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
     <Solution>$(RootDir)\Dlr.sln</Solution>
-    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(PackageVersion)</PackageDir>
+    
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
-    
+  </PropertyGroup>
+  
+  <Import Project="$(RootDir)\CurrentVersion.props" />
+  
+  <PropertyGroup>
+    <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
+    <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
+  
+    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
+    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(PackageVersion)</PackageDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>  
     <BuildProperties>
       RootDir=$(RootDir);
       Solution=$(Solution);
@@ -49,7 +51,7 @@
     <InfoFiles Include="$(RootDir)\LICENSE" />
     <InfoFiles Include="$(RootDir)\README.md" />
   </ItemGroup>
-
+  
   <Target Name="Build">
     <MSBuild 
       Projects="$(Solution)" 
