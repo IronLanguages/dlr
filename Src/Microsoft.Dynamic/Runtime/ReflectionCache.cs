@@ -46,7 +46,8 @@ namespace Microsoft.Scripting.Runtime {
         }
 #else
         private static readonly Dictionary<MethodBaseCache, MethodGroup> _functions = new Dictionary<MethodBaseCache, MethodGroup>();
-        
+        private static readonly Dictionary<Type, TypeTracker> _typeCache = new Dictionary<Type, TypeTracker>();
+
         public static MethodGroup GetMethodGroup(string name, MethodBase[] methods) {
             MethodGroup res = null;
             MethodBaseCache cache = new MethodBaseCache(name, methods);
@@ -81,6 +82,18 @@ namespace Microsoft.Scripting.Runtime {
                     if (!_functions.TryGetValue(cache, out res)) {
                         _functions[cache] = res = new MethodGroup(trackers);
                     }
+                }
+            }
+
+            return res;
+        }
+
+        public static TypeTracker GetTypeTracker(Type type) {
+            TypeTracker res;
+
+            lock (_typeCache) {
+                if (!_typeCache.TryGetValue(type, out res)) {
+                    _typeCache[type] = res = new NestedTypeTracker(type);
                 }
             }
 

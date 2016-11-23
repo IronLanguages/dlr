@@ -24,14 +24,12 @@ namespace HostingTest {
         public void Runtime_Test() {
             //@TODO - Custom language
             Assert.AreEqual(_runTime.GetEngine("python").Runtime, _runTime);
-            Assert.AreEqual(_runTime.GetEngine("ruby").Runtime, _runTime);
         }
 
 
         [Test]
         public void LanguageDisplayName_Test() {
             Assert.AreEqual(_runTime.GetEngine("python").Setup.DisplayName, "IronPython 3.0");
-            Assert.AreEqual(_runTime.GetEngine("ruby").Setup.DisplayName, "IronRuby");
         }
 
 

@@ -86,8 +86,8 @@ namespace TestInternalDLR {
                 actual[method.Name] = count + 1;
             }
 
-            foreach (string name in actual.Keys) {
-                Assert(expected.ContainsKey(name));
+            foreach (string name in expected.Keys) {
+                Assert(actual.ContainsKey(name));
                 Assert(expectExact ? expected[name] == actual[name] : expected[name] >= actual[name]);
             }
         }

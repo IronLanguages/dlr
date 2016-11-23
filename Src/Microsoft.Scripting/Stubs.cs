@@ -13,6 +13,8 @@
  *
  * ***************************************************************************/
 
+using System.Reflection;
+
 #if WIN8
 
 // When compiled with Dev10 VS CSC reports errors if this is not defined
@@ -56,9 +58,13 @@ namespace System.IO {
 #else
 namespace System {
     public static class TypeExtensions {
-#if !FEATURE_GET_TYPE_INFO
+#if !FEATURE_TYPE_INFO
         public static Type GetTypeInfo(this Type type) {
             return type;
+        }
+
+        public static InterfaceMapping GetRuntimeInterfaceMap(this Type type, Type iface) {
+            return type.GetInterfaceMap(iface);
         }
 #endif
 

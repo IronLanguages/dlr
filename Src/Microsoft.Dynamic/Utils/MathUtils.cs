@@ -1029,6 +1029,41 @@ namespace Microsoft.Scripting.Utils {
             return BigInt.Pow(self, exp);
         }
 
+        public static BigInt Power(this BigInt self, long exp) {
+            if (exp < 0) {
+                throw ExceptionUtils.MakeArgumentOutOfRangeException(nameof(exp), exp, "Must be at least 0");
+            }
+
+            // redirection possible?
+            if (exp <= int.MaxValue) {
+                return BigInt.Pow(self, (int)exp);
+            }
+
+            // manual implementation
+            if (self.IsOne) {
+                return BigInt.One;
+            } else if (self.IsZero) {
+                return BigInt.Zero;
+            } else if (self == BigInt.MinusOne) {
+                if (exp % 2 == 0) {
+                    return BigInt.One;
+                } else {
+                    return BigInt.MinusOne;
+                }
+            }
+
+            BigInt result = BigInt.One;
+            while (exp != 0) {
+                if (exp % 2 != 0) {
+                    result *= self;
+                }
+                exp >>= 1;
+                self *= self;
+            }
+
+            return result;
+        }
+
         public static BigInt ModPow(this BigInt self, int power, BigInt mod) {
             return BigInt.ModPow(self, power, mod);
         }
