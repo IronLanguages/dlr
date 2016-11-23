@@ -64,7 +64,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public MethodInfo GetAddMethod() {
+        public MethodInfo GetCallableAddMethod() {
             if (_addMethod == null) {
                 _addMethod = _eventInfo.GetAddMethod(true);
             }
@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public MethodInfo GetRemoveMethod() {
+        public MethodInfo GetCallableRemoveMethod() {
             if (_removeMethod == null) {
                 _removeMethod = _eventInfo.GetRemoveMethod(true);
             }
@@ -138,7 +138,7 @@ namespace Microsoft.Scripting.Actions {
                 stubs = GetHandlerList(target);
             }
 
-            var add = GetAddMethod();
+            var add = GetCallableAddMethod();
 
             // TODO (tomat): this used to use event.ReflectedType, is it still correct?
             if (target != null) {
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             if (delegateHandler != null) {
-                GetRemoveMethod().Invoke(target, new object[] { delegateHandler });
+                GetCallableRemoveMethod().Invoke(target, new object[] { delegateHandler });
             }
         }
 

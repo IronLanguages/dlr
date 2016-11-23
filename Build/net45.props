@@ -68,7 +68,7 @@
     <Features>$(Features);FEATURE_ANSICP</Features>
     <Features>$(Features);FEATURE_TIMEZONE</Features>
     <Features>$(Features);FEATURE_ASYNC</Features>
-    <Features>$(Features);FEATURE_GET_TYPE_INFO</Features>
+    <Features>$(Features);FEATURE_TYPE_INFO</Features>
     <Features>$(Features);FEATURE_DYNAMIC_EXPRESSION_VISITOR</Features>
     <Features>$(Features);FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY</Features>
     <Features>$(Features);FEATURE_READONLY_DICTIONARY</Features>
