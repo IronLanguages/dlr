@@ -6,5 +6,6 @@
     <MicroVersion>0</MicroVersion>
     <ReleaseLevel>alpha</ReleaseLevel>
     <ReleaseSerial>1</ReleaseSerial>
+    <AssemblyRevision>0</AssemblyRevision>
   </PropertyGroup>
 </Project>

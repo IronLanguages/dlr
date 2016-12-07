@@ -18,33 +18,15 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Win8Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Win8Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v2Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v2Release|AnyCPU' ">
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v45Debug|AnyCPU' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v45Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight5Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight5Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AndroidDebug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AndroidRelease|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\AssemblyVersion.Generated.cs">
-      <Link>Properties\AssemblyVersion.Generated.cs</Link>
-    </Compile>
+    <Compile Include="Properties\CurrentVersion.Generated.cs"/>
     <Compile Include="ArgumentTypeException.cs" />
     <Compile Include="AssemblyLoadedEventArgs.cs" />
     <Compile Include="Hosting\DocumentationOperations.cs" />
@@ -155,6 +137,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(CSharpTargets)" />
+  <Import Project="$(BeforeTargetFiles)" />
+  <Target Name="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <Import Project="$(AfterTargetFiles)" />
   <Target Name="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>
