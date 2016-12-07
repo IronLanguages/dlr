@@ -4,8 +4,8 @@
 -->
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)..</RootDir>
-    <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)\Build</BuildSysDir>
+    <DlrRootDir>$(MSBuildThisFileDirectory)..</DlrRootDir>
+    <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
 
     <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
     
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AfterTargetFiles>$(BuildSysDir)\After.targets</AfterTargetFiles>
+    <AfterTargetFiles>$(DlrBuildDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
 
@@ -51,15 +51,7 @@
   <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
     <ReferencedPlatform>net40</ReferencedPlatform>
     <ReferencedPlatform
-        Condition="'$(Configuration)' == 'v2Release' or '$(Configuration)' == 'v2Debug'">net35</ReferencedPlatform>
-    <ReferencedPlatform
         Condition="'$(Configuration)' == 'v45Release' or '$(Configuration)' == 'v45Debug'">net45</ReferencedPlatform>
-    <ReferencedPlatform
-        Condition="'$(Configuration)' == 'Win8Release' or '$(Configuration)' == 'Win8Debug'">wincore45</ReferencedPlatform>
-    <ReferencedPlatform
-        Condition="'$(Configuration)' == 'Silverlight5Release' or '$(Configuration)' == 'Silverlight5Debug'">sl5</ReferencedPlatform>
-    <ReferencedPlatform
-        Condition="'$(Configuration)' == 'AndroidRelease' or '$(Configuration)' == 'AndroidDebug'">android</ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Mono)' == 'true'">
@@ -67,8 +59,6 @@
     <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
 
     <CscToolExe>mcs$(CscToolExeSuffix)</CscToolExe>
-    <CscToolExe Condition="'$(ReferencedPlatform)' == 'net35'">gmcs$(CscToolExeSuffix)</CscToolExe>
-    <CscToolExe Condition="'$(ReferencedPlatform)' == 'net40'">dmcs$(CscToolExeSuffix)</CscToolExe>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -77,10 +67,10 @@
   </PropertyGroup>
 
   <!-- References -->
-  <Import Project="$(BuildSysDir)\$(ReferencedPlatform).props" />
+  <Import Project="$(DlrBuildDir)\$(ReferencedPlatform).props" />
   
   <PropertyGroup>
-    <BaseOutputPath>$(RootDir)\bin\$(Configuration)</BaseOutputPath>
+    <BaseOutputPath>$(DlrRootDir)\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
@@ -110,6 +100,6 @@
     <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   
-  <Import Project="$(BuildSysDir)\AssemblyVersion.targets" />
+  <Import Project="$(DlrBuildDir)\AssemblyVersion.targets" />
 </Project>
 
