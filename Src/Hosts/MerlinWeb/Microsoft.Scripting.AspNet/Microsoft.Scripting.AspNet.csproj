@@ -26,9 +26,7 @@
     <Compile Include="..\..\..\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\AssemblyVersion.Generated.cs">
-      <Link>Properties\AssemblyVersion.Generated.cs</Link>
-    </Compile>
+    <Compile Include="Properties\CurrentVersion.Generated.cs"/>
     <Compile Include="MembersInjectors\DictionaryMembersInjector.cs" />
     <Compile Include="MembersInjectors\DataRowViewMembersInjector.cs" />
     <Compile Include="Configuration\WebScriptingSection.cs" />
@@ -95,6 +93,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(BeforeTargetFiles)" />
+  <Target Name="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <Import Project="$(AfterTargetFiles)" />
   <Target Name="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>

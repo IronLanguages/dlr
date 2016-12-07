@@ -25,6 +25,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <BeforeTargetFiles>$(DlrBuildDir)\Versioning.targets</BeforeTargetFiles>                                                                                                                                                                 
+    <BeforeTargets>GenerateBuildInfo</BeforeTargets>
     <AfterTargetFiles>$(DlrBuildDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
@@ -99,7 +101,5 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-  
-  <Import Project="$(DlrBuildDir)\AssemblyVersion.targets" />
 </Project>
 

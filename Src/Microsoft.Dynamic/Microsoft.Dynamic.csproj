@@ -42,9 +42,7 @@
     <Compile Include="..\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\AssemblyVersion.Generated.cs">
-      <Link>Properties\AssemblyVersion.Generated.cs</Link>
-    </Compile>
+    <Compile Include="Properties\CurrentVersion.Generated.cs"/>
     <Compile Include="Actions\Calls\ActualArguments.cs" />
     <Compile Include="Actions\Calls\ApplicableCandidate.cs" />
     <Compile Include="Actions\Calls\ArgBuilder.cs" />
@@ -462,6 +460,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(CSharpTargets)" />
+  <Import Project="$(BeforeTargetFiles)" />
+  <Target Name="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <Import Project="$(AfterTargetFiles)" />
   <Target Name="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>
