@@ -70,7 +70,8 @@
     <Csc TargetType="library" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
     <Csc TargetType="library" Sources="Src\typeforwarder1.cs" References="$(OutputPath)\$(Prefix)typeforwardee1.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
     <Csc TargetType="library" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
-    <Exec Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" Condition=" '$(Mono)' != 'true' " />
+    <Message Text="Need to reenable the Exec for Linux once a mono is released with https://github.com/mono/mono/pull/3625" />
+    <Exec Condition="'$(OS)' != 'Unix'" Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" />
     <Csc TargetType="library" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
     <Csc TargetType="library" Sources="Src\typeforwarder3.cs" References="$(OutputPath)\$(Prefix)typeforwardee3.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
@@ -91,7 +92,7 @@
     <Csc TargetType="library" EmitDebugInformation="true" Sources="Src\baseclasscs.cs" OutputAssembly="$(OutputPath)\$(Prefix)baseclasscs.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" EmitDebugInformation="true" Sources="Src\dynamicobjmodel.cs" OutputAssembly="$(OutputPath)\$(Prefix)dynamicobjmodel.dll" References="$(OutputPath)\Microsoft.Dynamic.dll" />
   </Target>
-  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample">
+  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(OS)' != 'Unix'">
     <Vbc TargetType="library" EmitDebugInformation="true" Sources="Src\indexerdefinitionsvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)indexerdefinitionsvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Vbc TargetType="library" EmitDebugInformation="true" Sources="Src\defaultmembersvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)defaultmembersvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Vbc TargetType="library" EmitDebugInformation="true" Sources="Src\baseclassvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)baseclassvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
