@@ -22,22 +22,13 @@ namespace Microsoft.Scripting.Utils {
     public static class MonitorUtils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference")]
         public static void Enter(object obj, ref bool lockTaken) {
-#if CLR2
-            Monitor.Enter(obj);
-            lockTaken = true;
-#else
             Monitor.Enter(obj, ref lockTaken);
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference")]
         public static bool TryEnter(object obj, ref bool lockTaken) {
-#if CLR2
-            return lockTaken = Monitor.TryEnter(obj);
-#else
             Monitor.TryEnter(obj, ref lockTaken);
             return lockTaken;
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference")]

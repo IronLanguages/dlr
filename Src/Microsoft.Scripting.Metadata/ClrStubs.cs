@@ -29,22 +29,3 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 }
-
-#if CLR2
-
-namespace System.Diagnostics.Contracts {
-    internal static class Contract {
-        [Conditional("DEBUG")]
-        public static void Assert(bool precondition) {
-            Debug.Assert(precondition);
-        }
-
-        public static void Requires(bool precondition) {
-            if (!precondition) {
-                throw new ArgumentException("Method precondition violated");
-            }
-        }
-    }
-}
-
-#endif
