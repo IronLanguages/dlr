@@ -39,11 +39,7 @@ namespace Microsoft.Scripting.Runtime {
     /// This dictionary can store object values in addition to string values.  It also supports
     /// null keys.
     /// </summary>
-    public abstract class CustomStringDictionary : 
-#if CLR2
-        IValueEquality,
-#endif
-        IDictionary, IDictionary<object, object> {
+    public abstract class CustomStringDictionary : IDictionary, IDictionary<object, object> {
 
         private Dictionary<object, object> _data;
         private static readonly object _nullObject = new object();
@@ -398,14 +394,6 @@ namespace Microsoft.Scripting.Runtime {
                 object res;
                 if (!oth.TryGetValue(o.Key, out res))
                     return false;
-#if CLR2
-                IValueEquality ve = res as IValueEquality;
-                if (ve != null) {
-                    if (!ve.ValueEquals(o.Value)) return false;
-                } else if ((ve = (o.Value as IValueEquality)) != null) {
-                    if (!ve.Equals(res)) return false;
-                } else
-#endif
                     if (res != null) {
                         if (!res.Equals(o.Value)) return false;
                     } else if (o.Value != null) {

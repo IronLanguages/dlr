@@ -34,7 +34,6 @@
     <Compile Include="ClrStubs.cs" />
     <Compile Include="MetadataExtensions.cs" />
     <Compile Include="MemoryBlock.cs" />
-    <Compile Include="MemoryMapping.V2.cs" />
     <Compile Include="MemoryReader.cs" />
     <Compile Include="MetadataImport.cs" />
     <Compile Include="MetadataName.cs" />

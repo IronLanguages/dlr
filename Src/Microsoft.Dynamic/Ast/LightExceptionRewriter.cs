@@ -14,9 +14,7 @@
  * ***************************************************************************/
 
 
-#if !CLR2
 using Microsoft.Scripting.Ast;
-#endif
 
 using System;
 using System.Collections.Generic;

@@ -126,11 +126,7 @@ namespace Microsoft.Scripting.Utils {
                 if (_waitEvent == null) {
                     ManualResetEvent mre = new ManualResetEvent(false);
                     if (Interlocked.CompareExchange<ManualResetEvent>(ref _waitEvent, mre, null) != null) {
-#if CLR2
-                        mre.Close();
-#else
                         mre.Dispose();
-#endif
                     }
                 }
                 _waiters++;
@@ -143,11 +139,7 @@ namespace Microsoft.Scripting.Utils {
             public void FinishWait() {
                 _waiters--;
                 if (_waiters == 0) {
-#if CLR2
-                    _waitEvent.Close();
-#else
                     _waitEvent.Dispose();
-#endif
                 }
             }
         }

@@ -119,7 +119,6 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public static ScriptRuntime CreateRemote(AppDomain domain, ScriptRuntimeSetup setup) {
             ContractUtils.RequiresNotNull(domain, "domain");
-#if !CLR2
             return (ScriptRuntime)domain.CreateInstanceAndUnwrap(
                 typeof(ScriptRuntime).Assembly.FullName, 
                 typeof(ScriptRuntime).FullName, 
@@ -130,20 +129,6 @@ namespace Microsoft.Scripting.Hosting {
                 null,
                 null
             );
-#else
-            //The API CreateInstanceAndUnwrap is obsolete in Dev10.
-            return (ScriptRuntime)domain.CreateInstanceAndUnwrap(
-                typeof(ScriptRuntime).Assembly.FullName, 
-                typeof(ScriptRuntime).FullName, 
-                false, 
-                BindingFlags.Default, 
-                null, 
-                new object[] { setup }, 
-                null,
-                null,
-                null
-            );
-#endif
         }
 
         // TODO: Figure out what is the right lifetime
