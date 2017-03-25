@@ -39,6 +39,7 @@ namespace Microsoft.Scripting.Runtime {
     /// This dictionary can store object values in addition to string values.  It also supports
     /// null keys.
     /// </summary>
+    [DebuggerDisplay("Count = {Count}")]
     public abstract class CustomStringDictionary : IDictionary, IDictionary<object, object> {
 
         private Dictionary<object, object> _data;

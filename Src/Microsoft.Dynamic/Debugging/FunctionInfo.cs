@@ -15,8 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Scripting.Debugging {
+    [DebuggerDisplay("{Name}")]
     public sealed class FunctionInfo {
         private readonly Delegate _generatorFactory;
         private readonly string _name;
