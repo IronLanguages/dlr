@@ -19,13 +19,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Debugging.CompilerServices;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Debugging {
+    [DebuggerDisplay("FunctionInfo = {_funcInfo.Name}, CurrentSequencePointIndex = {CurrentSequencePointIndex}")]
     public sealed class DebugFrame {
         private readonly DebugThread _thread;
         private FunctionInfo _funcInfo;
@@ -40,7 +39,7 @@ namespace Microsoft.Scripting.Debugging {
         private Dictionary<IList<VariableInfo>, ScopeData> _variables;
 
         // Symbol used to set "$exception" variable when exceptions are thrown
-        private const string _exceptionVariableSymbol = "$exception";
+        private const string _exceptionVariableSymbol = "$debugException";
 
         internal DebugFrame(
             DebugThread thread,
