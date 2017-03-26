@@ -8,10 +8,10 @@ mono:
 
 solution: Dlr.sln
 
-before_install:
-  - curl https://api.nuget.org/downloads/nuget.exe -o nuget.exe
-  - mono nuget.exe install NUnit
-  - mono nuget.exe install NUnitLite
+#before_install:
+#  - curl https://api.nuget.org/downloads/nuget.exe -o nuget.exe
+#  - mono nuget.exe install NUnit
+#  - mono nuget.exe install NUnitLite
 
 script:
   - xbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
