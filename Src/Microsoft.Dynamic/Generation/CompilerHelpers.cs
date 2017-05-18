@@ -689,7 +689,7 @@ namespace Microsoft.Scripting.Generation {
             return lambda.Compile();
         }
 
-#if FEATURE_REFEMIT
+#if FEATURE_PDBEMIT && FEATURE_REFEMIT
         /// <summary>
         /// Compiles the LambdaExpression, emitting it into a new type, and
         /// optionally making it debuggable.
@@ -702,6 +702,7 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="emitDebugSymbols">True if debug symbols (PDBs) are emitted by the <paramref name="debugInfoGenerator"/>.</param>
         /// <returns>the compiled delegate</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+
         public static T CompileToMethod<T>(Expression<T> lambda, DebugInfoGenerator debugInfoGenerator, bool emitDebugSymbols) {
             return (T)(object)CompileToMethod((LambdaExpression)lambda, debugInfoGenerator, emitDebugSymbols);
         }
