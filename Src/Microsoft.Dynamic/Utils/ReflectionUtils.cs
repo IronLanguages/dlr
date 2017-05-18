@@ -700,7 +700,7 @@ namespace Microsoft.Scripting.Utils {
         #endregion
 
         #region Win8
-#if WIN8 || CLR45
+#if WIN8
         public static TypeCode GetTypeCode(this Enum e) {
             return GetTypeCode(Enum.GetUnderlyingType(e.GetType()));
         }
@@ -807,7 +807,6 @@ namespace Microsoft.Scripting.Utils {
             return type.GetTypeInfo().GetDeclaredMethods(name).WithBindingFlags(bindingFlags);
         }
 
-
         public static MethodInfo GetMethod(this Delegate d) {
             return d.GetMethodInfo();
         }
@@ -894,10 +893,16 @@ namespace Microsoft.Scripting.Utils {
             return Type.GetTypeCode(type);
         }
 
+#if CLR45
+        public static MethodInfo GetMethod(this Delegate d) {
+            return d.GetMethodInfo();
+        }
+#else
         public static MethodInfo GetMethodInfo(this Delegate d) {
             return d.Method;
         }
-        
+#endif
+
         public static bool IsDefined(this Assembly assembly, Type attributeType) {
             return assembly.IsDefined(attributeType, false);
         }
@@ -910,6 +915,7 @@ namespace Microsoft.Scripting.Utils {
             return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
 
+#if !CLR45
         public static IEnumerable<T> GetCustomAttributes<T>(this Assembly assembly, bool inherit = false) where T : Attribute {
             return Attribute.GetCustomAttributes(assembly, typeof(T), inherit).Cast<T>();
         }
@@ -917,6 +923,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<T> GetCustomAttributes<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
             return Attribute.GetCustomAttributes(member, typeof(T), inherit).Cast<T>();
         }
+#endif
 #endif
 
         public static bool ContainsGenericParameters(this Type type) {
