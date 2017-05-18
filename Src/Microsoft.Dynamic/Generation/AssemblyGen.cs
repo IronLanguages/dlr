@@ -77,13 +77,13 @@ namespace Microsoft.Scripting.Generation {
             // mark the assembly transparent so that it works in partial trust:
             CustomAttributeBuilder[] attributes = new CustomAttributeBuilder[] { 
                 new CustomAttributeBuilder(typeof(SecurityTransparentAttribute).GetConstructor(ReflectionUtils.EmptyTypes), new object[0]),
-#if !ANDROID
+#if FEATURE_SECURITY_RULES
                 new CustomAttributeBuilder(typeof(SecurityRulesAttribute).GetConstructor(new[] { typeof(SecurityRuleSet) }), new object[] { SecurityRuleSet.Level1 }),
 #endif
             };
 
             if (outDir != null) {
-#if !ANDROID
+#if !CLR2 && !ANDROID
                 _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave, outDir, false, attributes);
 #else
                 //The API DefineDynamicAssembly is obsolete in Dev10.
@@ -92,7 +92,11 @@ namespace Microsoft.Scripting.Generation {
 #endif
                 _myModule = _myAssembly.DefineDynamicModule(name.Name, _outFileName, isDebuggable);
             } else {
+#if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
+                _myAssembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
+#else
                 _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
+#endif
                 _myModule = _myAssembly.DefineDynamicModule(name.Name, isDebuggable);
             }
 

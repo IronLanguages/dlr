@@ -31,7 +31,7 @@ using System.Security;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("1bbee69c-30c5-41df-8912-b81da6d658c2")]
 
-#if !CLR2 && !SILVERLIGHT && !WIN8 && !ANDROID && !WP75
+#if FEATURE_SECURITY_RULES
 [assembly: System.Security.SecurityRules(SecurityRuleSet.Level1)]
 #endif
 
