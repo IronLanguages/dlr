@@ -105,7 +105,7 @@
     <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
+    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
       <Project>{eb66b766-6354-4208-a3d4-aacbdcb5c3b3}</Project>
       <Name>Microsoft.Dynamic</Name>
     </ProjectReference>
