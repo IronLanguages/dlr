@@ -83,9 +83,7 @@ namespace Microsoft.Scripting.Debugging {
 
         private StorageInfo CreateStorageInfo() {
             // we do our own locking, tell hosts this is a bad time to interrupt us.
-#if !SILVERLIGHT && !WP75
             Thread.BeginCriticalRegion();
-#endif
             StorageInfo[] curStorage = Updating;
             try {
                 int threadId = Thread.CurrentThread.ManagedThreadId;
@@ -122,9 +120,8 @@ namespace Microsoft.Scripting.Debugging {
                     // let others access the storage again
                     Interlocked.Exchange(ref _stores, curStorage);
                 }
-#if !SILVERLIGHT && !WP75
+
                 Thread.EndCriticalRegion();
-#endif
             }
         }
 

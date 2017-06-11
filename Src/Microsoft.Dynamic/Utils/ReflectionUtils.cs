@@ -1302,16 +1302,13 @@ namespace Microsoft.Scripting.Utils {
 #if FEATURE_LCG
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework")]
         internal static DynamicMethod RawCreateDynamicMethod(string name, Type returnType, Type[] parameterTypes) {
-#if SILVERLIGHT // Module-hosted DynamicMethod is not available in SILVERLIGHT
-            return new DynamicMethod(name, returnType, parameterTypes);
-#else
+            
             //
             // WARNING: we set restrictedSkipVisibility == true  (last parameter)
             //          setting this bit will allow accessing nonpublic members
             //          for more information see http://msdn.microsoft.com/en-us/library/bb348332.aspx
             //
             return new DynamicMethod(name, returnType, parameterTypes, true);
-#endif
         }
 #endif
 
@@ -1479,15 +1476,7 @@ namespace Microsoft.Scripting.Utils {
 
         internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly asm) {
             // TODO: WP7, SL5
-#if SILVERLIGHT // ReflectionTypeLoadException
-            try {
-                return asm.GetTypes();
-            } catch (Exception) {
-                return ReflectionUtils.EmptyTypes;
-            }
-#elif WIN8
-            return asm.DefinedTypes;
-#else
+
             foreach (Module module in asm.GetModules()) {
                 Type[] moduleTypes;
                 try {
@@ -1502,7 +1491,6 @@ namespace Microsoft.Scripting.Utils {
                     }
                 }
             }
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]

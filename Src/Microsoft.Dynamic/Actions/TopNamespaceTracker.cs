@@ -31,9 +31,7 @@ namespace Microsoft.Scripting.Actions {
         private int _lastDiscovery = 0;
         private readonly ScriptDomainManager _manager;
         internal readonly object HierarchyLock;
-#if !SILVERLIGHT
         private static Dictionary<Guid, Type> _comTypeCache = new Dictionary<Guid, Type>();
-#endif
 
         public TopNamespaceTracker(ScriptDomainManager manager)
             : base(null) {

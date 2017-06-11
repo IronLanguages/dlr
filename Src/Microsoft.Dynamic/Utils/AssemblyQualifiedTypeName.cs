@@ -34,11 +34,7 @@ namespace Microsoft.Scripting.Utils {
 
         public AssemblyQualifiedTypeName(Type type) {
             TypeName = type.FullName;
-#if SILVERLIGHT
-            AssemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
-#else
             AssemblyName = type.GetTypeInfo().Assembly.GetName();
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -67,11 +63,7 @@ namespace Microsoft.Scripting.Utils {
             try {
                 return new AssemblyQualifiedTypeName(str);
             } catch (ArgumentException e) {
-#if SILVERLIGHT || WP75
-                throw new ArgumentException(e.Message, argumentName);
-#else
                 throw new ArgumentException(e.Message, argumentName, e.InnerException);
-#endif
             }
         }
 

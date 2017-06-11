@@ -503,11 +503,9 @@ namespace Microsoft.Scripting.Math {
             return this * this;
         }
 
-#if !SILVERLIGHT
         public static BigInteger Parse(string str) {
             return new BigInteger(BigInt.Parse(str));
         }
-#endif
 
         public override string ToString() {
             return ToString(10);

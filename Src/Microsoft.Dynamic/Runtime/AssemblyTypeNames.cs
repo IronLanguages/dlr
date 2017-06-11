@@ -84,7 +84,6 @@ namespace Microsoft.Scripting.Runtime {
                    select new TypeName(t.AsType());
         }
 
-#if !SILVERLIGHT
         static IEnumerable<TypeName> GetTypeNames(string[] namespaces, string[][] types) {
             Debug.Assert(namespaces.Length == types.Length);
 
@@ -8076,7 +8075,5 @@ namespace Microsoft.Scripting.Runtime {
         #endregion
 
 #endif // CLR2
-
-#endif // !SILVERLIGHT
     }
 }

@@ -50,10 +50,9 @@ namespace TestInternalDLR {
 
             EditorBrowsableAttribute eba = new EditorBrowsableAttribute(EditorBrowsableState.Advanced);
             Assert(eba.GetType().IsSubclassOf(typeof(System.Attribute)));
-#if !SILVERLIGHT
+
             //SilverlightProxies.cs does not define the State property
             AreEqual(eba.State, EditorBrowsableState.Advanced);
-#endif
         }
 
         public void TestGeneratedCodeAttributeTest() {

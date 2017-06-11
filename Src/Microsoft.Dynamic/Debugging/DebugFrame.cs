@@ -129,9 +129,7 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 int debugMarker = CurrentLocationCookie;
                 if (debugMarker >= _funcInfo.SequencePoints.Length) {
-#if !SILVERLIGHT
                     Debug.Assert(false, "DebugMarker doesn't match any location");
-#endif
                     debugMarker = 0;
                 }
 
@@ -372,9 +370,8 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 IList<VariableInfo> scopedVars = CurrentLocationCookie < _funcInfo.VariableScopeMap.Length ? _funcInfo.VariableScopeMap[CurrentLocationCookie] : null;
                 if (scopedVars == null) {
-#if !SILVERLIGHT
                     Debug.Assert(false, "DebugMarker doesn't match any scope");
-#endif
+
                     // We use null as a key into the tuple that holds variables for "invalid" locations
                     scopedVars = _funcInfo.VariableScopeMap[0];
                 }
@@ -393,9 +390,7 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 IList<VariableInfo> locals = CurrentLocationCookie < _funcInfo.VariableScopeMap.Length ? _funcInfo.VariableScopeMap[CurrentLocationCookie] : null;
                 if (locals == null) {
-#if !SILVERLIGHT                    
                     Debug.Assert(false, "DebugMarker doesn't match any scope");
-#endif
                     locals = _funcInfo.VariableScopeMap[0];
                 }
 

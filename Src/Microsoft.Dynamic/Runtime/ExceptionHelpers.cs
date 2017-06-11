@@ -36,7 +36,6 @@ namespace Microsoft.Scripting.Runtime {
         /// we can present a reasonable stack trace to the user.
         /// </summary>
         public static Exception UpdateForRethrow(Exception rethrow) {
-#if !SILVERLIGHT
             List<StackTrace> prev;
 
             // we don't have any dynamic stack trace data, capture the data we can
@@ -50,7 +49,6 @@ namespace Microsoft.Scripting.Runtime {
 
             prev.Add(st);
 
-#endif
             return rethrow;
         }
 

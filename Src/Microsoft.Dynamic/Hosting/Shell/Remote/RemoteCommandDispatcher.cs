@@ -84,12 +84,10 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             return true;
         }
 
-#if !SILVERLIGHT
         // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
             return null;
         }
-#endif
     }
 }
 

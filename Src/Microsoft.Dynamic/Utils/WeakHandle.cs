@@ -18,35 +18,6 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Scripting.Utils {
 
-#if SILVERLIGHT
-    // TODO: finalizers in user types aren't supported in Silverlight
-    // we need to come up with another solution for Python's _weakref library
-    public struct WeakHandle {
-        private readonly WeakReference _weakRef;
-
-        public WeakHandle(object target, bool trackResurrection) {
-            _weakRef = new WeakReference(target, trackResurrection);
-            GC.SuppressFinalize(this._weakRef);
-        }
-
-        public object Target {
-            get {
-                if (!_weakRef.IsAlive)
-                    return null;
-                try {
-                    return _weakRef.Target;
-                } catch (InvalidOperationException) {
-                    return null;
-                }
-            }
-        }
-
-        public void Free() {
-            GC.ReRegisterForFinalize(_weakRef);
-            _weakRef.Target = null;
-        }
-    }
-#else
     /// <summary>
     /// Changes the semantics of GC handle to return <c>null</c> instead of throwing
     /// an <see cref="InvalidOperationException"/>.
@@ -82,5 +53,4 @@ namespace Microsoft.Scripting.Utils {
             }
         }
     }
-#endif
 }

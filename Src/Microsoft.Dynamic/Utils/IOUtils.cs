@@ -117,16 +117,9 @@ namespace Microsoft.Scripting.Utils {
                     sb.Replace(c, '_');
                 }
             } else {
-#if SILVERLIGHT || WP75
-                foreach (char c in Path.GetInvalidPathChars()) {
-                    sb.Replace(c, '_');
-                }
-                sb.Replace(':', '_').Replace('*', '_').Replace('?', '_').Replace('\\', '_').Replace('/', '_');
-#else
                 foreach (char c in Path.GetInvalidFileNameChars()) {
                     sb.Replace(c, '_');
                 }
-#endif
             }
 
             if (!isMask) {
