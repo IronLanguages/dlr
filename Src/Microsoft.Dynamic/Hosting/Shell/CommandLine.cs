@@ -72,9 +72,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public virtual string PromptContinuation { get { return "... "; } }
         protected virtual string Logo { get { return null; } }
 
-        public CommandLine() {
-        }
-
         protected virtual void Initialize() {
             if (_commandDispatcher == null) {
                 _commandDispatcher = CreateCommandDispatcher();

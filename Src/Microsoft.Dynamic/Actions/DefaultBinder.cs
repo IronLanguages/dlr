@@ -45,9 +45,6 @@ namespace Microsoft.Scripting.Actions {
     public partial class DefaultBinder : ActionBinder {
         internal static readonly DefaultBinder Instance = new DefaultBinder();
 
-        public DefaultBinder() {
-        }
-
         public override bool CanConvertFrom(Type fromType, Type toType, bool toNotNullable, NarrowingLevel level) {
             return toType.IsAssignableFrom(fromType);
         }

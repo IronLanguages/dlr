@@ -86,7 +86,6 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class DefaultValueInstruction<T> : Instruction {
-        internal DefaultValueInstruction() { }
 
         public override int ConsumedStack { get { return 0; } }
         public override int ProducedStack { get { return 1; } }
@@ -102,7 +101,6 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class TypeIsInstruction<T> : Instruction {
-        internal TypeIsInstruction() { }
 
         public override int ConsumedStack { get { return 1; } }
         public override int ProducedStack { get { return 1; } }
@@ -119,7 +117,6 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class TypeAsInstruction<T> : Instruction {
-        internal TypeAsInstruction() { }
 
         public override int ConsumedStack { get { return 1; } }
         public override int ProducedStack { get { return 1; } }

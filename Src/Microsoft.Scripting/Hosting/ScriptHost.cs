@@ -47,9 +47,6 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         private ScriptRuntime _runtime;
         
-        public ScriptHost() {
-        }
-
         // Called by ScriptRuntime when it is completely initialized. 
         // Notifies the host implementation that the runtime is available now.
         internal void SetRuntime(ScriptRuntime runtime) {

@@ -45,9 +45,6 @@ namespace Microsoft.Scripting.Runtime {
         private Dictionary<object, object> _data;
         private static readonly object _nullObject = new object();
 
-        protected CustomStringDictionary() {
-        }
-
         /// <summary>
         /// Gets a list of the extra keys that are cached by the the optimized implementation
         /// of the module.

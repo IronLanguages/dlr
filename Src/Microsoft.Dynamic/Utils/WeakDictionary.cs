@@ -52,9 +52,6 @@ namespace Microsoft.Scripting.Utils {
             valueConstructor = typeof(TValue).GetConstructor(new Type[] { });
         }
 
-        public WeakDictionary() {
-        }
-
         #region IDictionary<TKey,TValue> Members
 
         public void Add(TKey key, TValue value) {

@@ -276,9 +276,6 @@ namespace Microsoft.Scripting.Actions {
             /// </summary>
             private readonly CopyOnWriteList<KeyValuePair<WeakReference, WeakReference>> _handlers = new CopyOnWriteList<KeyValuePair<WeakReference, WeakReference>>();
 
-            public NormalHandlerList() {
-            }
-
             public override void AddHandler(object callableObject, Delegate handler) {
                 Assert.NotNull(handler);
                 _handlers.Add(new KeyValuePair<WeakReference, WeakReference>(new WeakReference(callableObject), new WeakReference(handler)));

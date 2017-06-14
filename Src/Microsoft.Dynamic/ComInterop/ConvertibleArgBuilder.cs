@@ -28,8 +28,6 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.ComInterop {
 
     internal class ConvertibleArgBuilder : ArgBuilder {
-        internal ConvertibleArgBuilder() {
-        }
 
         internal override Expression Marshal(Expression parameter) {
             return Helpers.Convert(parameter, typeof(IConvertible));

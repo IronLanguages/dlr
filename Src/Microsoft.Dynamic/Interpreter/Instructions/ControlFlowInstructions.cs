@@ -75,9 +75,6 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        internal BranchFalseInstruction() {
-        }
-
         public override int ConsumedStack { get { return 1; } }
 
         public override int Run(InterpretedFrame frame) {
@@ -103,9 +100,6 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        internal BranchTrueInstruction() {
-        }
-
         public override int ConsumedStack { get { return 1; } }
 
         public override int Run(InterpretedFrame frame) {
@@ -129,9 +123,6 @@ namespace Microsoft.Scripting.Interpreter {
                 }
                 return _cache;
             }
-        }
-
-        internal CoalescingBranchInstruction() {
         }
 
         public override int ConsumedStack { get { return 1; } }
