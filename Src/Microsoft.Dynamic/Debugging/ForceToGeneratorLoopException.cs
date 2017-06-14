@@ -14,12 +14,9 @@
  * ***************************************************************************/
 
 using System;
-using System.Runtime.Serialization;
 
 namespace Microsoft.Scripting.Debugging {
-#if !SILVERLIGHT
     [Serializable]
-#endif
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design","CA1032:ImplementStandardExceptionConstructors")]
     public sealed class ForceToGeneratorLoopException : Exception {
         public ForceToGeneratorLoopException() : base() { }

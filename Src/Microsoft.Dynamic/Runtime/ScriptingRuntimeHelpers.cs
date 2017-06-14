@@ -247,12 +247,7 @@ namespace Microsoft.Scripting.Runtime {
                     bindInfo.CompilationThreshold--;
                     return true;
                 }
-#if SILVERLIGHT
-                if (PlatformAdaptationLayer.IsCompactFramework) {
-                    bindInfo.CompilationThreshold = Int32.MaxValue;
-                    return true;
-                }
-#endif
+
                 return bindInfo.CheckCompiled();
             }
             return false;

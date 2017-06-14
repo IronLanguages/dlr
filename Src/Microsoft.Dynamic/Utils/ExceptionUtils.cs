@@ -22,11 +22,7 @@ using System.Threading;
 namespace Microsoft.Scripting.Utils {
     public static class ExceptionUtils {
         public static ArgumentOutOfRangeException MakeArgumentOutOfRangeException(string paramName, object actualValue, string message) {
-#if SILVERLIGHT || WP75 // ArgumentOutOfRangeException ctor overload
-            return new ArgumentOutOfRangeException(paramName, string.Format("{0} (actual value is '{1}')", message, actualValue));
-#else
             return new ArgumentOutOfRangeException(paramName, actualValue, message);
-#endif
         }
 
         public static ArgumentNullException MakeArgumentItemNullException(int index, string arrayName) {

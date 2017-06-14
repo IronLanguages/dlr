@@ -233,14 +233,12 @@ namespace Microsoft.Scripting.Generation {
             _ilg.Emit(opcode, arg);
         }
 
-#if !SILVERLIGHT && !WP75
         /// <summary>
         /// Emits an instruction with a signature token.
         /// </summary>
         public virtual void Emit(OpCode opcode, SignatureHelper signature) {
             _ilg.Emit(opcode, signature);
         }
-#endif
 
         /// <summary>
         /// Emits an instruction with a string argument.
@@ -263,7 +261,6 @@ namespace Microsoft.Scripting.Generation {
             _ilg.EmitCall(opcode, methodInfo, optionalParameterTypes);
         }
 
-#if !SILVERLIGHT && !WP75
 #if !WIN8
         /// <summary>
         /// Emits an unmanaged indirect call instruction.
@@ -278,7 +275,6 @@ namespace Microsoft.Scripting.Generation {
         public virtual void EmitCalli(OpCode opcode, CallingConventions callingConvention, Type returnType, Type[] parameterTypes, Type[] optionalParameterTypes) {
             _ilg.EmitCalli(opcode, callingConvention, returnType, parameterTypes, optionalParameterTypes);
         }
-#endif
 
 #if FEATURE_PDBEMIT
         /// <summary>

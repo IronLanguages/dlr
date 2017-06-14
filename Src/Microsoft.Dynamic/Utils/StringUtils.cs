@@ -57,102 +57,13 @@ namespace Microsoft.Scripting.Utils {
 
         public static string[] Split(string str, string separator, int maxComponents, StringSplitOptions options) {
             ContractUtils.RequiresNotNull(str, "str");
-#if SILVERLIGHT || WP75
-            if (string.IsNullOrEmpty(separator)) throw new ArgumentNullException("separator");
-
-            bool keep_empty = (options & StringSplitOptions.RemoveEmptyEntries) != StringSplitOptions.RemoveEmptyEntries;
-
-            List<string> result = new List<string>(maxComponents == Int32.MaxValue ? 1 : maxComponents + 1);
-
-            int i = 0;
-            int next;
-            while (maxComponents > 1 && i < str.Length && (next = str.IndexOf(separator, i)) != -1) {
-
-                if (next > i || keep_empty) {
-                    result.Add(str.Substring(i, next - i));
-                    maxComponents--;
-                }
-
-                i = next + separator.Length;
-            }
-
-            if (i < str.Length || keep_empty) {
-                result.Add(str.Substring(i));
-            }
-
-            return result.ToArray();
-#else
             return str.Split(new string[] { separator }, maxComponents, options);
-#endif
         }
 
         public static string[] Split(string str, char[] separators, int maxComponents, StringSplitOptions options) {
             ContractUtils.RequiresNotNull(str, "str");
-#if SILVERLIGHT || WP75
-            if (separators == null) return SplitOnWhiteSpace(str, maxComponents, options);
-
-            bool keep_empty = (options & StringSplitOptions.RemoveEmptyEntries) != StringSplitOptions.RemoveEmptyEntries;
-
-            List<string> result = new List<string>(maxComponents == Int32.MaxValue ? 1 : maxComponents + 1);
-
-            int i = 0;
-            int next;
-            while (maxComponents > 1 && i < str.Length && (next = str.IndexOfAny(separators, i)) != -1) {
-
-                if (next > i || keep_empty) {
-                    result.Add(str.Substring(i, next - i));
-                    maxComponents--;
-                }
-
-                i = next + 1;
-            }
-
-            if (i < str.Length || keep_empty) {
-                result.Add(str.Substring(i));
-            }
-
-            return result.ToArray();
-#else
             return str.Split(separators, maxComponents, options);
-#endif
         }
-
-#if SILVERLIGHT|| WP75
-        public static string[] SplitOnWhiteSpace(string str, int maxComponents, StringSplitOptions options) {
-            ContractUtils.RequiresNotNull(str, "str");
-
-            bool keep_empty = (options & StringSplitOptions.RemoveEmptyEntries) != StringSplitOptions.RemoveEmptyEntries;
-
-            List<string> result = new List<string>(maxComponents == Int32.MaxValue ? 1 : maxComponents + 1);
-
-            int i = 0;
-            int next;
-            while (maxComponents > 1 && i < str.Length && (next = IndexOfWhiteSpace(str, i)) != -1) {
-
-                if (next > i || keep_empty) {
-                    result.Add(str.Substring(i, next - i));
-                    maxComponents--;
-                }
-
-                i = next + 1;
-            }
-
-            if (i < str.Length || keep_empty) {
-                result.Add(str.Substring(i));
-            }
-
-            return result.ToArray();
-        }
-
-        public static int IndexOfWhiteSpace(string str, int start) {
-            ContractUtils.RequiresNotNull(str, "str");
-            if (start < 0 || start > str.Length) throw new ArgumentOutOfRangeException("start");
-
-            while (start < str.Length && !Char.IsWhiteSpace(str[start])) start++;
-
-            return (start == str.Length) ? -1 : start;
-        }
-#endif
 
         /// <summary>
         /// Splits text and optionally indents first lines - breaks along words, not characters.
@@ -235,24 +146,9 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if !WIN8
-#if SILVERLIGHT || WP75
-        private static Dictionary<string, CultureInfo> _cultureInfoCache = new Dictionary<string, CultureInfo>();
-#endif
-
         // Aims to be equivalent to Culture.GetCultureInfo for Silverlight
         public static CultureInfo GetCultureInfo(string name) {
-#if SILVERLIGHT || WP75
-            lock (_cultureInfoCache) {
-                CultureInfo result;
-                if (_cultureInfoCache.TryGetValue(name, out result)) {
-                    return result;
-                }
-                _cultureInfoCache[name] = result = new CultureInfo(name);
-                return result;
-            }
-#else
             return CultureInfo.GetCultureInfo(name);
-#endif
         }
 #endif
         // Like string.Split, but enumerates

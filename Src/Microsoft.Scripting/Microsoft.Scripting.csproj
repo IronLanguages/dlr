@@ -120,7 +120,6 @@
     <Compile Include="Utils\DelegateUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="Utils\TextStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft.Scripting.ruleset" />

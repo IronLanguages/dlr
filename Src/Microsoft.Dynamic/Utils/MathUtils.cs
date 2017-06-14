@@ -160,20 +160,7 @@ namespace Microsoft.Scripting.Utils {
         /// Needed because CoreCLR doesn't support this particular overload of Math.Round
         /// </summary>
         public static double RoundAwayFromZero(double value) {
-#if !SILVERLIGHT && !WP75
             return Math.Round(value, MidpointRounding.AwayFromZero);
-#else
-            if (value < 0) {
-                return -RoundAwayFromZero(-value);
-            }
-        
-            // we can assume positive value
-            double result = Math.Floor(value);
-            if (value - result >= 0.5) {
-                result += 1.0;
-            }
-            return result;
-#endif
         }
 
         private static readonly double[] _RoundPowersOfTens = new double[] { 1E0, 1E1, 1E2, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8, 1E9, 1E10, 1E11, 1E12, 1E13, 1E14, 1E15 };
@@ -214,16 +201,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static bool IsNegativeZero(double self) {
-#if SILVERLIGHT // BitConverter.DoubleToInt64Bits
-            if ( self != 0.0 ) {
-              return false;
-            }
-            byte[] bits = BitConverter.GetBytes(self);
-            return (bits[7] == 0x80 && bits[6] == 0x00 && bits[5] == 0x00 && bits[4] == 0x00
-                && bits[3] == 0x00 && bits[2] == 0x00 && bits[1] == 0x00 && bits[0] == 0x00);
-#else
             return (self == 0.0 && 1.0 / self < 0);
-#endif
         }
 
         #region Special Functions

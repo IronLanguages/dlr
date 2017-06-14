@@ -29,12 +29,8 @@ namespace Microsoft.Scripting {
     internal static class DebugOptions {
 
         private static bool ReadOption(string name) {
-#if SILVERLIGHT
-            return false;
-#else
             string envVar = ReadString(name);
             return envVar != null && envVar.ToLowerInvariant() == "true";
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "name")]

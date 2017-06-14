@@ -44,15 +44,9 @@ namespace RowanTest.Common {
         private static bool _Is64 = false;
 
         /// <summary>
-        /// True if we're running under Silverlight
-        /// </summary>
-        private static bool _IsSilverlight = false;
-
-        /// <summary>
         /// True if we're running under Visual Studio Orcas
         /// </summary>
         private static bool _IsOrcas;
-
 
         /// <summary>
         /// List of all failures that have occurred.
@@ -64,12 +58,10 @@ namespace RowanTest.Common {
         /// </summary>
         private static List<string> _DisabledTests;
 
-#if !SILVERLIGHT
         /// <summary>
         /// Used to keep track of method execution time.
         /// </summary>
         private static Stopwatch _Stopwatch = null;
-#endif
 
         //---------------------------------------------------------------------
         //--Methods
@@ -80,10 +72,6 @@ namespace RowanTest.Common {
         static Runner() {
             if (System.IntPtr.Size == 8) _Is64 = true;
 
-#if SILVERLIGHT
-            _IsSilverlight = true;
-#endif
-
             Type t = typeof(object).Assembly.GetType("System.DateTimeOffset", false);
             _IsOrcas = t != null;
         }
@@ -92,12 +80,9 @@ namespace RowanTest.Common {
         /// Reset the Runner object.
         /// </summary>
         private static void Reset() {
-            
             _Failures = new List<string>();
             _DisabledTests = new List<string>();
-#if !SILVERLIGHT
             _Stopwatch = new Stopwatch();
-#endif
         }
 
 
@@ -191,24 +176,22 @@ namespace RowanTest.Common {
                 }
             }
 
-            //Invoke the method
-#if !SILVERLIGHT
+            // Invoke the method.
             _Stopwatch.Start();
-#endif
-            //let caller worry about any exceptions methInfo might throw...
-            methInfo.Invoke(o, new object[] { });
-#if !SILVERLIGHT
-            _Stopwatch.Stop();
 
+            // Let caller worry about any exceptions methInfo might throw.
+            methInfo.Invoke(o, new object[] { });
+
+            _Stopwatch.Stop();
 
             //Verify it didn't take too long
             if (_Stopwatch.ElapsedMilliseconds > maxTime) {
-                System.Console.WriteLine(methInfo.DeclaringType.Name + " (" + methInfo.Name + ") took " + _Stopwatch.ElapsedTicks + "ms to execute.");
-                System.Console.WriteLine("Should have finished within " + maxTime + " milliseconds!");
+                Console.WriteLine(methInfo.DeclaringType.Name + " (" + methInfo.Name + ") took " + _Stopwatch.ElapsedTicks + "ms to execute.");
+                Console.WriteLine("Should have finished within " + maxTime + " milliseconds!");
                 _Failures.Add(methInfo.DeclaringType.Name + " (" + methInfo.Name + "): timeout.");
             }
+
             _Stopwatch.Reset();
-#endif
         }
 
         /// <summary>
@@ -241,12 +224,6 @@ namespace RowanTest.Common {
                     return true;
                 }
 
-                //Silverlight
-                if ((da.Reason & DisabledReason.Silverlight) != 0 && _IsSilverlight) {
-                    _DisabledTests.Add(methInfo.DeclaringType.Name + " (" + methInfo.Name + ") " + da.Reason + ": " + da.Description);
-                    return true;
-                }
-
                 //Orcas
                 if ((da.Reason & DisabledReason.Orcas) != 0 && _IsOrcas) {
                     _DisabledTests.Add(methInfo.DeclaringType.Name + " (" + methInfo.Name + ") " + da.Reason + ": " + da.Description);
@@ -261,26 +238,23 @@ namespace RowanTest.Common {
         /// Prints a summary of the test run and exits if any failures occurred.
         /// </summary>
         private static void PrintSummary() {
-            System.Console.WriteLine("------------------------------------------------------------");
+            Console.WriteLine("------------------------------------------------------------");
             if (_DisabledTests.Count != 0) {
-                System.Console.WriteLine("The following tests were disabled:");
+                Console.WriteLine("The following tests were disabled:");
                 foreach (string disabled in _DisabledTests) {
-                    System.Console.WriteLine("\t" + disabled);
+                    Console.WriteLine("\t" + disabled);
                 }
             }
             
             if (_Failures.Count != 0) {
-                System.Console.WriteLine("The following tests failed:");
+                Console.WriteLine("The following tests failed:");
                 foreach (string fail in _Failures) {
-                    System.Console.WriteLine("\t" + fail);
+                    Console.WriteLine("\t" + fail);
                 }
-#if !SILVERLIGHT
-                System.Environment.Exit(1);
-#else
-                throw new System.Exception("Runner Failure");
-#endif
+
+                Environment.Exit(1);
             } else {
-                System.Console.WriteLine("Passed!");
+                Console.WriteLine("Passed!");
             }
         }
     }

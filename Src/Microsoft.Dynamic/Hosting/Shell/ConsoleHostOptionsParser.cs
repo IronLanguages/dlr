@@ -86,7 +86,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         break;
 
                     case "setenv":
-                        OptionNotAvailableOnSilverlight(name);
                         _options.EnvironmentVars.AddRange(value.Split(';'));
                         break;
 
@@ -142,11 +141,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
             if (value == null) {
                 throw new InvalidOptionException(String.Format(CultureInfo.CurrentCulture, "Argument expected for the {0} option.", optionName));
             }
-        }
-
-        [Conditional("SILVERLIGHT")]
-        private void OptionNotAvailableOnSilverlight(string optionName) {
-            throw new InvalidOptionException(String.Format("Option '{0}' is not available on Silverlight.", optionName));
         }
     }
 }

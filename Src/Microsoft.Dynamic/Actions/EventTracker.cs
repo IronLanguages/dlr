@@ -236,7 +236,6 @@ namespace Microsoft.Scripting.Actions {
             public abstract Delegate RemoveHandler(object callableObject, IEqualityComparer<object> comparer);
         }
 
-#if !SILVERLIGHT
         private sealed class ComHandlerList : HandlerList {
             /// <summary>
             /// Storage for the handlers - a key value pair of the callable object and the delegate handler.
@@ -264,7 +263,6 @@ namespace Microsoft.Scripting.Actions {
                 return null;
             }
         }
-#endif
 
         private sealed class NormalHandlerList : HandlerList {
             /// <summary>

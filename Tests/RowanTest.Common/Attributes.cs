@@ -42,11 +42,6 @@ namespace RowanTest.Common {
         SixtyFourBitCLR = 0x0008,
 
         /// <summary>
-        /// Fails under Silverlight only
-        /// </summary>
-        Silverlight = 0x0010,
-
-        /// <summary>
         /// Fails under .NET 3.5 only
         /// </summary>
         Orcas = 0x0020,

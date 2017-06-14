@@ -270,7 +270,6 @@
     <Compile Include="MultiRuntimeAwareAttribute.cs" />
     <Compile Include="PerfTrack.cs" />
     <Compile Include="Runtime\CompilerContext.cs" />
-    <Compile Include="Runtime\DynamicLanguageProviderAttribute.cs" />
     <Compile Include="Runtime\IConvertibleMetaObject.cs" />
     <Compile Include="Runtime\ICustomScriptCodeData.cs" />
     <Compile Include="Runtime\IRestrictedMetaObject.cs" />
@@ -395,7 +394,6 @@
     <Compile Include="Utils\IOUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="Utils\TextStream.cs" />
     <Compile Include="IValueEquality.cs" />
     <Compile Include="KeyboardInterruptException.cs" />
     <Compile Include="SourceFileContentProvider.cs" />

@@ -61,13 +61,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// </summary>
         protected virtual string ExeName {
             get {
-#if !SILVERLIGHT
                 Assembly entryAssembly = Assembly.GetEntryAssembly();
-                //Can be null if called from unmanaged code (VS integration scenario)
+                
+                // Can be null if called from unmanaged code (VS integration scenario)
                 return entryAssembly != null ? entryAssembly.GetName().Name : "ConsoleHost";
-#else
-                return "ConsoleHost";
-#endif
             }
         }
 
@@ -351,14 +348,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private void SetEnvironment() {
             Debug.Assert(Options.EnvironmentVars != null);
 
-#if !SILVERLIGHT
             foreach (string env in Options.EnvironmentVars) {
                 if (!String.IsNullOrEmpty(env)) {
                     string[] var_def = env.Split('=');
                     System.Environment.SetEnvironmentVariable(var_def[0], (var_def.Length > 1) ? var_def[1] : "");
                 }
             }
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
