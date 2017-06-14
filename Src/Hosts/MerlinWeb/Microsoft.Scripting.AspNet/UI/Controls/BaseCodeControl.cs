@@ -21,18 +21,9 @@ using Microsoft.Scripting.AspNet.Util;
 
 namespace Microsoft.Scripting.AspNet.UI.Controls {
     public class BaseCodeControl: Control {
-        private string _code;
-        private int _line;
+        public string Code { get; set; }
 
-        public string Code {
-            get { return _code; }
-            set { _code = value; }
-        }
-
-        public int Line {
-            get { return _line; }
-            set { _line = value; }
-        }
+        public int Line { get; set; }
 
         protected override void OnInit(EventArgs e) {
             base.OnInit(e);

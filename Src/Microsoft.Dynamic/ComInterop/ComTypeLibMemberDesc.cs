@@ -18,17 +18,12 @@
 namespace Microsoft.Scripting.ComInterop {
 
     public class ComTypeLibMemberDesc {
-        readonly ComType _kind;
-
         internal ComTypeLibMemberDesc(ComType kind) {
-            _kind = kind;
+            Kind = kind;
         }
 
-        public ComType Kind {
-            get { return _kind; }
-        }
+        public ComType Kind { get; }
     }
-
 }
 
 #endif
