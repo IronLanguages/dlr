@@ -365,7 +365,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             if (_comTypeDesc == null) {
                 lock (_CacheComTypeDesc) {
-                    if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) == true &&
+                    if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) &&
                         _comTypeDesc.Events != null) {
                         return;
                     }
@@ -512,7 +512,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             if (_comTypeDesc == null) {
                 lock (_CacheComTypeDesc) {
-                    if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) == true &&
+                    if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) &&
                         _comTypeDesc.Funcs != null) {
                         return;
                     }
