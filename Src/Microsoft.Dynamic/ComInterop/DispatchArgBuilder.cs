@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Helpers.Convert(parameter, typeof(DispatchWrapper)),
                     typeof(DispatchWrapper).GetProperty("WrappedObject")
                 );
-            };
+            }
 
             return Helpers.Convert(parameter, typeof(object));
         }

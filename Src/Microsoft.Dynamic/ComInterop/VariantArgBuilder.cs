@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Helpers.Convert(parameter, typeof(VariantWrapper)),
                     typeof(VariantWrapper).GetProperty("WrappedObject")
                 );
-            };
+            }
 
             return Helpers.Convert(parameter, typeof(object));
         }
@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.ComInterop {
                     typeof(VariantWrapper).GetConstructor(new Type[] { typeof(object) }),
                     unmarshal
                 );
-            };
+            }
 
             return base.UnmarshalFromRef(unmarshal);
         }
