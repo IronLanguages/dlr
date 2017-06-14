@@ -258,17 +258,14 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <returns>Operation result code</returns>
 		internal int inflate(ZStream z, FlushStrategy flush)
 		{
-			int r;
-			int b;
-
-            int internalFlush = (int)flush;
+		    int internalFlush = (int)flush;
 
             int res_temp;
 			
 			if (z == null || z.istate == null || z.next_in == null)
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
             res_temp = internalFlush == (int)FlushStrategy.Z_FINISH ? (int)ZLibResultCode.Z_BUF_ERROR : (int)ZLibResultCode.Z_OK;
-			r = (int)ZLibResultCode.Z_BUF_ERROR;
+			int r = (int)ZLibResultCode.Z_BUF_ERROR;
 
             if (detectHeader)
             {
@@ -326,7 +323,7 @@ namespace ComponentAce.Compression.Libs.ZLib
                             return r; r = res_temp;
 						
 						z.avail_in--; z.total_in++;
-						b = (z.next_in[z.next_in_index++]) & 0xff;
+						int b = (z.next_in[z.next_in_index++]) & 0xff;
 						
 						if ((((z.istate.method << 8) + b) % 31) != 0)
 						{
