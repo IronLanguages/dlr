@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Helpers.Convert(parameter, typeof(BStrWrapper)),
                     typeof(BStrWrapper).GetProperty("WrappedObject")
                 );
-            };
+            }
 
             return parameter;
         }
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.ComInterop {
                     typeof(BStrWrapper).GetConstructor(new Type[] { typeof(string) }),
                     unmarshal
                 );
-            };
+            }
 
             return base.UnmarshalFromRef(unmarshal);
         }

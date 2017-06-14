@@ -1627,7 +1627,8 @@ namespace Microsoft.Scripting.Interpreter {
                 case ExpressionType.PostDecrementAssign:
                     CompileReducibleExpression(expr); break;
                 default: throw Assert.Unreachable;
-            };
+            }
+
             Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1));
         }
 
