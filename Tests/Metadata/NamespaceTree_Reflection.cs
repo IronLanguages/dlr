@@ -105,16 +105,13 @@ namespace Metadata {
     public sealed class RNamespaceTree {
         // Maps every prefix of every namespace name to the corresponding namespace:
         private readonly Dictionary<string, RNamespaceTreeNode> _names;
-        private readonly RNamespaceTreeNode _root;
 
         public RNamespaceTree() {
             _names = new Dictionary<string, RNamespaceTreeNode>();
-            _names.Add("", _root = new RNamespaceTreeNode(""));
+            _names.Add("", Root = new RNamespaceTreeNode(""));
         }
 
-        public RNamespaceTreeNode Root {
-            get { return _root; }
-        }
+        public RNamespaceTreeNode Root { get; }
 
         public IEnumerable<RNamespaceTreeNode> GetAllNamespaces() {
             return _names.Values;

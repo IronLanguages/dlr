@@ -18,12 +18,11 @@ using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Debugging {
     public sealed class DebugSourceFile {
-        private readonly string _fileName;
         private DebugMode _debugMode;
         private readonly Dictionary<DebugSourceSpan, FunctionInfo> _functionInfoMap;
 
         internal DebugSourceFile(string fileName, DebugMode debugMode) {
-            _fileName = fileName;
+            Name = fileName;
             _debugMode = debugMode;
             _functionInfoMap = new Dictionary<DebugSourceSpan, FunctionInfo>();
         }
@@ -32,9 +31,7 @@ namespace Microsoft.Scripting.Debugging {
             get { return _functionInfoMap; }
         }
 
-        internal string Name {
-            get { return _fileName; }
-        }
+        internal string Name { get; }
 
         internal DebugMode DebugMode {
             get { return _debugMode; }

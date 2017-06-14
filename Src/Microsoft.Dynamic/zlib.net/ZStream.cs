@@ -47,16 +47,15 @@ using System;
 
 namespace ComponentAce.Compression.Libs.ZLib
 {
-	
     /// <summary>
     /// ZStream is used to store user data to compress/decompress.
     /// </summary>
-	public sealed class ZStream
-	{
-		
+    public sealed class ZStream
+    {
+
         #region Constants
         
-		private const int DEF_WBITS = ZLibUtil.MAX_WBITS;
+        private const int DEF_WBITS = ZLibUtil.MAX_WBITS;
 
         /// <summary>
         /// Maximum memory level
@@ -121,16 +120,6 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// Inflate object to perform data decompression
         /// </summary>
         private Inflate _istate;
-	
-        /// <summary>
-        /// Best guess about the data type: ascii or binary
-        /// </summary>
-        private BlockType data_type;
-		
-        /// <summary>
-        /// A checksum computed with Adler algorithm
-        /// </summary>
-        private long _adler;
 
         #endregion
 
@@ -139,20 +128,12 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <summary>
         /// Adler-32 value for uncompressed data processed so far.
         /// </summary>
-        public long adler
-        {
-            get { return _adler; }
-            set { _adler = value; }
-        }
+        public long adler { get; set; }
 
         /// <summary>
         /// Best guess about the data type: ascii or binary
         /// </summary>
-        public BlockType Data_type
-        {
-            get { return data_type; }
-            set { data_type = value; }
-        }
+        public BlockType Data_type { get; set; }
 
         /// <summary>
         /// Gets/Sets the next input byte array.
@@ -644,9 +625,9 @@ namespace ComponentAce.Compression.Libs.ZLib
 				_dstate.Pending_out = 0;
 			}
 		}
-		
+
         /// <summary>
-		/// Read a new buffer from the current input stream, update the adler32 and total number of bytes read.  All <see cref="deflate" /> input goes 
+        /// Read a new buffer from the current input stream, update the adler32 and total number of bytes read.  All <see cref="deflate" /> input goes 
         /// through this function so some applications may wish to modify it to avoid allocating a large <see cref="next_in" /> buffer and copying from it.
         /// </summary>
         /// <seealso cref="flush_pending"/>
@@ -670,15 +651,15 @@ namespace ComponentAce.Compression.Libs.ZLib
 			_total_in += len;
 			return len;
 		}
-		
+
         /// <summary>
         /// Frees all inner <see cref="ZStream" /> buffers.
         /// </summary>
-		public void free()
-		{
-			_next_in = null;
-			_next_out = null;
-			_msg = null;
+        public void free()
+        {
+            _next_in = null;
+            _next_out = null;
+            _msg = null;
         }
 
         #endregion

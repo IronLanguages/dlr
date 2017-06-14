@@ -24,44 +24,24 @@ namespace Microsoft.Scripting.Runtime {
     public sealed class CompilerContext {
 
         /// <summary>
-        /// Source unit currently being compiled in the CompilerContext
+        /// Gets the source unit currently being compiled in the CompilerContext.
         /// </summary>
-        private readonly SourceUnit _sourceUnit;
+        public SourceUnit SourceUnit { get; }
 
         /// <summary>
-        /// Current error sink.
+        /// Gets the sink for parser callbacks (e.g. brace matching, etc.).
         /// </summary>
-        private readonly ErrorSink _errors;
+        public ParserSink ParserSink { get; }
 
         /// <summary>
-        /// Sink for parser callbacks (e.g. brace matching, etc.).
+        /// Gets the current error sink.
         /// </summary>
-        private readonly ParserSink _parserSink;
+        public ErrorSink Errors { get; }
 
         /// <summary>
-        /// Compiler specific options.
+        /// Gets the compiler specific options.
         /// </summary>
-        private readonly CompilerOptions _options;
-
-        public SourceUnit SourceUnit {
-            get {
-                return _sourceUnit;
-            }
-        }
-
-        public ParserSink ParserSink {
-            get {
-                return _parserSink;
-            }
-        }
-
-        public ErrorSink Errors {
-            get { return _errors; }
-        }
-
-        public CompilerOptions Options {
-            get { return _options; }
-        }
+        public CompilerOptions Options { get; }
 
         public CompilerContext(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink)
             : this(sourceUnit, options, errorSink, ParserSink.Null) {
@@ -73,10 +53,10 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(parserSink, "parserSink");
             ContractUtils.RequiresNotNull(options, "options");
 
-            _sourceUnit = sourceUnit;
-            _options = options;
-            _errors = errorSink;
-            _parserSink = parserSink;
+            SourceUnit = sourceUnit;
+            Options = options;
+            Errors = errorSink;
+            ParserSink = parserSink;
         }
     }
 }

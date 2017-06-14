@@ -26,13 +26,6 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
     /// Used by compilers to provide additional debug information about LambdaExpression to DebugContext
     /// </summary>
     public sealed class DebugLambdaInfo {
-        private IDebugCompilerSupport _langSupport;
-        private string _lambdaAlias;
-        private IList<MSAst.ParameterExpression> _hiddenVariables;
-        private IDictionary<MSAst.ParameterExpression, string> _variableAliases;
-        private object _customPayload;
-        private bool _optimizeForLeafFrames;
-        
         public DebugLambdaInfo(
             IDebugCompilerSupport compilerSupport,
             string lambdaAlias,
@@ -40,36 +33,24 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
             IList<MSAst.ParameterExpression> hiddenVariables,
             IDictionary<MSAst.ParameterExpression, string> variableAliases,
             object customPayload) {
-            _langSupport = compilerSupport;
-            _lambdaAlias = lambdaAlias;
-            _hiddenVariables = hiddenVariables;
-            _variableAliases = variableAliases;
-            _customPayload = customPayload;
-            _optimizeForLeafFrames = optimizeForLeafFrames;
+            CompilerSupport = compilerSupport;
+            LambdaAlias = lambdaAlias;
+            HiddenVariables = hiddenVariables;
+            VariableAliases = variableAliases;
+            CustomPayload = customPayload;
+            OptimizeForLeafFrames = optimizeForLeafFrames;
         }
 
-        public IDebugCompilerSupport CompilerSupport {
-            get { return _langSupport; }
-        }
+        public IDebugCompilerSupport CompilerSupport { get; }
 
-        public string LambdaAlias {
-            get { return _lambdaAlias; }
-        }
+        public string LambdaAlias { get; }
 
-        public IList<MSAst.ParameterExpression> HiddenVariables {
-            get { return _hiddenVariables; }
-        }
+        public IList<MSAst.ParameterExpression> HiddenVariables { get; }
 
-        public IDictionary<MSAst.ParameterExpression, string> VariableAliases {
-            get { return _variableAliases; }
-        }
+        public IDictionary<MSAst.ParameterExpression, string> VariableAliases { get; }
 
-        public object CustomPayload {
-            get { return _customPayload; }
-        }
+        public object CustomPayload { get; }
 
-        public bool OptimizeForLeafFrames {
-            get { return _optimizeForLeafFrames; }
-        }
+        public bool OptimizeForLeafFrames { get; }
     }
 }

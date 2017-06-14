@@ -20,17 +20,10 @@ using System.Reflection;
 
 namespace Microsoft.Scripting {
     public class AssemblyLoadedEventArgs : EventArgs {
-        private Assembly _assembly;
-
         public AssemblyLoadedEventArgs(Assembly assembly) {
-            _assembly = assembly;
+            Assembly = assembly;
         }
 
-        public Assembly Assembly {
-            get {
-                return _assembly;
-            }
-        }
+        public Assembly Assembly { get; }
     }
-
 }
