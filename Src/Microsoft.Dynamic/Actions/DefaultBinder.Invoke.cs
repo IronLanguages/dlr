@@ -166,14 +166,14 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static TargetInfo TryGetMemberGroupTargets(DynamicMetaObject target, DynamicMetaObject[] args, MemberGroup mg) {
             if (mg != null) {
-                MethodBase[] targets;
                 List<MethodInfo> foundTargets = new List<MethodInfo>();
                 foreach (MemberTracker mt in mg) {
                     if (mt.MemberType == TrackerTypes.Method) {
                         foundTargets.Add(((MethodTracker)mt).Method);
                     }
                 }
-                targets = foundTargets.ToArray();
+
+                MethodBase[] targets = foundTargets.ToArray();
                 return new TargetInfo(null, ArrayUtils.Insert(target, args), targets);
             }
             return null;

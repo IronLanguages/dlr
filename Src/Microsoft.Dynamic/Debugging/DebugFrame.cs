@@ -90,7 +90,6 @@ namespace Microsoft.Scripting.Debugging {
                 }
                 if (variables == null) {
                     List<VariableInfo> visibleInfos = new List<VariableInfo>();
-                    List<VariableInfo> visibleInfosWithException;
 
                     // Add parameters
                     foreach (VariableInfo varInfo in _funcInfo.Variables) {
@@ -106,7 +105,7 @@ namespace Microsoft.Scripting.Debugging {
                         }
                     }
 
-                    visibleInfosWithException = new List<VariableInfo>(visibleInfos);
+                    List<VariableInfo> visibleInfosWithException = new List<VariableInfo>(visibleInfos);
                     visibleInfosWithException.Add(new VariableInfo(_exceptionVariableSymbol, typeof(Exception), false, false, false));
 
                     scopeData.VarInfos = visibleInfos.ToArray();

@@ -201,8 +201,7 @@ namespace Microsoft.Scripting.Runtime {
         /// or false if the member does not exist.
         /// </summary>
         public void RemoveMember(object obj, string name, bool ignoreCase) {
-            CallSite<Action<CallSite, object>> site;
-            site = GetOrCreateActionSite<object>(_lc.CreateDeleteMemberBinder(name, ignoreCase));
+            CallSite<Action<CallSite, object>> site = GetOrCreateActionSite<object>(_lc.CreateDeleteMemberBinder(name, ignoreCase));
             site.Target(site, obj);
         }
 
@@ -210,8 +209,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Sets the member name on object obj to value.
         /// </summary>
         public void SetMember(object obj, string name, object value, bool ignoreCase) {
-            CallSite<Func<CallSite, object, object, object>> site;
-            site = GetOrCreateSite<object, object, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
+            CallSite<Func<CallSite, object, object, object>> site = GetOrCreateSite<object, object, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
             site.Target(site, obj, value);
         }
 
@@ -220,8 +218,7 @@ namespace Microsoft.Scripting.Runtime {
         /// boxing and casting of strongly typed members.
         /// </summary>
         public void SetMember<T>(object obj, string name, T value, bool ignoreCase) {
-            CallSite<Func<CallSite, object, T, object>> site;
-            site = GetOrCreateSite<object, T, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
+            CallSite<Func<CallSite, object, T, object>> site = GetOrCreateSite<object, T, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
             site.Target(site, obj, value);
         }
 
@@ -230,8 +227,7 @@ namespace Microsoft.Scripting.Runtime {
         /// depending on what the langauge prefers.
         /// </summary>
         public T ConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site;
-            site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), null));
+            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), null));
             return site.Target(site, obj);
         }
 
@@ -300,8 +296,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Convers the object obj to the type T including explicit conversions which may lose information.
         /// </summary>
         public T ExplicitConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site;
-            site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), true));
+            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), true));
             return site.Target(site, obj);
         }
 
@@ -309,8 +304,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Converts the object obj to the type type including explicit conversions which may lose information.
         /// </summary>
         public object ExplicitConvertTo(object obj, Type type) {
-            CallSite<Func<CallSite, object, object>> site;
-            site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, true));
+            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, true));
             return site.Target(site, obj);
         }
 

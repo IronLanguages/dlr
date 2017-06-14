@@ -1964,8 +1964,6 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
         internal int deflate(ZStream strm, FlushStrategy f)
         {
-            int old_flush;
-
             int internalFlush = (int)f;
 
             if (internalFlush > (int)FlushStrategy.Z_FINISH || internalFlush < 0)
@@ -1985,7 +1983,7 @@ namespace ComponentAce.Compression.Libs.ZLib
             }
 
             this.strm = strm; // just in case
-            old_flush = last_flush;
+            int old_flush = last_flush;
             last_flush = internalFlush;
 
             // Write the zlib header

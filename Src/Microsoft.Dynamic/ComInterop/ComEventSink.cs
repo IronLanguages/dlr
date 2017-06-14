@@ -130,8 +130,7 @@ namespace Microsoft.Scripting.ComInterop {
             string name = String.Format(CultureInfo.InvariantCulture, "[DISPID={0}]", dispid);
 
             lock (_lockObject) {
-                ComEventSinkMethod sinkMethod;
-                sinkMethod = FindSinkMethod(name);
+                ComEventSinkMethod sinkMethod = FindSinkMethod(name);
 
                 if (sinkMethod == null) {
                     if (_comEventSinkMethods == null) {
@@ -190,8 +189,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public object ExecuteHandler(string name, object[] args) {
-            ComEventSinkMethod site;
-            site = FindSinkMethod(name);
+            ComEventSinkMethod site = FindSinkMethod(name);
 
             if (site != null && site._handlers != null) {
                 return site._handlers(args);
@@ -318,8 +316,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_comEventSinkMethods == null)
                 return null;
 
-            ComEventSinkMethod site;
-            site = _comEventSinkMethods.Find(element => element._name == name);
+            ComEventSinkMethod site = _comEventSinkMethods.Find(element => element._name == name);
 
             return site;
         }

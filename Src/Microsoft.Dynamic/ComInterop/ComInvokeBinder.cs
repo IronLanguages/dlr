@@ -197,7 +197,6 @@ namespace Microsoft.Scripting.ComInterop {
             ParameterExpression hresult = Expression.Variable(typeof(int), "hresult");
 
             List<Expression> tryStatements = new List<Expression>();
-            Expression expr;
 
             if (_keywordArgNames.Length > 0) {
                 string[] names = _keywordArgNames.AddFirst(_methodDesc.Name);
@@ -282,7 +281,7 @@ namespace Microsoft.Scripting.ComInterop {
                 argErr
             );
 
-            expr = Expression.Assign(hresult, invoke);
+            Expression expr = Expression.Assign(hresult, invoke);
             tryStatements.Add(expr);
 
             //
