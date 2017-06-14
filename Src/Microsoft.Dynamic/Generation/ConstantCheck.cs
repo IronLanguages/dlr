@@ -119,7 +119,7 @@ namespace Microsoft.Scripting.Generation {
 
         private static bool Check(TypeBinaryExpression node, object value) {
             // allow constant TypeIs expressions to be optimized away
-            if (value is bool && ((bool)value) == true) {
+            if (value is bool && (bool)value) {
                 return node.TypeOperand.IsAssignableFrom(node.Expression.Type);
             }
             return false;

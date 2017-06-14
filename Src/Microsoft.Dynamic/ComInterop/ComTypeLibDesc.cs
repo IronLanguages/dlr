@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             ComTypeEnumDesc enumDesc;
-            if (_enums != null && _enums.TryGetValue(member, out enumDesc) == true)
+            if (_enums != null && _enums.TryGetValue(member, out enumDesc))
                 return enumDesc;
 
             return null;
@@ -200,7 +200,7 @@ namespace Microsoft.Scripting.ComInterop {
                 }
             }
 
-            if (_enums.ContainsKey(member) == true)
+            if (_enums.ContainsKey(member))
                 return true;
 
             return false;

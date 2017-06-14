@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.ComInterop {
                     }
                 }
 
-                if (comEventSink == null && createIfNotFound == true) {
+                if (comEventSink == null && createIfNotFound) {
                     comEventSink = new ComEventSink(rcw, sourceIid);
                     comEventSinks.Add(comEventSink);
                 }
