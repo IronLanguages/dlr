@@ -40,9 +40,6 @@ namespace Microsoft.Scripting.Ast {
         private int _count;
         private ReadOnlyCollectionBuilder<TExpression> _expressions;
 
-        public ExpressionCollectionBuilder() {
-        }
-
         public int Count {
             get { return _count; }
         }

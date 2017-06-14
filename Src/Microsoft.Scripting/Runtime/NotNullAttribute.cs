@@ -23,8 +23,6 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public sealed class NotNullAttribute : Attribute {
-        public NotNullAttribute() {
-        }
     }
 
     /// <summary>

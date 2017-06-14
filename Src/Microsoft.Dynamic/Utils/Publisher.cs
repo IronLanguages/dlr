@@ -94,8 +94,6 @@ namespace Microsoft.Scripting.Utils {
         /// Helper class which stores the published value
         /// </summary>
         class PublishInfo<T> {
-            public PublishInfo() {
-            }
 
             // TODO: seems to be FxCop bug
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]

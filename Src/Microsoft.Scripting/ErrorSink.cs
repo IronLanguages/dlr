@@ -48,8 +48,6 @@ namespace Microsoft.Scripting {
     }
 
     internal sealed class NullErrorSink : ErrorSink {
-        internal NullErrorSink() {
-        }
 
         public override void Add(SourceUnit source, string/*!*/ message, SourceSpan span, int errorCode, Severity severity) {
         }

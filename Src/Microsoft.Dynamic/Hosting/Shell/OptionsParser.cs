@@ -153,9 +153,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private string _assembliesDir = null;
 #endif
 
-        public OptionsParser() {
-        }
-
         public TConsoleOptions ConsoleOptions {
             get {
                 if (_consoleOptions == null) {

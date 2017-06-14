@@ -41,9 +41,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public string LanguageProvider { get; set; }
         public bool HasLanguageProvider { get; set; }
 
-        public ConsoleHostOptions() {
-        }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")] // TODO: fix
         public string[,] GetHelp() {
             return new string[,] {

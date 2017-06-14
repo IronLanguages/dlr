@@ -52,10 +52,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected IConsole ConsoleIO { get { return _console; } set { _console = value; } }
         protected CommandLine CommandLine { get { return _commandLine; } }
 
-        protected ConsoleHost() {
-        }
-
-
         /// <summary>
         /// Console Host entry-point .exe name.
         /// </summary>
