@@ -23,7 +23,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestReflectionServices.cs" />
-    <Compile Include="TestSilverlightProxies.cs" />
     <Compile Include="TestTuple.cs" />
   </ItemGroup>
   <ItemGroup>

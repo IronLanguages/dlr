@@ -101,22 +101,3 @@ namespace System {
 }
 
 #endif
-
-#if SILVERLIGHT && !CLR2
-
-namespace System {
-    namespace Runtime.InteropServices {
-        /// <summary>
-        /// The Default Parameter Value Attribute.
-        /// </summary>
-        public sealed class DefaultParameterValueAttribute : Attribute {
-            /// <summary>
-            /// The constructor
-            /// </summary>
-            /// <param name="value">The value.</param>
-            public DefaultParameterValueAttribute(object value) { }
-        }
-    }
-}
-
-#endif

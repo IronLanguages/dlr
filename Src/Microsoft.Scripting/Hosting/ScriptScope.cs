@@ -45,9 +45,7 @@ namespace Microsoft.Scripting.Hosting {
     ///
     /// Hosting API counterpart for <see cref="Scope"/>.
     /// </summary>
-#if !SILVERLIGHT && !WIN8 && !WP75
     [DebuggerTypeProxy(typeof(ScriptScope.DebugView))]
-#endif
     public sealed class ScriptScope : MarshalByRefObject, IDynamicMetaObjectProvider {
         private readonly Scope _scope;
         private readonly ScriptEngine _engine;
@@ -212,7 +210,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         #region DebugView
-#if !SILVERLIGHT && !WIN8 && !WP75
+
         internal sealed class DebugView {
             private readonly ScriptScope _scope;
 
@@ -235,7 +233,7 @@ namespace Microsoft.Scripting.Hosting {
                 }
             }
         }
-#endif
+
         #endregion
 
         #region IDynamicMetaObjectProvider implementation

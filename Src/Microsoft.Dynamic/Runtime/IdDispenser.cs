@@ -30,13 +30,12 @@ namespace Microsoft.Scripting.Runtime {
         [MultiRuntimeAware]
         private static long _currentId = 42; // Last unique Id we have given out.
 
-#if !SILVERLIGHT && !WIN8 && !WP75 // GC.CollectionCount
         // cleanupId and cleanupGC are used for efficient scheduling of hashtable cleanups
         [MultiRuntimeAware]
         private static long _cleanupId; // currentId at the time of last cleanup
         [MultiRuntimeAware]
         private static int _cleanupGC; // GC.CollectionCount(0) at the time of last cleanup
-#endif
+
         /// <summary>
         /// Given an ID returns the object associated with that ID.
         /// </summary>
@@ -67,7 +66,6 @@ namespace Microsoft.Scripting.Runtime {
 
                 long uniqueId = checked(++_currentId);
 
-#if !SILVERLIGHT && !WIN8 && !WP75 // GC.CollectionCount
                 long change = uniqueId - _cleanupId;
 
                 // Cleanup the table if it is a while since we have done it last time.
@@ -85,7 +83,7 @@ namespace Microsoft.Scripting.Runtime {
                         _cleanupId += 1234;
                     }
                 }
-#endif
+
                 Wrapper w = new Wrapper(o, uniqueId);
                 _hashtable[w] = w;
 
