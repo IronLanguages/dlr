@@ -168,11 +168,11 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] AppendRange<T>(T[] array, IList<T> items, int additionalItemCount) {
             ContractUtils.RequiresNotNull(array, "array");
-            if (additionalItemCount < 0) throw new ArgumentOutOfRangeException("additionalItemCount");
+            if (additionalItemCount < 0) throw new ArgumentOutOfRangeException(nameof(additionalItemCount));
 
             int j = array.Length;
 
-            System.Array.Resize<T>(ref array, array.Length + items.Count + additionalItemCount);
+            Array.Resize<T>(ref array, array.Length + items.Count + additionalItemCount);
 
             for (int i = 0; i < items.Count; i++, j++) {
                 array[j] = items[i];
