@@ -24,21 +24,14 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Ast {
 
     public sealed class IfStatementTest {
-        private readonly Expression _test;
-        private readonly Expression _body;
-
         internal IfStatementTest(Expression test, Expression body) {
-            _test = test;
-            _body = body;
+            Test = test;
+            Body = body;
         }
 
-        public Expression Test {
-            get { return _test; }
-        }
+        public Expression Test { get; }
 
-        public Expression Body {
-            get { return _body; }
-        }
+        public Expression Body { get; }
     }
 
     public partial class Utils {

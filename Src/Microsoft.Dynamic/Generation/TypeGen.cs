@@ -21,7 +21,6 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Generation {
     public sealed class TypeGen {
-        private readonly AssemblyGen _myAssembly;
         private readonly TypeBuilder _myType;
 
         private ILGen _initGen;                        // The IL generator for the .cctor()
@@ -38,9 +37,7 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        internal AssemblyGen AssemblyGen {
-            get { return _myAssembly; }
-        }
+        internal AssemblyGen AssemblyGen { get; }
 
         public TypeBuilder TypeBuilder {
             get { return _myType; }
@@ -49,7 +46,7 @@ namespace Microsoft.Scripting.Generation {
         public TypeGen(AssemblyGen myAssembly, TypeBuilder myType) {
             Assert.NotNull(myAssembly, myType);
 
-            _myAssembly = myAssembly;
+            AssemblyGen = myAssembly;
             _myType = myType;
         }
 

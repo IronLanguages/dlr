@@ -22,15 +22,11 @@ namespace Microsoft.Scripting.Runtime {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly ScopeExtension[] EmptyArray = new ScopeExtension[0];
 
-        private readonly Scope _scope;
-
-        public Scope Scope {
-            get { return _scope; }
-        }
+        public Scope Scope { get; }
 
         public ScopeExtension(Scope scope) {
             ContractUtils.RequiresNotNull(scope, "scope");
-            _scope = scope;
+            Scope = scope;
         }
     }
 }

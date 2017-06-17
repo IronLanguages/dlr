@@ -44,7 +44,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 
-
 namespace ComponentAce.Compression.Libs.ZLib
 {
 
@@ -195,49 +194,29 @@ namespace ComponentAce.Compression.Libs.ZLib
         #region Properties
 
         /// <summary>
-        /// Compression level
+        /// Gets or sets the Compression level.
         /// </summary>
-        public int level
-        {
-            get { return _level; }
-            set { _level = value; }
-        }
+        public int level { get; set; }
 
         /// <summary>
-        /// Number of bytes in the pending buffer
+        /// Gets or sets the Number of bytes in the pending buffer.
         /// </summary>
-        public int Pending
-        {
-            get { return pending; }
-            set { pending = value; }
-        }
+        public int Pending { get; set; }
 
         /// <summary>
-        /// Output still pending
+        /// Gets or sets the Output pending buffer.
         /// </summary>
-        public byte[] Pending_buf
-        {
-            get { return pending_buf; }
-            set { pending_buf = value; }
-        }
+        public byte[] Pending_buf { get; set; }
 
         /// <summary>
-        /// Next pending byte to output to the stream
+        /// Gets or sets the next pending byte to output to the stream.
         /// </summary>
-        public int Pending_out
-        {
-            get { return pending_out; }
-            set { pending_out = value; }
-        }
+        public int Pending_out { get; set; }
 
         /// <summary>
-        /// suppress zlib header and adler32
+        /// Gets or sets a value indicating whether to suppress zlib header and adler32.
         /// </summary>
-        public int NoHeader
-        {
-            get { return noheader; }
-            set { noheader = value; }
-        }
+        public int NoHeader { get; set; }
 
         #endregion
 
@@ -254,29 +233,9 @@ namespace ComponentAce.Compression.Libs.ZLib
         private DeflateState status;
 
         /// <summary>
-        /// Output still pending
-        /// </summary>
-        private byte[] pending_buf;
-
-        /// <summary>
         /// Size of Pending_buf
         /// </summary>
         private int pending_buf_size;
-
-        /// <summary>
-        /// Next pending byte to output to the stream
-        /// </summary>
-        private int pending_out;
-        
-        /// <summary>
-        /// Number of bytes in the pending buffer
-        /// </summary>
-        private int pending;
-
-        /// <summary>
-        /// suppress zlib header and adler32
-        /// </summary>
-        private int noheader;
 
         /// <summary>
         /// UNKNOWN, BINARY or ASCII
@@ -424,11 +383,6 @@ namespace ComponentAce.Compression.Libs.ZLib
         // greater than this length. This saves time but degrades compression.
         // max_insert_length is used only for compression levels <= 3.
 
-        /// <summary>
-        /// compression level (1..9)
-        /// </summary>
-        private int _level;
-        
         /// <summary>
         /// favor or force Huffman coding
         /// </summary>
@@ -873,8 +827,8 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
         private void put_byte(byte[] p, int start, int len)
         {
-            Array.Copy(p, start, Pending_buf, pending, len);
-            pending += len;
+            Array.Copy(p, start, Pending_buf, Pending, len);
+            Pending += len;
         }
 
         /// <summary>
@@ -882,7 +836,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
         private void put_byte(byte c)
         {
-            Pending_buf[pending++] = c;
+            Pending_buf[Pending++] = c;
         }
 
         private void put_short(int w)
@@ -1849,7 +1803,7 @@ namespace ComponentAce.Compression.Libs.ZLib
             strm.msg = null; //
             strm.Data_type = BlockType.Z_UNKNOWN;
 
-            pending = 0;
+            Pending = 0;
             Pending_out = 0;
 
             if (NoHeader < 0)
@@ -1901,19 +1855,19 @@ namespace ComponentAce.Compression.Libs.ZLib
                 return (int)ZLibResultCode.Z_STREAM_ERROR;
             }
 
-            if (config_table[this._level].func != config_table[level].func && strm.total_in != 0)
+            if (config_table[this.level].func != config_table[level].func && strm.total_in != 0)
             {
                 // Flush the last buffer:
                 err = strm.deflate(FlushStrategy.Z_PARTIAL_FLUSH);
             }
 
-            if (this._level != level)
+            if (this.level != level)
             {
-                this._level = level;
-                max_lazy_match = config_table[this._level].max_lazy;
-                good_match = config_table[this._level].good_length;
-                nice_match = config_table[this._level].nice_length;
-                max_chain_length = config_table[this._level].max_chain;
+                this.level = level;
+                max_lazy_match = config_table[this.level].max_lazy;
+                good_match = config_table[this.level].good_length;
+                nice_match = config_table[this.level].nice_length;
+                max_chain_length = config_table[this.level].max_chain;
             }
             this.strategy = strategy;
             return err;
@@ -2013,7 +1967,7 @@ namespace ComponentAce.Compression.Libs.ZLib
             }
 
             // Flush as much pending output as possible
-            if (pending != 0)
+            if (Pending != 0)
             {
                 strm.flush_pending();
                 if (strm.avail_out == 0)
@@ -2129,7 +2083,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 			// If _avail_out is zero, the application will call deflate again
 			// to internalFlush the rest.
 			NoHeader = - 1; // WritePos the trailer only once!
-            return pending != 0 ? (int)ZLibResultCode.Z_OK : (int)ZLibResultCode.Z_STREAM_END;
+            return Pending != 0 ? (int)ZLibResultCode.Z_OK : (int)ZLibResultCode.Z_STREAM_END;
         }
 
         #endregion

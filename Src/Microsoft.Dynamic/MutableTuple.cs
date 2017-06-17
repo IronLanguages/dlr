@@ -404,17 +404,11 @@ namespace Microsoft.Scripting {
     public class MutableTuple<T0> : MutableTuple {
         public MutableTuple() { }
 
-        public MutableTuple(T0 item0)
-          : base() {
-            _item0 = item0;
+        public MutableTuple(T0 item0) {
+            Item000 = item0;
         }
 
-        private T0 _item0;
-
-        public T0 Item000 {
-            get { return _item0; }
-            set { _item0 = value; }
-        }
+        public T0 Item000 { get; set; }
 
         public override object GetValue(int index) {
             switch(index) {
@@ -441,15 +435,10 @@ namespace Microsoft.Scripting {
 
         public MutableTuple(T0 item0, T1 item1)
           : base(item0) {
-            _item1 = item1;
+            Item001 = item1;
         }
 
-        private T1 _item1;
-
-        public T1 Item001 {
-            get { return _item1; }
-            set { _item1 = value; }
-        }
+        public T1 Item001 { get; set; }
 
         public override object GetValue(int index) {
             switch(index) {
@@ -517,33 +506,19 @@ namespace Microsoft.Scripting {
 
         public MutableTuple(T0 item0, T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7)
           : base(item0, item1, item2, item3) {
-            _item4 = item4;
-            _item5 = item5;
-            _item6 = item6;
-            _item7 = item7;
+            Item004 = item4;
+            Item005 = item5;
+            Item006 = item6;
+            Item007 = item7;
         }
 
-        private T4 _item4;
-        private T5 _item5;
-        private T6 _item6;
-        private T7 _item7;
+        public T4 Item004 { get; set; }
 
-        public T4 Item004 {
-            get { return _item4; }
-            set { _item4 = value; }
-        }
-        public T5 Item005 {
-            get { return _item5; }
-            set { _item5 = value; }
-        }
-        public T6 Item006 {
-            get { return _item6; }
-            set { _item6 = value; }
-        }
-        public T7 Item007 {
-            get { return _item7; }
-            set { _item7 = value; }
-        }
+        public T5 Item005 { get; set; }
+
+        public T6 Item006 { get; set; }
+
+        public T7 Item007 { get; set; }
 
         public override object GetValue(int index) {
             switch(index) {
@@ -584,57 +559,31 @@ namespace Microsoft.Scripting {
 
         public MutableTuple(T0 item0, T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, T8 item8, T9 item9, T10 item10, T11 item11, T12 item12, T13 item13, T14 item14, T15 item15)
           : base(item0, item1, item2, item3, item4, item5, item6, item7) {
-            _item8 = item8;
-            _item9 = item9;
-            _item10 = item10;
-            _item11 = item11;
-            _item12 = item12;
-            _item13 = item13;
-            _item14 = item14;
-            _item15 = item15;
+            Item008 = item8;
+            Item009 = item9;
+            Item010 = item10;
+            Item011 = item11;
+            Item012 = item12;
+            Item013 = item13;
+            Item014 = item14;
+            Item015 = item15;
         }
 
-        private T8 _item8;
-        private T9 _item9;
-        private T10 _item10;
-        private T11 _item11;
-        private T12 _item12;
-        private T13 _item13;
-        private T14 _item14;
-        private T15 _item15;
+        public T8 Item008 { get; set; }
 
-        public T8 Item008 {
-            get { return _item8; }
-            set { _item8 = value; }
-        }
-        public T9 Item009 {
-            get { return _item9; }
-            set { _item9 = value; }
-        }
-        public T10 Item010 {
-            get { return _item10; }
-            set { _item10 = value; }
-        }
-        public T11 Item011 {
-            get { return _item11; }
-            set { _item11 = value; }
-        }
-        public T12 Item012 {
-            get { return _item12; }
-            set { _item12 = value; }
-        }
-        public T13 Item013 {
-            get { return _item13; }
-            set { _item13 = value; }
-        }
-        public T14 Item014 {
-            get { return _item14; }
-            set { _item14 = value; }
-        }
-        public T15 Item015 {
-            get { return _item15; }
-            set { _item15 = value; }
-        }
+        public T9 Item009 { get; set; }
+
+        public T10 Item010 { get; set; }
+
+        public T11 Item011 { get; set; }
+
+        public T12 Item012 { get; set; }
+
+        public T13 Item013 { get; set; }
+
+        public T14 Item014 { get; set; }
+
+        public T15 Item015 { get; set; }
 
         public override object GetValue(int index) {
             switch(index) {

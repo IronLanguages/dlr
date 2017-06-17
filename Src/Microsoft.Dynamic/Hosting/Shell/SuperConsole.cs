@@ -77,7 +77,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         class SuperConsoleOptions {
             private List<string> _list = new List<string>();
             private int _current;
-            private string _root;
 
             public int Count {
                 get {
@@ -116,14 +115,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 return Current;
             }
 
-            public string Root {
-                get {
-                    return _root;
-                }
-                set {
-                    _root = value;
-                }
-            }
+            public string Root { get; set; }
         }
 
         /// <summary>

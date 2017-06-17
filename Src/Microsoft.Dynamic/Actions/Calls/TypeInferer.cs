@@ -579,27 +579,16 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// type.
     /// </summary>
     public class InferenceResult {
-        private readonly Type _type;
-        private readonly BindingRestrictions _restrictions;
-
         public InferenceResult(Type type, BindingRestrictions restrictions) {
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(restrictions, "restrictions");
 
-            _type = type;
-            _restrictions = restrictions;
+            Type = type;
+            Restrictions = restrictions;
         }
 
-        public Type Type {
-            get {
-                return _type;
-            }
-        }
+        public Type Type { get; }
 
-        public BindingRestrictions Restrictions {
-            get {
-                return _restrictions;
-            }
-        }
+        public BindingRestrictions Restrictions { get; }
     }
 }

@@ -29,10 +29,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
             DisplayHelp
         }
 
-        private readonly List<string> _ignoredArgs = new List<string>();
         private readonly List<string> _environmentVars = new List<string>();
 
-        public List<string> IgnoredArgs { get { return _ignoredArgs; } }
+        public List<string> IgnoredArgs { get; } = new List<string>();
         public string RunFile { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")] // TODO: fix
         public string[] SourceUnitSearchPaths { get; set; }

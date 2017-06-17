@@ -27,35 +27,20 @@ using Microsoft.Scripting.Generation;
 
 namespace Microsoft.Scripting.Ast {
     public class LightLambdaExpression : Expression {
-        private readonly Expression _body;
         private readonly Type _retType;
-        private readonly string _name;
-        private readonly IList<ParameterExpression> _args;
 
         internal LightLambdaExpression(Type retType, Expression body, string name, IList<ParameterExpression> args) {
-            _body = body;
-            _name = name;
-            _args = args;
+            Body = body;
+            Name = name;
+            Parameters = args;
             _retType = retType;
         }
 
-        public Expression Body {
-            get {
-                return _body;
-            }
-        }
+        public Expression Body { get; }
 
-        public string Name {
-            get {
-                return _name;
-            }
-        }
+        public string Name { get; }
 
-        public IList<ParameterExpression> Parameters {
-            get {
-                return _args;
-            }
-        }
+        public IList<ParameterExpression> Parameters { get; }
 
         internal virtual LambdaExpression ReduceToLambdaWorker() {
             throw new InvalidOperationException();

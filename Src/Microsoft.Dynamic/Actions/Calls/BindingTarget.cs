@@ -43,7 +43,6 @@ namespace Microsoft.Scripting.Actions.Calls {
         private readonly string _name;                                                    // the name of the method being bound to
         private readonly MethodCandidate _candidate;                                      // the selected method if the binding was successful 
         private readonly RestrictedArguments _restrictedArgs;                                 // the arguments after they've been restricted to their known types
-        private readonly NarrowingLevel _level;                                           // the NarrowingLevel at which the target succeeds on conversion
         private readonly CallFailure[] _callFailures;                                     // if failed on conversion the various conversion failures for all overloads
         private readonly MethodCandidate[] _ambiguousMatches;                             // list of methods which are ambiguous to bind to.
         private readonly int[] _expectedArgs;                                             // gets the acceptable number of parameters which can be passed to the method.
@@ -56,7 +55,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _name = name;
             _candidate = candidate;
             _restrictedArgs = restrictedArgs;
-            _level = level;
+            NarrowingLevel = level;
             _actualArgs = actualArgumentCount;
         }
 
@@ -225,14 +224,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         /// <summary>
-        /// Returns the NarrowingLevel of the method if the call succeeded.  If the call
-        /// failed returns NarrowingLevel.None.
+        /// Gets the NarrowingLevel of the method if the call succeeded.
+        /// If the call failed returns NarrowingLevel.None.
         /// </summary>
-        public NarrowingLevel NarrowingLevel {
-            get {
-                return _level;
-            }
-        }
+        public NarrowingLevel NarrowingLevel { get; }
 
         /// <summary>
         /// Returns true if the binding was succesful, false if it failed.

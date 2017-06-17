@@ -20,15 +20,8 @@ using System.Diagnostics;
 namespace Microsoft.Scripting.Debugging {
     [DebuggerDisplay("{Name}")]
     public sealed class FunctionInfo {
-        private readonly Delegate _generatorFactory;
-        private readonly string _name;
-        private int _version;
-        private FunctionInfo _prevVersion;
-        private FunctionInfo _nextVersion;
         private readonly DebugSourceSpan[] _sequencePoints;
         private readonly IList<VariableInfo>[] _variableScopeMap;
-        private readonly IList<VariableInfo> _variables;
-        private readonly object _customPayload;
         private readonly bool[] _traceLocations;
 
         internal FunctionInfo(
@@ -39,53 +32,28 @@ namespace Microsoft.Scripting.Debugging {
             IList<VariableInfo> variables,
             object customPayload) {
 
-            _generatorFactory = generatorFactory;
-            _name = name;
+            GeneratorFactory = generatorFactory;
+            Name = name;
             _sequencePoints = sequencePoints;
             _variableScopeMap = scopedVariables;
-            _variables = variables;
-            _customPayload = customPayload;
+            Variables = variables;
+            CustomPayload = customPayload;
             _traceLocations = new bool[sequencePoints.Length];
         }
 
-        internal Delegate GeneratorFactory {
-            get { return _generatorFactory; }
-        }
+        internal Delegate GeneratorFactory { get; }
 
-        internal IList<VariableInfo> Variables {
-            get { return _variables; }
-        }
+        internal IList<VariableInfo> Variables { get; }
 
         internal IList<VariableInfo>[] VariableScopeMap {
             get { return _variableScopeMap; }
         }
 
-        internal FunctionInfo PreviousVersion {
-            get {
-                return _prevVersion;
-            }
-            set {
-                _prevVersion = value;
-            }
-        }
+        internal FunctionInfo PreviousVersion { get; set; }
 
-        internal FunctionInfo NextVersion {
-            get {
-                return _nextVersion;
-            }
-            set {
-                _nextVersion = value;
-            }
-        }
+        internal FunctionInfo NextVersion { get; set; }
 
-        internal int Version {
-            get {
-                return _version;
-            }
-            set {
-                _version = value;
-            }
-        }
+        internal int Version { get; set; }
 
         /// <summary>
         /// SequencePoints
@@ -95,18 +63,14 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         /// <summary>
-        /// Name
+        /// Gets the name.
         /// </summary>
-        internal string Name {
-            get { return _name; }
-        }
+        internal string Name { get; }
 
         /// <summary>
-        /// CustomPayload
+        /// Gets the custom payload.
         /// </summary>
-        internal object CustomPayload {
-            get { return _customPayload; }
-        }
+        internal object CustomPayload { get; }
 
         /// <summary>
         /// GetTraceLocations

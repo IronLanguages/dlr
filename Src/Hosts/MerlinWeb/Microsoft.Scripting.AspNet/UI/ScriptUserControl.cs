@@ -33,12 +33,10 @@ namespace Microsoft.Scripting.AspNet.UI {
             base.OnInit(e);
         }
 
-        // This allows the language to be specified in the page directive (e.g. <%@ Page scriptlanguage="IronPython" %>)
-        private string _scriptLanguage;
-        public string ScriptLanguage {
-            get { return _scriptLanguage; }
-            set { _scriptLanguage = value; }
-        }
+        /// <summary>
+        /// Gets or sets the language to be specified in the page directive (e.g. &lt;%@ Page scriptlanguage="IronPython" %&gt;)
+        /// </summary>
+        public string ScriptLanguage { get; set; }
 
         [SpecialName]
         public object GetBoundMember(string name) {
