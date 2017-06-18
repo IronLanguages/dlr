@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Generation {
 
         internal bool IsDebuggable {
             get {
-#if FEATURE_PDBEMIT && !SILVERLIGHT
+#if FEATURE_PDBEMIT
                 Debug.Assert(_isDebuggable == (_myModule.GetSymWriter() != null));
 #endif
                 return _isDebuggable;

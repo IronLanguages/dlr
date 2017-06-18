@@ -378,19 +378,15 @@ namespace Microsoft.Scripting.Generation {
                 ctors = FilterConstructorsToPublicAndProtected(ctors);
             }
 
-            if (t.IsValueType()
-#if !SILVERLIGHT && !WIN8 && !WP75
-                && t != typeof(ArgIterator)
-#endif
-) {
+            if (t.IsValueType() && t != typeof(ArgIterator)) {
                 // structs don't define a parameterless ctor, add a generic method for that.
                 List<MethodBase> result = new List<MethodBase>();
                 result.Add(GetStructDefaultCtor(t));
                 result.AddRange(ctors.Cast<ConstructorInfo, MethodBase>());
                 return result.ToArray();
-            } else {
-                return ctors.ToArray();
-            }
+            } 
+
+            return ctors.ToArray();
         }
 
         public static IEnumerable<ConstructorInfo> FilterConstructorsToPublicAndProtected(IEnumerable<ConstructorInfo> ctors) {
@@ -545,7 +541,9 @@ namespace Microsoft.Scripting.Generation {
             if (typeof(Delegate).IsAssignableFrom(t)) {
                 MethodInfo mi = t.GetMethod("Invoke");
                 return new MethodBase[] { mi };
-            } else if (typeof(BoundMemberTracker).IsAssignableFrom(t)) {
+            }
+
+            if (typeof(BoundMemberTracker).IsAssignableFrom(t)) {
                 BoundMemberTracker bmt = obj as BoundMemberTracker;
                 if (bmt.BoundTo.MemberType == TrackerTypes.Method) {
                 }

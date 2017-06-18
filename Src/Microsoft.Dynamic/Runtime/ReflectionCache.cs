@@ -124,24 +124,7 @@ namespace Microsoft.Scripting.Runtime {
                     return x.MetadataToken - y.MetadataToken;
                 }
                 
-#if SILVERLIGHT || WIN8 || WP75
-                int xHash = xModule.GetHashCode();
-                int yHash = yModule.GetHashCode();
-                if (xHash != yHash) {
-                    return xHash - yHash;
-                } else {
-                    long diff = IdDispenser.GetId(xModule) - IdDispenser.GetId(yModule);
-                    if (diff > 0) {
-                        return 1;
-                    } else if (diff < 0) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-#else
                 return xModule.ModuleVersionId.CompareTo(yModule.ModuleVersionId);
-#endif
             }
 
             public override bool Equals(object obj) {
