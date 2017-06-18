@@ -998,36 +998,36 @@ namespace Microsoft.Scripting.Utils {
         /// </summary>
         public static object UnwrapEnumValue(object value) {
             if (value == null) {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             switch (value.GetType().GetTypeCode()) {
                 case TypeCode.Byte:
-                    return System.Convert.ToByte(value);
+                    return Convert.ToByte(value);
 
                 case TypeCode.Int16:
-                    return System.Convert.ToInt16(value);
+                    return Convert.ToInt16(value);
 
                 case TypeCode.Int32:
-                    return System.Convert.ToInt32(value);
+                    return Convert.ToInt32(value);
 
                 case TypeCode.Int64:
-                    return System.Convert.ToInt64(value);
+                    return Convert.ToInt64(value);
 
                 case TypeCode.SByte:
-                    return System.Convert.ToSByte(value);
+                    return Convert.ToSByte(value);
 
                 case TypeCode.UInt16:
-                    return System.Convert.ToUInt16(value);
+                    return Convert.ToUInt16(value);
 
                 case TypeCode.UInt32:
-                    return System.Convert.ToUInt32(value);
+                    return Convert.ToUInt32(value);
 
                 case TypeCode.UInt64:
-                    return System.Convert.ToUInt64(value);
+                    return Convert.ToUInt64(value);
 
                 default: 
-                    throw new ArgumentException("Value must be a boxed enum.", "value");
+                    throw new ArgumentException("Value must be a boxed enum.", nameof(value));
             }
         }
 

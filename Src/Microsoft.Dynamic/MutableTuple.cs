@@ -419,14 +419,14 @@ namespace Microsoft.Scripting {
         public override object GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
         public override void SetValue(int index, object value) {
             switch(index) {
                 case 0: Item000 = (T0)value; break;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
         public override int Capacity {
@@ -492,7 +492,7 @@ namespace Microsoft.Scripting {
                 case 1: return Item001;
                 case 2: return Item002;
                 case 3: return Item003;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -676,7 +676,7 @@ namespace Microsoft.Scripting {
                 case 13: Item013 = (T13)value; break;
                 case 14: Item014 = (T14)value; break;
                 case 15: Item015 = (T15)value; break;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
         public override int Capacity {
@@ -775,7 +775,7 @@ namespace Microsoft.Scripting {
                 case 29: return Item029;
                 case 30: return Item030;
                 case 31: return Item031;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -1062,7 +1062,7 @@ namespace Microsoft.Scripting {
                 case 61: Item061 = (T61)value; break;
                 case 62: Item062 = (T62)value; break;
                 case 63: Item063 = (T63)value; break;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
         public override int Capacity {
@@ -1535,7 +1535,7 @@ namespace Microsoft.Scripting {
                 case 125: Item125 = (T125)value; break;
                 case 126: Item126 = (T126)value; break;
                 case 127: Item127 = (T127)value; break;
-                default: throw new ArgumentOutOfRangeException("index");
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
         public override int Capacity {

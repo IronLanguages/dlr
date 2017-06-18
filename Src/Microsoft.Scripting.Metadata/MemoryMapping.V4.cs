@@ -52,10 +52,10 @@ namespace Microsoft.Scripting.Metadata {
                 throw new ObjectDisposedException("MemoryMapping");
             }
             if (start < 0) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (length < 0 || length > _capacity - start) {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
             return new MemoryBlock(this, _pointer + start, length);
         }

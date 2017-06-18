@@ -121,8 +121,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] MakeArray<T>(ICollection<T> elements, int reservedSlotsBefore, int reservedSlotsAfter) {
-            if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException("reservedSlotsAfter");
-            if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException("reservedSlotsBefore");
+            if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsAfter));
+            if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsBefore));
 
             if (elements == null) {
                 return new T[reservedSlotsBefore + reservedSlotsAfter];
@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] RotateRight<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, "array");
-            if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException("count");
+            if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length];
             // The head of the array is shifted, and the tail will be rotated to the head of the resulting array
@@ -147,7 +147,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] ShiftRight<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, "array");
-            if (count < 0) throw new ArgumentOutOfRangeException("count");
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length + count];
             System.Array.Copy(array, 0, result, count, array.Length);

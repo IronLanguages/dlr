@@ -176,7 +176,7 @@ namespace Microsoft.Scripting.Math {
 
         public BigInteger(BigInteger copy) {
             if (object.ReferenceEquals(copy, null)) {
-                throw new ArgumentNullException("copy");
+                throw new ArgumentNullException(nameof(copy));
             }
             Value = copy.Value;
         }

@@ -298,7 +298,7 @@ namespace Microsoft.Scripting.Metadata {
         /// </summary>
         public MemoryBlock GetData(int size) {
             if (size < 0) {
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
             }
             uint rva = m_record.Import.FieldRVATable.GetFieldRVA(m_record.Rid);
             return rva != 0 ? m_record.Import.RvaToMemoryBlock(rva, (uint)size) : null;

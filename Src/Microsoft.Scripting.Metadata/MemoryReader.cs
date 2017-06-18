@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public MemoryReader(MemoryBlock block) {
             if (block == null) {
-                throw new ArgumentNullException("block");
+                throw new ArgumentNullException(nameof(block));
             }
             _block = block;
         }

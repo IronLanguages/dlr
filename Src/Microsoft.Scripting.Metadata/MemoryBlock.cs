@@ -36,10 +36,10 @@ namespace Microsoft.Scripting.Metadata {
 
         public MemoryBlock GetRange(int start, int length) {
             if (start < 0) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (length < 0 || length > _length - start) {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
             return new MemoryBlock(_owner, _pointer + start, length);
         }
@@ -64,7 +64,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public short ReadInt16(int offset) {
             if (offset < 0 || offset > _length - sizeof(short)) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             var result = *(short*)(_pointer + offset);
             GC.KeepAlive(_owner);
@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public int ReadInt32(int offset) {
             if (offset < 0 || offset > _length - sizeof(int)) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             var result = *(int*)(_pointer + offset);
             GC.KeepAlive(_owner);
@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public long ReadInt64(int offset) {
             if (offset < 0 || offset > _length - sizeof(long)) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             var result = *(long*)(_pointer + offset);
             GC.KeepAlive(_owner);
@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public Guid ReadGuid(int offset) {
             if (offset < 0 || offset > _length - sizeof(Guid)) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             var result = *(Guid*)(_pointer + offset);
             GC.KeepAlive(_owner);
@@ -122,7 +122,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public string ReadUtf16(int offset, int byteCount) {
             if (offset < 0 || offset > _length - byteCount) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             if (byteCount <= 1) {
                 return String.Empty;
@@ -138,10 +138,10 @@ namespace Microsoft.Scripting.Metadata {
 
         public string ReadAscii(int offset, int maxByteCount) {
             if (maxByteCount < 0) {
-                throw new ArgumentOutOfRangeException("maxByteCount");
+                throw new ArgumentOutOfRangeException(nameof(maxByteCount));
             }
             if (offset < 0 || offset > _length - maxByteCount) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             
             sbyte* pStart = (sbyte*)_pointer + offset;

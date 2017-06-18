@@ -367,10 +367,10 @@ namespace Microsoft.Scripting.Metadata {
 
         public int IndexOf(byte b, int start, int count) {
             if (start < 0) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (count < 0 || count > Length - start) {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             return m_name.IndexOf(b, start, count);
         }
@@ -394,10 +394,10 @@ namespace Microsoft.Scripting.Metadata {
 
         public unsafe MetadataNamePart GetPart(int start, int count) {
             if (start < 0) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (count < 0 || count > Length - start) {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             return new MetadataNamePart(m_name.GetSuffix(start), count);
         }
