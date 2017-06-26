@@ -16,17 +16,11 @@ namespace System.Threading {
 
 namespace Microsoft.Scripting.Utils {
     public static class ThreadingUtils {
-#if CLR2 || SILVERLIGHT || WP75 // TODO: WP7?
-        public static int GetCurrentThreadId() {
-            return Thread.CurrentThread.ManagedThreadId;
-        }
-#else
         private static int id;
         private static System.Threading.ThreadLocal<int> threadIds = new System.Threading.ThreadLocal<int>(() => Interlocked.Increment(ref id));
         
         public static int GetCurrentThreadId() {
             return threadIds.Value;
         }
-#endif
     }
 }
