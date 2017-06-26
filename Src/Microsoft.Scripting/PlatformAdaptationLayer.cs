@@ -64,13 +64,7 @@ namespace Microsoft.Scripting {
         #region Assembly Loading
 
         public virtual Assembly LoadAssembly(string name) {
-#if WIN8
-            throw new NotImplementedException();
-#elif !SILVERLIGHT
             return Assembly.Load(name);
-#else
-            return Assembly.Load(LookupFullName(name));
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFile")]

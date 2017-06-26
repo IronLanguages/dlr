@@ -1352,10 +1352,6 @@ namespace Microsoft.Scripting.Utils {
             return method.ReturnType == requiredSignature[i];
         }
 
-#if CLR2 && !SILVERLIGHT
-        private static Type _ExtensionAttributeType;
-#endif
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public static bool IsExtension(this MemberInfo member) {
             var dlrExtension = typeof(ExtensionAttribute);
@@ -1363,20 +1359,6 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             }
 
-#if CLR2 && !SILVERLIGHT
-            if (_ExtensionAttributeType == null) {
-                try {
-                    _ExtensionAttributeType = Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
-                        .GetType("System.Runtime.CompilerServices.ExtensionAttribute");
-                } catch {
-                    _ExtensionAttributeType = dlrExtension;
-                }
-            }
-
-            if (_ExtensionAttributeType != dlrExtension) {
-                return member.IsDefined(_ExtensionAttributeType, false);
-            }
-#endif
             return false;
         }
 
@@ -1679,7 +1661,7 @@ namespace Microsoft.Scripting.Utils {
         /// Uses a global cache if <paramref name="useCache"/> is true.
         /// </summary>
         public static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> GetVisibleExtensionMethodGroups(Assembly/*!*/ assembly, bool useCache) {
-#if !CLR2 && FEATURE_REFEMIT
+#if FEATURE_REFEMIT
             useCache &= !assembly.IsDynamic;
 #endif
             if (useCache) {
