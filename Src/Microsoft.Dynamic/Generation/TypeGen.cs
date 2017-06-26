@@ -21,8 +21,6 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Generation {
     public sealed class TypeGen {
-        private readonly TypeBuilder _myType;
-
         private ILGen _initGen;                        // The IL generator for the .cctor()
 
         /// <summary>
@@ -31,7 +29,7 @@ namespace Microsoft.Scripting.Generation {
         public ILGen TypeInitializer {
             get {
                 if (_initGen == null) {
-                    _initGen = new ILGen(_myType.DefineTypeInitializer().GetILGenerator());
+                    _initGen = new ILGen(TypeBuilder.DefineTypeInitializer().GetILGenerator());
                 }
                 return _initGen;
             }
@@ -39,33 +37,31 @@ namespace Microsoft.Scripting.Generation {
 
         internal AssemblyGen AssemblyGen { get; }
 
-        public TypeBuilder TypeBuilder {
-            get { return _myType; }
-        }
+        public TypeBuilder TypeBuilder { get; }
 
         public TypeGen(AssemblyGen myAssembly, TypeBuilder myType) {
             Assert.NotNull(myAssembly, myType);
 
             AssemblyGen = myAssembly;
-            _myType = myType;
+            TypeBuilder = myType;
         }
 
         public override string ToString() {
-            return _myType.ToString();
+            return TypeBuilder.ToString();
         }
 
         public Type FinishType() {
-            if (_initGen != null) _initGen.Emit(OpCodes.Ret);
-            Type ret = _myType.CreateType();
+            _initGen?.Emit(OpCodes.Ret);
+            Type ret = TypeBuilder.CreateType();
             return ret;
         }
 
         public FieldBuilder AddStaticField(Type fieldType, string name) {
-            return _myType.DefineField(name, fieldType, FieldAttributes.Public | FieldAttributes.Static);
+            return TypeBuilder.DefineField(name, fieldType, FieldAttributes.Public | FieldAttributes.Static);
         }
 
         public FieldBuilder AddStaticField(Type fieldType, FieldAttributes attributes, string name) {
-            return _myType.DefineField(name, fieldType, attributes | FieldAttributes.Static);
+            return TypeBuilder.DefineField(name, fieldType, attributes | FieldAttributes.Static);
         }
 
         public ILGen DefineExplicitInterfaceImplementation(MethodInfo baseMethod) {
@@ -75,7 +71,7 @@ namespace Microsoft.Scripting.Generation {
             attrs |= MethodAttributes.NewSlot | MethodAttributes.Final;
 
             Type[] baseSignature = baseMethod.GetParameters().Map(p => p.ParameterType);
-            MethodBuilder mb = _myType.DefineMethod(
+            MethodBuilder mb = TypeBuilder.DefineMethod(
                 baseMethod.DeclaringType.Name + "." + baseMethod.Name,
                 attrs,
                 baseMethod.ReturnType,
@@ -95,7 +91,7 @@ namespace Microsoft.Scripting.Generation {
         public ILGen DefineMethodOverride(MethodInfo baseMethod) {
             MethodAttributes finalAttrs = baseMethod.Attributes & ~MethodAttributesToEraseInOveride;
             Type[] baseSignature = baseMethod.GetParameters().Map(p => p.ParameterType);
-            MethodBuilder mb = _myType.DefineMethod(baseMethod.Name, finalAttrs, baseMethod.ReturnType, baseSignature);
+            MethodBuilder mb = TypeBuilder.DefineMethod(baseMethod.Name, finalAttrs, baseMethod.ReturnType, baseSignature);
 
             TypeBuilder.DefineMethodOverride(mb, baseMethod);
             return new ILGen(mb.GetILGenerator());

@@ -29,14 +29,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
             DisplayHelp
         }
 
-        private readonly List<string> _environmentVars = new List<string>();
-
         public List<string> IgnoredArgs { get; } = new List<string>();
         public string RunFile { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")] // TODO: fix
         public string[] SourceUnitSearchPaths { get; set; }
         public Action RunAction { get; set; }
-        public List<string> EnvironmentVars { get { return _environmentVars; } }
+        public List<string> EnvironmentVars { get; } = new List<string>();
         public string LanguageProvider { get; set; }
         public bool HasLanguageProvider { get; set; }
 

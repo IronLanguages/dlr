@@ -21,19 +21,15 @@ using Microsoft.Scripting.Ast;
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Scripting.Interpreter;
-using Microsoft.Scripting.Generation;
 
 namespace Microsoft.Scripting.Ast {
     public class LightLambdaExpression : Expression {
-        private readonly Type _retType;
-
         internal LightLambdaExpression(Type retType, Expression body, string name, IList<ParameterExpression> args) {
             Body = body;
             Name = name;
             Parameters = args;
-            _retType = retType;
+            ReturnType = retType;
         }
 
         public Expression Body { get; }
@@ -66,11 +62,7 @@ namespace Microsoft.Scripting.Ast {
             return ReduceToLambdaWorker();
         }
 
-        public Type ReturnType {
-            get {
-                return _retType;
-            }
-        }
+        public Type ReturnType { get; }
     }
 
     internal class TypedLightLambdaExpression : LightLambdaExpression {
