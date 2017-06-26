@@ -43,7 +43,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
 
-
 namespace ComponentAce.Compression.Libs.ZLib
 {
 
@@ -115,39 +114,9 @@ namespace ComponentAce.Compression.Libs.ZLib
         // mode independent information 
 
         /// <summary>
-        /// bits in bit buffer 
-        /// </summary>
-        private int bitk;
-
-        /// <summary>
-        /// bit buffer 
-        /// </summary>
-        private int bitb;
-
-        /// <summary>
         /// single malloc for tree space 
         /// </summary>
         private int[] hufts;
-
-        /// <summary>
-        /// sliding Window 
-        /// </summary>
-        private byte[] window;
-
-        /// <summary>
-        /// one byte after sliding Window 
-        /// </summary>
-        private int end;
-
-        /// <summary>
-        /// Window ReadPos pointer 
-        /// </summary>
-        private int read;
-
-        /// <summary>
-        /// Window WritePos pointer 
-        /// </summary>
-        private int write;
 
         /// <summary>
         /// need check
@@ -164,58 +133,34 @@ namespace ComponentAce.Compression.Libs.ZLib
         #region Properties
 
         /// <summary>
-        /// sliding window 
+        /// Gets or sets the sliding window.
         /// </summary>
-        public byte[] Window
-        {
-            get { return window; }
-            set { window = value; }
-        }
+        public byte[] Window { get; set; }
 
         /// <summary>
-        /// one byte after sliding Window 
+        /// Gets or sets the one byte after sliding Window.
         /// </summary>
-        public int End
-        {
-            get { return end; }
-            set { end = value; }
-        }
+        public int End { get; set; }
 
         /// <summary>
-        /// Window ReadPos pointer 
+        /// Gets or sets the Window ReadPos pointer.
         /// </summary>
-        public int ReadPos
-        {
-            get { return read; }
-            set { read = value; }
-        }
+        public int ReadPos { get; set; }
 
         /// <summary>
-        /// Window WritePos pointer 
+        /// Gets or sets the Window WritePos pointer.
         /// </summary>
-        public int WritePos
-        {
-            get { return write; }
-            set { write = value; }
-        }
+        public int WritePos { get; set; }
 
         /// <summary>
-        /// bits in bit buffer 
+        /// Gets or sets the bits in bit buffer. 
         /// </summary>
-        public int BitK
-        {
-            get { return bitk; }
-            set { bitk = value; }
-        }
+        public int BitK { get; set; }
 
         /// <summary>
-        /// bit buffer 
+        /// Gets or sets the bit buffer.
         /// </summary>
-        public int BitB
-        {
-            get { return bitb; }
-            set { bitb = value; }
-        }
+        public int BitB { get; set; }
 
         #endregion
 
@@ -224,8 +169,8 @@ namespace ComponentAce.Compression.Libs.ZLib
         internal InfBlocks(ZStream z, bool needCheck, int w)
         {
             hufts = new int[MANY * 3];
-            window = new byte[w];
-            end = w;
+            Window = new byte[w];
+            End = w;
             this.needCheck = needCheck;
             mode = InflateBlockMode.TYPE;
             reset(z, null);

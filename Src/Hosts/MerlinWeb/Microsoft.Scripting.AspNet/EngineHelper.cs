@@ -296,16 +296,13 @@ namespace Microsoft.Scripting.AspNet {
 
     // The base class of what we cache when we build a python file
     internal class BuildResult {
-        private CompiledCode _compiledCode;
-        private string _scriptVirtualPath;
-
         public BuildResult(CompiledCode compiledCode, string scriptVirtualPath) {
-            _scriptVirtualPath = scriptVirtualPath;
-            _compiledCode = compiledCode;
+            ScriptVirtualPath = scriptVirtualPath;
+            CompiledCode = compiledCode;
         }
 
-        public CompiledCode CompiledCode { get { return _compiledCode; } }
-        public string ScriptVirtualPath { get { return _scriptVirtualPath; } }
+        public CompiledCode CompiledCode { get; }
+        public string ScriptVirtualPath { get; }
     }
 
     abstract class TypeWithEventsBuildResult : BuildResult {
@@ -343,7 +340,5 @@ namespace Microsoft.Scripting.AspNet {
 
         internal abstract bool ProcessEventHandler(string handlerName, Type type, DynamicFunction f);
     }
-
-
 }
  

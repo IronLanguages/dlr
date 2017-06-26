@@ -23,24 +23,16 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Debugging {
     [DebuggerDisplay("ThreadId = {_threadId}")]
     public abstract class DebugThread {
-        private readonly DebugContext _debugContext;
-        private Exception _leafFrameException;
-        private bool _isInTraceback;
         private readonly int _threadId;
 
         internal DebugThread(DebugContext debugContext) {
-            _debugContext = debugContext;
+            DebugContext = debugContext;
             _threadId = ThreadingUtils.GetCurrentThreadId();
         }
 
-        internal DebugContext DebugContext {
-            get { return _debugContext; }
-        }
+        internal DebugContext DebugContext { get; }
 
-        internal Exception ThrownException {
-            get { return _leafFrameException; }
-            set { _leafFrameException = value; }
-        }
+        internal Exception ThrownException { get; set; }
 
         internal bool IsCurrentThread {
             get 
@@ -49,10 +41,7 @@ namespace Microsoft.Scripting.Debugging {
             }
         }
 
-        internal bool IsInTraceback {
-            get { return _isInTraceback; }
-            set { _isInTraceback = value; }
-        }
+        internal bool IsInTraceback { get; set; }
 
         #region Abstract Methods
 

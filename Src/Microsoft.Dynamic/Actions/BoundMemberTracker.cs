@@ -19,18 +19,14 @@ using Microsoft.Scripting.Actions.Calls;
 
 namespace Microsoft.Scripting.Actions {
     public class BoundMemberTracker : MemberTracker {
-        private DynamicMetaObject _instance;
-        private MemberTracker _tracker;
-        private object _objInst;
-
         public BoundMemberTracker(MemberTracker tracker, DynamicMetaObject instance) {
-            _tracker = tracker;
-            _instance = instance;
+            BoundTo = tracker;
+            Instance = instance;
         }
 
         public BoundMemberTracker(MemberTracker tracker, object instance) {
-            _tracker = tracker;
-            _objInst = instance;
+            BoundTo = tracker;
+            ObjectInstance = instance;
         }
 
         public override TrackerTypes MemberType {
@@ -38,45 +34,33 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override Type DeclaringType {
-            get { return _tracker.DeclaringType; }
+            get { return BoundTo.DeclaringType; }
         }
 
         public override string Name {
-            get { return _tracker.Name; }
+            get { return BoundTo.Name; }
         }
 
-        public DynamicMetaObject Instance {
-            get {
-                return _instance;
-            }
-        }
+        public DynamicMetaObject Instance { get; }
 
-        public object ObjectInstance {
-            get {
-                return _objInst;
-            }
-        }
+        public object ObjectInstance { get; }
 
-        public MemberTracker BoundTo {
-            get {
-                return _tracker;
-            }
-        }
+        public MemberTracker BoundTo { get; }
 
         public override DynamicMetaObject GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
-            return _tracker.GetBoundValue(resolverFactory, binder, instanceType, _instance);
+            return BoundTo.GetBoundValue(resolverFactory, binder, instanceType, Instance);
         }
 
         public override ErrorInfo GetError(ActionBinder binder, Type instanceType) {
-            return _tracker.GetBoundError(binder, _instance, instanceType);
+            return BoundTo.GetBoundError(binder, Instance, instanceType);
         }
 
         public override DynamicMetaObject SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value) {
-            return _tracker.SetBoundValue(resolverFactory, binder, instanceType, value, _instance);
+            return BoundTo.SetBoundValue(resolverFactory, binder, instanceType, value, Instance);
         }
 
         public override DynamicMetaObject SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject errorSuggestion) {
-            return _tracker.SetBoundValue(resolverFactory, binder, instanceType, value, _instance, errorSuggestion);
+            return BoundTo.SetBoundValue(resolverFactory, binder, instanceType, value, Instance, errorSuggestion);
         }
     }
 }

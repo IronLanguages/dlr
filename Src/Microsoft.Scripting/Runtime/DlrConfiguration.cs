@@ -105,10 +105,6 @@ namespace Microsoft.Scripting.Runtime {
     public sealed class DlrConfiguration {
         private bool _frozen;
 
-        private readonly bool _debugMode;
-        private readonly bool _privateBinding;
-        private readonly IDictionary<string, object> _options;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly StringComparer FileExtensionComparer = StringComparer.OrdinalIgnoreCase;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
@@ -123,9 +119,9 @@ namespace Microsoft.Scripting.Runtime {
 
         public DlrConfiguration(bool debugMode, bool privateBinding, IDictionary<string, object> options) {
             ContractUtils.RequiresNotNull(options, "options");
-            _debugMode = debugMode;
-            _privateBinding = privateBinding;
-            _options = options;
+            DebugMode = debugMode;
+            PrivateBinding = privateBinding;
+            Options = options;
 
             _languageNames = new Dictionary<string, LanguageConfiguration>(LanguageNameComparer);
             _languageExtensions = new Dictionary<string, LanguageConfiguration>(FileExtensionComparer);
@@ -134,7 +130,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         /// <summary>
-        /// Whether the application is in debug mode.
+        /// Gets a value indicating whether the application is in debug mode.
         /// This means:
         /// 
         /// 1) Symbols are emitted for debuggable methods (methods associated with SourceUnit).
@@ -142,20 +138,14 @@ namespace Microsoft.Scripting.Runtime {
         /// 3) JIT optimization is disabled for all methods
         /// 4) Languages may disable optimizations based on this value.
         /// </summary>
-        public bool DebugMode {
-            get { return _debugMode; }
-        }
+        public bool DebugMode { get; }
 
         /// <summary>
         /// Ignore CLR visibility checks.
         /// </summary>
-        public bool PrivateBinding {
-            get { return _privateBinding; }
-        }
+        public bool PrivateBinding { get; }
 
-        internal IDictionary<string, object> Options {
-            get { return _options; }
-        }
+        internal IDictionary<string, object> Options { get; }
 
         internal IDictionary<AssemblyQualifiedTypeName, LanguageConfiguration> Languages {
             get { return _languageConfigurations; }
@@ -192,7 +182,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             // Add global language options first, they can be rewritten by language specific ones:
-            var mergedOptions = new Dictionary<string, object>(_options);
+            var mergedOptions = new Dictionary<string, object>(Options);
 
             // Replace global options with language-specific options
             foreach (var option in options) {

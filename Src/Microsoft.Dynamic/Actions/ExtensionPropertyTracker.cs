@@ -19,25 +19,19 @@ using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Actions {
     public class ExtensionPropertyTracker : PropertyTracker {
-        private string _name;
-        private Type _declaringType;
         private MethodInfo _getter, _setter, _deleter;
 
         public ExtensionPropertyTracker(string name, MethodInfo getter, MethodInfo setter, MethodInfo deleter, Type declaringType) {
-            _name = name; 
+            Name = name; 
             _getter = getter; 
             _setter = setter;
             _deleter = deleter;
-            _declaringType = declaringType;
+            DeclaringType = declaringType;
         }
 
-        public override string Name {
-            get { return _name; }
-        }
+        public override string Name { get; }
 
-        public override Type DeclaringType {
-            get { return _declaringType; }
-        }
+        public override Type DeclaringType { get; }
 
         public override bool IsStatic {
             get { return IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true)); }

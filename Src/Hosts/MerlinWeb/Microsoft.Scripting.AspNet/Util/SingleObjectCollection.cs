@@ -23,11 +23,11 @@ namespace Microsoft.Scripting.AspNet.Util {
     internal class SingleObjectCollection : ICollection {
 
         private class SingleObjectEnumerator : IEnumerator {
-            private object _object;
             private bool done;
 
-            public SingleObjectEnumerator(object o) { _object = o; }
-            public object Current { get { return _object; } }
+            public SingleObjectEnumerator(object o) { Current = o; }
+            public object Current { get; }
+
             public bool MoveNext() {
                 if (!done) {
                     done = true;

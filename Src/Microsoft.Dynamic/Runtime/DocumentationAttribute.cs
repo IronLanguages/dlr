@@ -24,14 +24,10 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
     public sealed class DocumentationAttribute : Attribute {
-        private readonly string _doc;
-
         public DocumentationAttribute(string documentation) {
-            _doc = documentation;
+            Documentation = documentation;
         }
 
-        public string Documentation {
-            get { return _doc; }
-        }
+        public string Documentation { get; }
     }
 }

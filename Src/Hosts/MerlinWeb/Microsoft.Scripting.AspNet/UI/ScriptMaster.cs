@@ -36,13 +36,11 @@ namespace Microsoft.Scripting.AspNet.UI {
 
         // Make ContentPlaceHolders public instead of protected
         public new IList ContentPlaceHolders { get { return base.ContentPlaceHolders; } }
-        
-        // This allows the language to be specified in the page directive (e.g. <%@ Page scriptlanguage="IronPython" %>)
-        private string _scriptLanguage;
-        public string ScriptLanguage {
-            get { return _scriptLanguage; }
-            set { _scriptLanguage = value; }
-        }
+
+        /// <summary>
+        /// Gets or sets the language to be specified in the page directive (e.g. &lt;%@ Page scriptlanguage="IronPython" %&gt;)
+        /// </summary>
+        public string ScriptLanguage { get; set; }
 
         [SpecialName]
         public object GetBoundMember(string name) {
@@ -79,17 +77,10 @@ namespace Microsoft.Scripting.AspNet.UI {
             get { return this.EnsureScriptTemplateControl(); }
         }
 
-        private string _inlineScript;
-        public virtual string InlineScript {
-            get { return _inlineScript; }
-            set { _inlineScript = value; }
-        }
+        public virtual string InlineScript { get; set; }
 
-        private int _inlineScriptLine;
-        public virtual int InlineScriptLine {
-            get { return _inlineScriptLine; }
-            set { _inlineScriptLine = value; }
-        }
+        public virtual int InlineScriptLine { get; set; }
+
         #endregion
     }
 }

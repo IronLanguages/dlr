@@ -29,14 +29,10 @@ namespace Microsoft.Scripting.Actions {
     internal class OperatorInfo {
         private static Dictionary<ExpressionType, OperatorInfo> _infos = MakeOperatorTable(); // table of ExpressionType, names, and alt names for looking up methods.
 
-        private readonly ExpressionType _operator;
-        private readonly string _name;
-        private readonly string _altName;
-
         private OperatorInfo(ExpressionType op, string name, string altName) {
-            _operator = op;
-            _name = name;
-            _altName = altName;
+            Operator = op;
+            Name = name;
+            AlternateName = altName;
         }
 
         /// <summary>
@@ -59,27 +55,21 @@ namespace Microsoft.Scripting.Actions {
 
 
         /// <summary>
-        /// The operator the OperatorInfo provides info for.
+        /// Gets the operator the OperatorInfo provides info for.
         /// </summary>
-        public ExpressionType Operator {
-            get { return _operator; }
-        }
-        
-        /// <summary>
-        /// The primary method name associated with the method.  This method name is
-        /// usally in the form of op_Operator (e.g. op_Addition).
-        /// </summary>
-        public string Name {
-            get { return _name; }
-        }
+        public ExpressionType Operator { get; }
 
         /// <summary>
-        /// The secondary method name associated with the method.  This method name is
-        /// usually a standard .NET method name with pascal casing (e.g. Add).
+        /// Gets the primary method name associated with the method.
+        /// This method name is usally in the form of op_Operator (e.g. op_Addition).
         /// </summary>
-        public string AlternateName {
-            get { return _altName; }
-        }
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets the secondary method name associated with the method.
+        /// This method name is usually a standard .NET method name with pascal casing (e.g. Add).
+        /// </summary>
+        public string AlternateName { get; }
 
         private static Dictionary<ExpressionType, OperatorInfo> MakeOperatorTable() {
             var res = new Dictionary<ExpressionType, OperatorInfo>();
