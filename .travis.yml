@@ -13,10 +13,17 @@ solution: Dlr.sln
 #  - mono nuget.exe install NUnit
 #  - mono nuget.exe install NUnitLite
 
+sudo: required
+dist: trusty
+
+dotnet: 1.0.3
+
 script:
-  - xbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
+  - dotnet restore Dlr.sln
+  - msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
   - pushd bin/$CONFIGURATION
-  - mono ./TestInternalDLR.exe
+  - mono ./net40/TestInternalDLR.exe
+  - mono ./net45/TestInternalDLR.exe
 
 notifications:
   email:

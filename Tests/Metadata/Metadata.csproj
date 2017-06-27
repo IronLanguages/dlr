@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{848BBEB0-63E6-4736-B60C-23A9D733593D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,39 +12,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FxCop|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v4Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v4Release|AnyCPU' ">
-  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyList.cs" />
-    <Compile Include="MetadataTablesExtensions.cs" />
-    <Compile Include="NamespaceTree_Reflection.cs" />
-    <Compile Include="NamespaceTree.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ReflectionExtensions.cs" />
-    <Compile Include="RubyModules.cs" />
-    <Compile Include="Sequence.cs" />
-    <Compile Include="TestCases.cs" />
-    <Compile Include="TypeNestings.cs" />
-    <Compile Include="UnitTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
+    <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
-      <Project>{EB66B766-6354-4208-A3D4-AACBDCB5C3B3}</Project>
-      <Name>Microsoft.Dynamic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj">
-      <Project>{ACDD9B9E-8FE6-439C-9521-1CCBA47F6143}</Project>
-      <Name>Microsoft.Scripting.Metadata</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

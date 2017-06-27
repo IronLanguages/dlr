@@ -12,6 +12,8 @@
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <!-- Signing -->
@@ -21,7 +23,11 @@
 
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
     <AssemblyOriginatorKeyFile>$(PublicKey)</AssemblyOriginatorKeyFile>
-    <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
+    <SignedSym>SIGNED</SignedSym>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -49,7 +55,6 @@
     <BuildFlavour>Debug</BuildFlavour>
     <BuildFlavour Condition="'$(Configuration)' == 'FxCop'">Release</BuildFlavour>
     <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
-    <BuildFlavour Condition="'$(Configuration)' == 'v4Release'">Release</BuildFlavour>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
