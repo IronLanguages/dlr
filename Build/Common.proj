@@ -61,8 +61,6 @@
   <PropertyGroup Condition="'$(Mono)' == 'true'">
     <CscToolExeSuffix Condition="'$(OS)' == 'Windows_NT'">.bat</CscToolExeSuffix>
     <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
-
-    <CscToolExe>mcs$(CscToolExeSuffix)</CscToolExe>
   </PropertyGroup>
 
   <PropertyGroup>
