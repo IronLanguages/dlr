@@ -476,7 +476,7 @@ namespace Microsoft.Scripting.Metadata {
         private readonly int ClassOffset;
         private readonly int NameOffset;
         private readonly int SignatureOffset;
-        private int RowSize;
+        private readonly int RowSize;
         internal MemoryBlock Table;
 
         internal MemberRefTable(int numberOfRows, int memberRefParentRefSize, int stringHeapRefSize, int blobHeapRefSize, int start, MemoryBlock block) {

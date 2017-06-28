@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace Microsoft.Scripting.Actions {
     public class ConstructorTracker : MemberTracker {
-        private ConstructorInfo _ctor;
+        private readonly ConstructorInfo _ctor;
 
         public ConstructorTracker(ConstructorInfo ctor) {
             _ctor = ctor;

@@ -20,50 +20,36 @@ namespace Microsoft.Scripting.Runtime {
     /// Event args for when a ScriptScope has had its contents changed.  
     /// </summary>
     public class ModuleChangeEventArgs : EventArgs {
-        private string _name;
-        private ModuleChangeType _type;
-        private object _value;
-
         /// <summary>
         /// Creates a new ModuleChangeEventArgs object with the specified name and type.
         /// </summary>
         public ModuleChangeEventArgs(string name, ModuleChangeType changeType) {
-            _name = name;
-            _type = changeType;
+            Name = name;
+            ChangeType = changeType;
         }
 
         /// <summary>
         /// Creates a nwe ModuleChangeEventArgs with the specified name, type, and changed value.
         /// </summary>
         public ModuleChangeEventArgs(string name, ModuleChangeType changeType, object value) {
-            _name = name;
-            _type = changeType;
-            _value = value;
+            Name = name;
+            ChangeType = changeType;
+            Value = value;
         }
 
         /// <summary>
         /// Gets the name of the symbol that has changed.
         /// </summary>
-        public string Name {
-            get {
-                return _name;
-            }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the way in which the symbol has changed: Set or Delete.
         /// </summary>
-        public ModuleChangeType ChangeType {
-            get {
-                return _type;
-            }
-        }
+        public ModuleChangeType ChangeType { get; }
 
         /// <summary>
-        /// The the symbol has been set provides the new value.
+        /// Gets the symbol has been set provides the new value.
         /// </summary>
-        public object Value {
-            get { return _value; }
-        }
+        public object Value { get; }
     }
 }
