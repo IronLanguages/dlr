@@ -15,7 +15,7 @@
 
 namespace Microsoft.Scripting.Runtime {
     public class Extensible<T> {
-        private T _value;
+        private readonly T _value;
 
         public Extensible() { }
         public Extensible(T value) { this._value = value; }

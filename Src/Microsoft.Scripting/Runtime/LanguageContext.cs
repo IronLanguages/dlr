@@ -502,7 +502,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private class DefaultCallAction : InvokeMemberBinder {
-            private LanguageContext _context;
+            private readonly LanguageContext _context;
 
             internal DefaultCallAction(LanguageContext context, string name, bool ignoreCase, CallInfo callInfo)
                 : base(name, ignoreCase, callInfo) {
@@ -629,6 +629,5 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         #endregion
-
     }
 }

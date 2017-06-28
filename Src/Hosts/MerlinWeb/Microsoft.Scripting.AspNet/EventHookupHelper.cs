@@ -21,9 +21,9 @@ using Microsoft.Scripting.Hosting;
 
 namespace Microsoft.Scripting.AspNet {
     class EventHookupHelper {
-        private string _handlerName;
-        private EventInfo _eventInfo;
-        private string _scriptVirtualPath;
+        private readonly string _handlerName;
+        private readonly EventInfo _eventInfo;
+        private readonly string _scriptVirtualPath;
 
         internal static EventHookupHelper Create(Type type, string eventName, string handlerName,
             DynamicFunction f, string scriptVirtualPath) {

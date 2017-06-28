@@ -466,27 +466,27 @@ namespace Microsoft.Scripting.Utils {
         }
 
         // polynomial coefficients ordered by increasing degree
-        private static double[] ErfNumerCoeffs = {
+        private static readonly double[] ErfNumerCoeffs = {
             2.4266795523053175e02, 2.1979261618294152e01,
             6.9963834886191355, -3.5609843701815385e-02
         };
-        private static double[] ErfDenomCoeffs = {
+        private static readonly double[] ErfDenomCoeffs = {
             2.1505887586986120e02, 9.1164905404514901e01,
             1.5082797630407787e01, 1.0
         };
-        private static double[] ErfcNumerCoeffs = {
+        private static readonly double[] ErfcNumerCoeffs = {
             3.004592610201616005e02, 4.519189537118729422e02,
             3.393208167343436870e02, 1.529892850469404039e02,
             4.316222722205673530e01, 7.211758250883093659,
             5.641955174789739711e-01, -1.368648573827167067e-07
         };
-        private static double[] ErfcDenomCoeffs = {
+        private static readonly double[] ErfcDenomCoeffs = {
             3.004592609569832933e02, 7.909509253278980272e02,
             9.313540948506096211e02, 6.389802644656311665e02,
             2.775854447439876434e02, 7.700015293522947295e01,
             1.278272731962942351e01, 1.0
         };
-        private static double[] GammaNumerCoeffs = {
+        private static readonly double[] GammaNumerCoeffs = {
             4.401213842800460895436e13, 4.159045335859320051581e13,
             1.801384278711799677796e13, 4.728736263475388896889e12,
             8.379100836284046470415e11, 1.055837072734299344907e11,
@@ -495,7 +495,7 @@ namespace Microsoft.Scripting.Utils {
             2.666579378459858944762e04, 3.818801248632926870394e02,
             2.506628274631000502415
         };
-        private static double[] GammaDenomCoeffs = {
+        private static readonly double[] GammaDenomCoeffs = {
             0.0, 39916800.0, 120543840.0, 150917976.0,
             105258076.0, 45995730.0, 13339535.0, 2637558.0,
             357423.0, 32670.0, 1925.0, 66.0, 1.0
@@ -1232,5 +1232,4 @@ namespace Microsoft.Scripting.Utils {
 
         #endregion
     }
-
 }
