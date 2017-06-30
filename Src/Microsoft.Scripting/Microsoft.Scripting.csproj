@@ -19,4 +19,8 @@
     <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
     <Reference Include="System.Runtime.Remoting" Condition=" $(Features.Contains('FEATURE_REMOTING')) " />
   </ItemGroup>
+  <Import Project="$(BeforeTargetFiles)" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
+  <Import Project="$(AfterTargetFiles)" />
+  <Target Name="AfterBuildStarts" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>

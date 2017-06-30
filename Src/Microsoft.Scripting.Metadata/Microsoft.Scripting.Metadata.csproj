@@ -20,4 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
   </ItemGroup>
+  <Import Project="$(BeforeTargetFiles)" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
+  <Import Project="$(AfterTargetFiles)" />
+  <Target Name="AfterBuildStarts" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>
