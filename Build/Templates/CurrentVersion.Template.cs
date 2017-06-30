@@ -1,5 +1,5 @@
-namespace {9} {{
-    public static class CurrentVersion {{
+namespace DynamicLanguageRuntime {{
+    internal static class CurrentVersion {{
         public const int Major = {0};
         public const int Minor = {1};
         public const int Micro = {2};
