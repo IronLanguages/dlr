@@ -33,3 +33,8 @@ using System.Security;
 #if FEATURE_APTCA
 [assembly: AllowPartiallyTrustedCallers]
 #endif
+
+// Versioning
+[assembly: AssemblyVersion(DynamicLanguageRuntime.CurrentVersion.AssemblyVersion)]
+[assembly: AssemblyFileVersion(DynamicLanguageRuntime.CurrentVersion.AssemblyFileVersion)]
+[assembly: AssemblyInformationalVersion(DynamicLanguageRuntime.CurrentVersion.AssemblyInformationalVersion)]
