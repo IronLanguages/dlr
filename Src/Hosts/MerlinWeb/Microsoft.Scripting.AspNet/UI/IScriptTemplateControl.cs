@@ -13,15 +13,6 @@
  *
  * ***************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Diagnostics;
-using System.Web;
-using System.Web.Hosting;
-using System.Web.UI;
-
 namespace Microsoft.Scripting.AspNet.UI {
     public interface IScriptTemplateControl {
         ScriptTemplateControl ScriptTemplateControl { get; }

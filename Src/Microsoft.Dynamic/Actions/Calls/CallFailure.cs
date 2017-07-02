@@ -14,7 +14,6 @@
  * ***************************************************************************/
 
 using System.Collections.Generic;
-using System.Dynamic;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>

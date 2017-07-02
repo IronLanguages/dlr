@@ -12,11 +12,8 @@
  *
  *
  * ***************************************************************************/
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Security;
-using System.Collections;
 using System.Diagnostics;
 
 namespace Microsoft.Scripting.Metadata {

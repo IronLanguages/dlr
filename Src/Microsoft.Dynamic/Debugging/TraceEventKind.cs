@@ -12,11 +12,6 @@
  *
  *
  * ***************************************************************************/
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Microsoft.Scripting.Debugging {
     public enum TraceEventKind {
         // Fired when the execution enters a new frame

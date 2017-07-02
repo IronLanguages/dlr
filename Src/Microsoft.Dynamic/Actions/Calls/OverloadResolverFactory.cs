@@ -13,12 +13,9 @@
  *
  * ***************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Dynamic;
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     public abstract class OverloadResolverFactory {

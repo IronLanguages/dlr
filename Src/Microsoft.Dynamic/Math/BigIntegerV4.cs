@@ -15,11 +15,7 @@
 #if FEATURE_NUMERICS
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Text;
 using Microsoft.Scripting.Utils;
 using BigInt = System.Numerics.BigInteger;
 

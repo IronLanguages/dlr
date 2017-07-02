@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
