@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.AspNet.UI.Controls {
         protected override void Render(HtmlTextWriter writer) {
             ScriptTemplateControl scriptTemplateControl = ScriptTemplateControl.GetScriptTemplateControl(this);
             object result = scriptTemplateControl.EvaluateExpression(Code.Trim(), Line);
-            writer.Write(System.Convert.ToString(result));
+            writer.Write(Convert.ToString(result));
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Microsoft.Scripting.Ast {
         private static MethodCallExpression CallDebugWriteLine(string marker) {
             return Expression.Call(
                 typeof(Debug).GetMethod("WriteLine", new[] { typeof(string) }),
-                AstUtils.Constant(marker)
+                Constant(marker)
             );
         }
 #endif

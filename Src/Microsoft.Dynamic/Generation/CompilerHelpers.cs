@@ -713,7 +713,7 @@ namespace Microsoft.Scripting.Generation {
             lambda = (LambdaExpression)rewriter.Visit(lambda);
 
             //Create a unique method name when the lambda doesn't have a name or the name is empty.
-            var method = type.DefineMethod(methodName, CompilerHelpers.PublicStatic);
+            var method = type.DefineMethod(methodName, PublicStatic);
 
             lambda.CompileToMethod(method, debugInfoGenerator);
             var finished = type.CreateType();
@@ -752,15 +752,15 @@ namespace Microsoft.Scripting.Generation {
 
                     _methodNames.Add(newName);
                     return Expression.Lambda<T>(
-                        base.Visit(node.Body),
+                        Visit(node.Body),
                         newName,
                         node.TailCall,
                         node.Parameters
                     );
-                } else {
-                    _methodNames.Add(node.Name);
-                    return base.VisitLambda<T>(node);
                 }
+
+                _methodNames.Add(node.Name);
+                return base.VisitLambda<T>(node);
             }
 
             protected override Expression VisitExtension(Expression node) {

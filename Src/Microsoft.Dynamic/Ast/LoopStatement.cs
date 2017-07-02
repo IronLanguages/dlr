@@ -76,14 +76,14 @@ namespace Microsoft.Scripting.Ast {
                             test,
                             Utils.Empty(),
                             Expression.Block(
-                                @else != null ? @else : Utils.Empty(),
+                                @else ?? Empty(),
                                 Expression.Break(@break)
                             )
                         )
-                        : Utils.Empty(),
+                        : Empty(),
                     body,
-                    @continue != null ? (Expression)Expression.Label(@continue) : Utils.Empty(),
-                    increment != null ? increment : Utils.Empty()
+                    @continue != null ? (Expression)Expression.Label(@continue) : Empty(),
+                    increment ?? Empty()
                 ),
                 @break,
                 null

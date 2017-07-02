@@ -39,21 +39,21 @@ namespace Microsoft.Scripting.Debugging {
     internal class DebugInfoRewriter : MSAst.DynamicExpressionVisitor {
         private readonly DebugContext _debugContext;
         private readonly bool _transformToGenerator;
-        private readonly MSAst.Expression _thread;
-        private readonly MSAst.Expression _frame;
-        private readonly MSAst.Expression _debugMarker;
-        private readonly MSAst.Expression _traceLocations;
-        private readonly Dictionary<MSAst.ParameterExpression, MSAst.ParameterExpression> _replacedLocals;
-        private readonly Dictionary<MSAst.ParameterExpression, VariableInfo> _localsToVarInfos;
-        private readonly Stack<MSAst.BlockExpression> _currentLocals;
+        private readonly Expression _thread;
+        private readonly Expression _frame;
+        private readonly Expression _debugMarker;
+        private readonly Expression _traceLocations;
+        private readonly Dictionary<ParameterExpression, MSAst.ParameterExpression> _replacedLocals;
+        private readonly Dictionary<ParameterExpression, VariableInfo> _localsToVarInfos;
+        private readonly Stack<BlockExpression> _currentLocals;
         private readonly Dictionary<int, DebugSourceSpan> _markerLocationMap;
         private readonly Dictionary<int, IList<VariableInfo>> _variableScopeMap;
-        private readonly Dictionary<MSAst.BlockExpression, IList<VariableInfo>> _variableScopeMapCache;
-        private readonly Dictionary<DebugSourceFile, MSAst.ParameterExpression> _sourceFilesToVariablesMap;
-        private readonly MSAst.Expression _globalDebugMode;
-        private readonly MSAst.LabelTarget _generatorLabelTarget;
-        private readonly MSAst.ConstantExpression _debugYieldValue;
-        private readonly MSAst.Expression _pushFrame;
+        private readonly Dictionary<BlockExpression, IList<VariableInfo>> _variableScopeMapCache;
+        private readonly Dictionary<DebugSourceFile, ParameterExpression> _sourceFilesToVariablesMap;
+        private readonly Expression _globalDebugMode;
+        private readonly LabelTarget _generatorLabelTarget;
+        private readonly ConstantExpression _debugYieldValue;
+        private readonly Expression _pushFrame;
         private readonly DebugLambdaInfo _lambdaInfo;
         private int _locationCookie;
         private bool _hasUnconditionalFunctionCalls;
@@ -62,16 +62,16 @@ namespace Microsoft.Scripting.Debugging {
         internal DebugInfoRewriter(
             DebugContext debugContext,
             bool transformToGenerator,
-            MSAst.Expression traceLocations,
-            MSAst.Expression thread,
-            MSAst.Expression frame,
-            MSAst.Expression pushFrame,
-            MSAst.Expression debugMarker,
-            MSAst.Expression globalDebugMode,
-            Dictionary<DebugSourceFile, MSAst.ParameterExpression> sourceFilesToVariablesMap,
-            MSAst.LabelTarget generatorLabel,
-            Dictionary<MSAst.ParameterExpression, MSAst.ParameterExpression> replacedLocals,
-            Dictionary<MSAst.ParameterExpression, VariableInfo> localsToVarInfos,
+            Expression traceLocations,
+            Expression thread,
+            Expression frame,
+            Expression pushFrame,
+            Expression debugMarker,
+            Expression globalDebugMode,
+            Dictionary<DebugSourceFile, ParameterExpression> sourceFilesToVariablesMap,
+            LabelTarget generatorLabel,
+            Dictionary<ParameterExpression, ParameterExpression> replacedLocals,
+            Dictionary<ParameterExpression, VariableInfo> localsToVarInfos,
             DebugLambdaInfo lambdaInfo) {
 
             _debugContext = debugContext;
@@ -87,8 +87,8 @@ namespace Microsoft.Scripting.Debugging {
                 // When transforming to generator we'll also create marker-location and position-handler maps
                 _markerLocationMap = new Dictionary<int, DebugSourceSpan>();
                 _variableScopeMap = new Dictionary<int, IList<VariableInfo>>();
-                _currentLocals = new Stack<MSAst.BlockExpression>();
-                _variableScopeMapCache = new Dictionary<MSAst.BlockExpression, IList<VariableInfo>>();
+                _currentLocals = new Stack<BlockExpression>();
+                _variableScopeMapCache = new Dictionary<BlockExpression, IList<VariableInfo>>();
             }
 
             _debugMarker = debugMarker;
@@ -132,23 +132,23 @@ namespace Microsoft.Scripting.Debugging {
             }
         }
 
-        protected override MSAst.Expression VisitLambda<T>(MSAst.Expression<T> node) {
+        protected override Expression VisitLambda<T>(MSAst.Expression<T> node) {
             // Explicitely don't walk nested lambdas.  They should already have been transformed
             return node;
         }
 
         // We remove all nested variables declared inside the block.
-        protected override MSAst.Expression VisitBlock(MSAst.BlockExpression node) {
+        protected override Expression VisitBlock(MSAst.BlockExpression node) {
             if (_transformToGenerator) {
                 _currentLocals.Push(node);
             }
             try {
-                MSAst.BlockExpression modifiedBlock = Ast.Block(node.Type, node.Expressions);
+                BlockExpression modifiedBlock = Ast.Block(node.Type, node.Expressions);
                 return base.VisitBlock(modifiedBlock);
             } finally {
                 if (_transformToGenerator) {
 #if DEBUG
-                    MSAst.BlockExpression poppedBlock =
+                    BlockExpression poppedBlock =
 #endif
                     _currentLocals.Pop();
 #if DEBUG
@@ -158,9 +158,9 @@ namespace Microsoft.Scripting.Debugging {
             }
         }
 
-        protected override MSAst.Expression VisitTry(MSAst.TryExpression node) {
+        protected override Expression VisitTry(TryExpression node) {
             MSAst.Expression b = Visit(node.Body);
-            ReadOnlyCollection<MSAst.CatchBlock> h = Visit(node.Handlers, VisitCatchBlock);
+            ReadOnlyCollection<CatchBlock> h = Visit(node.Handlers, VisitCatchBlock);
             MSAst.Expression y = Visit(node.Finally);
             MSAst.Expression f;
 

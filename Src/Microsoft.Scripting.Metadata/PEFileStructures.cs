@@ -378,7 +378,7 @@ namespace Microsoft.Scripting.Metadata {
         internal const ushort DosSignature = 0x5A4D;     // MZ
         internal const int PESignatureOffsetLocation = 0x3C;
         internal const uint PESignature = 0x00004550;    // PE00
-        internal const int BasicPEHeaderSize = PEFileConstants.PESignatureOffsetLocation;
+        internal const int BasicPEHeaderSize = PESignatureOffsetLocation;
         internal const int SizeofCOFFFileHeader = 20;
         internal const int SizeofOptionalHeaderStandardFields32 = 28;
         internal const int SizeofOptionalHeaderStandardFields64 = 24;
@@ -617,26 +617,26 @@ namespace Microsoft.Scripting.Metadata {
         internal static MetadataToken ConvertToToken(uint hasCustomAttribute) {
             MetadataTokenType tokenType;
             switch (hasCustomAttribute & TagMask) {
-                case HasCustomAttributeTag.Method: tokenType = MetadataTokenType.MethodDef; break;
-                case HasCustomAttributeTag.Field: tokenType = MetadataTokenType.FieldDef; break;
-                case HasCustomAttributeTag.TypeRef: tokenType = MetadataTokenType.TypeRef; break;
-                case HasCustomAttributeTag.TypeDef: tokenType = MetadataTokenType.TypeDef; break;
-                case HasCustomAttributeTag.Param: tokenType = MetadataTokenType.ParamDef; break;
-                case HasCustomAttributeTag.InterfaceImpl: tokenType = MetadataTokenType.InterfaceImpl; break;
-                case HasCustomAttributeTag.MemberRef: tokenType = MetadataTokenType.MemberRef; break;
-                case HasCustomAttributeTag.Module: tokenType = MetadataTokenType.Module; break;
-                case HasCustomAttributeTag.DeclSecurity: tokenType = MetadataTokenType.Permission; break;
-                case HasCustomAttributeTag.Property: tokenType = MetadataTokenType.Property; break;
-                case HasCustomAttributeTag.Event: tokenType = MetadataTokenType.Event; break;
-                case HasCustomAttributeTag.StandAloneSig: tokenType = MetadataTokenType.Signature; break;
-                case HasCustomAttributeTag.ModuleRef: tokenType = MetadataTokenType.ModuleRef; break;
-                case HasCustomAttributeTag.TypeSpec: tokenType = MetadataTokenType.TypeSpec; break;
-                case HasCustomAttributeTag.Assembly: tokenType = MetadataTokenType.Assembly; break;
-                case HasCustomAttributeTag.AssemblyRef: tokenType = MetadataTokenType.AssemblyRef; break;
-                case HasCustomAttributeTag.File: tokenType = MetadataTokenType.File; break;
-                case HasCustomAttributeTag.ExportedType: tokenType = MetadataTokenType.ExportedType; break;
-                case HasCustomAttributeTag.ManifestResource: tokenType = MetadataTokenType.ManifestResource; break;
-                case HasCustomAttributeTag.GenericParameter: tokenType = MetadataTokenType.GenericPar; break;
+                case Method: tokenType = MetadataTokenType.MethodDef; break;
+                case Field: tokenType = MetadataTokenType.FieldDef; break;
+                case TypeRef: tokenType = MetadataTokenType.TypeRef; break;
+                case TypeDef: tokenType = MetadataTokenType.TypeDef; break;
+                case Param: tokenType = MetadataTokenType.ParamDef; break;
+                case InterfaceImpl: tokenType = MetadataTokenType.InterfaceImpl; break;
+                case MemberRef: tokenType = MetadataTokenType.MemberRef; break;
+                case Module: tokenType = MetadataTokenType.Module; break;
+                case DeclSecurity: tokenType = MetadataTokenType.Permission; break;
+                case Property: tokenType = MetadataTokenType.Property; break;
+                case Event: tokenType = MetadataTokenType.Event; break;
+                case StandAloneSig: tokenType = MetadataTokenType.Signature; break;
+                case ModuleRef: tokenType = MetadataTokenType.ModuleRef; break;
+                case TypeSpec: tokenType = MetadataTokenType.TypeSpec; break;
+                case Assembly: tokenType = MetadataTokenType.Assembly; break;
+                case AssemblyRef: tokenType = MetadataTokenType.AssemblyRef; break;
+                case File: tokenType = MetadataTokenType.File; break;
+                case ExportedType: tokenType = MetadataTokenType.ExportedType; break;
+                case ManifestResource: tokenType = MetadataTokenType.ManifestResource; break;
+                case GenericParameter: tokenType = MetadataTokenType.GenericPar; break;
                 default: throw new BadImageFormatException();
             }
             return new MetadataToken(tokenType, hasCustomAttribute >> HasCustomAttributeTag.NumberOfBits);
@@ -647,45 +647,45 @@ namespace Microsoft.Scripting.Metadata {
             uint rowId = (uint)token.Rid;
             switch (token.TokenType) {
                 case MetadataTokenType.MethodDef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Method;
+                    return rowId << NumberOfBits | Method;
                 case MetadataTokenType.FieldDef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Field;
+                    return rowId << NumberOfBits | Field;
                 case MetadataTokenType.TypeRef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.TypeRef;
+                    return rowId << NumberOfBits | TypeRef;
                 case MetadataTokenType.TypeDef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.TypeDef;
+                    return rowId << NumberOfBits | TypeDef;
                 case MetadataTokenType.ParamDef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Param;
+                    return rowId << NumberOfBits | Param;
                 case MetadataTokenType.InterfaceImpl:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.InterfaceImpl;
+                    return rowId << NumberOfBits | InterfaceImpl;
                 case MetadataTokenType.MemberRef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.MemberRef;
+                    return rowId << NumberOfBits | MemberRef;
                 case MetadataTokenType.Module:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Module;
+                    return rowId << NumberOfBits | Module;
                 case MetadataTokenType.Permission:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.DeclSecurity;
+                    return rowId << NumberOfBits | DeclSecurity;
                 case MetadataTokenType.Property:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Property;
+                    return rowId << NumberOfBits | Property;
                 case MetadataTokenType.Event:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Event;
+                    return rowId << NumberOfBits | Event;
                 case MetadataTokenType.Signature:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.StandAloneSig;
+                    return rowId << NumberOfBits | StandAloneSig;
                 case MetadataTokenType.ModuleRef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.ModuleRef;
+                    return rowId << NumberOfBits | ModuleRef;
                 case MetadataTokenType.TypeSpec:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.TypeSpec;
+                    return rowId << NumberOfBits | TypeSpec;
                 case MetadataTokenType.Assembly:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.Assembly;
+                    return rowId << NumberOfBits | Assembly;
                 case MetadataTokenType.AssemblyRef:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.AssemblyRef;
+                    return rowId << NumberOfBits | AssemblyRef;
                 case MetadataTokenType.File:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.File;
+                    return rowId << NumberOfBits | File;
                 case MetadataTokenType.ExportedType:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.ExportedType;
+                    return rowId << NumberOfBits | ExportedType;
                 case MetadataTokenType.ManifestResource:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.ManifestResource;
+                    return rowId << NumberOfBits | ManifestResource;
                 case MetadataTokenType.GenericPar:
-                    return rowId << HasCustomAttributeTag.NumberOfBits | HasCustomAttributeTag.GenericParameter;
+                    return rowId << NumberOfBits | GenericParameter;
             }
             return 0;
         }
@@ -821,7 +821,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal static uint ConvertMethodDefRowIdToTag(int methodDefRowId) {
-            return (uint)methodDefRowId << MemberForwardedTag.NumberOfBits | MemberForwardedTag.Method;
+            return (uint)methodDefRowId << NumberOfBits | Method;
         }
     }
 
@@ -853,7 +853,7 @@ namespace Microsoft.Scripting.Metadata {
 
     internal static class CustomAttributeTypeTag {
         internal const int NumberOfBits = 3;
-        internal const int LargeRowSize = 0x00000001 << (16 - CustomAttributeTypeTag.NumberOfBits);
+        internal const int LargeRowSize = 0x00000001 << (16 - NumberOfBits);
         internal const uint Method = 0x00000002;
         internal const uint MemberRef = 0x00000003;
         internal const uint TagMask = 0x0000007;
@@ -895,7 +895,7 @@ namespace Microsoft.Scripting.Metadata {
 
     internal static class TypeOrMethodDefTag {
         internal const int NumberOfBits = 1;
-        internal const int LargeRowSize = 0x00000001 << (16 - TypeOrMethodDefTag.NumberOfBits);
+        internal const int LargeRowSize = 0x00000001 << (16 - NumberOfBits);
         internal const uint TypeDef = 0x00000000;
         internal const uint MethodDef = 0x00000001;
         internal const uint TagMask = 0x0000001;

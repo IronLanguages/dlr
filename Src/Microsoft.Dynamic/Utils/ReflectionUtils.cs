@@ -1194,7 +1194,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static string GetNormalizedTypeName(string typeName) {
             Debug.Assert(typeName.IndexOf('.') == -1); // This is the simple name, not the full name
-            int backtick = typeName.IndexOf(ReflectionUtils.GenericArityDelimiter);
+            int backtick = typeName.IndexOf(GenericArityDelimiter);
             if (backtick != -1) return typeName.Substring(0, backtick);
             return typeName;
         }
@@ -1341,7 +1341,7 @@ namespace Microsoft.Scripting.Utils {
         public static bool SignatureEquals(MethodInfo method, params Type[] requiredSignature) {
             ContractUtils.RequiresNotNull(method, "method");
 
-            Type[] actualTypes = ReflectionUtils.GetParameterTypes(method.GetParameters());
+            Type[] actualTypes = GetParameterTypes(method.GetParameters());
             Debug.Assert(actualTypes.Length == requiredSignature.Length - 1);
             int i = 0;
             while (i < actualTypes.Length) {
@@ -1637,7 +1637,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<MethodInfo> GetVisibleExtensionMethodsSlow(Assembly assembly) {
             var ea = typeof(ExtensionAttribute);
             if (assembly.IsDefined(ea)) {
-                foreach (TypeInfo type in ReflectionUtils.GetAllTypesFromAssembly(assembly)) {
+                foreach (TypeInfo type in GetAllTypesFromAssembly(assembly)) {
                     if ((type.IsPublic || type.IsNestedPublic) &&
                         type.IsAbstract &&
                         type.IsSealed &&
@@ -1678,7 +1678,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             Dictionary<string, List<ExtensionMethodInfo>> result = null;
-            foreach (MethodInfo method in ReflectionUtils.GetVisibleExtensionMethodsSlow(assembly)) {
+            foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
                 if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition()) {
                     continue;
                 }
@@ -1806,7 +1806,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
-                (!closedType.IsValueType() && closedType.GetConstructor(ReflectionUtils.EmptyTypes) == null)) {
+                (!closedType.IsValueType() && closedType.GetConstructor(EmptyTypes) == null)) {
                 // reference type w/o a default constructor to type constrianed as new()
                 return true;
             }
