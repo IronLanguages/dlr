@@ -113,7 +113,7 @@ namespace Microsoft.Scripting.Utils {
 
             public void PublishValue(T value) {
                 Value = value;
-                if (_waitEvent != null) _waitEvent.Set();
+                _waitEvent?.Set();
             }
 
             public void PublishError(Exception e) {

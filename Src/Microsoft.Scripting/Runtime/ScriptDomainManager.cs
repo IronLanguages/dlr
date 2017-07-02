@@ -144,9 +144,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             EventHandler<AssemblyLoadedEventArgs> assmLoaded = AssemblyLoaded;
-            if (assmLoaded != null) {
-                assmLoaded(this, new AssemblyLoadedEventArgs(assembly));
-            }
+            assmLoaded?.Invoke(this, new AssemblyLoadedEventArgs(assembly));
 
             return true;
         }

@@ -372,11 +372,9 @@ namespace Microsoft.Scripting.Interpreter {
         internal void SwitchToBoxed(int index, int instructionIndex) {
             var instruction = _instructions[instructionIndex] as IBoxableInstruction;
 
-            if (instruction != null) {
-                var newInstruction = instruction.BoxIfIndexMatches(index);
-                if (newInstruction != null) {
-                    _instructions[instructionIndex] = newInstruction;
-                }
+            var newInstruction = instruction?.BoxIfIndexMatches(index);
+            if (newInstruction != null) {
+                _instructions[instructionIndex] = newInstruction;
             }
         }
 

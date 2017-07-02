@@ -40,9 +40,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.Requires(path == null || path.Length > 0, "path");
 
             // Convert the CodeDom to source code
-            if (_writer != null) {
-                _writer.Close();
-            }
+            _writer?.Close();
             _writer = new PositionTrackingWriter();
 
             WriteFunctionDefinition(codeDom);

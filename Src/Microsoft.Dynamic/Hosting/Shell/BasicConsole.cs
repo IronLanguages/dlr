@@ -189,9 +189,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         #region IDisposable Members
 
         public void Dispose() {
-            if (_ctrlCEvent != null) {
-                _ctrlCEvent.Close();
-            }
+            _ctrlCEvent?.Close();
 
             GC.SuppressFinalize(this);
         }

@@ -175,8 +175,8 @@ namespace Microsoft.Scripting.Ast {
                     _debugCookies.Add(Int32.MaxValue);
                 }
                 _debugCookies.Insert(result.State, node.YieldMarker);
-            } else if (_debugCookies != null) {
-                _debugCookies.Insert(result.State, Int32.MaxValue);
+            } else {
+                _debugCookies?.Insert(result.State, Int32.MaxValue);
             }
             return result;
         }

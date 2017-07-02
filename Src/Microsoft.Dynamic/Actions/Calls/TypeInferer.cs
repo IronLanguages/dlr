@@ -414,21 +414,19 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (parameterType.IsSubclassOf(typeof(Delegate))) {
                 // see if we have an invokable object which can be used to infer into this delegate
                 IInferableInvokable invokeInfer = input as IInferableInvokable;
-                if (invokeInfer != null) {
-                    InferenceResult inference = invokeInfer.GetInferredType(parameterType, genericParameter);
-                    if (inference != null) {
-                        if (inference.Restrictions != BindingRestrictions.Empty) {
-                            restrictions[input] = inference.Restrictions;
-                        }
-
-                        binding[genericParameter] = inference.Type;
-
-                        if (ConstraintsViolated(inference.Type, genericParameter, binding)) {
-                            return null;
-                        }
-
-                        return inference.Type;
+                InferenceResult inference = invokeInfer?.GetInferredType(parameterType, genericParameter);
+                if (inference != null) {
+                    if (inference.Restrictions != BindingRestrictions.Empty) {
+                        restrictions[input] = inference.Restrictions;
                     }
+
+                    binding[genericParameter] = inference.Type;
+
+                    if (ConstraintsViolated(inference.Type, genericParameter, binding)) {
+                        return null;
+                    }
+
+                    return inference.Type;
                 }
             }
 

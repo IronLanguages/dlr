@@ -128,10 +128,7 @@ namespace Microsoft.Scripting.AspNet.UI.Controls {
 
         #region IAttributeAccessor Members
         public virtual string GetAttribute(string key) {
-            if (_attributes == null)
-                return null;
-
-            return _attributes[key];
+            return _attributes?[key];
         }
 
         public virtual void SetAttribute(string key, string value) {

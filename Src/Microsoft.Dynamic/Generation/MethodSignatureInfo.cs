@@ -38,7 +38,6 @@ namespace Microsoft.Scripting.Generation {
         public override bool Equals(object obj) {
             MethodSignatureInfo args = obj as MethodSignatureInfo;
             if (args == null) return false;
-
             if (args._isStatic != _isStatic || args._pis.Length != _pis.Length || args._genericArity != _genericArity) {
                 return false;
             }

@@ -147,10 +147,8 @@ namespace Microsoft.Scripting.Actions {
 
             add.Invoke(target, new object[] { delegateHandler });
 
-            if (stubs != null) {
-                // remember the stub so that we could search for it on removal:
-                stubs.AddHandler(handler, delegateHandler);
-            }
+            // remember the stub so that we could search for it on removal:
+            stubs?.AddHandler(handler, delegateHandler);
         }
 
         public void RemoveHandler(object target, object handler, IEqualityComparer<object> objectComparer) {

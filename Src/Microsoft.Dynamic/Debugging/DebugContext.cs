@@ -191,9 +191,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
             try {
                 // Fire the event
                 IDebugCallback traceHook = _traceHook;
-                if (traceHook != null) {
-                    traceHook.OnDebugEvent(eventKind, thread, functionInfo, debugMarker, stackDepth, payload);
-                }
+                traceHook?.OnDebugEvent(eventKind, thread, functionInfo, debugMarker, stackDepth, payload);
 
                 // Check if the frame object is created after the traceback.  If it's created - then we need
                 // to check if we need to remap

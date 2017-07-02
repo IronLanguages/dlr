@@ -88,15 +88,9 @@ namespace Microsoft.Scripting.Metadata {
                     mapping._capacity = accessor.Capacity;
                 }
             } finally {
-                if (stream != null) {
-                    stream.Dispose();
-                }
-                if (accessor != null) {
-                    accessor.Dispose();
-                }
-                if (file != null) {
-                    file.Dispose();
-                }
+                stream?.Dispose();
+                accessor?.Dispose();
+                file?.Dispose();
             }
             return mapping;
         }

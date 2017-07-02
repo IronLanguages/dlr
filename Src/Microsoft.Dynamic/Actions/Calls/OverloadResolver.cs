@@ -371,9 +371,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             // go through all available narrowing levels selecting candidates.  
             for (NarrowingLevel level = _minLevel; level <= _maxLevel; level++) {
-                if (failures != null) {
-                    failures.Clear();
-                }
+                failures?.Clear();
 
                 // only allow candidates whose non-collapsed arguments are convertible to the parameter types:
                 var applicable = SelectCandidatesWithConvertibleArgs(potential, level, ref failures);

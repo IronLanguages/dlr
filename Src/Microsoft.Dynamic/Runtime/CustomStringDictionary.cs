@@ -380,9 +380,8 @@ namespace Microsoft.Scripting.Runtime {
 
             IDictionary<object, object> oth = other as IDictionary<object, object>;
             IDictionary<object, object> ths = this as IDictionary<object, object>;
-            if (oth == null) return false;
 
-            if (oth.Count != ths.Count) return false;
+            if (oth?.Count != ths.Count) return false;
 
             foreach (KeyValuePair<object, object> o in ths) {
                 object res;
