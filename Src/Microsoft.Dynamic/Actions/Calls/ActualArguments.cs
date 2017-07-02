@@ -13,14 +13,10 @@
  *
  * ***************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Dynamic;
-using System.Diagnostics;
 using Microsoft.Scripting.Utils;
 using System.Collections;
-using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Actions.Calls {
     public sealed class ActualArguments {

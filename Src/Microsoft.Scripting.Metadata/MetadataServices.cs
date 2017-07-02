@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
-using System.IO;
-using System.Diagnostics;
 
 namespace Microsoft.Scripting.Metadata {
     public static class MetadataServices {

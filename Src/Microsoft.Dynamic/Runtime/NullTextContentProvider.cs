@@ -12,10 +12,6 @@
  *
  *
  * ***************************************************************************/
-
-using System.IO;
-using System.Text;
-
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// A NullTextContentProvider to be provided when we have a pre-compiled ScriptCode which doesn't
