@@ -84,13 +84,13 @@ namespace Microsoft.Scripting.Metadata {
         // safe
         public bool Equals(byte[] bytes, int start, int count) {
             if (bytes == null) {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
             if (start < 0) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (count < 0 || count > bytes.Length - start) {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
 
             bool result;
@@ -377,17 +377,17 @@ namespace Microsoft.Scripting.Metadata {
 
         public int LastIndexOf(byte b, int start, int count) {
             if (start < 0 || start > Length) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             if (count < 0 || start < count - 1) {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             return m_name.LastIndexOf(b, start, count);
         }
 
         public unsafe MetadataNamePart GetPart(int start) {
             if (start < 0 || start > Length) {
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             return new MetadataNamePart(m_name.GetSuffix(start), m_byteCount - start);
         }

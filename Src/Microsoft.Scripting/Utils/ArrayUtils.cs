@@ -98,7 +98,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] RotateRight<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, "array");
-            if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException("count");
+            if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length];
             // The head of the array is shifted, and the tail will be rotated to the head of the resulting array
@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] ShiftRight<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, "array");
-            if (count < 0) throw new ArgumentOutOfRangeException("count");
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length + count];
             System.Array.Copy(array, 0, result, count, array.Length);
@@ -119,7 +119,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] ShiftLeft<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, "array");
-            if (count < 0) throw new ArgumentOutOfRangeException("count");
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length - count];
             System.Array.Copy(array, count, result, 0, result.Length);

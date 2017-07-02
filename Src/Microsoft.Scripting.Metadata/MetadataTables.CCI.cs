@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public static MetadataTables OpenModule(Module module) {
             if (module == null) {
-                throw new ArgumentNullException("module");
+                throw new ArgumentNullException(nameof(module));
             }
 
             return new MetadataTables(CreateImport(module.FullyQualifiedName), null, module);

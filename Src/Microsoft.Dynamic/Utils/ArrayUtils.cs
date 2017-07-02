@@ -203,7 +203,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] AppendRange<T>(T[] array, IList<T> items, int additionalItemCount) {
             if (additionalItemCount < 0) {
-                throw new ArgumentOutOfRangeException("additionalItemCount");
+                throw new ArgumentOutOfRangeException(nameof(additionalItemCount));
             }
 
             int j = (array == null) ? 0 : array.Length;

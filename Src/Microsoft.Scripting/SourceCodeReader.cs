@@ -61,7 +61,7 @@ namespace Microsoft.Scripting {
         /// Returns <c>true</c> if the line is found, <b>false</b> otherwise.
         /// </returns>
         public virtual bool SeekLine(int line) {
-            if (line < 1) throw new ArgumentOutOfRangeException("line");
+            if (line < 1) throw new ArgumentOutOfRangeException(nameof(line));
             if (line == 1) return true;
 
             int current_line = 1;
