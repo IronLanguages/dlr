@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.AspNet {
         private void OnBeginRequest(object sender, EventArgs eventArgs) {
             EnsureGlobalFileCompiled();
 
-            if (_globalScope == null && s_buildResult != null && s_buildResult.CompiledCode != null) {
+            if (_globalScope == null && s_buildResult?.CompiledCode != null) {
                 _globalScope = EngineHelper.ScriptRuntime.CreateScope();
 
                 EngineHelper.ExecuteCode(_globalScope, s_buildResult.CompiledCode, s_globalVirtualPath);
@@ -208,11 +208,7 @@ namespace Microsoft.Scripting.AspNet {
                 EventHandlerWrapper eventHandlerWrapper = _handlers[handlerName];
 
                 DynamicFunction f = null;
-
-                if (s_buildResult != null && s_buildResult.EventHandlers != null) {
-                    s_buildResult.EventHandlers.TryGetValue(handlerName, out f);
-                }
-
+                s_buildResult?.EventHandlers?.TryGetValue(handlerName, out f);
                 eventHandlerWrapper.SetDynamicFunction(f, s_globalVirtualPath);
             }
         }
