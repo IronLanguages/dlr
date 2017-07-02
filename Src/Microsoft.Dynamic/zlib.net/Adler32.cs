@@ -48,13 +48,11 @@ using System;
 
 namespace ComponentAce.Compression.Libs.ZLib
 {
-	
     /// <summary>
-    /// This class represents adler32 checksum algorithm
+    /// This class represents adler32 checksum algorithm.
     /// </summary>
-	public class Adler32
+	public static class Adler32
 	{
-		
 		// largest prime smaller than 65536
 		private const int BASE = 65521;
 		// NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1
@@ -111,6 +109,5 @@ namespace ComponentAce.Compression.Libs.ZLib
 			}
 			return (s2 << 16) | s1;
 		}
-		
 	}
 }
