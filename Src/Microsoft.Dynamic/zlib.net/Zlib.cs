@@ -44,14 +44,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Text;
 
-
 namespace ComponentAce.Compression.Libs.ZLib
 {
-
     /// <summary>
     /// Some constants for specifying compression levels. Methods which takes a compression level as a parameter expects an integer value from 0 to 9. You can either specify an integer value or use constants for some most widely used compression levels.
     /// </summary>
-    public class ZLibCompressionLevel
+    public static class ZLibCompressionLevel
     {
         /// <summary>
         ///  No compression should be used at all.
@@ -183,7 +181,7 @@ namespace ComponentAce.Compression.Libs.ZLib
     /// <summary>
     /// Helper class
     /// </summary>
-    public class ZLibUtil
+    public static class ZLibUtil
     {
         #region Copy large array to a small one in several steps
 
