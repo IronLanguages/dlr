@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public byte ReadByte(int offset) {
             if (offset < 0 || offset > _length - sizeof(byte)) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
             var result = *(_pointer + offset);
             GC.KeepAlive(_owner);

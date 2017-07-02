@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Utils {
         /// </returns>
         public static bool SeekLine(TextReader reader, int line) {
             ContractUtils.RequiresNotNull(reader, "reader");
-            if (line < 1) throw new ArgumentOutOfRangeException("line");
+            if (line < 1) throw new ArgumentOutOfRangeException(nameof(line));
             if (line == 1) return true;
 
             int current_line = 1;

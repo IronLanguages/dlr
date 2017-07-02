@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.Debugging {
             }
             set {
                 if (value < 0 || value >= _funcInfo.SequencePoints.Length) {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 // The location can only be changed in leaf frames which are inside trace events
