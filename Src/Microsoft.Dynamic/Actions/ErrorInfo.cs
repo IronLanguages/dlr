@@ -34,9 +34,6 @@ namespace Microsoft.Scripting.Actions {
     /// binding.  
     /// </summary>
     public sealed class ErrorInfo {
-        private readonly Expression _value;
-        private readonly ErrorInfoKind _kind;
-
         /// <summary>
         /// Private constructor - consumers must use static From* factories
         /// to create ErrorInfo objects.
@@ -44,8 +41,8 @@ namespace Microsoft.Scripting.Actions {
         private ErrorInfo(Expression value, ErrorInfoKind kind) {
             Debug.Assert(value != null);
 
-            _value = value;
-            _kind = kind;
+            Expression = value;
+            Kind = kind;
         }
 
         /// <summary>
@@ -81,17 +78,9 @@ namespace Microsoft.Scripting.Actions {
             return new ErrorInfo(resultValue, ErrorInfoKind.Success);
         }
 
-        public ErrorInfoKind Kind {
-            get {
-                return _kind;
-            }
-        }
+        public ErrorInfoKind Kind { get; }
 
-        public Expression Expression {
-            get {
-                return _value;
-            }
-        }
+        public Expression Expression { get; }
     }
 
     public enum ErrorInfoKind {

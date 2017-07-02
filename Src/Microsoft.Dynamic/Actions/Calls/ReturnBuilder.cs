@@ -22,8 +22,6 @@ using System.Diagnostics;
 namespace Microsoft.Scripting.Actions.Calls {
 
     internal class ReturnBuilder {
-        private readonly Type _returnType;
-
         /// <summary>
         /// Creates a ReturnBuilder
         /// </summary>
@@ -31,7 +29,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public ReturnBuilder(Type returnType) {
             Debug.Assert(returnType != null);
 
-            this._returnType = returnType;
+            this.ReturnType = returnType;
         }
 
         internal virtual Expression ToExpression(OverloadResolver resolver, IList<ArgBuilder> builders, RestrictedArguments args, Expression ret) {
@@ -42,10 +40,6 @@ namespace Microsoft.Scripting.Actions.Calls {
             get { return 0; }
         }
 
-        public Type ReturnType {
-            get {
-                return _returnType;
-            }
-        }
+        public Type ReturnType { get; }
     }
 }

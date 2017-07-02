@@ -49,23 +49,17 @@ namespace Microsoft.Scripting.Metadata {
     }
 
     public partial class MetadataTables {
-        private readonly Module m_module;
-
         internal MetadataTables(MetadataImport import, string path, Module module) {
             m_import = import;
             m_path = path;
-            m_module = module;
+            Module = module;
         }
 
         /// <summary>
         /// Gets the module whose metadata tables this instance represents.
         /// Null if the tables reflect unloaded module file.
         /// </summary>
-        public Module Module {
-            get {
-                return m_module;
-            }
-        }
+        public Module Module { get; }
 
         public bool IsValidToken(MetadataToken token) {
             return m_import.IsValidToken(token);

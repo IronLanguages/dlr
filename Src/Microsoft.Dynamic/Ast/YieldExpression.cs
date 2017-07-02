@@ -26,14 +26,12 @@ namespace Microsoft.Scripting.Ast {
     /// MoveNext to return false.
     /// </summary>
     public sealed class YieldExpression : Expression {
-        private readonly LabelTarget _target;
         private readonly Expression _value;
-        private readonly int _yieldMarker;
 
         internal YieldExpression(LabelTarget target, Expression value, int yieldMarker) {
-            _target = target;
+            Target = target;
             _value = value;
-            _yieldMarker = yieldMarker;
+            YieldMarker = yieldMarker;
         }
 
         public override bool CanReduce {
@@ -56,24 +54,18 @@ namespace Microsoft.Scripting.Ast {
         }
 
         /// <summary>
-        /// The label used to yield from this generator
+        /// Gets the label used to yield from this generator
         /// </summary>
-        public LabelTarget Target {
-            get { return _target; }
-        }
+        public LabelTarget Target { get; }
 
-        public int YieldMarker {
-            get {
-                return _yieldMarker;
-            }
-        }
+        public int YieldMarker { get; }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression v = visitor.Visit(_value);
             if (v == _value) {
                 return this;
             }
-            return Utils.MakeYield(_target, v, YieldMarker);
+            return Utils.MakeYield(Target, v, YieldMarker);
         }
     }
 

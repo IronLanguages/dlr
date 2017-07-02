@@ -31,21 +31,12 @@ namespace Microsoft.Scripting.ComInterop {
     /// for every generic RCW instance.
     /// </summary>
     internal class ComObject : IDynamicMetaObjectProvider {
-        /// <summary>
-        /// The runtime-callable wrapper
-        /// </summary>
-        private readonly object _rcw;
-
         internal ComObject(object rcw) {
             Debug.Assert(IsComObject(rcw));
-            _rcw = rcw;
+            RuntimeCallableWrapper = rcw;
         }
 
-        internal object RuntimeCallableWrapper {
-            get {
-                return _rcw;
-            }
-        }
+        internal object RuntimeCallableWrapper { get; }
 
         private readonly static object _ComObjectInfoKey = new object();
 

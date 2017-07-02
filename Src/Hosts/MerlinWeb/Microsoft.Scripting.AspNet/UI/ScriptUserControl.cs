@@ -73,17 +73,10 @@ namespace Microsoft.Scripting.AspNet.UI {
             get { return this.EnsureScriptTemplateControl(); }
         }
 
-        private string _inlineScript;
-        public virtual string InlineScript {
-            get { return _inlineScript; }
-            set { _inlineScript = value; }
-        }
+        public virtual string InlineScript { get; set; }
 
-        private int _inlineScriptLine;
-        public virtual int InlineScriptLine {
-            get { return _inlineScriptLine; }
-            set { _inlineScriptLine = value; }
-        }
+        public virtual int InlineScriptLine { get; set; }
+
         #endregion
     }
 }

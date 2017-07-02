@@ -22,18 +22,15 @@ namespace Microsoft.Scripting.Debugging {
     /// </summary>
     [DebuggerDisplay("{Name}")]
     internal sealed class VariableInfo {
-        private string _name;
-        private Type _type;
-        private bool _parameter;    // Indicates whether the symbol represents a local variable or parameter
         private bool _hidden;       // Indicates whether the symbol should be hidden during inspection
         private bool _strongBoxed;  // Indicates whether the lifted value of the variable is exposed through byref or strongbox
         private int _localIndex;    // Index within byref variables list or within strongbox variables list
         private int _globalIndex;   // Index within the combined list
 
         internal VariableInfo(string name, Type type, bool parameter, bool hidden, bool strongBoxed, int localIndex, int globalIndex) {
-            _name = name;
-            _type = type;
-            _parameter = parameter;
+            Name = name;
+            VariableType = type;
+            IsParameter = parameter;
             _hidden = hidden;
             _strongBoxed = strongBoxed;
             _localIndex = localIndex;
@@ -42,9 +39,9 @@ namespace Microsoft.Scripting.Debugging {
 
         internal VariableInfo(string name, Type type, bool parameter, bool hidden, bool strongBoxed)
             : this(name, type, parameter, hidden, strongBoxed, Int32.MaxValue, Int32.MaxValue) {
-            _name = name;
-            _type = type;
-            _parameter = parameter;
+            Name = name;
+            VariableType = type;
+            IsParameter = parameter;
             _hidden = hidden;
             _strongBoxed = strongBoxed;
         }
@@ -66,24 +63,18 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         /// <summary>
-        /// Type
+        /// Gets the variable type.
         /// </summary>
-        internal Type VariableType {
-            get { return _type; }
-        }
+        internal Type VariableType { get; }
 
         /// <summary>
-        /// Name
+        /// Gets the name.
         /// </summary>
-        internal string Name {
-            get { return _name; }
-        }
+        internal string Name { get; }
 
         /// <summary>
-        /// Parameter
+        /// Gets or sets a value indicating whether it is a parameter.
         /// </summary>
-        internal bool IsParameter {
-            get { return _parameter; }
-        }
+        internal bool IsParameter { get; }
     }
 }

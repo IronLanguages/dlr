@@ -27,30 +27,23 @@ namespace Microsoft.Scripting {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         new public static readonly SourceCodeReader Null = new SourceCodeReader(TextReader.Null, null);
 
-        private readonly TextReader _textReader;
-        private readonly Encoding _encoding;
-
         public SourceCodeReader(TextReader textReader, Encoding encoding) {
             ContractUtils.RequiresNotNull(textReader, "textReader");
 
-            _encoding = encoding;
-            _textReader = textReader;
+            Encoding = encoding;
+            BaseReader = textReader;
         }
 
         /// <summary>
-        /// Encoding that is used by the reader to convert binary data read from an underlying binary stream.
+        /// Gets the encoding that is used by the reader to convert binary data read from an underlying binary stream.
         /// <c>Null</c> if the reader is reading from a textual source (not performing any byte to character transcoding).
         /// </summary>
-        public Encoding Encoding {
-            get { return _encoding; }
-        }
+        public Encoding Encoding { get; }
 
-        public TextReader BaseReader {
-            get { return _textReader; }
-        }
+        public TextReader BaseReader { get; }
 
         public override string ReadLine() {
-            return _textReader.ReadLine();
+            return BaseReader.ReadLine();
         }
 
         /// <summary>
@@ -67,11 +60,11 @@ namespace Microsoft.Scripting {
             int current_line = 1;
 
             for (; ; ) {
-                int c = _textReader.Read();
+                int c = BaseReader.Read();
 
                 if (c == '\r') {
-                    if (_textReader.Peek() == '\n') {
-                        _textReader.Read();
+                    if (BaseReader.Peek() == '\n') {
+                        BaseReader.Read();
                     }
 
                     current_line++;
@@ -87,23 +80,23 @@ namespace Microsoft.Scripting {
         }
 
         public override string ReadToEnd() {
-            return _textReader.ReadToEnd();
+            return BaseReader.ReadToEnd();
         }
 
         public override int Read(char[] buffer, int index, int count) {
-            return _textReader.Read(buffer, index, count);
+            return BaseReader.Read(buffer, index, count);
         }
 
         public override int Peek() {
-            return _textReader.Peek();
+            return BaseReader.Peek();
         }
 
         public override int Read() {
-            return _textReader.Read();
+            return BaseReader.Read();
         }
 
         protected override void Dispose(bool disposing) {
-            _textReader.Dispose();
+            BaseReader.Dispose();
             base.Dispose(disposing);
         }
     }
