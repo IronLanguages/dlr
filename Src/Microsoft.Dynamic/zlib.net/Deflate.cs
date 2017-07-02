@@ -1097,7 +1097,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         {
             _tr_flush_block(block_start >= 0 ? block_start : -1, strstart - block_start, eof);
             block_start = strstart;
-            strm.flush_pending();
+            strm.FlushPending();
         }
 
         /// <summary>
@@ -1335,7 +1335,7 @@ namespace ComponentAce.Compression.Libs.ZLib
                 // Otherwise, window_size == 2*WSIZE so more >= 2.
                 // If there was sliding, more >= WSIZE. So in all cases, more >= 2.
 
-                n = strm.read_buf(window, strstart + lookahead, more);
+                n = strm.ReadBuf(window, strstart + lookahead, more);
                 lookahead += n;
 
                 // Initialize the hash value now that we have some input:
@@ -1714,9 +1714,9 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <param name="level">Compression level</param>
         /// <param name="bits">Window bits</param>
         /// <returns>A result code</returns>
-        internal int deflateInit(ZStream strm, int level, int bits)
+        internal int DeflateInit(ZStream strm, int level, int bits)
         {
-            return deflateInit2(strm, level, bits, DEF_MEM_LEVEL, CompressionStrategy.Z_DEFAULT_STRATEGY);
+            return DeflateInit2(strm, level, bits, DEF_MEM_LEVEL, CompressionStrategy.Z_DEFAULT_STRATEGY);
         }
 
         /// <summary>
@@ -1725,9 +1725,9 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <param name="strm">ZStream object</param>
         /// <param name="level">Compression level</param>
         /// <returns>Operation result result code</returns>
-        internal int deflateInit(ZStream strm, int level)
+        internal int DeflateInit(ZStream strm, int level)
         {
-            return deflateInit(strm, level, ZLibUtil.MAX_WBITS);
+            return DeflateInit(strm, level, ZLibUtil.MAX_WBITS);
         }
 
         /// <summary>
@@ -1739,7 +1739,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <param name="memLevel">Memory level</param>
         /// <param name="strategy">Compression strategy</param>
         /// <returns>Operation result code</returns>
-        internal int deflateInit2(ZStream strm, int level, int windowBits, int memLevel, CompressionStrategy strategy)
+        internal int DeflateInit2(ZStream strm, int level, int windowBits, int memLevel, CompressionStrategy strategy)
         {
             int noheader = 0;
 
@@ -1969,7 +1969,7 @@ namespace ComponentAce.Compression.Libs.ZLib
             // Flush as much pending output as possible
             if (Pending != 0)
             {
-                strm.flush_pending();
+                strm.FlushPending();
                 if (strm.avail_out == 0)
                 {
                     //System.out.println("  _avail_out==0");
@@ -2061,28 +2061,28 @@ namespace ComponentAce.Compression.Libs.ZLib
 								head[i] = 0;
 						}
 					}
-					strm.flush_pending();
-					if (strm.avail_out == 0)
+					strm.FlushPending();
+                    if (strm.avail_out == 0)
 					{
 						last_flush = -1; // avoid BUF_ERROR at next call, see above
 						return (int)ZLibResultCode.Z_OK;
 					}
 				}
 			}
-			
-			if (internalFlush != (int)FlushStrategy.Z_FINISH)
-				return (int)ZLibResultCode.Z_OK;
-			if (NoHeader != 0)
-				return (int)ZLibResultCode.Z_STREAM_END;
-			
-			// Write the zlib trailer (adler32)
-			putShortMSB((int) (ZLibUtil.URShift(strm.adler, 16)));
-			putShortMSB((int) (strm.adler & 0xffff));
-			strm.flush_pending();
-			
-			// If _avail_out is zero, the application will call deflate again
-			// to internalFlush the rest.
-			NoHeader = - 1; // WritePos the trailer only once!
+
+            if (internalFlush != (int)FlushStrategy.Z_FINISH)
+                return (int)ZLibResultCode.Z_OK;
+            if (NoHeader != 0)
+                return (int)ZLibResultCode.Z_STREAM_END;
+
+            // Write the zlib trailer (adler32)
+            putShortMSB((int) (ZLibUtil.URShift(strm.adler, 16)));
+            putShortMSB((int) (strm.adler & 0xffff));
+            strm.FlushPending();
+
+            // If _avail_out is zero, the application will call deflate again
+            // to internalFlush the rest.
+            NoHeader = - 1; // WritePos the trailer only once!
             return Pending != 0 ? (int)ZLibResultCode.Z_OK : (int)ZLibResultCode.Z_STREAM_END;
         }
 

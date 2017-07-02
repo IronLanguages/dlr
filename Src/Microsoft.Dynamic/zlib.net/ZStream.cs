@@ -396,19 +396,19 @@ namespace ComponentAce.Compression.Libs.ZLib
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
 			return _istate.inflateSetDictionary(this, dictionary, dictLength);
 		}
-		
+
         /// <summary>
         /// Initializes the internal stream state for compression. 
         /// </summary>
         /// <param name="level">An integer value from 0 to 9 indicating the desired compression level.</param>
         /// <returns>
-        /// deflateInit returns <see cref="ZLibResultCode.Z_OK" /> if success, <see cref="ZLibResultCode.Z_MEM_ERROR" /> if there was not enough memory, 
+        /// DeflateInit returns <see cref="ZLibResultCode.Z_OK" /> if success, <see cref="ZLibResultCode.Z_MEM_ERROR" /> if there was not enough memory, 
         /// <see cref="ZLibResultCode.Z_STREAM_ERROR" /> if level is not a valid compression level. <see cref="msg" /> is set to <c>null</c> if there is 
-        /// no error message. <see cref="deflateInit(int)" /> does not perform any compression: this will be done by <see cref="deflate" />.
+        /// no error message. <see cref="DeflateInit(int)" /> does not perform any compression: this will be done by <see cref="deflate" />.
         /// </returns>
-		public int deflateInit(int level)
+        public int DeflateInit(int level)
 		{
-			return deflateInit(level, ZLibUtil.MAX_WBITS);
+			return DeflateInit(level, ZLibUtil.MAX_WBITS);
 		}
 
         /// <summary>
@@ -417,21 +417,21 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <param name="level">An integer value from 0 to 9 indicating the desired compression level.</param>
         /// <param name="bits"> The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). It should be in the 
         /// range 8..15 for this version of the library. Larger values of this parameter result in better compression at the expense of memory usage. 
-        /// The default value is 15 if deflateInit is used instead.</param>
+        /// The default value is 15 if DeflateInit is used instead.</param>
         /// <returns>
-        /// deflateInit returns <see cref="ZLibResultCode.Z_OK" /> if success, <see cref="ZLibResultCode.Z_MEM_ERROR" /> if there was not enough memory,
+        /// DeflateInit returns <see cref="ZLibResultCode.Z_OK" /> if success, <see cref="ZLibResultCode.Z_MEM_ERROR" /> if there was not enough memory,
         /// <see cref="ZLibResultCode.Z_STREAM_ERROR" /> if level is not a valid compression level. <see cref="msg" /> is set to <c>null</c> if there 
-        /// is no error message. <see cref="deflateInit(int,int)" /> does not perform any compression: this will be done by <see cref="deflate" />.
+        /// is no error message. <see cref="DeflateInit(int,int)" /> does not perform any compression: this will be done by <see cref="deflate" />.
         /// </returns>
-		public int deflateInit(int level, int bits)
+		public int DeflateInit(int level, int bits)
 		{
 			_dstate = new Deflate();
-			return _dstate.deflateInit(this, level, bits);
+			return _dstate.DeflateInit(this, level, bits);
 		}
 
-        public int deflateInit(int level, int windowBits, int memLevel, CompressionStrategy strategy) {
+        public int DeflateInit(int level, int windowBits, int memLevel, CompressionStrategy strategy) {
             _dstate = new Deflate();
-            return _dstate.deflateInit2(this, level, windowBits, memLevel, strategy);
+            return _dstate.DeflateInit2(this, level, windowBits, memLevel, strategy);
         }
 
         public int reset() {
@@ -494,7 +494,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// or an error. After deflate has returned <see cref="ZLibResultCode.Z_STREAM_END" />, the only possible operation on the stream is
         /// <see cref="deflateEnd" />. </para>
         /// <para>
-        /// <see cref="FlushStrategy.Z_FINISH" /> can be used immediately after <see cref="deflateInit(int)" /> if all the compression is to be 
+        /// <see cref="FlushStrategy.Z_FINISH" /> can be used immediately after <see cref="DeflateInit(int)" /> if all the compression is to be 
         /// done in a single step. In this case, avail_out must be at least 0.1% larger than avail_in plus 12 bytes. If deflate does not return 
         /// Z_STREAM_END, then it must be called again as described above. 
         /// </para>
@@ -544,7 +544,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 		}
 
         /// <summary>
-        /// Dynamically update the compression level and compression strategy. The interpretation of level is as in <see cref="deflateInit(int)"/>. 
+        /// Dynamically update the compression level and compression strategy. The interpretation of level is as in <see cref="DeflateInit(int)"/>. 
         /// This can be used to switch between compression and straight copy of the input data, or to switch to a different kind of input data 
         /// requiring a different strategy. If the compression level is changed, the input available so far is compressed with the old level 
         /// (and may be flushed); the new level will take effect only at the next call of <see cref="deflate" />
@@ -568,7 +568,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 
         /// <summary>
         /// Initializes the compression dictionary from the given byte sequence without producing any compressed output. This function must be called 
-        /// immediately after <see cref="deflateInit(int)" />, before any call of <see cref="deflate" />. The compressor and decompressor must use 
+        /// immediately after <see cref="DeflateInit(int)" />, before any call of <see cref="deflate" />. The compressor and decompressor must use 
         /// exactly the same dictionary (see <see cref="inflateSetDictionary" />).
         /// </summary>
         /// <param name="dictionary">A byte array - a dictionary.</param>
@@ -579,7 +579,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// with the most commonly used strings preferably put towards the end of the dictionary. Using a dictionary is most useful when the data 
         /// to be compressed is short and can be predicted with good accuracy; the data can then be compressed better than with the default empty dictionary.
         /// </para>
-        /// <para>Depending on the size of the compression data structures selected by <see cref="deflateInit(int)" />, a part of the dictionary may 
+        /// <para>Depending on the size of the compression data structures selected by <see cref="DeflateInit(int)" />, a part of the dictionary may 
         /// in effect be discarded, for example if the dictionary is larger than the window size in <see cref="deflate" />. Thus the strings most likely 
         /// to be useful should be put at the end of the dictionary, not at the front.</para>
         /// <para>Upon return of this function, adler is set to the Adler32 value of the dictionary; the decompresser may later use this value to determine 
@@ -598,13 +598,13 @@ namespace ComponentAce.Compression.Libs.ZLib
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
 			return _dstate.deflateSetDictionary(this, dictionary, dictLength);
 		}
-		
+
         /// <summary>
-		/// Flush as much pending output as possible. All <see cref="deflate" /> output goes through this function so some applications may wish to 
+        /// Flush as much pending output as possible. All <see cref="deflate" /> output goes through this function so some applications may wish to 
         /// modify it to avoid allocating a large <see cref="next_out" /> buffer and copying into it.
         /// </summary>
-        /// <seealso cref="read_buf" />
-		public void  flush_pending()
+        /// <seealso cref="ReadBuf" />
+        public void FlushPending()
 		{
 			int len = _dstate.Pending;
 			
@@ -631,7 +631,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// through this function so some applications may wish to modify it to avoid allocating a large <see cref="next_in" /> buffer and copying from it.
         /// </summary>
         /// <seealso cref="flush_pending"/>
-		public int read_buf(byte[] buf, int start, int size)
+		public int ReadBuf(byte[] buf, int start, int size)
 		{
 			int len = _avail_in;
 			
