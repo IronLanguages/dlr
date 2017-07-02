@@ -127,7 +127,8 @@ namespace Microsoft.Scripting.Runtime {
                     formalCount = maxFormalNormalArgumentCount;
                 }
             } else if (minFormalNormalArgumentCount == 0) {
-                return ScriptingRuntimeHelpers.SimpleTypeError(string.Format("{0}() takes no arguments ({1} given)", methodName, providedArgumentCount));
+                return ScriptingRuntimeHelpers.SimpleTypeError(
+                    $"{methodName}() takes no arguments ({providedArgumentCount} given)");
             } else {
                 formalCountQualifier = "exactly";
                 formalCount = minFormalNormalArgumentCount;
@@ -152,15 +153,16 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static ArgumentTypeException TypeErrorForExtraKeywordArgument(string name, string argumentName) {
-            return new ArgumentTypeException(String.Format("{0}() got an unexpected keyword argument '{1}'", name, argumentName));
+            return new ArgumentTypeException($"{name}() got an unexpected keyword argument '{argumentName}'");
         }
 
         public static ArgumentTypeException TypeErrorForDuplicateKeywordArgument(string name, string argumentName) {
-            return new ArgumentTypeException(String.Format("{0}() got multiple values for keyword argument '{1}'", name, argumentName));
+            return new ArgumentTypeException($"{name}() got multiple values for keyword argument '{argumentName}'");
         }
 
         public static ArgumentTypeException TypeErrorForNonInferrableMethod(string name) {
-            return new ArgumentTypeException(String.Format("The type arguments for method '{0}' cannot be inferred from the usage. Try specifying the type arguments explicitly.", name));
+            return new ArgumentTypeException(
+                $"The type arguments for method '{name}' cannot be inferred from the usage. Try specifying the type arguments explicitly.");
         }
 
         public static ArgumentTypeException SimpleTypeError(string message) {
@@ -168,7 +170,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static ArgumentTypeException InvalidSplatteeError(string name, string typeName) {
-            return new ArgumentTypeException(String.Format("{0}() argument after * must be a sequence, not {1}", name, typeName));
+            return new ArgumentTypeException($"{name}() argument after * must be a sequence, not {typeName}");
         }
 
         public static object InvokeMethod(MethodBase mb, object obj, object[] args) {

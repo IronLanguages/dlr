@@ -76,7 +76,7 @@ namespace Microsoft.Scripting.Interpreter {
             // active IL Label per LabelInfo)
             for (LabelScopeInfo j = block; j != null; j = j.Parent) {
                 if (j.ContainsTarget(_node)) {
-                    throw new InvalidOperationException(String.Format("Label target already defined: {0}", _node.Name));
+                    throw new InvalidOperationException($"Label target already defined: {_node.Name}");
                 }
             }
 

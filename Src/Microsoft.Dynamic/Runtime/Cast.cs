@@ -32,15 +32,18 @@ namespace Microsoft.Scripting.Runtime {
                 if (to.IsValueType()) {
                     if (to.IsGenericType() && to.GetGenericTypeDefinition() == NullableType) {
                         return NewNullableInstance(to.GetGenericArguments()[0]);
-                    } else if (to == typeof(void)) {
-                        return null;
-                    } else {
-                        throw new InvalidCastException(String.Format("Cannot cast null to a value type {0}", to.Name));
                     }
-                } else {
-                    // Explicit cast to reference type is simply null
-                    return null;
+
+                    if (to == typeof(void)) {
+                        return null;
+                    }
+
+                    throw new InvalidCastException($"Cannot cast null to a value type {to.Name}");
+                    
                 }
+
+                // Explicit cast to reference type is simply null
+                return null;
             }
 
             if (to.IsValueType()) {
@@ -52,7 +55,7 @@ namespace Microsoft.Scripting.Runtime {
                 return o;
             }
  
-            throw new InvalidCastException(String.Format("Cannot cast {0} to {1}", type.Name, to.Name));
+            throw new InvalidCastException($"Cannot cast {type.Name} to {to.Name}");
         }
 
         public static T Explicit<T>(object o) {

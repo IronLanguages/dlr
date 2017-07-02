@@ -131,12 +131,9 @@ namespace Microsoft.Scripting.Interpreter {
             return debugInfos[i];
         }
 
-        public override string ToString() {
-            if (IsClear) {
-                return String.Format("{0}: clear", Index);
-            } else {
-                return String.Format("{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
-            }
+        public override string ToString()
+        {
+            return IsClear ? $"{Index}: clear" : $"{Index}: [{StartLine}-{EndLine}] '{FileName}'";
         }
     }
 

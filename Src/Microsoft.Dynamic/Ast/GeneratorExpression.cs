@@ -154,7 +154,8 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private static ArgumentException GeneratorTypeMustBeEnumerableOfT(Type type) {
-            return new ArgumentException(string.Format("Generator must be of type IEnumerable<T>, IEnumerator<T>, IEnumerable, or IEnumerator, where T is '{0}'", type));
+            return new ArgumentException(
+                $"Generator must be of type IEnumerable<T>, IEnumerator<T>, IEnumerable, or IEnumerator, where T is '{type}'");
         }
 
         internal static bool IsEnumerableType(Type type) {

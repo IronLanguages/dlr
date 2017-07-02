@@ -55,7 +55,7 @@ namespace Microsoft.Scripting {
         }
 
         private static Exception ErrorOutOfRange(object p0, object p1) {
-            return new ArgumentOutOfRangeException(string.Format("{0} must be greater than or equal to {1}", p0, p1));
+            return new ArgumentOutOfRangeException($"{p0} must be greater than or equal to {p1}");
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]

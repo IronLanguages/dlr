@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected static Exception InvalidOptionValue(string option, string value) {
-            return new InvalidOptionException(String.Format("'{0}' is not a valid value for option '{1}'", value, option));
+            return new InvalidOptionException($"'{value}' is not a valid value for option '{option}'");
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")] // TODO: fix

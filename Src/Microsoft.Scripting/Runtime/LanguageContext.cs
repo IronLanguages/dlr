@@ -426,7 +426,7 @@ namespace Microsoft.Scripting.Runtime {
                 return new DynamicMetaObject(
                     Expression.Throw(
                         Expression.Constant(
-                            new ArgumentTypeException(string.Format("Expected {0}, got {1}", Type.FullName, self.LimitType.FullName))
+                            new ArgumentTypeException($"Expected {Type.FullName}, got {self.LimitType.FullName}")
                         ),
                         ReturnType
                     ),
@@ -458,7 +458,7 @@ namespace Microsoft.Scripting.Runtime {
                     Expression.Throw(
                         Expression.New(
                             typeof(MissingMemberException).GetConstructor(new[] { typeof(string) }),
-                            Expression.Constant(String.Format("unknown member: {0}", Name))
+                            Expression.Constant($"unknown member: {Name}")
                         ),
                         typeof(object)
                     ),

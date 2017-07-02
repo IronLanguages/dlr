@@ -1059,7 +1059,8 @@ namespace Microsoft.Scripting.Actions.Calls {
                                 return ErrorInfo.FromException(
                                     Ast.Call(
                                         typeof(BinderOps).GetMethod("SimpleTypeError"),
-                                        AstUtils.Constant(String.Format("expected {0}, got {1}", _binder.GetTypeName(cr.To), cr.GetArgumentTypeName(_binder)))
+                                        AstUtils.Constant(
+                                            $"expected {_binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(_binder)}")
                                     )
                                 );
                             }

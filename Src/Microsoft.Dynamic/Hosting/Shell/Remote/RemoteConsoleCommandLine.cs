@@ -45,7 +45,8 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
                 // All bets are off while accessing the remote runtime. So we catch all exceptions.
                 // However, in most cases, we only expect to see RemotingException here.
                 if (!(exceptionDuringHandling is RemotingException)) {
-                    Console.WriteLine(String.Format("({0} thrown while trying to display unhandled exception)", exceptionDuringHandling.GetType()), Style.Error);
+                    Console.WriteLine(
+                        $"({exceptionDuringHandling.GetType()} thrown while trying to display unhandled exception)", Style.Error);
                 }
 
                 // The remote server may have shutdown. So just do something simple

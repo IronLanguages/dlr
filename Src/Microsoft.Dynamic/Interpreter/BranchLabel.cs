@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToString() {
-            return String.Format("->{0} C({1}) S({2})", Index, ContinuationStackDepth, StackDepth);
+            return $"->{Index} C({ContinuationStackDepth}) S({StackDepth})";
         }
     }
 

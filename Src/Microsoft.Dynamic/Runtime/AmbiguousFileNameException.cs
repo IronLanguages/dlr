@@ -41,7 +41,8 @@ namespace Microsoft.Scripting {
         }
 
         public AmbiguousFileNameException(string firstPath, string secondPath, string message, Exception inner)
-            : base(message ?? string.Format("File name is ambiguous; more files are matching the same name (including '{0}' and '{1}')", firstPath, secondPath), inner) {
+            : base(message ??
+                   $"File name is ambiguous; more files are matching the same name (including '{firstPath}' and '{secondPath}')", inner) {
             ContractUtils.RequiresNotNull(firstPath, "firstPath");
             ContractUtils.RequiresNotNull(secondPath, "secondPath");
 

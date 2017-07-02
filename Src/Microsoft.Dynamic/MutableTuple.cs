@@ -273,7 +273,7 @@ namespace Microsoft.Scripting {
                     int newStart = start + (i * multiplier);
                     int newEnd = System.Math.Min(end, start + ((i + 1) * multiplier));
 
-                    PropertyInfo pi = tupleType.GetInheritedProperties("Item" + String.Format("{0:D3}", i)).First();
+                    PropertyInfo pi = tupleType.GetInheritedProperties("Item" + $"{i:D3}").First();
                     res.SetValue(i, CreateTupleInstance(pi.PropertyType, newStart, newEnd, args));
                 }
             } else {
@@ -370,7 +370,7 @@ namespace Microsoft.Scripting {
                     int newStart = start + (i * multiplier);
                     int newEnd = System.Math.Min(end, start + ((i + 1) * multiplier));
 
-                    PropertyInfo pi = tupleType.GetInheritedProperties("Item" + String.Format("{0:D3}", i)).First();
+                    PropertyInfo pi = tupleType.GetInheritedProperties("Item" + $"{i:D3}").First();
 
                     newValues[i] = CreateNew(pi.PropertyType, newStart, newEnd, values);
                 }

@@ -456,7 +456,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         #endregion
 
         public override string ToString() {
-            return string.Format("MethodCandidate({0} on {1})", Overload.ReflectionInfo, Overload.DeclaringType.FullName);
+            return $"MethodCandidate({Overload.ReflectionInfo} on {Overload.DeclaringType.FullName})";
         }
     }
 }

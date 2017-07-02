@@ -48,12 +48,13 @@ namespace Microsoft.Scripting.Utils {
                         AssemblyName = new AssemblyName(assemblyNameStr);
                         return;
                     } catch (Exception e) {
-                        throw new ArgumentException(String.Format("Invalid assembly qualified name '{0}': {1}", assemblyQualifiedTypeName, e.Message), e);
+                        throw new ArgumentException(
+                            $"Invalid assembly qualified name '{assemblyQualifiedTypeName}': {e.Message}", e);
                     }
                 }
             }
 
-            throw new ArgumentException(String.Format("Invalid assembly qualified name '{0}'", assemblyQualifiedTypeName));
+            throw new ArgumentException($"Invalid assembly qualified name '{assemblyQualifiedTypeName}'");
         }
 
         internal static AssemblyQualifiedTypeName ParseArgument(string str, string argumentName) {

@@ -204,15 +204,15 @@ namespace Metadata {
             switch (record.Type) {
                 case MetadataRecordType.TypeDef:
                     var typeDef = record.TypeDef;
-                    return String.Format("def({0}.{1})", typeDef.Namespace, typeDef.Name);
+                    return $"def({typeDef.Namespace}.{typeDef.Name})";
 
                 case MetadataRecordType.TypeRef:
                     var typeRef = record.TypeRef;
-                    return String.Format("ref({0}.{1})", typeRef.TypeNamespace, typeRef.TypeName);
+                    return $"ref({typeRef.TypeNamespace}.{typeRef.TypeName})";
 
                 case MetadataRecordType.TypeSpec:
                     var typeSpec = record.TypeSpec;
-                    return String.Format("spec({0})", SignatureToString(typeSpec.Signature));
+                    return $"spec({SignatureToString(typeSpec.Signature)})";
             }
 
             throw new InvalidOperationException("Unknown type token");
@@ -227,15 +227,16 @@ namespace Metadata {
                 case MetadataRecordType.MethodDef:
                     var methodDef = record.MethodDef;
                     var parent = methodDef.FindDeclaringType();
-                    return String.Format("def({0}.{1}::{2})", parent.Namespace, parent.Name, methodDef.Name);
+                    return $"def({parent.Namespace}.{parent.Name}::{methodDef.Name})";
 
                 case MetadataRecordType.MemberRef:
                     var memberRef = record.MemberRef;
-                    return String.Format("ref({0}::{1}|{2})", TypeToString(memberRef.Class), memberRef.Name, SignatureToString(memberRef.Signature));
+                    return
+                        $"ref({TypeToString(memberRef.Class)}::{memberRef.Name}|{SignatureToString(memberRef.Signature)})";
 
                 case MetadataRecordType.MethodSpec:
                     var methodSpec = record.MethodSpec;
-                    return String.Format("spec({0})", SignatureToString(methodSpec.Signature));
+                    return $"spec({SignatureToString(methodSpec.Signature)})";
             }
 
             throw new InvalidOperationException("Unknown method token");
