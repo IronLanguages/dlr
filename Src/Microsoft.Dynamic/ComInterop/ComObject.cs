@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.ComInterop {
         private readonly object _rcw;
 
         internal ComObject(object rcw) {
-            Debug.Assert(ComObject.IsComObject(rcw));
+            Debug.Assert(IsComObject(rcw));
             _rcw = rcw;
         }
 

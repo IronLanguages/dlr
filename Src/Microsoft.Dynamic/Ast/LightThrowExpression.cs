@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public override Expression Reduce() {
-            return Expression.Call(_throw, _exception);
+            return Call(_throw, _exception);
         }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {

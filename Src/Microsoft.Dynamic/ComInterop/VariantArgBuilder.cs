@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             // parameter == UnsafeMethods.GetVariantForObject(parameter);
             return Expression.Call(
-                typeof(UnsafeMethods).GetMethod("GetVariantForObject", BindingFlags.Static | System.Reflection.BindingFlags.NonPublic),
+                typeof(UnsafeMethods).GetMethod("GetVariantForObject", BindingFlags.Static | BindingFlags.NonPublic),
                 parameter
             );
         }

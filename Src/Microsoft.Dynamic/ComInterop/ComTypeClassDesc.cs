@@ -34,9 +34,9 @@ namespace Microsoft.Scripting.ComInterop {
         
         public object CreateInstance() {
             if (_typeObj == null) {
-                _typeObj = System.Type.GetTypeFromCLSID(Guid);
+                _typeObj = Type.GetTypeFromCLSID(Guid);
             }
-            return System.Activator.CreateInstance(System.Type.GetTypeFromCLSID(Guid));
+            return Activator.CreateInstance(Type.GetTypeFromCLSID(Guid));
         }
 
         internal ComTypeClassDesc(ComTypes.ITypeInfo typeInfo, ComTypeLibDesc typeLibDesc) :

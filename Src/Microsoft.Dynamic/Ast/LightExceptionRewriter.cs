@@ -144,7 +144,7 @@ namespace Microsoft.Scripting.Ast {
                         DynamicExpression.Dynamic(
                             newBinder,
                             node.Type,
-                            base.Visit(node.Arguments)
+                            Visit(node.Arguments)
                         ),
                         node.Type
                     );

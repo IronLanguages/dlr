@@ -552,10 +552,10 @@ namespace ComponentAce.Compression.Libs.ZLib
             Array.Clear(head, 0, hash_size);
 
             // Set the default configuration parameters:
-            max_lazy_match = Deflate.config_table[level].max_lazy;
-            good_match = Deflate.config_table[level].good_length;
-            nice_match = Deflate.config_table[level].nice_length;
-            max_chain_length = Deflate.config_table[level].max_chain;
+            max_lazy_match = config_table[level].max_lazy;
+            good_match = config_table[level].good_length;
+            nice_match = config_table[level].nice_length;
+            max_chain_length = config_table[level].max_chain;
 
             strstart = 0;
             block_start = 0;

@@ -47,17 +47,19 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         
-        internal static ComTypeDesc FromITypeInfo(ComTypes.ITypeInfo typeInfo, ComTypes.TYPEATTR typeAttr) {
-            if (typeAttr.typekind == ComTypes.TYPEKIND.TKIND_COCLASS) {
-                return new ComTypeClassDesc(typeInfo, null);
-            } else if (typeAttr.typekind == ComTypes.TYPEKIND.TKIND_ENUM) {
-                return new ComTypeEnumDesc(typeInfo, null);
-            } else if ((typeAttr.typekind == ComTypes.TYPEKIND.TKIND_DISPATCH) ||
-                  (typeAttr.typekind == ComTypes.TYPEKIND.TKIND_INTERFACE)) {
-                ComTypeDesc typeDesc = new ComTypeDesc(typeInfo, ComType.Interface, null);
-                return typeDesc;
-            } else {
-                throw new InvalidOperationException("Attempting to wrap an unsupported enum type.");
+        internal static ComTypeDesc FromITypeInfo(ITypeInfo typeInfo, TYPEATTR typeAttr)
+        {
+            switch (typeAttr.typekind) {
+                case TYPEKIND.TKIND_COCLASS:
+                    return new ComTypeClassDesc(typeInfo, null);
+                case TYPEKIND.TKIND_ENUM:
+                    return new ComTypeEnumDesc(typeInfo, null);
+                case TYPEKIND.TKIND_DISPATCH:
+                case TYPEKIND.TKIND_INTERFACE:
+                    ComTypeDesc typeDesc = new ComTypeDesc(typeInfo, ComType.Interface, null);
+                    return typeDesc;
+                default:
+                    throw new InvalidOperationException("Attempting to wrap an unsupported enum type.");
             }
         }
 

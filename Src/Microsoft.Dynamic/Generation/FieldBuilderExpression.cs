@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Generation {
         public override Expression Reduce() {
             FieldInfo fi = GetFieldInfo();
             Debug.Assert(fi.Name == _builder.Name);
-            return Expression.Field(
+            return Field(
                 null,
                 fi
             );

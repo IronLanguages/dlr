@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Actions {
                 if (node.Target == CallSiteBinder.UpdateLabel) {
                     return Binder.Defer(Arguments).Expression;
                 }
-                return base.Visit(node);
+                return Visit(node);
             }
         }
 

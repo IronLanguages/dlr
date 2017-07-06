@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             try {
                 object result = compiledCode.Execute(scope);
 
-                Console.WriteLine(RemoteCommandDispatcher.OutputCompleteMarker);
+                Console.WriteLine(OutputCompleteMarker);
 
                 return result;
             } catch (ThreadAbortException tae) {

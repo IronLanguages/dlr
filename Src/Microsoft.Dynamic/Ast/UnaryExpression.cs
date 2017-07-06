@@ -36,7 +36,7 @@ namespace Microsoft.Scripting.Ast {
             if (expression.Type == typeof(void)) {
                 return expression;
             }
-            return Expression.Block(expression, Utils.Empty());
+            return Expression.Block(expression, Empty());
         }
 
         public static Expression Convert(Expression expression, Type type) {
@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Ast {
             }
 
             if (expression.Type == typeof(void)) {
-                return Expression.Block(expression, Utils.Default(type));
+                return Expression.Block(expression, Default(type));
             }
 
             if (type == typeof(void)) {

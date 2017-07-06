@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 namespace TestInternalDLR {
 
     // Strongbox should not ever be sealed
-    class MyStrongBox<T> : System.Runtime.CompilerServices.StrongBox<T>
+    class MyStrongBox<T> : StrongBox<T>
     {
         public MyStrongBox(T value) : base(value) {
         }
