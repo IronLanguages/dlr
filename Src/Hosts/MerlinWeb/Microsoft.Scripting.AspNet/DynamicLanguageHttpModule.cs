@@ -61,8 +61,8 @@ namespace Microsoft.Scripting.AspNet {
             string mwName = typeof(DynamicLanguageHttpModule).Assembly.FullName.Split(',')[0];
             Version mwVersion  = typeof(DynamicLanguageHttpModule).Assembly.GetName().Version;
             Version dlrVersion = typeof(ScriptEngine).Assembly.GetName().Version;
-            s_merlinWebHeader = string.Format("{0} v{1}.{2}(CTP); DLR v{3}.{4}",
-                mwName, mwVersion.Major, mwVersion.Minor, dlrVersion.Major, dlrVersion.Minor);
+            s_merlinWebHeader =
+                $"{mwName} v{mwVersion.Major}.{mwVersion.Minor}(CTP); DLR v{dlrVersion.Major}.{dlrVersion.Minor}";
         }
 
         public virtual void Init(HttpApplication app) {

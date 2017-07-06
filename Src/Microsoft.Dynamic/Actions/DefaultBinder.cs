@@ -216,7 +216,7 @@ namespace Microsoft.Scripting.Actions {
         
         private static Exception AmbiguousMatch(Type type, string name) {
             throw new AmbiguousMatchException(
-                string.Format("Found multiple SpecialName methods for {0} on type {1}", name, type)
+                $"Found multiple SpecialName methods for {name} on type {type}"
             );
         }
     }

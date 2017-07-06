@@ -75,10 +75,7 @@ namespace Microsoft.Scripting.Runtime {
 
                 if (!type.GetTypeInfo().IsSubclassOf(typeof(LanguageContext))) {
                     throw new InvalidOperationException(
-                        String.Format(
-                            "Failed to load language '{0}': type '{1}' is not a valid language provider because it does not inherit from LanguageContext",
-                            _displayName, type
-                    )); 
+                        $"Failed to load language '{_displayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
                 }
 
                 LanguageContext context;
@@ -86,7 +83,7 @@ namespace Microsoft.Scripting.Runtime {
                     context = (LanguageContext)Activator.CreateInstance(type, new object[] { domainManager, _options });
                 } catch (TargetInvocationException e) {
                     throw new TargetInvocationException(
-                        String.Format("Failed to load language '{0}': {1}", _displayName, e.InnerException.Message), 
+                        $"Failed to load language '{_displayName}': {e.InnerException.Message}", 
                         e.InnerException
                     );
                 } catch (Exception e) {

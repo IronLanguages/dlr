@@ -18,7 +18,7 @@ using System;
 namespace Microsoft.Scripting.Utils {
     internal static class ExceptionUtils {
         public static ArgumentNullException MakeArgumentItemNullException(int index, string arrayName) {
-            return new ArgumentNullException(String.Format("{0}[{1}]", arrayName, index));
+            return new ArgumentNullException($"{arrayName}[{index}]");
         }
     }
 }

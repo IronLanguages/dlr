@@ -622,7 +622,7 @@ namespace Microsoft.Scripting.Runtime {
             #endregion
 #if DEBUG
             public override string ToString() {
-                return String.Format("{0} {1}", SiteBinder.ToString(), HitCount);
+                return $"{SiteBinder} {HitCount}";
             }
 #endif
         }

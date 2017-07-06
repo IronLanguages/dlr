@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Utils {
             TValue value;
             if (!TryGetValue(key, out value)) {
                 if (valueConstructor == null) {
-                    throw new InvalidOperationException(string.Format("{0} does not have a default constructor.", typeof(TValue).Name));
+                    throw new InvalidOperationException($"{typeof(TValue).Name} does not have a default constructor.");
                 }
             
                 value = (TValue)valueConstructor.Invoke(new object[] { });

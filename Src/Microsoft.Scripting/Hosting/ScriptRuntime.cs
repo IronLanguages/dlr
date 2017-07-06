@@ -169,7 +169,7 @@ namespace Microsoft.Scripting.Hosting {
 
             ScriptEngine engine;
             if (!TryGetEngineByFileExtension(fileExtension, out engine)) {
-                throw new ArgumentException(String.Format("Unknown file extension: '{0}'", fileExtension));
+                throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
 
             return engine;
