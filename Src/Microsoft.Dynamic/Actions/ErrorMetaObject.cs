@@ -19,11 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 
-#if FEATURE_CORE_DLR
 using System.Linq.Expressions;
-#else
-using Microsoft.Scripting.Ast;
-#endif
 
 namespace Microsoft.Scripting.Actions {
     /// <summary>

@@ -13,10 +13,6 @@
  *
  * ***************************************************************************/
 
-#if !FEATURE_CORE_DLR
-using dynamic = System.Object;
-#endif
-
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else

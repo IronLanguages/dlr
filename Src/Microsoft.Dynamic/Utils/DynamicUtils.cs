@@ -17,11 +17,7 @@
 using System.Threading.Tasks;
 #endif
 
-#if FEATURE_CORE_DLR
 using System.Linq.Expressions;
-#else
-using Microsoft.Scripting.Ast;
-#endif
 
 using System;
 using System.Collections.ObjectModel;
@@ -35,11 +31,7 @@ using Microsoft.Scripting.Interpreter;
 using Microsoft.Scripting.Runtime;
 
 #if !FEATURE_DYNAMIC_EXPRESSION_VISITOR
-#if FEATURE_CORE_DLR
 namespace System.Linq.Expressions {
-#else
-namespace Microsoft.Scripting.Ast {
-#endif
     public abstract class DynamicExpressionVisitor : ExpressionVisitor {
     }
 }
