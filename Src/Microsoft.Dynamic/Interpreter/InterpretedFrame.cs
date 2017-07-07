@@ -141,6 +141,11 @@ namespace Microsoft.Scripting.Interpreter {
         public static IEnumerable<StackFrame> GroupStackFrames(IEnumerable<StackFrame> stackTrace) {
             bool inInterpretedFrame = false;
             foreach (StackFrame frame in stackTrace) {
+#if FEATURE_MONO
+                // mono sets the method to null for dynamic methods
+                // IsInterpretedFrame doesn't allow null methods
+                if(frame.GetMethod() == null) continue;
+#endif
                 if (InterpretedFrame.IsInterpretedFrame(frame.GetMethod())) {
                     if (inInterpretedFrame) {
                         continue;

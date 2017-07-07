@@ -37,6 +37,7 @@
     <Features Condition=" '$(OS)' != 'Unix' ">$(Features);FEATURE_WPF</Features>
     <Features Condition=" '$(OS)' != 'Unix' ">$(Features);FEATURE_WINDOWS</Features>
     <Features Condition=" '$(OS)' == 'Unix' ">$(Features);FEATURE_UNIX</Features>
+    <Features Condition=" '$(Mono)' == 'true' ">$(Features);FEATURE_MONO</Features>
     <Features>$(Features);FEATURE_FULL_CONSOLE</Features>
     <Features>$(Features);FEATURE_BASIC_CONSOLE</Features>
     <Features>$(Features);FEATURE_SERIALIZATION</Features>
