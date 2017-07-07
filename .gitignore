@@ -8,6 +8,9 @@ bin/
 /Package
 /Util/References
 
+# NuGet Packages
+packages/*
+
 # Temporary VS files
 *.suo
 *.csproj.user
