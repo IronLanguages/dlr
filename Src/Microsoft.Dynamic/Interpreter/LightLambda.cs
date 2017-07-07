@@ -17,11 +17,7 @@
 using System.Threading.Tasks;
 #endif
 
-#if FEATURE_CORE_DLR
 using System.Linq.Expressions;
-#else
-using Microsoft.Scripting.Ast;
-#endif
 
 using System;
 using System.Reflection;

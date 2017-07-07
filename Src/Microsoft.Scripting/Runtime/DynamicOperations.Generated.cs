@@ -18,11 +18,7 @@
 // ir Languages/Ruby/Scripts/CodeGenerator.rb DynamicOperations.Generated.cs
 //
 
-#if FEATURE_CORE_DLR
 using System.Linq.Expressions;
-#else
-using Microsoft.Scripting.Ast;
-#endif
 
 using System;
 using System.Runtime.CompilerServices;
