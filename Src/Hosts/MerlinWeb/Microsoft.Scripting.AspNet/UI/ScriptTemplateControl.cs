@@ -101,7 +101,7 @@ namespace Microsoft.Scripting.AspNet.UI {
             _buildResult = (TemplateControlBuildResult)EngineHelper.GetBuildResult(_scriptVirtualPath, this);
 
             // No script: nothing to do
-            if (_buildResult == null || _buildResult.CompiledCode == null)
+            if (_buildResult?.CompiledCode == null)
                 return false;
 
             _scopeDictionary = new ScriptTemplateControlDictionary(_templateControl, this);

@@ -350,7 +350,7 @@ namespace Microsoft.Scripting.ComInterop {
         private void EnsureScanDefinedEvents() {
             // _comTypeDesc.Events is null if we have not yet attempted
             // to scan the object for events.
-            if (_comTypeDesc != null && _comTypeDesc.Events != null) {
+            if (_comTypeDesc?.Events != null) {
                 return;
             }
 

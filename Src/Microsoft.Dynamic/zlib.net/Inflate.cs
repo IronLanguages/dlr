@@ -177,31 +177,31 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// <param name="z">A ZStream object</param>
         /// <returns>A result code</returns>
         internal int inflateReset(ZStream z)
-		{
-			if (z == null || z.istate == null)
-				return (int)ZLibResultCode.Z_STREAM_ERROR;
-			
-			z.total_in = z.total_out = 0;
-			z.msg = null;
-			z.istate.mode = z.istate.nowrap != 0? InflateMode.BLOCKS: InflateMode.METHOD;
-			z.istate.blocks.reset(z, null);
-			return (int)ZLibResultCode.Z_OK;
-		}
-		
+        {
+            if (z?.istate == null)
+                return (int)ZLibResultCode.Z_STREAM_ERROR;
+            
+            z.total_in = z.total_out = 0;
+            z.msg = null;
+            z.istate.mode = z.istate.nowrap != 0? InflateMode.BLOCKS: InflateMode.METHOD;
+            z.istate.blocks.reset(z, null);
+            return (int)ZLibResultCode.Z_OK;
+        }
+        
         /// <summary>
         /// Finishes the inflate algorithm processing
         /// </summary>
         /// <param name="z">A ZStream object</param>
         /// <returns>Operation result code</returns>
-		internal int inflateEnd(ZStream z)
-		{
-			if (blocks != null)
-				blocks.free(z);
-			blocks = null;
-			//    ZFREE(z, z->state);
-			return (int)ZLibResultCode.Z_OK;
-		}
-		
+        internal int inflateEnd(ZStream z)
+        {
+            if (blocks != null)
+                blocks.free(z);
+            blocks = null;
+            //    ZFREE(z, z->state);
+            return (int)ZLibResultCode.Z_OK;
+        }
+
         /// <summary>
         /// Initializes the inflate algorithm
         /// </summary>
@@ -260,11 +260,11 @@ namespace ComponentAce.Compression.Libs.ZLib
 		{
 		    int internalFlush = (int)flush;
 
-            int res_temp;
-			
-			if (z == null || z.istate == null || z.next_in == null)
-				return (int)ZLibResultCode.Z_STREAM_ERROR;
-            res_temp = internalFlush == (int)FlushStrategy.Z_FINISH ? (int)ZLibResultCode.Z_BUF_ERROR : (int)ZLibResultCode.Z_OK;
+		    if (z == null || z.istate == null || z.next_in == null)
+                return (int)ZLibResultCode.Z_STREAM_ERROR;
+		    int res_temp = internalFlush == (int)FlushStrategy.Z_FINISH
+		        ? (int)ZLibResultCode.Z_BUF_ERROR
+		        : (int)ZLibResultCode.Z_OK;
 			int r = (int)ZLibResultCode.Z_BUF_ERROR;
 
             if (detectHeader)
@@ -487,7 +487,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 		{
 			int index = 0;
 			int length = dictLength;
-			if (z == null || z.istate == null || z.istate.mode !=  InflateMode.DICT0)
+			if (z?.istate?.mode != InflateMode.DICT0)
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
 			
 			if (Adler32.GetAdler32Checksum(1L, dictionary, 0, dictLength) != z.adler)
@@ -521,7 +521,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 			long r, w; // temporaries to save _total_in and _total_out
 			
 			// set up
-			if (z == null || z.istate == null)
+			if (z?.istate == null)
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
 			if (z.istate.mode !=  InflateMode.BAD)
 			{
@@ -579,7 +579,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
 		internal int inflateSyncPoint(ZStream z)
 		{
-			if (z == null || z.istate == null || z.istate.blocks == null)
+			if (z?.istate?.blocks == null)
 				return (int)ZLibResultCode.Z_STREAM_ERROR;
 			return z.istate.blocks.sync_point();
         }

@@ -191,11 +191,7 @@ namespace Microsoft.Scripting.ComInterop {
         public object ExecuteHandler(string name, object[] args) {
             ComEventSinkMethod site = FindSinkMethod(name);
 
-            if (site != null && site._handlers != null) {
-                return site._handlers(args);
-            }
-
-            return null;
+            return site?._handlers?.Invoke(args);
         }
 
         #region IReflect
