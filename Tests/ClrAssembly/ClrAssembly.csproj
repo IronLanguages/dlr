@@ -1,25 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{BEE737B9-18D5-48D9-8672-9A896213C98B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>merlintest</RootNamespace>
     <AssemblyName>merlintest.dummy</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v4Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'v4Release|AnyCPU' ">
-  </PropertyGroup>
   <PropertyGroup>
     <Prefix>rowantest.</Prefix>
   </PropertyGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
   <Target Name="GetFrameworkPath">
     <GetFrameworkPath>
       <Output TaskParameter="Path" PropertyName="DotNetFrameworkPath" />
@@ -97,17 +91,16 @@
     <Vbc TargetType="library" Sources="Src\defaultmembersvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)defaultmembersvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Vbc TargetType="library" Sources="Src\baseclassvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)baseclassvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
-  <Target Name="BeforeBuild" DependsOnTargets="LoadOrder;ReachType;CSManyArea;VBManyArea" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="LoadOrder;ReachType;CSManyArea;VBManyArea" />
   <ItemGroup>
-    <Compile Include="dummy.cs" />
     <AreaCSFile Include="Src\*.cs" />
     <AreaVBFile Include="Src\*.vb" />
     <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj">
-      <Project>{eb66b766-6354-4208-a3d4-aacbdcb5c3b3}</Project>
-      <Name>Microsoft.Dynamic</Name>
-    </ProjectReference>
+    <Compile Include="dummy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
   </ItemGroup>
 </Project>
