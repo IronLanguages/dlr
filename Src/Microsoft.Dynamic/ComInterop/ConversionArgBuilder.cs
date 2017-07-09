@@ -16,15 +16,14 @@
 using System.Linq.Expressions;
 
 using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
     internal class ConversionArgBuilder : ArgBuilder {
-        private SimpleArgBuilder _innerBuilder;
-        private Type _parameterType;
+        private readonly SimpleArgBuilder _innerBuilder;
+        private readonly Type _parameterType;
 
         internal ConversionArgBuilder(Type parameterType, SimpleArgBuilder innerBuilder) {
             _parameterType = parameterType;
