@@ -28,6 +28,8 @@ script:
   - mono ./net45/Metadata.exe
   - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net40/Microsoft.Dynamic.Test.dll
   - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net45/Microsoft.Dynamic.Test.dll
+  - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net40/Microsoft.Scripting.Test.dll
+  - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net45/Microsoft.Scripting.Test.dll
 
 notifications:
   email:

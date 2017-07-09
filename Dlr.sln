@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Dynamic.Test", "Tests\Microsoft.Dynamic.Test\Microsoft.Dynamic.Test.csproj", "{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Scripting.Test", "Tests\Microsoft.Scripting.Test\Microsoft.Scripting.Test.csproj", "{56B4AA3A-42BC-4CA6-A022-703A777332AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,12 @@ Global
 		{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1}.FxCop|Any CPU.Build.0 = Debug|Any CPU
 		{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.FxCop|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.FxCop|Any CPU.Build.0 = Debug|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,5 +123,6 @@ Global
 		{848BBEB0-63E6-4736-B60C-23A9D733593D} = {9C454D45-326F-4EA1-8177-64341267A17F}
 		{60056F49-17D6-4C5C-80EC-F203BA2F7E3B} = {BFEE2666-74E5-49B0-BEB7-1F01CECD7F98}
 		{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1} = {9C454D45-326F-4EA1-8177-64341267A17F}
+		{56B4AA3A-42BC-4CA6-A022-703A777332AF} = {9C454D45-326F-4EA1-8177-64341267A17F}
 	EndGlobalSection
 EndGlobal

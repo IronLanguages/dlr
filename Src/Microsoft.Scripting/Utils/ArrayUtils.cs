@@ -48,10 +48,10 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(output, "output");
             ContractUtils.RequiresNotNull(table, "table");
 
-            int max_width = 0;
+            int maxWidth = 0;
             for (int i = 0; i < table.GetLength(0); i++) {
-                if (table[i, 0].Length > max_width) {
-                    max_width = table[i, 0].Length;
+                if (table[i, 0].Length > maxWidth) {
+                    maxWidth = table[i, 0].Length;
                 }
             }
 
@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Utils {
                 output.Append(" ");
                 output.Append(table[i, 0]);
 
-                for (int j = table[i, 0].Length; j < max_width + 1; j++) {
+                for (int j = table[i, 0].Length; j < maxWidth + 1; j++) {
                     output.Append(' ');
                 }
 
@@ -82,8 +82,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] MakeArray<T>(ICollection<T> elements, int reservedSlotsBefore, int reservedSlotsAfter) {
-            if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException("reservedSlotsAfter");
-            if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException("reservedSlotsBefore");
+            if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsAfter));
+            if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsBefore));
 
             if (elements == null) {
                 return new T[reservedSlotsBefore + reservedSlotsAfter];
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] RotateRight<T>(T[] array, int count) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length];
@@ -107,20 +107,20 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] ShiftRight<T>(T[] array, int count) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length + count];
-            System.Array.Copy(array, 0, result, count, array.Length);
+            Array.Copy(array, 0, result, count, array.Length);
             return result;
         }
 
         public static T[] ShiftLeft<T>(T[] array, int count) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length - count];
-            System.Array.Copy(array, count, result, 0, result.Length);
+            Array.Copy(array, count, result, 0, result.Length);
             return result;
         }
 
@@ -155,7 +155,7 @@ namespace Microsoft.Scripting.Utils {
         public static T[] Append<T>(T[] array, T item) {
             ContractUtils.RequiresNotNull(array, "array");
 
-            System.Array.Resize<T>(ref array, array.Length + 1);
+            Array.Resize<T>(ref array, array.Length + 1);
             array[array.Length - 1] = item;
             return array;
         }
@@ -223,7 +223,7 @@ namespace Microsoft.Scripting.Utils {
         public static T[] RemoveLast<T>(T[] array) {
             ContractUtils.RequiresNotNull(array, "array");
 
-            System.Array.Resize(ref array, array.Length - 1);
+            Array.Resize(ref array, array.Length - 1);
             return array;
         }
 
@@ -295,7 +295,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             for (int i = 0; i < array.Length; i++) {
-                if (!Object.Equals(array[i], other[i])) {
+                if (!Equals(array[i], other[i])) {
                     return false;
                 }
             }
