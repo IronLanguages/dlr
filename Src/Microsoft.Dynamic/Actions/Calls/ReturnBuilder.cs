@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public ReturnBuilder(Type returnType) {
             Debug.Assert(returnType != null);
 
-            this.ReturnType = returnType;
+            ReturnType = returnType;
         }
 
         internal virtual Expression ToExpression(OverloadResolver resolver, IList<ArgBuilder> builders, RestrictedArguments args, Expression ret) {

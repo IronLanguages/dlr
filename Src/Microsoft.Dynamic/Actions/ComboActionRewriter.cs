@@ -44,11 +44,15 @@ namespace Microsoft.Scripting.Actions {
                 Type = type;
             }
 
-            public override bool CanReduce { get; } = true;
+            public override bool CanReduce {
+                get { return true; }
+            }
 
             public sealed override Type Type { get; }
 
-            public sealed override ExpressionType NodeType { get; } = ExpressionType.Extension;
+            public sealed override ExpressionType NodeType {
+                get { return ExpressionType.Extension; }
+            }
 
             public Expression[] Inputs { get; }
 
