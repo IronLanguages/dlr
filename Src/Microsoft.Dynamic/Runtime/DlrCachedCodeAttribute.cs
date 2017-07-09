@@ -27,26 +27,20 @@ namespace Microsoft.Scripting.Runtime {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class CachedOptimizedCodeAttribute : Attribute {
-        private readonly string[] _names;
-
         // C# requires a constructor with CLS compliant types:
         public CachedOptimizedCodeAttribute() {
-            _names = ArrayUtils.EmptyStrings;
+            Names = ArrayUtils.EmptyStrings;
         }
 
         public CachedOptimizedCodeAttribute(string[] names) {
             ContractUtils.RequiresNotNull(names, "names");
-            _names = names;
+            Names = names;
         }
 
         /// <summary>
         /// Gets names stored in optimized scope. 
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-        public string[] Names {
-            get {
-                return _names;
-            }
-        }
+        public string[] Names { get; }
     }
 }

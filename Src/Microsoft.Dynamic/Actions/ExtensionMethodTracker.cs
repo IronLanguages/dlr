@@ -22,26 +22,17 @@ namespace Microsoft.Scripting.Actions {
     /// Represents extension method.
     /// </summary>
     public class ExtensionMethodTracker : MethodTracker {
-        /// <summary>
-        /// The declaring type of the extension (the type this extension method extends)
-        /// </summary>
-        private readonly Type _declaringType;
-
         internal ExtensionMethodTracker(MethodInfo method, bool isStatic, Type declaringType)
             : base(method, isStatic) {
             ContractUtils.RequiresNotNull(declaringType, "declaringType");
-            _declaringType = declaringType;
+            DeclaringType = declaringType;
         }
 
         /// <summary>
-        /// The declaring type of the extension method. Since this is an extension method,
+        /// Gets the declaring type of the extension method. Since this is an extension method,
         /// the declaring type is in fact the type this extension method extends,
         /// not Method.DeclaringType
         /// </summary>
-        public override Type DeclaringType {
-            get {
-                return _declaringType;
-            }
-        }
+        public override Type DeclaringType { get; }
     }
 }

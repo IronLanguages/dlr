@@ -33,18 +33,16 @@ namespace Microsoft.Scripting.Runtime {
         // the index of the first item _arguments that represents an argument:
         private readonly int _first;
 
-        // the number of items in _arguments that represent the arguments:
-        private readonly int _count;
-
         internal ArgumentArray(object[] arguments, int first, int count) {
             _arguments = arguments;
             _first = first;
-            _count = count;
+            Count = count;
         }
 
-        public int Count {
-            get { return _count; }
-        }
+        /// <summary>
+        /// Gets the number of items in _arguments that represent the arguments.
+        /// </summary>
+        public int Count { get; }
 
         public object GetArgument(int index) {
             ContractUtils.RequiresArrayIndex(_arguments, index, "index");

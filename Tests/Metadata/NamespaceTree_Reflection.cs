@@ -23,14 +23,13 @@ using Microsoft.Scripting.Utils;
 
 namespace Metadata {
     public sealed class RNamespaceTreeNode {
-        private readonly string _name;
         private List<Type> _typeDefs; // TODO: Use Sequence<TypeDef> (typedefs from the same assembly per chunk/assemblies index)
         private RNamespaceTreeNode _lastChild;
         private RNamespaceTreeNode _firstChild;
         private RNamespaceTreeNode _nextSibling;
 
         internal RNamespaceTreeNode(string name) {
-            _name = name;
+            Name = name;
         }
 
         internal void AddType(Type typeDef) {
@@ -55,9 +54,7 @@ namespace Metadata {
             
         }
 
-        public string Name {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         public IEnumerable<Type> GetTypeDefs() {
             if (_typeDefs != null) {

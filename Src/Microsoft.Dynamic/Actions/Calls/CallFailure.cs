@@ -33,7 +33,6 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// MethodTarget is always set and indicates the method which failed to bind.
     /// </summary>
     public sealed class CallFailure {
-        private readonly CallFailureReason _reason;      // the reason the call failed
         private readonly MethodCandidate _candidate;
         private readonly ConversionResult[] _results;
         private readonly string[] _keywordArgs;
@@ -41,18 +40,18 @@ namespace Microsoft.Scripting.Actions.Calls {
         internal CallFailure(MethodCandidate candidate, ConversionResult[] results) {
             _candidate = candidate;
             _results = results;
-            _reason = CallFailureReason.ConversionFailure;
+            Reason = CallFailureReason.ConversionFailure;
         }
 
         internal CallFailure(MethodCandidate candidate, string[] keywordArgs, bool unassignable) {
-            _reason = unassignable ? CallFailureReason.UnassignableKeyword : CallFailureReason.DuplicateKeyword;
+            Reason = unassignable ? CallFailureReason.UnassignableKeyword : CallFailureReason.DuplicateKeyword;
             _candidate = candidate;
             _keywordArgs = keywordArgs;
         }
 
         internal CallFailure(MethodCandidate candidate, CallFailureReason reason) {
             _candidate = candidate;
-            _reason = reason;
+            Reason = reason;
         }
 
         /// <summary>
@@ -68,11 +67,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Gets the reason for the call failure which determines the other 
         /// properties of the CallFailure which should be consulted.
         /// </summary>
-        public CallFailureReason Reason {
-            get{
-                return _reason;
-            }
-        }
+        public CallFailureReason Reason { get; }
 
         /// <summary>
         /// Gets a list of ConversionResult's for each parameter indicating

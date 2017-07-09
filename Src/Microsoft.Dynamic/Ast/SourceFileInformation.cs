@@ -20,46 +20,35 @@ namespace Microsoft.Scripting {
     /// source file, in particular the file name and unique language identifier
     /// </summary>
     public sealed class SourceFileInformation {
-        private readonly string _fileName;
-
-        // TODO: save storage space if these are not supplied?
-        private readonly Guid _language;
-        private readonly Guid _vendor;
 
         public SourceFileInformation(string fileName) {
-            _fileName = fileName;
+            FileName = fileName;
         }
 
         public SourceFileInformation(string fileName, Guid language) {
-            _fileName = fileName;
-            _language = language;
+            FileName = fileName;
+            LanguageGuid = language;
         }
 
         public SourceFileInformation(string fileName, Guid language, Guid vendor) {
-            _fileName = fileName;
-            _language = language;
-            _vendor = vendor;
+            FileName = fileName;
+            LanguageGuid = language;
+            VendorGuid = vendor;
         }
 
         /// <summary>
-        /// The source file name
+        /// Gets the source file name.
         /// </summary>
-        public string FileName {
-            get { return _fileName; }
-        }
+        public string FileName { get; }
 
         /// <summary>
-        /// Returns the language's unique identifier, if any
+        /// Gets the language's unique identifier, if any.
         /// </summary>
-        public Guid LanguageGuid {
-            get { return _language; }
-        }
+        public Guid LanguageGuid { get; }
 
         /// <summary>
-        /// Returns the language vendor's unique identifier, if any
+        /// Gets the language vendor's unique identifier, if any.
         /// </summary>
-        public Guid VendorGuid {
-            get { return _vendor; }
-        }
+        public Guid VendorGuid { get; }
     }
 }

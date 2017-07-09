@@ -26,9 +26,7 @@ using Microsoft.Scripting.Runtime;
 namespace Microsoft.Scripting.Debugging {
     [DebuggerDisplay("FunctionInfo = {_funcInfo.Name}, CurrentSequencePointIndex = {CurrentSequencePointIndex}")]
     public sealed class DebugFrame {
-        private readonly DebugThread _thread;
         private FunctionInfo _funcInfo;
-        private int _stackDepth;
         private Exception _thrownException;
         private IRuntimeVariables _liftedLocals;
         private IDebuggableGenerator _generator;
@@ -44,7 +42,7 @@ namespace Microsoft.Scripting.Debugging {
         internal DebugFrame(
             DebugThread thread,
             FunctionInfo funcInfo) {
-            _thread = thread;
+            Thread = thread;
             _funcInfo = funcInfo;
             _variables = new  Dictionary<IList<VariableInfo>, ScopeData>();
         }
@@ -56,7 +54,7 @@ namespace Microsoft.Scripting.Debugging {
             int frameOrder)
             : this(thread, funcInfo) {
             _liftedLocals = liftedLocals;
-            _stackDepth = frameOrder;
+            StackDepth = frameOrder;
         }
 
         #region Internal members
@@ -64,18 +62,13 @@ namespace Microsoft.Scripting.Debugging {
         /// <summary>
         /// Thread
         /// </summary>
-        internal DebugThread Thread {
-            get { return _thread; }
-        }
+        internal DebugThread Thread { get; }
 
         /// <summary>
         /// FrameOrder
         /// </summary>
-        internal int StackDepth {
-            get { return _stackDepth; }
-            set { _stackDepth = value; }
-        }
-        
+        internal int StackDepth { get; set; }
+
         /// <summary>
         /// Variables
         /// </summary>
@@ -111,11 +104,7 @@ namespace Microsoft.Scripting.Debugging {
                     scopeData.VarInfos = visibleInfos.ToArray();
                     scopeData.VarInfosWithException = visibleInfosWithException.ToArray();
 
-                    if (_thrownException == null) {
-                        variables = scopeData.VarInfos;
-                    } else {
-                        variables = scopeData.VarInfosWithException;
-                    }
+                    variables = _thrownException == null ? scopeData.VarInfos : scopeData.VarInfosWithException;
                 }
 
                 return variables;
@@ -218,7 +207,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         internal DebugContext DebugContext {
-            get { return _thread.DebugContext; }
+            get { return Thread.DebugContext; }
         }
 
         internal int CurrentLocationCookie {

@@ -25,15 +25,12 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// </summary>
     public sealed class ConversionResult {
         private readonly object _arg;
-        private readonly Type _argType;
-        private readonly Type _toType;
-        private readonly bool _failed;
 
         internal ConversionResult(object arg, Type argType, Type toType, bool failed) {
             _arg = arg;
-            _argType = argType;
-            _toType = toType;
-            _failed = failed;
+            ArgType = argType;
+            To = toType;
+            Failed = failed;
         }
 
         /// <summary>
@@ -47,17 +44,11 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Argument actual type or its limit type if the value not known.
         /// DynamicNull if the argument value is null.
         /// </summary>
-        public Type ArgType {
-            get { return _argType; }
-        }
+        public Type ArgType { get; }
 
-        public Type To {
-            get { return _toType; }
-        }
+        public Type To { get; }
 
-        public bool Failed {
-            get { return _failed; }
-        }
+        public bool Failed { get; }
 
         internal static void ReplaceLastFailure(IList<ConversionResult> failures, bool isFailure) {
             ConversionResult failure = failures[failures.Count - 1];
@@ -67,7 +58,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public string GetArgumentTypeName(ActionBinder binder) {
             ContractUtils.RequiresNotNull(binder, "binder");
-            return (_arg != null) ? binder.GetObjectTypeName(_arg) : binder.GetTypeName(_argType);
+            return (_arg != null) ? binder.GetObjectTypeName(_arg) : binder.GetTypeName(ArgType);
         }
     }
 }

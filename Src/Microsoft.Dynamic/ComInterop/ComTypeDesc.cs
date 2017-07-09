@@ -27,7 +27,6 @@ namespace Microsoft.Scripting.ComInterop {
     public class ComTypeDesc : ComTypeLibMemberDesc {
         private string _typeName;
         private string _documentation;
-        private Guid _guid;
         //Hashtable is threadsafe for multiple readers single writer. 
         //Enumerating and writing is mutually exclusive so require locking.
         private Hashtable _funcs;
@@ -36,14 +35,13 @@ namespace Microsoft.Scripting.ComInterop {
         private ComMethodDesc _getItem;
         private ComMethodDesc _setItem;
         private Dictionary<string, ComEventDesc> _events;
-        private readonly ComTypeLibDesc _typeLibDesc;
         private static readonly Dictionary<string, ComEventDesc> _EmptyEventsDict = new Dictionary<string, ComEventDesc>();
 
         internal ComTypeDesc(ITypeInfo typeInfo, ComType memberType, ComTypeLibDesc typeLibDesc) : base(memberType) {
             if (typeInfo != null) {
                 ComRuntimeHelpers.GetInfoFromType(typeInfo, out _typeName, out _documentation);
             }
-            _typeLibDesc = typeLibDesc;
+            TypeLib = typeLibDesc;
         }
 
         
@@ -203,14 +201,9 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         // this property is public - accessed by an AST
-        public ComTypeLibDesc TypeLib {
-            get { return _typeLibDesc; }
-        }
+        public ComTypeLibDesc TypeLib { get; }
 
-        internal Guid Guid {
-            get { return _guid; }
-            set { _guid = value; }
-        }
+        internal Guid Guid { get; set; }
 
         internal ComMethodDesc GetItem {
             get { return _getItem; }

@@ -29,18 +29,17 @@ namespace Microsoft.Scripting.Actions {
     
     public class MethodTracker : MemberTracker {
         private readonly MethodInfo _method;
-        private readonly bool _isStatic;
 
         internal MethodTracker(MethodInfo method) {
             ContractUtils.RequiresNotNull(method, "method");
             _method = method;
-            _isStatic = method.IsStatic;
+            IsStatic = method.IsStatic;
         }
 
         internal MethodTracker(MethodInfo method, bool isStatic) {
             ContractUtils.RequiresNotNull(method, "method");
             _method = method;
-            _isStatic = isStatic;
+            IsStatic = isStatic;
         }
 
         public override Type DeclaringType {
@@ -67,11 +66,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public bool IsStatic {
-            get {
-                return _isStatic;
-            }
-        }
+        public bool IsStatic { get; }
 
         public override string ToString() {
             return _method.ToString();

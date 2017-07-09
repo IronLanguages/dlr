@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Actions {
     public class TopNamespaceTracker : NamespaceTracker {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")] // TODO: fix
         private int _lastDiscovery = 0;
-        private readonly ScriptDomainManager _manager;
+
         internal readonly object HierarchyLock;
         private static Dictionary<Guid, Type> _comTypeCache = new Dictionary<Guid, Type>();
 
@@ -37,7 +37,7 @@ namespace Microsoft.Scripting.Actions {
             : base(null) {
             ContractUtils.RequiresNotNull(manager, "manager");
             SetTopPackage(this);
-            _manager = manager;
+            DomainManager = manager;
             HierarchyLock = new object();
         }
 
@@ -141,10 +141,6 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public ScriptDomainManager DomainManager {
-            get {
-                return _manager;
-            }
-        }
+        public ScriptDomainManager DomainManager { get; }
     }
 }

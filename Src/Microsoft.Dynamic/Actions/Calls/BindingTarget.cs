@@ -42,7 +42,6 @@ namespace Microsoft.Scripting.Actions.Calls {
         private readonly CallFailure[] _callFailures;                                     // if failed on conversion the various conversion failures for all overloads
         private readonly MethodCandidate[] _ambiguousMatches;                             // list of methods which are ambiguous to bind to.
         private readonly int[] _expectedArgs;                                             // gets the acceptable number of parameters which can be passed to the method.
-        private readonly int _actualArgs;                                                 // gets the actual number of arguments provided
 
         /// <summary>
         /// Creates a new BindingTarget when the method binding has succeeded.
@@ -52,7 +51,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _candidate = candidate;
             _restrictedArgs = restrictedArgs;
             NarrowingLevel = level;
-            _actualArgs = actualArgumentCount;
+            ActualArgumentCount = actualArgumentCount;
         }
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _name = name;
             _result = BindingResult.IncorrectArgumentCount;
             _expectedArgs = expectedArgCount;
-            _actualArgs = actualArgumentCount;
+            ActualArgumentCount = actualArgumentCount;
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _name = name;
             _result = BindingResult.CallFailure;
             _callFailures = failures;
-            _actualArgs = actualArgumentCount;
+            ActualArgumentCount = actualArgumentCount;
         }
 
         /// <summary>
@@ -83,7 +82,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _name = name;
             _result = BindingResult.AmbiguousMatch;
             _ambiguousMatches = ambiguousMatches;
-            _actualArgs = actualArgumentCount;
+            ActualArgumentCount = actualArgumentCount;
         }
 
         /// <summary>
@@ -188,11 +187,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Returns the total number of arguments provided to the call. 0 if the call succeeded or failed for a reason other
         /// than argument count mismatch.
         /// </summary>
-        public int ActualArgumentCount {
-            get {
-                return _actualArgs;
-            }
-        }
+        public int ActualArgumentCount { get; }
 
         /// <summary>
         /// Gets the MetaObjects which we originally did binding against in their restricted form.

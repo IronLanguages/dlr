@@ -29,7 +29,6 @@ namespace Microsoft.Scripting.Runtime {
         // last id assigned to a language context:
         private int _lastContextId;
 
-        private Scope _globals;
         private readonly DlrConfiguration _configuration;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -67,7 +66,7 @@ namespace Microsoft.Scripting.Runtime {
             _sharedIO = new SharedIO();
 
             // create the initial default scope
-            _globals = new Scope();
+            Globals = new Scope();
         }
 
         #region Language Registration
@@ -121,16 +120,9 @@ namespace Microsoft.Scripting.Runtime {
         #endregion
 
         /// <summary>
-        /// A collection of environment variables.
+        /// Gets or sets a collection of environment variables.
         /// </summary>
-        public Scope Globals {
-            get {
-                return _globals;
-            }
-            set {
-                _globals = value;
-            }
-        }
+        public Scope Globals { get; set; }
 
         /// <summary>
         /// Event for when a host calls LoadAssembly.  After hooking this

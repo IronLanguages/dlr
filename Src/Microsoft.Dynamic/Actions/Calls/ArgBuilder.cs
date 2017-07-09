@@ -30,20 +30,17 @@ namespace Microsoft.Scripting.Actions.Calls {
     public abstract class ArgBuilder {
         internal const int AllArguments = -1;
 
-        // can be null, e.g. for ctor return value builder or custom arg builders
-        private readonly ParameterInfo _info;
-
         protected ArgBuilder(ParameterInfo info) {
-            _info = info;
+            ParameterInfo = info;
         }
 
-        public abstract int Priority {
-            get;
-        }
+        /// <summary>
+        /// Gets the priority.
+        /// </summary>
+        public abstract int Priority { get; }
 
-        public ParameterInfo ParameterInfo {
-            get { return _info; }
-        }
+        // can be null, e.g. for ctor return value builder or custom arg builders
+        public ParameterInfo ParameterInfo { get; }
 
         /// <summary>
         /// The number of actual arguments consumed by this builder.

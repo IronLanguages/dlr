@@ -36,11 +36,7 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     public sealed class ScriptRuntime : MarshalByRefObject {
         private readonly Dictionary<LanguageContext, ScriptEngine> _engines;
-        private readonly ScriptDomainManager _manager;
         private readonly InvariantContext _invariantContext;
-        private readonly ScriptIO _io;
-        private readonly ScriptHost _host;
-        private readonly ScriptRuntimeSetup _setup;
         private readonly object _lock = new object();
         private ScriptScope _globals;
         private Scope _scopeGlobals;
@@ -56,50 +52,44 @@ namespace Microsoft.Scripting.Hosting {
 
             // Do this first, so we detect configuration errors immediately
             DlrConfiguration config = setup.ToConfiguration();
-            _setup = setup;
+            Setup = setup;
 
             try {
-                _host = (ScriptHost)Activator.CreateInstance(setup.HostType, setup.HostArguments.ToArray<object>());
+                Host = (ScriptHost)Activator.CreateInstance(setup.HostType, setup.HostArguments.ToArray<object>());
             } catch (TargetInvocationException e) {
                 throw new InvalidImplementationException(Strings.InvalidCtorImplementation(setup.HostType, e.InnerException.Message), e.InnerException);
             } catch (Exception e) {
                 throw new InvalidImplementationException(Strings.InvalidCtorImplementation(setup.HostType, e.Message), e);
             }
 
-            ScriptHostProxy hostProxy = new ScriptHostProxy(_host);
+            ScriptHostProxy hostProxy = new ScriptHostProxy(Host);
 
-            _manager = new ScriptDomainManager(hostProxy, config);
-            _invariantContext = new InvariantContext(_manager);
+            Manager = new ScriptDomainManager(hostProxy, config);
+            _invariantContext = new InvariantContext(Manager);
 
-            _io = new ScriptIO(_manager.SharedIO);
+            IO = new ScriptIO(Manager.SharedIO);
             _engines = new Dictionary<LanguageContext, ScriptEngine>();
 
             bool freshEngineCreated;
-            _globals = new ScriptScope(GetEngineNoLockNoNotification(_invariantContext, out freshEngineCreated), _manager.Globals);
+            _globals = new ScriptScope(GetEngineNoLockNoNotification(_invariantContext, out freshEngineCreated), Manager.Globals);
 
             // runtime needs to be all set at this point, host code is called
 
-            _host.SetRuntime(this);
+            Host.SetRuntime(this);
 
             object noDefaultRefs;
             if (!setup.Options.TryGetValue("NoDefaultReferences", out noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
                 LoadAssembly(typeof(string).GetTypeInfo().Assembly);
-                LoadAssembly(typeof(System.Diagnostics.Debug).GetTypeInfo().Assembly);
+                LoadAssembly(typeof(Debug).GetTypeInfo().Assembly);
             }
         }
 
-        internal ScriptDomainManager Manager {
-            get { return _manager; }
-        }
+        internal ScriptDomainManager Manager { get; }
 
-        public ScriptHost Host {
-            get { return _host; }
-        }
+        public ScriptHost Host { get; }
 
-        public ScriptIO IO {
-            get { return _io; }
-        }
-        
+        public ScriptIO IO { get; }
+
         /// <summary>
         /// Creates a new runtime with languages set up according to the current application configuration 
         /// (using System.Configuration).
@@ -138,11 +128,7 @@ namespace Microsoft.Scripting.Hosting {
 #endif
         #endregion
 
-        public ScriptRuntimeSetup Setup {
-            get {
-                return _setup;
-            }
-        }
+        public ScriptRuntimeSetup Setup { get; }
 
         #region Engines
 
@@ -159,7 +145,7 @@ namespace Microsoft.Scripting.Hosting {
 
         public ScriptEngine GetEngineByTypeName(string assemblyQualifiedTypeName) {
             ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, "assemblyQualifiedTypeName");
-            return GetEngine(_manager.GetLanguageByTypeName(assemblyQualifiedTypeName));
+            return GetEngine(Manager.GetLanguageByTypeName(assemblyQualifiedTypeName));
         }
 
         /// <exception cref="ArgumentException"></exception>
@@ -177,7 +163,7 @@ namespace Microsoft.Scripting.Hosting {
 
         public bool TryGetEngine(string languageName, out ScriptEngine engine) {
             LanguageContext language;
-            if (!_manager.TryGetLanguage(languageName, out language)) {
+            if (!Manager.TryGetLanguage(languageName, out language)) {
                 engine = null;
                 return false;
             }
@@ -188,7 +174,7 @@ namespace Microsoft.Scripting.Hosting {
 
         public bool TryGetEngineByFileExtension(string fileExtension, out ScriptEngine engine) {
             LanguageContext language;
-            if (!_manager.TryGetLanguageByFileExtension(fileExtension, out language)) {
+            if (!Manager.TryGetLanguageByFileExtension(fileExtension, out language)) {
                 engine = null;
                 return false;
             }
@@ -210,7 +196,7 @@ namespace Microsoft.Scripting.Hosting {
             }
 
             if (freshEngineCreated && !ReferenceEquals(language, _invariantContext)) {
-                _host.EngineCreated(engine);
+                Host.EngineCreated(engine);
             }
 
             return engine;
@@ -307,7 +293,7 @@ namespace Microsoft.Scripting.Hosting {
             // Find the file on disk, then load it
             foreach (string searchPath in searchPaths) {
                 string filePath = Path.Combine(searchPath, path);
-                if (_manager.Platform.FileExists(filePath)) {
+                if (Manager.Platform.FileExists(filePath)) {
                     return ExecuteFile(filePath);
                 }
             }
@@ -325,7 +311,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ScriptScope Globals {
             get {
-                Scope scope = _manager.Globals;
+                Scope scope = Manager.Globals;
                 if (_scopeGlobals == scope) {
                     return _globals;
                 }
@@ -343,7 +329,7 @@ namespace Microsoft.Scripting.Hosting {
                 ContractUtils.RequiresNotNull(value, "value");
                 lock (_lock) {
                     _globals = value;
-                    _manager.Globals = value.Scope;
+                    Manager.Globals = value.Scope;
                 }
             }
         }
@@ -358,7 +344,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <param name="assembly"></param>
         public void LoadAssembly(Assembly assembly) {
-            _manager.LoadAssembly(assembly);
+            Manager.LoadAssembly(assembly);
         }
 
         public ObjectOperations Operations {

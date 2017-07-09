@@ -37,47 +37,33 @@ namespace Microsoft.Scripting.Actions {
         /// the binding mapping info.  If any of the inputs cause side effects then we'll stop the combination.
         /// </summary>
         class ComboDynamicSiteExpression : Expression {
-            private readonly Expression[] _inputs;
-            private readonly List<BinderMappingInfo> _binders;
-            private readonly Type _type;
-
             public ComboDynamicSiteExpression(Type type, List<BinderMappingInfo> binders, Expression[] inputs) {
 
-                _binders = binders;
-                _inputs = inputs;
-                _type = type;
+                Binders = binders;
+                Inputs = inputs;
+                Type = type;
             }
 
             public override bool CanReduce {
                 get { return true; }
             }
 
-            public sealed override Type Type {
-                get { return _type; }
-            }
+            public sealed override Type Type { get; }
 
             public sealed override ExpressionType NodeType {
                 get { return ExpressionType.Extension; }
             }
 
-            public Expression[] Inputs {
-                get {
-                    return _inputs;
-                }
-            }
+            public Expression[] Inputs { get; }
 
-            public List<BinderMappingInfo> Binders {
-                get {
-                    return _binders;
-                }
-            }
+            public List<BinderMappingInfo> Binders { get; }
 
             public override Expression Reduce() {
                 // we just reduce to a simple DynamicExpression
                 return DynamicExpression.Dynamic(
-                    new ComboBinder(_binders),
+                    new ComboBinder(Binders),
                     Type,
-                    _inputs
+                    Inputs
                 );
             }
         }

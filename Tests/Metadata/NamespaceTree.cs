@@ -23,14 +23,13 @@ using Microsoft.Scripting.Utils;
 
 namespace Metadata {
     public sealed class NamespaceTreeNode {
-        private readonly MetadataNamePart _name;
         private List<TypeDef> _typeDefs; // TODO: Use Sequence<TypeDef> (typedefs from the same assembly per chunk/assemblies index)
         private NamespaceTreeNode _lastChild;
         private NamespaceTreeNode _firstChild;
         private NamespaceTreeNode _nextSibling;
 
         internal NamespaceTreeNode(MetadataNamePart name) {
-            _name = name;
+            Name = name;
         }
 
         internal void AddType(TypeDef typeDef) {
@@ -55,9 +54,7 @@ namespace Metadata {
             
         }
 
-        public MetadataNamePart Name {
-            get { return _name; }
-        }
+        public MetadataNamePart Name { get; }
 
         public IEnumerable<TypeDef> GetTypeDefs() {
             if (_typeDefs != null) {
@@ -105,16 +102,13 @@ namespace Metadata {
     public sealed class NamespaceTree {
         // Maps every prefix of every namespace name to the corresponding namespace:
         private readonly Dictionary<MetadataNamePart, NamespaceTreeNode> _names;
-        private readonly NamespaceTreeNode _root;
 
         public NamespaceTree() {
             _names = new Dictionary<MetadataNamePart, NamespaceTreeNode>();
-            _names.Add(MetadataNamePart.Empty, _root = new NamespaceTreeNode(MetadataNamePart.Empty));
+            _names.Add(MetadataNamePart.Empty, Root = new NamespaceTreeNode(MetadataNamePart.Empty));
         }
 
-        public NamespaceTreeNode Root {
-            get { return _root; }
-        }
+        public NamespaceTreeNode Root { get; }
 
         public IEnumerable<NamespaceTreeNode> GetAllNamespaces() {
             return _names.Values;
