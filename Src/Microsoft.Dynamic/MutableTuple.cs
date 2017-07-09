@@ -27,12 +27,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
     public abstract class MutableTuple {
-#if WP75
-        // CF doesn't support more than 64 generic type parameters:
-        public static readonly int MaxSize = PlatformAdaptationLayer.IsCompactFramework ? 64 : 128;
-#else
         public const int MaxSize = 128;
-#endif
         private static readonly Dictionary<Type, int> _sizeDict = new Dictionary<Type, int>();
 
         public abstract object GetValue(int index);

@@ -145,12 +145,11 @@ namespace Microsoft.Scripting.Utils {
             return DateTime.TryParse(s, provider, style, out result);
         }
 
-#if !WIN8
         // Aims to be equivalent to Culture.GetCultureInfo for Silverlight
         public static CultureInfo GetCultureInfo(string name) {
             return CultureInfo.GetCultureInfo(name);
         }
-#endif
+
         // Like string.Split, but enumerates
         public static IEnumerable<string> Split(string str, string sep) {
             int start = 0, end;

@@ -50,12 +50,8 @@ namespace Microsoft.Scripting {
         public static readonly PlatformAdaptationLayer Default = new PlatformAdaptationLayer();
 
         public static readonly bool IsCompactFramework =
-#if WIN8
-            false;
-#else
             Environment.OSVersion.Platform == PlatformID.WinCE ||
             Environment.OSVersion.Platform == PlatformID.Xbox;
-#endif
 
         #region Assembly Loading
 
@@ -89,8 +85,6 @@ namespace Microsoft.Scripting {
 #if FEATURE_FILESYSTEM
                 return Environment.OSVersion.Platform == PlatformID.Unix
                     || Environment.OSVersion.Platform == PlatformID.MacOSX;
-#elif WIN8
-                return false;
 #else
                 return true;
 #endif

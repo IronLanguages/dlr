@@ -101,29 +101,9 @@ namespace Microsoft.Scripting.Utils {
 
         #region Storage implementation
 
-#if WP75
-        private static int _cfThreadIdDispenser = 1;
-
-        [ThreadStatic]
-        private static int _cfThreadId;
-
-        private static int GetCurrentThreadId() {
-            if (PlatformAdaptationLayer.IsCompactFramework) {
-                // CF doesn't index threads by small integers, so we need to do the indexing ourselves:
-                int id = _cfThreadId;
-                if (id == 0) {
-                    _cfThreadId = id = Interlocked.Increment(ref _cfThreadIdDispenser);
-                }
-                return id;
-            } else {
-                return Thread.CurrentThread.ManagedThreadId;
-            }
-        }
-#else
         private static int GetCurrentThreadId() {
             return Thread.CurrentThread.ManagedThreadId;
         }
-#endif
 
         /// <summary>
         /// Gets the StorageInfo for the current thread.

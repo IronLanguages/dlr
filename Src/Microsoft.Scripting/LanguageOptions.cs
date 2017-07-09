@@ -139,11 +139,7 @@ namespace Microsoft.Scripting {
         }
 
         public static ReadOnlyCollection<string> GetSearchPathsOption(IDictionary<string, object> options) {
-#if WIN8
-            return GetStringCollectionOption(options, "SearchPaths", ';');
-#else
             return GetStringCollectionOption(options, "SearchPaths", Path.PathSeparator);
-#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]

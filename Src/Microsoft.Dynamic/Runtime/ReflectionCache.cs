@@ -24,27 +24,6 @@ namespace Microsoft.Scripting.Runtime {
     /// specific request.
     /// </summary>
     public static class ReflectionCache {
-#if WIN8 // tokens are not exposed, we need to implement method comparison that doesn't use them, for now just always return a new method group
-        public static MethodGroup GetMethodGroup(string name, MethodBase[] methods) {
-            return new MethodGroup(
-                ArrayUtils.ConvertAll<MethodBase, MethodTracker>(
-                    methods,
-                    delegate(MethodBase x) {
-                        return (MethodTracker)MemberTracker.FromMemberInfo(x);
-                    }
-                )
-            );
-        }
-
-        public static MethodGroup GetMethodGroup(string name, MemberGroup mems) {
-            MethodTracker[] trackers = new MethodTracker[mems.Count];
-            for (int i = 0; i < trackers.Length; i++) {
-                trackers[i] = (MethodTracker)mems[i];
-            }
-
-            return new MethodGroup(trackers);
-        }
-#else
         private static readonly Dictionary<MethodBaseCache, MethodGroup> _functions = new Dictionary<MethodBaseCache, MethodGroup>();
         private static readonly Dictionary<Type, TypeTracker> _typeCache = new Dictionary<Type, TypeTracker>();
 
@@ -169,6 +148,5 @@ namespace Microsoft.Scripting.Runtime {
                 return res;
             }
         }
-#endif
     }
 }

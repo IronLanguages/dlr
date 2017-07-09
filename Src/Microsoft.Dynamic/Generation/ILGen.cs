@@ -261,14 +261,13 @@ namespace Microsoft.Scripting.Generation {
             _ilg.EmitCall(opcode, methodInfo, optionalParameterTypes);
         }
 
-#if !WIN8
         /// <summary>
         /// Emits an unmanaged indirect call instruction.
         /// </summary>
         public virtual void EmitCalli(OpCode opcode, CallingConvention unmanagedCallConv, Type returnType, Type[] parameterTypes) {
             _ilg.EmitCalli(opcode, unmanagedCallConv, returnType, parameterTypes);
         }
-#endif
+
         /// <summary>
         /// Emits a managed indirect call instruction.
         /// </summary>

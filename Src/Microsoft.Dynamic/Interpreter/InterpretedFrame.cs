@@ -25,11 +25,7 @@ using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Interpreter {
-#if WIN8
-    using InterpretedFrameThreadLocal = ThreadLocal<InterpretedFrame>;
-#else
     using InterpretedFrameThreadLocal = Microsoft.Scripting.Utils.ThreadLocal<InterpretedFrame>;
-#endif
 
     public sealed class InterpretedFrame {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
@@ -187,18 +183,6 @@ namespace Microsoft.Scripting.Interpreter {
         }
 #endif
 
-#if WIN8
-        internal InterpretedFrameThreadLocal Enter() {
-            var currentFrame = InterpretedFrame.CurrentFrame;
-            _parent = currentFrame.Value;
-            currentFrame.Value = this;
-            return currentFrame;
-        }
-
-        internal void Leave(InterpretedFrameThreadLocal currentFrame) {
-            currentFrame.Value = _parent;
-        }
-#else
         internal InterpretedFrameThreadLocal.StorageInfo Enter() {
             var currentFrame = InterpretedFrame.CurrentFrame.GetStorageInfo();
             _parent = currentFrame.Value;
@@ -209,7 +193,7 @@ namespace Microsoft.Scripting.Interpreter {
         internal void Leave(InterpretedFrameThreadLocal.StorageInfo currentFrame) {
             currentFrame.Value = _parent;
         }
-#endif
+
         #endregion
 
         #region Continuations

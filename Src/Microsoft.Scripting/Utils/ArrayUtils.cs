@@ -26,7 +26,6 @@ namespace Microsoft.Scripting.Utils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly object[] EmptyObjects = new object[0];
 
-#if !WIN8
         internal sealed class FunctorComparer<T> : IComparer<T> {
             private readonly Comparison<T> _comparison;
 
@@ -43,7 +42,6 @@ namespace Microsoft.Scripting.Utils {
         public static IComparer<T> ToComparer<T>(Comparison<T> comparison) {
             return new FunctorComparer<T>(comparison);
         }
-#endif
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "1#")] // TODO: fix
         public static void PrintTable(StringBuilder output, string[,] table) {

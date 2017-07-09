@@ -12,8 +12,6 @@
  *
  *
  * ***************************************************************************/
-#if !WIN8
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -138,4 +136,3 @@ namespace Microsoft.Scripting.Debugging {
         #endregion
     }
 }
-#endif
