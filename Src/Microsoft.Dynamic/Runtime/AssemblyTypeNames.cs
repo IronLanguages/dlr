@@ -13,9 +13,7 @@
  *
  * ***************************************************************************/
 
-#if !WIN8
 using TypeInfo = System.Type;
-#endif
 
 using System;
 using System.Linq;

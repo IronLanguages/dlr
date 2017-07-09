@@ -42,20 +42,11 @@ namespace Microsoft.Scripting.Utils {
             e.Data.Remove(key);
         }
 #else
-
-#if WP75
-        private static WeakDictionary<Exception, List<KeyValuePair<object, object>>> _exceptionData;
-#else
         private static ConditionalWeakTable<Exception, List<KeyValuePair<object, object>>> _exceptionData;
-#endif
 
         public static void SetData(this Exception e, object key, object value) {
             if (_exceptionData == null) {
-#if WP75
-                Interlocked.CompareExchange(ref _exceptionData, new WeakDictionary<Exception, List<KeyValuePair<object, object>>>(), null);
-#else
                 Interlocked.CompareExchange(ref _exceptionData, new ConditionalWeakTable<Exception, List<KeyValuePair<object, object>>>(), null);
-#endif
             }
 
             lock (_exceptionData) {

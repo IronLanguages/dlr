@@ -203,17 +203,6 @@ namespace Microsoft.Scripting.Generation {
                 return baseMethod;
             }
 
-#if WIN8 // TODO: interface map, method handle
-            foreach (Type iface in targetType.GetImplementedInterfaces()) {
-                dynamic mapping = ((dynamic)targetType).GetInterfaceMap(iface);
-                for (int i = 0; i < mapping.TargetMethods.Length; i++) {
-                    MethodInfo targetMethod = mapping.TargetMethods[i];
-                    if (targetMethod != null && ((dynamic)targetMethod).MethodHandle == ((dynamic)method).MethodHandle) {
-                        return mapping.InterfaceMethods[i];
-                    }
-                }
-            }
-#else
             // maybe we can get it from an interface on the type this
             // method came from...
             foreach (Type iface in targetType.GetImplementedInterfaces()) {
@@ -227,7 +216,7 @@ namespace Microsoft.Scripting.Generation {
                     }
                 }
             }
-#endif
+
             return method;
         }
 
@@ -283,7 +272,6 @@ namespace Microsoft.Scripting.Generation {
             return visible;
         }
 
-#if !WIN8
         /// <summary>
         /// Sees if two MemberInfos point to the same underlying construct in IL.  This
         /// ignores the ReflectedType property which exists on MemberInfos which
@@ -320,7 +308,6 @@ namespace Microsoft.Scripting.Generation {
                         ((MemberInfo)self).MetadataToken == ((MemberInfo)other).MetadataToken;
             }
         }
-#endif
 
         public static bool IsVisible(MethodBase info) {
             return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.IsVisible());
@@ -655,11 +642,7 @@ namespace Microsoft.Scripting.Generation {
             }
 #endif
 
-#if WIN8 // TODO
-            ((dynamic)lambda).CompileToMethod(method);
-#else
             lambda.CompileToMethod(method);
-#endif
         }
 #endif
 

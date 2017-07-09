@@ -40,6 +40,4 @@ using System.Security;
 [assembly: SecurityRules(SecurityRuleSet.Level1)]
 #endif
 
-#if !WIN8
 [assembly: SecurityTransparent]
-#endif

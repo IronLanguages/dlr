@@ -81,11 +81,7 @@ namespace Microsoft.Scripting.Generation {
             return new ILGen(mb.GetILGenerator());
         }
 
-#if WIN8 // TODO: what is ReservedMask? 
-        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | (MethodAttributes)0xD000;
-#else
         private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.ReservedMask;
-#endif
 
         // TODO: Use ReflectionUtils.DefineMethodOverride?
         public ILGen DefineMethodOverride(MethodInfo baseMethod) {

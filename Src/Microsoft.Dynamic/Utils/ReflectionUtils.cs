@@ -17,9 +17,7 @@
 using Microsoft.Scripting.Metadata;
 #endif
 
-#if !WIN8
 using TypeInfo = System.Type;
-#endif
 
 using System;
 using System.Collections.Generic;
@@ -39,54 +37,7 @@ using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
-#if WIN8 || WP75
-namespace System.Runtime.CompilerServices {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Event)]
-    public sealed class SpecialNameAttribute : Attribute {
-        public SpecialNameAttribute() {
-        }
-    }
-}
-#endif
-
-#if WIN8
-namespace System {
-    public enum TypeCode {
-        Empty,
-        Object,
-        DBNull,
-        Boolean,
-        Char,
-        SByte,
-        Byte,
-        Int16,
-        UInt16,
-        Int32,
-        UInt32,
-        Int64,
-        UInt64,
-        Single,
-        Double,
-        Decimal,
-        DateTime,
-        String = 18
-    }
-}
-
-namespace System.Reflection {
-    [Flags]
-    public enum BindingFlags {
-        /// <summary>Specifies that instance members are to be included in the search.</summary>
-        Instance = 4,
-        /// <summary>Specifies that static members are to be included in the search.</summary>
-        Static = 8,
-        /// <summary>Specifies that public members are to be included in the search.</summary>
-        Public = 16,
-        /// <summary>Specifies that non-public members are to be included in the search.</summary>
-        NonPublic = 32
-    }
-}
-#elif !CLR45
+#if !CLR45
 namespace System.Reflection {
     public static class RuntimeReflectionExtensions {
         public static MethodInfo GetRuntimeBaseDefinition(this MethodInfo method) {
@@ -557,145 +508,60 @@ namespace Microsoft.Scripting.Utils {
         #region Declared Members
 
         public static IEnumerable<ConstructorInfo> GetDeclaredConstructors(this Type type) {
-#if WIN8
-            return type.GetTypeInfo().DeclaredConstructors;
-#else
             return type.GetConstructors(BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
-
-#if WIN8
-        public static ConstructorInfo GetConstructor(this Type type, Type[] parameterTypes) {
-            return type.GetDeclaredConstructors().Where(ci => !ci.IsStatic && ci.IsPublic).WithSignature(parameterTypes).SingleOrDefault();
-        }
-#endif
 
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name = null) {
-#if WIN8
-            if (name == null) {
-                return type.GetTypeInfo().DeclaredMethods;
-            } else {
-                return type.GetTypeInfo().GetDeclaredMethods(name);
-            }
-#else
             if (name == null) {
                 return type.GetMethods(BindingFlags.DeclaredOnly | AllMembers);
-            } else {
-                return type.GetMember(name, MemberTypes.Method, BindingFlags.DeclaredOnly | AllMembers).OfType<MethodInfo>();
-            }
-#endif
+            } 
+
+            return type.GetMember(name, MemberTypes.Method, BindingFlags.DeclaredOnly | AllMembers).OfType<MethodInfo>();
         }
 
         public static IEnumerable<PropertyInfo> GetDeclaredProperties(this Type type) {
-#if WIN8
-            return type.GetTypeInfo().DeclaredProperties;
-#else
             return type.GetProperties(BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static PropertyInfo GetDeclaredProperty(this Type type, string name) {
             Debug.Assert(name != null);
-#if WIN8
-            return type.GetTypeInfo().GetDeclaredProperty(name);
-#else
             return type.GetProperty(name, BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static IEnumerable<EventInfo> GetDeclaredEvents(this Type type) {
-#if WIN8
-            return type.GetTypeInfo().DeclaredEvents;
-#else
             return type.GetEvents(BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static EventInfo GetDeclaredEvent(this Type type, string name) {
             Debug.Assert(name != null);
-#if WIN8
-            return type.GetTypeInfo().GetDeclaredEvent(name);
-#else
             return type.GetEvent(name, BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static IEnumerable<FieldInfo> GetDeclaredFields(this Type type) {
-#if WIN8
-            return type.GetTypeInfo().DeclaredFields;
-#else
             return type.GetFields(BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static FieldInfo GetDeclaredField(this Type type, string name) {
             Debug.Assert(name != null);
-#if WIN8
-            return type.GetTypeInfo().GetDeclaredField(name);
-#else
             return type.GetField(name, BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static IEnumerable<TypeInfo> GetDeclaredNestedTypes(this Type type) {
-#if WIN8
-            return type.GetTypeInfo().DeclaredNestedTypes;
-#else
             return type.GetNestedTypes(BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static TypeInfo GetDeclaredNestedType(this Type type, string name) {
             Debug.Assert(name != null);
-#if WIN8
-            return type.GetTypeInfo().GetDeclaredNestedType(name);
-#else
             return type.GetNestedType(name, BindingFlags.DeclaredOnly | AllMembers);
-#endif
         }
 
         public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string name = null) {
-#if WIN8
-            var info = type.GetTypeInfo();
-            if (name == null) {
-                return info.DeclaredMembers;
-            } else {
-                return GetDeclaredMembersWithName(info, name);
-            }
-#else
             if (name == null) {
                 return type.GetMembers(BindingFlags.DeclaredOnly | AllMembers);
-            } else {
-                return type.GetMember(name, BindingFlags.DeclaredOnly | AllMembers);
-            }
-#endif
+            } 
+
+            return type.GetMember(name, BindingFlags.DeclaredOnly | AllMembers);
         }
-
-#if WIN8
-        private static IEnumerable<MemberInfo> GetDeclaredMembersWithName(TypeInfo info, string name) {
-            MemberInfo member;
-
-            if ((member = info.GetDeclaredMethod(name)) != null) {
-                yield return member;
-            }
-
-            if ((member = info.GetDeclaredField(name)) != null) {
-                yield return member;
-            }
-
-            if ((member = info.GetDeclaredProperty(name)) != null) {
-                yield return member;
-            }
-
-            if ((member = info.GetDeclaredEvent(name)) != null) {
-                yield return member;
-            }
-
-            if ((member = info.GetDeclaredNestedType(name)) != null) {
-                yield return member;
-            }
-        }
-#endif
 
         #endregion
 
@@ -1203,21 +1069,6 @@ namespace Microsoft.Scripting.Utils {
 
         #region Delegates and Dynamic Methods
 
-#if WP75
-        /// <summary>
-        /// Creates an open delegate for the given (dynamic)method.
-        /// </summary>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType) {
-            return CreateDelegate(methodInfo, delegateType, null);
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target) {
-            return Delegate.CreateDelegate(delegateType, target, methodInfo);
-        }
-#elif !WIN8
         /// <summary>
         /// Creates an open delegate for the given (dynamic)method.
         /// </summary>
@@ -1236,7 +1087,6 @@ namespace Microsoft.Scripting.Utils {
                 return Delegate.CreateDelegate(delegateType, target, methodInfo);
             }
         }
-#endif
 
 #if FEATURE_LCG
         public static bool IsDynamicMethod(MethodBase method) {
@@ -1484,11 +1334,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             try {
-#if WIN8
-                return assembly.ExportedTypes.Select(t => t.GetTypeInfo());
-#else
                 return assembly.GetExportedTypes();
-#endif
             } catch (NotSupportedException) {
                 // GetExportedTypes does not work with dynamic assemblies
             } catch (Exception) {

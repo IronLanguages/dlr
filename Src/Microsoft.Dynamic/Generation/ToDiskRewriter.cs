@@ -216,9 +216,6 @@ namespace Microsoft.Scripting.Generation {
             // SaveAssemblies mode prevents us from detecting the module as
             // transient. If that option is turned on, always replace delegates
             // that live in another AssemblyBuilder
-#if WIN8 // TODO:
-            return true;
-#else
             var module = delegateType.Module as ModuleBuilder;
 
             if (module == null) {
@@ -240,7 +237,6 @@ namespace Microsoft.Scripting.Generation {
             }
 
             return false;
-#endif
         }
 
         private Expression RewriteCallSite(CallSite site) {
