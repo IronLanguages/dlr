@@ -76,6 +76,10 @@ build_script:
 test_script:
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/TestInternalDLR.exe'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/TestInternalDLR.exe'
+  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Metadata.exe'
+  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Metadata.exe'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Dynamic.Test.dll'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Dynamic.Test.dll'
   #- make test
   #- Test\test-ipy-tc.cmd /category:Languages\IronPython\IronPython\2.X
 

@@ -19,11 +19,15 @@ dist: trusty
 dotnet: 1.0.3
 
 script:
-  - dotnet restore Dlr.sln
+  - dotnet restore Dlr.sln --packages ./packages
   - msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
   - pushd bin/$CONFIGURATION
   - mono ./net40/TestInternalDLR.exe
   - mono ./net45/TestInternalDLR.exe
+  - mono ./net40/Metadata.exe
+  - mono ./net45/Metadata.exe
+  - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net40/Microsoft.Dynamic.Test.dll
+  - mono ./../../packages/nunit.consolerunner/3.6.1/tools/nunit3-console.exe ./net45/Microsoft.Dynamic.Test.dll
 
 notifications:
   email:

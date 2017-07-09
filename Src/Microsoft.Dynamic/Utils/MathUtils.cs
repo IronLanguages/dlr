@@ -41,26 +41,28 @@ namespace Microsoft.Scripting.Utils {
             if (x >= 0) {
                 if (y > 0) {
                     return q;
-                } else if (x % y == 0) {
-                    return q;
-                } else {
-                    return q - 1;
                 }
-            } else {
-                if (y > 0) {
-                    if (x % y == 0) {
-                        return q;
-                    } else {
-                        return q - 1;
-                    }
-                } else {
+
+                if (x % y == 0) {
                     return q;
                 }
+
+                return q - 1;
             }
+
+            if (y > 0) {
+                if (x % y == 0) {
+                    return q;
+                }
+
+                return q - 1;
+            } 
+
+            return q;
         }
 
         /// <summary>
-        /// Calculates the quotient of two 32-bit signed integers rounded towards negative infinity.
+        /// Calculates the quotient of two 64-bit signed integers rounded towards negative infinity.
         /// </summary>
         /// <param name="x">Dividend.</param>
         /// <param name="y">Divisor.</param>
@@ -73,22 +75,24 @@ namespace Microsoft.Scripting.Utils {
             if (x >= 0) {
                 if (y > 0) {
                     return q;
-                } else if (x % y == 0) {
-                    return q;
-                } else {
-                    return q - 1;
                 }
-            } else {
-                if (y > 0) {
-                    if (x % y == 0) {
-                        return q;
-                    } else {
-                        return q - 1;
-                    }
-                } else {
+
+                if (x % y == 0) {
                     return q;
-                }
+                } 
+
+                return q - 1;
             }
+
+            if (y > 0) {
+                if (x % y == 0) {
+                    return q;
+                }
+
+                return q - 1;
+            }
+
+            return q;
         }
 
         /// <summary>
