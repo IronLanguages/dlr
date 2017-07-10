@@ -13,9 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_TASKS
 using System.Threading.Tasks;
-#endif
 
 using System.Linq.Expressions;
 
@@ -200,11 +198,7 @@ namespace Microsoft.Scripting.Interpreter {
                 } 
                 
                 // Kick off the compile on another thread so this one can keep going
-#if FEATURE_TASKS
                 new Task(_delegateCreator.Compile, null).Start();
-#else
-                ThreadPool.QueueUserWorkItem(_delegateCreator.Compile, null);
-#endif
             }
 
             return false;

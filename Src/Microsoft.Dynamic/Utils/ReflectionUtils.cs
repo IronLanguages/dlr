@@ -52,38 +52,6 @@ namespace System.Reflection {
 #endif
 
 namespace Microsoft.Scripting.Utils {
-    // CF doesn't support DefaultParameterValue attribute. Define our own, but not in System.Runtime.InteropServices namespace as that would 
-    // make C# compiler emit the parameter's default value metadata not the attribute itself. The default value metadata are not accessible on CF.
-#if !FEATURE_DEFAULT_PARAMETER_VALUE
-    /// <summary>
-    /// The Default Parameter Value Attribute.
-    /// </summary>
-    public sealed class DefaultParameterValueAttribute : Attribute
-    {
-        private readonly object _value;
-
-        public object Value
-        {
-            get { return _value; }
-        }
-
-        /// <summary>
-        /// The constructor
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public DefaultParameterValueAttribute(object value)
-        {
-            _value = value;
-        }
-    }
-
-#if !ANDROID
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false), ComVisible(true)]
-    public sealed class OptionalAttribute : Attribute {
-    }
-#endif
-#endif
-
     public static class ReflectionUtils {
         #region Accessibility
 
@@ -1225,11 +1193,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static bool HasDefaultValue(this ParameterInfo pi) {
-#if !FEATURE_DEFAULT_PARAMETER_VALUE
-            return pi.IsDefined(typeof(DefaultParameterValueAttribute), false);
-#else
             return (pi.Attributes & ParameterAttributes.HasDefault) != 0;
-#endif
         }
 
         public static bool ProhibitsNull(this ParameterInfo parameter) {
@@ -1260,20 +1224,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static object GetDefaultValue(this ParameterInfo info) {
-#if !FEATURE_DEFAULT_PARAMETER_VALUE
-            if (info.IsOptional) {
-                return info.ParameterType == typeof(object) ? Missing.Value : ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(info.ParameterType);
-            } 
-
-            var defaultValueAttribute = info.GetCustomAttributes(typeof(DefaultParameterValueAttribute), false);
-            if (defaultValueAttribute.Length > 0) {
-                return ((DefaultParameterValueAttribute)defaultValueAttribute[0]).Value;
-            } 
-
-            return null;
-#else
             return info.DefaultValue;
-#endif
         }
 
         #endregion
@@ -1379,10 +1330,8 @@ namespace Microsoft.Scripting.Utils {
             Type[][] parameterRequiredModifiers = null, parameterOptionalModifiers = null;
             Type[] returnRequiredModifiers = null, returnOptionalModifiers = null;
 
-#if FEATURE_CUSTOM_MODIFIERS
             returnRequiredModifiers = from.ReturnParameter.GetRequiredCustomModifiers();
             returnOptionalModifiers = from.ReturnParameter.GetOptionalCustomModifiers();
-#endif
             for (int i = 0; i < paramInfos.Length; i++) {
                 if (substituteDeclaringType && paramInfos[i].ParameterType == from.DeclaringType) {
                     parameterTypes[i] = to.DeclaringType;
@@ -1390,7 +1339,6 @@ namespace Microsoft.Scripting.Utils {
                     parameterTypes[i] = paramInfos[i].ParameterType;
                 }
 
-#if FEATURE_CUSTOM_MODIFIERS
                 var mods = paramInfos[i].GetRequiredCustomModifiers();
                 if (mods.Length > 0) {
                     if (parameterRequiredModifiers == null) {
@@ -1408,7 +1356,6 @@ namespace Microsoft.Scripting.Utils {
 
                     parameterOptionalModifiers[i] = mods;
                 }
-#endif
             }
 
             to.SetSignature(
