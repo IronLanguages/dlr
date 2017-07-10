@@ -13,9 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_TASKS
 using System.Threading.Tasks;
-#endif
 
 using System.Linq.Expressions;
 
@@ -522,11 +520,7 @@ namespace Microsoft.Scripting.Interpreter {
                 } else {
                     // Kick off the compile on another thread so this one can keep going,
                     // Compile method backpatches the instruction when finished so we don't need to await the task.
-#if FEATURE_TASKS
                     new Task(Compile, frame).Start();
-#else
-                    ThreadPool.QueueUserWorkItem(Compile, frame);
-#endif
                 }
             }
             return 1;

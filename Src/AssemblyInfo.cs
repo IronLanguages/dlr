@@ -30,9 +30,7 @@ using System.Security;
 [assembly: AssemblyCompany("DLR Open Source Team")]
 [assembly: AssemblyCopyright("© DLR Contributors.")]
 
-#if FEATURE_APTCA
 [assembly: AllowPartiallyTrustedCallers]
-#endif
 
 // Versioning
 [assembly: AssemblyVersion(DynamicLanguageRuntime.CurrentVersion.AssemblyVersion)]

@@ -13,9 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_TASKS
 using System.Threading.Tasks;
-#endif
 
 using System.Linq.Expressions;
 
@@ -270,11 +268,7 @@ namespace Microsoft.Scripting.Utils {
                 // start compiling the target if no one else has
                 var lambda = Interlocked.Exchange(ref Target, null);
                 if (lambda != null) {
-#if FEATURE_TASKS
                     new Task(() => { CompiledTarget = lambda.Compile(); }).Start();
-#else
-                    ThreadPool.QueueUserWorkItem(x => { CompiledTarget = lambda.Compile(); });
-#endif
                 }
             }
 
