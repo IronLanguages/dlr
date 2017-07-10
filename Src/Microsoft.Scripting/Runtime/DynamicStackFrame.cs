@@ -22,10 +22,10 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [Serializable]
     public class DynamicStackFrame {
-        private string _funcName;
-        private string _filename;
-        private int _lineNo;
-        private MethodBase _method;
+        private readonly string _funcName;
+        private readonly string _filename;
+        private readonly int _lineNo;
+        private readonly MethodBase _method;
 
         public DynamicStackFrame(MethodBase method, string funcName, string filename, int line) {
             _funcName = funcName;

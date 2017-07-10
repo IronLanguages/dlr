@@ -248,8 +248,8 @@ namespace Microsoft.Scripting.Utils {
     }
 
     internal class WeakObject {
-        WeakReference weakReference;
-        int hashCode;
+        private readonly WeakReference weakReference;
+        private readonly int hashCode;
 
         public WeakObject(object obj) {
             // CF throws doesn't support long weak references (NotSuportedException is thrown)

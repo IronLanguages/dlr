@@ -384,8 +384,8 @@ namespace Microsoft.Scripting.Actions {
             List<string> _simpleTypeNames = new List<string>();
             Dictionary<string, List<string>> _genericTypeNames = new Dictionary<string, List<string>>();
 
-            Assembly _assembly;
-            string _fullNamespace;
+            private readonly Assembly _assembly;
+            private readonly string _fullNamespace;
 
             internal TypeNames(Assembly assembly, string fullNamespace) {
                 _assembly = assembly;
