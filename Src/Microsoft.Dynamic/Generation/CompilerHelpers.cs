@@ -13,9 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NUMERICS
 using BigInt = System.Numerics.BigInteger;
-#endif
 
 using System.Linq.Expressions;
 
@@ -853,12 +851,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         #region Factories
-#if !FEATURE_NUMERICS
-        [CLSCompliant(false)]
-        public static BigInteger CreateBigInteger(int sign, uint[] data) {
-            return new BigInteger(sign, data);
-        }
-#else
+
         public static BigInteger CreateBigInteger(bool isNegative, byte[] data) {
             return new BigInteger(CreateBigInt(isNegative, data));
         }
@@ -876,7 +869,6 @@ namespace Microsoft.Scripting.Generation {
             return isNegative ? -res : res;
         }
 
-#endif
         #endregion
     }
 }

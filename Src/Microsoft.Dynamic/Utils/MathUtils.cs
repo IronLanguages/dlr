@@ -13,10 +13,8 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NUMERICS
 using BigInt = System.Numerics.BigInteger;
 using Complex = System.Numerics.Complex;
-#endif
 
 using System;
 using System.Text;
@@ -663,51 +661,6 @@ namespace Microsoft.Scripting.Utils {
             return four;
         }
 
-#if !FEATURE_NUMERICS
-        public static BigInteger GetRandBits(this Random generator, int bits) {
-            ContractUtils.Requires(bits > 0);
-
-            // equivalent to (bits + 7) / 8 without possibility of overflow
-            int count = bits % 8 == 0 ? bits / 8 : bits / 8 + 1;
-
-            // Pad the end (most significant) with zeros if we align to the byte
-            // to ensure that we end up with a positive value
-            byte[] bytes = new byte[bits % 8 == 0 ? count + 1 : count];
-            generator.NextBytes(bytes);
-            if (bits % 8 == 0) {
-                bytes[bytes.Length - 1] = 0;
-            } else {
-                bytes[bytes.Length - 1] = (byte)(bytes[bytes.Length - 1] & ((1 << (bits % 8)) - 1));
-            }
-
-            if (bits <= 32) {
-                return (BigInteger)GetWord(bytes, 0, bits);
-            } else if (bits <= 64) {
-                ulong a = GetWord(bytes, 0, bits);
-                ulong b = GetWord(bytes, 32, bits);
-                return (BigInteger)(a | (b << 32));
-            } else {
-                count = (count + 3) / 4;
-                uint[] data = new uint[count];
-                for (int i = 0; i < count; i++) {
-                    data[i] = GetWord(bytes, i * 32, bits);
-                }
-                return new BigInteger(1, data);
-            }
-        }
-
-        public static BigInteger Random(this Random generator, BigInteger limit) {
-            ContractUtils.Requires(limit.Sign > 0, "limit");
-            ContractUtils.RequiresNotNull(generator, "generator");
-
-            // TODO: this doesn't yield a uniform distribution (small numbers will be picked more frequently):
-            uint[] result = new uint[limit.GetWordCount() + 1];
-            for (int i = 0; i < result.Length; i++) {
-                result[i] = unchecked((uint)generator.Next());
-            }
-            return new BigInteger(1, result) % limit;
-        }
-#else
         public static BigInt GetRandBits(this Random generator, int bits) {
             ContractUtils.Requires(bits > 0);
 
@@ -803,7 +756,6 @@ namespace Microsoft.Scripting.Utils {
                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat
             );
         }
-#endif
 
         public static bool TryToFloat64(this BigInteger self, out double result) {
             return StringUtils.TryParseDouble(
@@ -831,7 +783,6 @@ namespace Microsoft.Scripting.Utils {
             return x.Abs().GetBitCount();
         }
 
-#if FEATURE_NUMERICS
         public static int BitLength(BigInt x) {
             if (x.IsZero) {
                 return 0;
@@ -843,7 +794,6 @@ namespace Microsoft.Scripting.Utils {
 
             return index * 8 + BitLength((int)bytes[index]);
         }
-#endif
 
         // Like GetBitCount(Abs(x)), except 0 maps to 0
         public static int BitLength(long x) {
@@ -936,7 +886,6 @@ namespace Microsoft.Scripting.Utils {
         }
 
         #region Extending BigInt with BigInteger API
-#if FEATURE_NUMERICS
 
         public static bool AsInt32(this BigInt self, out int ret) {
             if (self >= Int32.MinValue && self <= Int32.MaxValue) {
@@ -1081,11 +1030,10 @@ namespace Microsoft.Scripting.Utils {
             }
             return ret.ToString();
         }
-#endif
+
         #endregion
 
         #region Exposing underlying data
-#if FEATURE_NUMERICS
 
         [CLSCompliant(false)]
         public static uint[] GetWords(this BigInt self) {
@@ -1169,38 +1117,12 @@ namespace Microsoft.Scripting.Utils {
             return b;
         }
 
-#endif
         #endregion
 
         #endregion
 
         #region Complex
 
-#if !FEATURE_NUMERICS
-        public static Complex64 MakeReal(double real) {
-            return new Complex64(real, 0.0);
-        }
-
-        public static Complex64 MakeImaginary(double imag) {
-            return new Complex64(0.0, imag);
-        }
-
-        public static Complex64 MakeComplex(double real, double imag) {
-            return new Complex64(real, imag);
-        }
-
-        public static double Imaginary(this Complex64 self) {
-            return self.Imag;
-        }
-
-        public static bool IsZero(this Complex64 self) {
-            return self.IsZero;
-        }
-
-        public static Complex64 Pow(this Complex64 self, Complex64 power) {
-            return self.Power(power);
-        }
-#else
         public static Complex MakeReal(double real) {
             return new Complex(real, 0.0);
         }
@@ -1232,7 +1154,6 @@ namespace Microsoft.Scripting.Utils {
         public static Complex Pow(this Complex self, Complex power) {
             return Complex.Pow(self, power);
         }
-#endif
 
         #endregion
     }
