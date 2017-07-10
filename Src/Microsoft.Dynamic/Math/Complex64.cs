@@ -16,9 +16,7 @@
 using System;
 using Microsoft.Scripting.Utils;
 
-#if FEATURE_NUMERICS
 using BigInt = System.Numerics.BigInteger;
-#endif
 
 namespace Microsoft.Scripting.Math {
     /// <summary>
@@ -137,12 +135,10 @@ namespace Microsoft.Scripting.Math {
             return MakeReal((double)i);
         }
 
-#if FEATURE_NUMERICS
         public static implicit operator Complex64(BigInt i) {
             // throws an overflow exception if we can't handle the value.
             return MakeReal((double)i);
         }
-#endif
 
         public static bool operator ==(Complex64 x, Complex64 y) {
             return x.real == y.real && x.imag == y.imag;

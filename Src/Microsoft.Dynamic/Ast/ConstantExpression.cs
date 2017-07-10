@@ -15,10 +15,8 @@
 
 using System.Linq.Expressions;
 
-#if FEATURE_NUMERICS
 using BigInt = System.Numerics.BigInteger;
 using Complex = System.Numerics.Complex;
-#endif
 
 using System;
 using System.Reflection;
@@ -60,12 +58,10 @@ namespace Microsoft.Scripting.Ast {
             BigInteger bi = value as BigInteger;
             if ((object)bi != null) {
                 return BigIntegerConstant(bi);
-#if FEATURE_NUMERICS
             } else if (value is BigInt) {
                 return BigIntConstant((BigInt)value);
             } else if (value is Complex) {
                 return ComplexConstant((Complex)value);
-#endif
             } else if (value is Complex64) {
                 return Complex64Constant((Complex64)value);
             } else if (value is Type) {
@@ -125,13 +121,6 @@ namespace Microsoft.Scripting.Ast {
                 );
             }
 
-#if !FEATURE_NUMERICS
-            return Expression.Call(
-                new Func<int, uint[], BigInteger>(CompilerHelpers.CreateBigInteger).Method,
-                Constant((int)value.Sign),
-                CreateArray<uint>(value.GetWords())
-            );
-#else
             return Expression.Call(
                 new Func<bool, byte[], BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                 Constant(value.Sign < 0),
@@ -161,7 +150,6 @@ namespace Microsoft.Scripting.Ast {
                 Constant(value.Sign < 0),
                 CreateArray<byte>(value.Abs().ToByteArray())
             );
-#endif
         }
 
         private static Expression CreateArray<T>(T[] array) {
@@ -173,7 +161,6 @@ namespace Microsoft.Scripting.Ast {
             return Expression.NewArrayInit(typeof(T), init);
         }
 
-#if FEATURE_NUMERICS
         private static Expression ComplexConstant(Complex value) {
             if (value.Real != 0.0) {
                 if (value.Imaginary() != 0.0) {
@@ -195,7 +182,6 @@ namespace Microsoft.Scripting.Ast {
                 );
             }
         }
-#endif
 
         private static Expression Complex64Constant(Complex64 value) {
             if (value.Real != 0.0) {

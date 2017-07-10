@@ -12,7 +12,6 @@
  *
  *
  * ***************************************************************************/
-#if FEATURE_NUMERICS
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -605,4 +604,3 @@ namespace Microsoft.Scripting.Math {
         #endregion
     }
 }
-#endif
