@@ -125,9 +125,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             Debug.Assert(sender == _remoteRuntimeProcess || _remoteRuntimeProcess == null);
 
             EventHandler remoteRuntimeExited = RemoteRuntimeExited;
-            if (remoteRuntimeExited != null) {
-                remoteRuntimeExited(sender, args);
-            }
+            remoteRuntimeExited?.Invoke(sender, args);
 
             // StartRemoteRuntimeProcess also blocks on this event. Signal it in case the 
             // remote runtime terminates during startup itself.

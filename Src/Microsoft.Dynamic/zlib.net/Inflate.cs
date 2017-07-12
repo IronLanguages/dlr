@@ -193,14 +193,13 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
         /// <param name="z">A ZStream object</param>
         /// <returns>Operation result code</returns>
-        internal int inflateEnd(ZStream z)
-        {
-            if (blocks != null)
-                blocks.free(z);
-            blocks = null;
-            //    ZFREE(z, z->state);
-            return (int)ZLibResultCode.Z_OK;
-        }
+		internal int inflateEnd(ZStream z)
+		{
+		    blocks?.free(z);
+		    blocks = null;
+			//    ZFREE(z, z->state);
+			return (int)ZLibResultCode.Z_OK;
+		}
 
         /// <summary>
         /// Initializes the inflate algorithm

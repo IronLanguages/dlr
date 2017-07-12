@@ -115,9 +115,7 @@ namespace Metadata {
             }
 
             _constants = new Dictionary<string, object>();
-            if (_clrModule != null) {
-                _clrModule.InitializeConstants(_context, _constants);
-            }
+            _clrModule?.InitializeConstants(_context, _constants);
         }
 
         internal void AddClrModules(NamespaceTreeNode treeNode) {

@@ -102,9 +102,7 @@ namespace Microsoft.Scripting.AspNet {
 
             // If it's the last module, the app is shutting down.  Call Application_OnEnd (if any)
             if (s_moduleCount == 0) {
-                if (s_buildResult != null) {
-                    s_buildResult.CallOnEndMethod();
-                }
+                s_buildResult?.CallOnEndMethod();
             }
         }
 
@@ -199,8 +197,8 @@ namespace Microsoft.Scripting.AspNet {
             // a global.<ext> file changes
 
             // If it's the first request in the domain, call Application_OnStart (if any)
-            if (s_firstRequest && s_buildResult != null) {
-                s_buildResult.CallOnStartMethod();
+            if (s_firstRequest) {
+                s_buildResult?.CallOnStartMethod();
             }
             
             // Hook up all the events implemented in the 'global' file
@@ -209,6 +207,7 @@ namespace Microsoft.Scripting.AspNet {
 
                 DynamicFunction f = null;
                 s_buildResult?.EventHandlers?.TryGetValue(handlerName, out f);
+
                 eventHandlerWrapper.SetDynamicFunction(f, s_globalVirtualPath);
             }
         }

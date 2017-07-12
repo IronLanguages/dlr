@@ -123,11 +123,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         [Obsolete("Use Overload instead")]
         public MethodBase Method {
             get {
-                if (_candidate != null) {
-                    return _candidate.Overload.ReflectionInfo;
-                }
-
-                return null;
+                return _candidate?.Overload.ReflectionInfo;
             }
         }
 
@@ -206,11 +202,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         public Type ReturnType {
             get {
-                if (_candidate != null) {
-                    return _candidate.ReturnType;
-                }
-
-                return null;
+                return _candidate?.ReturnType;
             }
         }
 

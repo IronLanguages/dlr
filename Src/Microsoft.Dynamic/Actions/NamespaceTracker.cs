@@ -364,9 +364,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         protected virtual void LoadNamespaces() {
-            if (_topPackage != null) {
-                _topPackage.LoadNamespaces();
-            }
+            _topPackage?.LoadNamespaces();
         }
 
         protected void SetTopPackage(TopNamespaceTracker pkg) {
@@ -502,9 +500,7 @@ namespace Microsoft.Scripting.Actions {
 
             foreach (KeyValuePair<string, MemberTracker> kvp in _dict) {
                 NamespaceTracker ns = kvp.Value as NamespaceTracker;
-                if (ns != null) {
-                    ns.UpdateSubtreeIds();
-                }
+                ns?.UpdateSubtreeIds();
             }
         }
     }

@@ -97,9 +97,7 @@ namespace Microsoft.Scripting.ComInterop {
             VerifyHandler(handler);
 
             ComEventSink comEventSink = ComEventSink.FromRuntimeCallableWrapper(_rcw, _sourceIid, false);
-            if (comEventSink != null) {
-                comEventSink.RemoveHandler(_dispid, handler);
-            }
+            comEventSink?.RemoveHandler(_dispid, handler);
 
             return this;
         }

@@ -238,9 +238,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override bool Equals(object obj) {
             ParameterMappingInfo pmi = obj as ParameterMappingInfo;
-            if (pmi == null) {
-                return false;
-            }
+            if (pmi == null) return false;
 
             if (pmi.ParameterIndex == ParameterIndex && pmi.ActionIndex == ActionIndex) {
                 if (Constant != null) {
@@ -249,9 +247,9 @@ namespace Microsoft.Scripting.Actions {
                     }
 
                     return Constant.Value == pmi.Constant.Value;
-                } else {
-                    return pmi.Constant == null;
                 }
+
+                return pmi.Constant == null;
             }
 
             return false;
@@ -259,10 +257,8 @@ namespace Microsoft.Scripting.Actions {
 
         public override int GetHashCode() {
             int res = ParameterIndex.GetHashCode() ^ ActionIndex.GetHashCode();
-            if (Constant != null) {
-                if (Constant.Value != null) {
-                    res ^= Constant.Value.GetHashCode();
-                }
+            if (Constant?.Value != null) {
+                res ^= Constant.Value.GetHashCode();
             }
             return res;
         }

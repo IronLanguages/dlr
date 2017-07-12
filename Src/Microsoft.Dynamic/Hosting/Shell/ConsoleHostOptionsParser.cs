@@ -132,9 +132,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 name = null;
             }
 
-            if (name != null) {
-                name = name.ToLower(CultureInfo.InvariantCulture);
-            }
+            name = name?.ToLower(CultureInfo.InvariantCulture);
         }
 
         protected void OptionValueRequired(string optionName, string value) {

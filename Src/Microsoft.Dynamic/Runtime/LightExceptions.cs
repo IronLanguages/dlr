@@ -184,11 +184,7 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public static Exception GetLightException(object exceptionValue) {
             LightException lightEx = exceptionValue as LightException;
-            if (lightEx != null) {
-                return lightEx.Exception;
-            }
-
-            return null;
+            return lightEx?.Exception;
         }
 
         /// <summary>

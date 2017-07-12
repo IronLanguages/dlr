@@ -41,8 +41,7 @@ namespace Microsoft.Scripting.Debugging {
 
         void IDisposable.Dispose() {
             IDisposable innerDisposable = _frame.Generator as IDisposable;
-            if (innerDisposable != null)
-                innerDisposable.Dispose();
+            innerDisposable?.Dispose();
 
             GC.SuppressFinalize(this);
         }
