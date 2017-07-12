@@ -370,11 +370,11 @@ namespace Microsoft.Scripting.Interpreter {
         #region Locals
 
         internal void SwitchToBoxed(int index, int instructionIndex) {
-            var instruction = _instructions[instructionIndex] as IBoxableInstruction;
-
-            var newInstruction = instruction?.BoxIfIndexMatches(index);
-            if (newInstruction != null) {
-                _instructions[instructionIndex] = newInstruction;
+            if (_instructions[instructionIndex] is IBoxableInstruction instruction) {
+                var newInstruction = instruction.BoxIfIndexMatches(index);
+                if (newInstruction != null) {
+                    _instructions[instructionIndex] = newInstruction;
+                }
             }
         }
 
