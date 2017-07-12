@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using SRC = System.Runtime.CompilerServices;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {    
@@ -122,29 +121,20 @@ namespace Microsoft.Scripting.Runtime {
         /// Weak-ref wrapper caches the weak reference, our hash code, and the object ID.
         /// </summary>
         private sealed class Wrapper {
-            private WeakReference _weakReference;
-            private int _hashCode;
-            private long _id;
+            private readonly WeakReference _weakReference;
+            private readonly int _hashCode;
 
             public Wrapper(Object obj, long uniqueId) {
                 // CF throws doesn't support long weak references (NotSuportedException is thrown)
                 _weakReference = new WeakReference(obj, !PlatformAdaptationLayer.IsCompactFramework);
 
                 _hashCode = (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
-                _id = uniqueId;
+                Id = uniqueId;
             }
 
-            public long Id {
-                get {
-                    return _id;
-                }
-            }
+            public long Id { get; }
 
-            public Object Target {
-                get {
-                    return _weakReference.Target;
-                }
-            }
+            public Object Target => _weakReference.Target;
 
             public override int GetHashCode() {
                 return _hashCode;
@@ -165,7 +155,7 @@ namespace Microsoft.Scripting.Runtime {
                 if (wy != null)
                     y = wy.Target;
 
-                return Object.ReferenceEquals(x, y);
+                return ReferenceEquals(x, y);
             }
 
             int IEqualityComparer<object>.GetHashCode(Object obj) {
@@ -182,6 +172,5 @@ namespace Microsoft.Scripting.Runtime {
                 return ReferenceEqualityComparer<object>.Instance.GetHashCode(o);
             }
         }
-
     }
 }
