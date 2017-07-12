@@ -66,7 +66,7 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - msbuild Dlr.sln /t:Build /p:BaseConfiguration=%CONFIGURATION% /verbosity:minimal /nologo
+  - msbuild Build.proj /t:Build /p:BuildFlavour=%CONFIGURATION% /verbosity:minimal /nologo
 
 # to disable automatic builds
 #build: off
