@@ -44,8 +44,12 @@
     <InfoFiles Include="$(RootDir)\LICENSE" />
     <InfoFiles Include="$(RootDir)\README.md" />
   </ItemGroup>
+
+  <Target Name="Restore">
+    <MSBuild Projects="$(Solution)" Targets="Restore" />
+  </Target>
   
-  <Target Name="Build">
+  <Target Name="Build" DependsOnTargets="Restore">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
