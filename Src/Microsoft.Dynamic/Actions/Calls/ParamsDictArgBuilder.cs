@@ -64,7 +64,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private static InvalidOperationException BadDictionaryType(Type dictType) {
-            return new InvalidOperationException(String.Format("Unsupported param dictionary type: {0}", dictType.FullName));
+            return new InvalidOperationException($"Unsupported param dictionary type: {dictType.FullName}");
         }
 
         public override Type Type {

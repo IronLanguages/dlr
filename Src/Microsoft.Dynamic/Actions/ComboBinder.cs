@@ -298,12 +298,12 @@ namespace Microsoft.Scripting.Actions {
 
         public override string ToString() {
             StringBuilder res = new StringBuilder();
-            res.Append(Binder.ToString());
+            res.Append(Binder);
             res.Append(" ");
             string comma = "";
             foreach (ParameterMappingInfo info in MappingInfo) {
                 res.Append(comma);
-                res.Append(info.ToString());
+                res.Append(info);
                 comma = ", ";
             }
             return res.ToString();

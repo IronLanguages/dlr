@@ -246,11 +246,8 @@ namespace Microsoft.Scripting.Runtime {
             if (bmt == null) throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name);
             if (bmt.BoundTo.MemberType != TrackerTypes.Event) throw new ArgumentTypeException("expected bound event, got " + bmt.BoundTo.MemberType.ToString());
 
-            if (bmt.BoundTo != eventTracker) throw new ArgumentException(String.Format("expected event from {0}.{1}, got event from {2}.{3}",
-                eventTracker.DeclaringType.Name,
-                eventTracker.Name,
-                bmt.BoundTo.DeclaringType.Name,
-                bmt.BoundTo.Name));
+            if (bmt.BoundTo != eventTracker) throw new ArgumentException(
+                $"expected event from {eventTracker.DeclaringType.Name}.{eventTracker.Name}, got event from {bmt.BoundTo.DeclaringType.Name}.{bmt.BoundTo.Name}");
         }
     }
 }

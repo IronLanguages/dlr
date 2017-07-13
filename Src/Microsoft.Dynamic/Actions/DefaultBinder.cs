@@ -134,7 +134,7 @@ namespace Microsoft.Scripting.Actions {
                 if (sb.Length != 0) sb.Append(", ");
                 sb.Append(mi.MemberType);
                 sb.Append(" : ");
-                sb.Append(mi.ToString());
+                sb.Append(mi);
             }
 
             return Ast.Throw(

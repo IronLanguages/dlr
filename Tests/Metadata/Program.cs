@@ -249,9 +249,9 @@ namespace Metadata {
             string str = value as string;
             if (str != null) {
                 return "\"" + str + "\"";
-            } else {
-                return "(" + value.GetType().Name + ") " + value.ToString();
             }
+
+            return "(" + value.GetType().Name + ") " + value;
         }
 
         private static string SignatureToString(MemoryBlock signature) {
@@ -477,7 +477,7 @@ namespace Metadata {
         }
 
         private static string MdTablesToString(MetadataTables tables) {
-            return tables.Module != null ? tables.Module.Assembly.ToString() + ":" + tables.Module.ToString() : tables.Path;
+            return tables.Module != null ? tables.Module.Assembly + ":" + tables.Module : tables.Path;
         }
 
         private static void DumpTables(

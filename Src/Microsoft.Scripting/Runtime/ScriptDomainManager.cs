@@ -99,7 +99,7 @@ namespace Microsoft.Scripting.Runtime {
         public LanguageContext GetLanguageByName(string languageName) {
             LanguageContext language;
             if (!TryGetLanguage(languageName, out language)) {
-                throw new ArgumentException(String.Format("Unknown language name: '{0}'", languageName));
+                throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
             return language;
         }

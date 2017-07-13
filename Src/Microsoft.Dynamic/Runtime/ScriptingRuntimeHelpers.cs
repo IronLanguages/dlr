@@ -134,7 +134,7 @@ namespace Microsoft.Scripting.Runtime {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
         public static Exception CannotConvertError(Type toType, object value) {
-            return SimpleTypeError(String.Format("Cannot convert {0}({1}) to {2}", CompilerHelpers.GetType(value).Name, value, toType.Name));
+            return SimpleTypeError($"Cannot convert {CompilerHelpers.GetType(value).Name}({value}) to {toType.Name}");
         }
 
         public static Exception SimpleAttributeError(string message) {

@@ -209,7 +209,7 @@ namespace Microsoft.Scripting.Generation {
                 exitCode = proc.ExitCode;
                 proc.Close();
             } catch (Exception e) {
-                strOut = "Unexpected exception: " + e.ToString();
+                strOut = "Unexpected exception: " + e;
                 exitCode = 1;
             }
 
