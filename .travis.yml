@@ -19,6 +19,7 @@ dist: trusty
 dotnet: 1.0.3
 
 script:
+  - dotnet restore Dlr.sln --packages ./packages
   - msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
   - pushd bin/$CONFIGURATION
   - mono ./net40/TestInternalDLR.exe
