@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToString() {
-            return String.Format("{0}: {1} {2}", Index, IsBoxed ? "boxed" : null, InClosure ? "in closure" : null);
+            return $"{Index}: {(IsBoxed ? "boxed" : null)} {(InClosure ? "in closure" : null)}";
         }
     }
 

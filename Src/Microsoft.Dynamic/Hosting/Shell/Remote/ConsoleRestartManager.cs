@@ -111,7 +111,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             try {
                 RunWorker();
             } catch (Exception e) {
-                Debug.Assert(false, "Unhandled exception on console thread:\n\n" + e.ToString());
+                Debug.Assert(false, "Unhandled exception on console thread:\n\n" + e);
             }
 #else
             RunWorker();

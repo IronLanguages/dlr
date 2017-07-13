@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.Hosting {
 
             ScriptEngine engine;
             if (!TryGetEngine(languageName, out engine)) {
-                throw new ArgumentException(String.Format("Unknown language name: '{0}'", languageName));
+                throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
 
             return engine;
@@ -300,7 +300,7 @@ namespace Microsoft.Scripting.Hosting {
 
             // Didn't find the file, throw
             string allPaths = searchPaths.Aggregate((x, y) => x + ", " + y);
-            throw new FileNotFoundException(string.Format("File '{0}' not found in language's search path: {1}", path, allPaths));
+            throw new FileNotFoundException($"File '{path}' not found in language's search path: {allPaths}");
         }
 
         /// <summary>

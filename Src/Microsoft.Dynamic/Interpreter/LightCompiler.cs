@@ -149,7 +149,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToString() {
-            return MethodName + (DebugInfo != null ? ": " + DebugInfo.ToString() : null);
+            return MethodName + (DebugInfo != null ? ": " + DebugInfo : null);
         }
     }
 

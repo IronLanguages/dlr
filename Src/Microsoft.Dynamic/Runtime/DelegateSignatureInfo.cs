@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public override string ToString() {
             StringBuilder text = new StringBuilder();
-            text.Append(_returnType.ToString());
+            text.Append(_returnType);
             text.Append("(");
             for (int i = 0; i < _parameterTypes.Length; i++) {
                 if (i != 0) text.Append(", ");

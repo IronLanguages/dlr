@@ -196,7 +196,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             if (_defaultValue != DBNull.Value) {
                 result.Append("=");
-                result.Append(_defaultValue.ToString());
+                result.Append(_defaultValue);
             }
 
             return result.ToString();
