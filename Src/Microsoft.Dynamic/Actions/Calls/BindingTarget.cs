@@ -13,16 +13,10 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Dynamic;
-using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Actions;
-using Microsoft.Scripting.Runtime;
-using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>
@@ -35,10 +29,6 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// the reason the call failed.
     /// </summary>
     public sealed class BindingTarget {
-        private readonly BindingResult _result;                                           // the result of the binding
-        private readonly string _name;                                                    // the name of the method being bound to
-        private readonly MethodCandidate _candidate;                                      // the selected method if the binding was successful 
-        private readonly RestrictedArguments _restrictedArgs;                                 // the arguments after they've been restricted to their known types
         private readonly CallFailure[] _callFailures;                                     // if failed on conversion the various conversion failures for all overloads
         private readonly MethodCandidate[] _ambiguousMatches;                             // list of methods which are ambiguous to bind to.
         private readonly int[] _expectedArgs;                                             // gets the acceptable number of parameters which can be passed to the method.
@@ -47,9 +37,9 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Creates a new BindingTarget when the method binding has succeeded.
         /// </summary>
         internal BindingTarget(string name, int actualArgumentCount, MethodCandidate candidate, NarrowingLevel level, RestrictedArguments restrictedArgs) {
-            _name = name;
-            _candidate = candidate;
-            _restrictedArgs = restrictedArgs;
+            Name = name;
+            MethodCandidate = candidate;
+            RestrictedArguments = restrictedArgs;
             NarrowingLevel = level;
             ActualArgumentCount = actualArgumentCount;
         }
@@ -58,8 +48,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Creates a new BindingTarget when the method binding has failed due to an incorrect argument count
         /// </summary>
         internal BindingTarget(string name, int actualArgumentCount, int[] expectedArgCount) {
-            _name = name;
-            _result = BindingResult.IncorrectArgumentCount;
+            Name = name;
+            Result = BindingResult.IncorrectArgumentCount;
             _expectedArgs = expectedArgCount;
             ActualArgumentCount = actualArgumentCount;
         }
@@ -69,8 +59,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// one or more parameters which could not be converted.
         /// </summary>
         internal BindingTarget(string name, int actualArgumentCount, CallFailure[] failures) {
-            _name = name;
-            _result = BindingResult.CallFailure;
+            Name = name;
+            Result = BindingResult.CallFailure;
             _callFailures = failures;
             ActualArgumentCount = actualArgumentCount;
         }
@@ -79,8 +69,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Creates a new BindingTarget when the match was ambiguous
         /// </summary>
         internal BindingTarget(string name, int actualArgumentCount, MethodCandidate[] ambiguousMatches) {
-            _name = name;
-            _result = BindingResult.AmbiguousMatch;
+            Name = name;
+            Result = BindingResult.AmbiguousMatch;
             _ambiguousMatches = ambiguousMatches;
             ActualArgumentCount = actualArgumentCount;
         }
@@ -89,18 +79,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Other failure.
         /// </summary>
         internal BindingTarget(string name, BindingResult result) {
-            _name = name;
-            _result = result;
+            Name = name;
+            Result = result;
         }
 
         /// <summary>
         /// Gets the result of the attempt to bind.
         /// </summary>
-        public BindingResult Result {
-            get {
-                return _result;
-            }
-        }
+        public BindingResult Result { get; }
 
         /// <summary>
         /// Gets an Expression which calls the binding target if the method binding succeeded.
@@ -108,76 +94,52 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Throws InvalidOperationException if the binding failed.
         /// </summary>
         public Expression MakeExpression() {
-            if (_candidate == null) {
+            if (MethodCandidate == null) {
                 throw new InvalidOperationException("An expression cannot be produced because the method binding was unsuccessful.");
-            } else if (_restrictedArgs == null) {
+            }
+
+            if (RestrictedArguments == null) {
                 throw new InvalidOperationException("An expression cannot be produced because the method binding was done with Expressions, not MetaObject's");
             }
 
-            return _candidate.MakeExpression(_restrictedArgs);
+            return MethodCandidate.MakeExpression(RestrictedArguments);
         }
 
         /// <summary>
         /// Returns the method if the binding succeeded, or null if no method was applicable.
         /// </summary>
         [Obsolete("Use Overload instead")]
-        public MethodBase Method {
-            get {
-                return _candidate?.Overload.ReflectionInfo;
-            }
-        }
+        public MethodBase Method => MethodCandidate?.Overload.ReflectionInfo;
 
         /// <summary>
         /// Returns the selected overload if the binding succeeded, or null if no one was applicable.
         /// </summary>
-        public OverloadInfo Overload {
-            get { return (_candidate != null) ? _candidate.Overload : null; }
-        }
+        public OverloadInfo Overload => MethodCandidate?.Overload;
 
         /// <summary>
         /// Gets the name of the method as supplied to the OverloadResolver.
         /// </summary>
-        public string Name {
-            get {
-                return _name;
-            }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Returns the MethodTarget if the binding succeeded, or null if no method was applicable.
         /// </summary>
-        public MethodCandidate MethodCandidate {
-            get {
-                return _candidate;
-            }
-        }
+        public MethodCandidate MethodCandidate { get; }
 
         /// <summary>
         /// Returns the methods which don't have any matches or null if Result == BindingResult.AmbiguousMatch
         /// </summary>
-        public IEnumerable<MethodCandidate> AmbiguousMatches {
-            get {
-                return _ambiguousMatches;
-            }
-        }
+        public IEnumerable<MethodCandidate> AmbiguousMatches => _ambiguousMatches;
 
         /// <summary>
         /// Returns the methods and their associated conversion failures if Result == BindingResult.CallFailure.
         /// </summary>
-        public ICollection<CallFailure> CallFailures {
-            get {
-                return _callFailures;
-            }
-        }
+        public ICollection<CallFailure> CallFailures => _callFailures;
 
         /// <summary>
         /// Returns the acceptable number of arguments which can be passed to the method if Result == BindingResult.IncorrectArgumentCount.
         /// </summary>
-        public IList<int> ExpectedArgumentCount {
-            get {
-                return _expectedArgs;
-            }
-        }
+        public IList<int> ExpectedArgumentCount => _expectedArgs;
 
         /// <summary>
         /// Returns the total number of arguments provided to the call. 0 if the call succeeded or failed for a reason other
@@ -191,20 +153,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// The members of the array correspond to each of the arguments.  All members of the array
         /// have a value.
         /// </summary>
-        public RestrictedArguments RestrictedArguments {
-            get {
-                return _restrictedArgs;
-            }
-        }
+        public RestrictedArguments RestrictedArguments { get; }
 
         /// <summary>
         /// Returns the return type of the binding, or null if no method was applicable.
         /// </summary>
-        public Type ReturnType {
-            get {
-                return _candidate?.ReturnType;
-            }
-        }
+        public Type ReturnType => MethodCandidate?.ReturnType;
 
         /// <summary>
         /// Gets the NarrowingLevel of the method if the call succeeded.
@@ -214,13 +168,8 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         /// <summary>
         /// Returns true if the binding was succesful, false if it failed.
-        /// 
         /// This is an alias for BindingTarget.Result == BindingResult.Success.
         /// </summary>
-        public bool Success {
-            get {
-                return _result == BindingResult.Success;
-            }
-        }
+        public bool Success => Result == BindingResult.Success;
     }
 }

@@ -44,9 +44,7 @@ namespace Microsoft.Scripting.Ast {
         private readonly List<KeyValuePair<ParameterExpression, bool>> _visibleVars = new List<KeyValuePair<ParameterExpression, bool>>();
         private string _name;
         private Type _returnType;
-        private ParameterExpression _paramsArray;
         private Expression _body;
-        private bool _dictionary;
         private bool _visible = true;
         private bool _completed;
 
@@ -105,11 +103,7 @@ namespace Microsoft.Scripting.Ast {
         /// <summary>
         /// The params array argument, if any.
         /// </summary>
-        public ParameterExpression ParamsArray {
-            get {
-                return _paramsArray;
-            }
-        }
+        public ParameterExpression ParamsArray { get; private set; }
 
         /// <summary>
         /// The body of the lambda. This must be non-null.
@@ -128,14 +122,7 @@ namespace Microsoft.Scripting.Ast {
         /// The generated lambda should have dictionary of locals
         /// instead of allocating them directly on the CLR stack.
         /// </summary>
-        public bool Dictionary {
-            get {
-                return _dictionary;
-            }
-            set {
-                _dictionary = value;
-            }
-        }
+        public bool Dictionary { get; set; }
 
         /// <summary>
         /// The scope is visible (default). Invisible if false.
@@ -225,9 +212,9 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.Requires(type.IsArray, "type");
             ContractUtils.Requires(type.GetArrayRank() == 1, "type");
-            ContractUtils.Requires(_paramsArray == null, "type", "Already have parameter array");
+            ContractUtils.Requires(ParamsArray == null, "type", "Already have parameter array");
 
-            return _paramsArray = Parameter(type, name);
+            return ParamsArray = Parameter(type, name);
         }
 
         /// <summary>
@@ -300,7 +287,7 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         /// <returns>New LambdaExpression instance.</returns>
         public LambdaExpression MakeLambda() {
-            ContractUtils.Requires(_paramsArray == null, "Paramarray lambdas require explicit delegate type");
+            ContractUtils.Requires(ParamsArray == null, "Paramarray lambdas require explicit delegate type");
             Validate();
 
             LambdaExpression lambda = Expression.Lambda(
@@ -450,7 +437,7 @@ namespace Microsoft.Scripting.Ast {
 
                 //lambda's paramarray should get elements from the delegate paramarray after skipping those that we unwrapped.
                 if (lambdaHasParamarray) {
-                    ParameterExpression mappedParameter = _paramsArray;
+                    ParameterExpression mappedParameter = ParamsArray;
                     ParameterExpression backingVariable = Expression.Variable(mappedParameter.Type, mappedParameter.Name);
 
                     backingVars.Add(backingVariable);
@@ -482,7 +469,7 @@ namespace Microsoft.Scripting.Ast {
             preambuleExpressions.Add(newBody);
             _body = Expression.Block(preambuleExpressions);
 
-            _paramsArray = null;
+            ParamsArray = null;
             _locals.AddRange(backingVars);
             _params = newParams;
 
@@ -513,14 +500,14 @@ namespace Microsoft.Scripting.Ast {
                 throw new InvalidOperationException("Body is missing");
             }
 
-            if (_paramsArray != null &&
-                (_params.Count == 0 || _params[_params.Count -1] != _paramsArray)) {
+            if (ParamsArray != null &&
+                (_params.Count == 0 || _params[_params.Count -1] != ParamsArray)) {
                 throw new InvalidOperationException("The params array parameter is not last in the parameter list");
             }
         }
 
         private bool EmitDictionary {
-            get { return _dictionary; }
+            get { return Dictionary; }
         }
 
         private Expression MakeBody() {

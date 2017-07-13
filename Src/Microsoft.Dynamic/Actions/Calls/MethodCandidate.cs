@@ -50,7 +50,6 @@ namespace Microsoft.Scripting.Actions.Calls {
         private readonly IList<ArgBuilder> _argBuilders;
         private readonly InstanceBuilder _instanceBuilder;
         private readonly ReturnBuilder _returnBuilder;
-        private readonly Dictionary<DynamicMetaObject, BindingRestrictions> _restrictions;
 
         internal MethodCandidate(OverloadResolver resolver, OverloadInfo method, List<ParameterWrapper> parameters, ParameterWrapper paramsDict,
             ReturnBuilder returnBuilder, InstanceBuilder instanceBuilder, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions> restrictions) {
@@ -66,7 +65,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _returnBuilder = returnBuilder;
             _parameters = parameters;
             _paramsDict = paramsDict;
-            _restrictions = restrictions;
+            Restrictions = restrictions;
 
             _paramsArrayIndex = ParameterWrapper.IndexOfParamsArray(parameters);
 
@@ -77,50 +76,28 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new MethodCandidate(_resolver, newMethod, parameters, _paramsDict, _returnBuilder, _instanceBuilder, argBuilders, restrictions);
         }
 
-        internal ReturnBuilder ReturnBuilder {
-            get { return _returnBuilder; }
-        }
+        internal ReturnBuilder ReturnBuilder => _returnBuilder;
 
-        internal IList<ArgBuilder> ArgBuilders {
-            get { return _argBuilders; }
-        }
+        internal IList<ArgBuilder> ArgBuilders => _argBuilders;
 
-        public OverloadResolver Resolver {
-            get { return _resolver; }
-        }
+        public OverloadResolver Resolver => _resolver;
 
         [Obsolete("Use Overload instead")]
-        public MethodBase Method {
-            get { return _overload.ReflectionInfo; }
-        }
+        public MethodBase Method => _overload.ReflectionInfo;
 
-        public OverloadInfo Overload {
-            get { return _overload; }
-        }
+        public OverloadInfo Overload => _overload;
 
-        internal Dictionary<DynamicMetaObject, BindingRestrictions> Restrictions {
-            get { return _restrictions; }
-        }
+        internal Dictionary<DynamicMetaObject, BindingRestrictions> Restrictions { get; }
 
-        public Type ReturnType {
-            get { return _returnBuilder.ReturnType; }
-        }
+        public Type ReturnType => _returnBuilder.ReturnType;
 
-        public int ParamsArrayIndex {
-            get { return _paramsArrayIndex; }
-        }
+        public int ParamsArrayIndex => _paramsArrayIndex;
 
-        public bool HasParamsArray {
-            get { return _paramsArrayIndex != -1; }
-        }
+        public bool HasParamsArray => _paramsArrayIndex != -1;
 
-        public bool HasParamsDictionary {
-            get { return _paramsDict != null; }
-        }
+        public bool HasParamsDictionary => _paramsDict != null;
 
-        public ActionBinder Binder {
-            get { return _resolver.Binder; }
-        }
+        public ActionBinder Binder => _resolver.Binder;
 
         internal ParameterWrapper GetParameter(int argumentIndex, ArgumentBinding namesBinding) {
             return _parameters[namesBinding.ArgumentToParameter(argumentIndex)];
@@ -130,9 +107,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return _parameters[parameterIndex];
         }
 
-        internal int ParameterCount {
-            get { return _parameters.Count; }
-        }
+        internal int ParameterCount => _parameters.Count;
 
         internal int IndexOfParameter(string name) {
             for (int i = 0; i < _parameters.Count; i++) {

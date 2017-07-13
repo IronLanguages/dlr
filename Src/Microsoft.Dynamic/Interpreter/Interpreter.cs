@@ -43,11 +43,6 @@ namespace Microsoft.Scripting.Interpreter {
         // negative: default
         internal readonly int _compilationThreshold;
 
-        private readonly int _localCount;
-        private readonly HybridReferenceDictionary<LabelTarget, BranchLabel> _labelMapping;
-        private readonly Dictionary<ParameterExpression, LocalVariable> _closureVariables;
-
-        private readonly InstructionArray _instructions;
         internal readonly object[] _objects;
         internal readonly RuntimeLabel[] _labels;
 
@@ -59,13 +54,13 @@ namespace Microsoft.Scripting.Interpreter {
             InstructionArray instructions, ExceptionHandler[] handlers, DebugInfo[] debugInfos, int compilationThreshold) {
 
             _name = name;
-            _localCount = locals.LocalCount;
-            _closureVariables = locals.ClosureVariables;
+            LocalCount = locals.LocalCount;
+            ClosureVariables = locals.ClosureVariables;
 
-            _instructions = instructions;
+            Instructions = instructions;
             _objects = instructions.Objects;
             _labels = instructions.Labels;
-            _labelMapping = labelMapping;
+            LabelMapping = labelMapping;
 
             _handlers = handlers;
             _debugInfos = debugInfos;
@@ -74,34 +69,22 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal int ClosureSize {
             get {
-                if (_closureVariables == null) {
+                if (ClosureVariables == null) {
                     return 0;
                 }
-                return _closureVariables.Count;
+                return ClosureVariables.Count;
             }
         }
 
-        internal int LocalCount {
-            get {
-                return _localCount;
-            }
-        }
+        internal int LocalCount { get; }
 
-        internal bool CompileSynchronously {
-            get { return _compilationThreshold <= 1; }
-        }
+        internal bool CompileSynchronously => _compilationThreshold <= 1;
 
-        internal InstructionArray Instructions {
-            get { return _instructions; }
-        }
+        internal InstructionArray Instructions { get; }
 
-        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables {
-            get { return _closureVariables; } 
-        }
+        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; }
 
-        internal HybridReferenceDictionary<LabelTarget, BranchLabel> LabelMapping {
-            get { return _labelMapping; }
-        }
+        internal HybridReferenceDictionary<LabelTarget, BranchLabel> LabelMapping { get; }
 
         /// <summary>
         /// Runs instructions within the given frame.
@@ -116,7 +99,7 @@ namespace Microsoft.Scripting.Interpreter {
         public void Run(InterpretedFrame frame) {
             while (true) {
                 try {
-                    var instructions = _instructions.Instructions;
+                    var instructions = Instructions.Instructions;
                     int index = frame.InstructionIndex;
                     while (index < instructions.Length) {
                         index += instructions[index].Run(frame);
@@ -159,7 +142,7 @@ namespace Microsoft.Scripting.Interpreter {
 #endif
             while (true) {
                 try {
-                    var instructions = _instructions.Instructions;
+                    var instructions = Instructions.Instructions;
                     int index = frame.InstructionIndex;
 
                     while (index < instructions.Length) {

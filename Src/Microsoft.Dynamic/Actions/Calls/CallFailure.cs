@@ -33,35 +33,30 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// MethodTarget is always set and indicates the method which failed to bind.
     /// </summary>
     public sealed class CallFailure {
-        private readonly MethodCandidate _candidate;
         private readonly ConversionResult[] _results;
         private readonly string[] _keywordArgs;
 
         internal CallFailure(MethodCandidate candidate, ConversionResult[] results) {
-            _candidate = candidate;
+            Candidate = candidate;
             _results = results;
             Reason = CallFailureReason.ConversionFailure;
         }
 
         internal CallFailure(MethodCandidate candidate, string[] keywordArgs, bool unassignable) {
             Reason = unassignable ? CallFailureReason.UnassignableKeyword : CallFailureReason.DuplicateKeyword;
-            _candidate = candidate;
+            Candidate = candidate;
             _keywordArgs = keywordArgs;
         }
 
         internal CallFailure(MethodCandidate candidate, CallFailureReason reason) {
-            _candidate = candidate;
+            Candidate = candidate;
             Reason = reason;
         }
 
         /// <summary>
         /// Gets the MethodTarget which the call failed for.
         /// </summary>
-        public MethodCandidate Candidate {
-            get {
-                return _candidate;
-            }
-        }
+        public MethodCandidate Candidate { get; }
 
         /// <summary>
         /// Gets the reason for the call failure which determines the other 
@@ -74,20 +69,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// whether the conversion was successful or failed and the types
         /// being converted.
         /// </summary>
-        public IList<ConversionResult> ConversionResults {
-            get {
-                return _results;
-            }
-        }
+        public IList<ConversionResult> ConversionResults => _results;
 
         /// <summary>
         /// Gets the list of keyword arguments that were either dupliated or
         /// unassignable.
         /// </summary>
-        public IList<string> KeywordArguments {
-            get {
-                return _keywordArgs;
-            }
-        }
+        public IList<string> KeywordArguments => _keywordArgs;
     }
 }

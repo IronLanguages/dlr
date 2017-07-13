@@ -33,57 +33,42 @@ namespace Microsoft.Scripting.Ast {
         private readonly LabelTarget _target;
         private readonly Expression _body;
         private Expression _reduced;
-        private readonly Type _type;
         private readonly string _name;
         private readonly bool _rewriteAssignments;
 
         internal GeneratorExpression(string name, Type type, LabelTarget label, Expression body, bool rewriteAssignments) {
             _target = label;
             _body = body;
-            _type = type;
+            Type = type;
             _name = name;
             _rewriteAssignments = rewriteAssignments;
         }
 
-        public override bool CanReduce {
-            get { return true; }
-        }
+        public override bool CanReduce => true;
 
-        public sealed override Type Type {
-            get { return _type; }
-        }
+        public sealed override Type Type { get; }
 
-        public sealed override ExpressionType NodeType {
-            get { return ExpressionType.Extension; }
-        }
+        public sealed override ExpressionType NodeType => ExpressionType.Extension;
 
-        public string Name {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         /// <summary>
         /// The label used by YieldBreak and YieldReturn expressions to yield
         /// from this generator
         /// </summary>
-        public LabelTarget Target {
-            get { return _target; }
-        }
+        public LabelTarget Target => _target;
 
         /// <summary>
         /// The body of the generator, which can contain YieldBreak and
         /// YieldReturn expressions
         /// </summary>
-        public Expression Body {
-            get { return _body; }
-        }
+        public Expression Body => _body;
 
         /// <summary>
         /// Indicates whether the lhs instances are preserved when assignments
         /// are made to expressions containing yields.
         /// </summary>
-        public bool RewriteAssignments {
-            get { return _rewriteAssignments; }
-        }
+        public bool RewriteAssignments => _rewriteAssignments;
 
         public override Expression Reduce() {
             if (_reduced == null) {
@@ -100,9 +85,7 @@ namespace Microsoft.Scripting.Ast {
             return Utils.Generator(_name, _target, b, Type);
         }
 
-        internal bool IsEnumerable {
-            get { return Utils.IsEnumerableType(Type); }
-        }
+        internal bool IsEnumerable => Utils.IsEnumerableType(Type);
     }
 
     public partial class Utils {        
