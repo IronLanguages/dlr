@@ -55,6 +55,22 @@ namespace Microsoft.Scripting {
 
         #region Assembly Loading
 
+#if NETCOREAPP2_0
+        static PlatformAdaptationLayer() {
+            // https://github.com/dotnet/coreclr/issues/11498
+            // attempt to resolve dependencies in the requesting directory
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+                if (args.RequestingAssembly == null) return null;
+                var path = Path.Combine(Path.GetDirectoryName(args.RequestingAssembly.Location), new AssemblyName(args.Name).Name + ".dll");
+                if (File.Exists(path)) {
+                    try { return Assembly.LoadFrom(path); }
+                    catch { }
+                }
+                return null;
+            };
+        }
+#endif
+
         public virtual Assembly LoadAssembly(string name) {
             return Assembly.Load(name);
         }

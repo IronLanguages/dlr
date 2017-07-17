@@ -31,9 +31,19 @@ namespace Microsoft.Scripting.Generation {
     public class FieldBuilderExpression : Expression {
         private readonly FieldBuilder _builder;
 
+#if NETCOREAPP2_0
+        private readonly StrongBox<Type> _finishedType;
+
+        // Get something which can be updated w/ the final type.
+        public FieldBuilderExpression(FieldBuilder builder, StrongBox<Type> finishedType) {
+            _builder = builder;
+            _finishedType = finishedType;
+        }
+#else
         public FieldBuilderExpression(FieldBuilder builder) {
             _builder = builder;
         }
+#endif
 
         public override bool CanReduce {
             get {
@@ -60,9 +70,14 @@ namespace Microsoft.Scripting.Generation {
 
         private FieldInfo GetFieldInfo() {
             // turn the field builder back into a FieldInfo
+#if NETCOREAPP2_0
+            return _finishedType.Value.GetDeclaredField(_builder.Name);
+#else
+            var tmp = _builder.MetadataToken;
             return _builder.DeclaringType.Module.ResolveField(
                 _builder.GetToken().Token
             );
+#endif
         }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {

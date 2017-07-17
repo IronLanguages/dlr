@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9C454D45-326F-4EA1-8177-64341267A17F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Scripting.AspNet", "Src\Hosts\MerlinWeb\Microsoft.Scripting.AspNet\Microsoft.Scripting.AspNet.csproj", "{3272E46C-F4D9-418D-9EE9-081A1B658EE4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RowanTest.Common", "Tests\RowanTest.Common\RowanTest.Common.csproj", "{7B67CCAD-3C88-4A1E-8F5C-6AD784DFB52F}"
 EndProject
@@ -41,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49
 		Build\Common.proj = Build\Common.proj
 		Build\net40.props = Build\net40.props
 		Build\net45.props = Build\net45.props
+		Build\netcoreapp2.0.props = Build\netcoreapp2.0.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Dynamic.Test", "Tests\Microsoft.Dynamic.Test\Microsoft.Dynamic.Test.csproj", "{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1}"
@@ -53,10 +52,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3272E46C-F4D9-418D-9EE9-081A1B658EE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3272E46C-F4D9-418D-9EE9-081A1B658EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3272E46C-F4D9-418D-9EE9-081A1B658EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3272E46C-F4D9-418D-9EE9-081A1B658EE4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B67CCAD-3C88-4A1E-8F5C-6AD784DFB52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B67CCAD-3C88-4A1E-8F5C-6AD784DFB52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B67CCAD-3C88-4A1E-8F5C-6AD784DFB52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -105,5 +100,8 @@ Global
 		{60056F49-17D6-4C5C-80EC-F203BA2F7E3B} = {BFEE2666-74E5-49B0-BEB7-1F01CECD7F98}
 		{CBDDAD40-D44E-458A-AA53-9A6DB62EC4A1} = {9C454D45-326F-4EA1-8177-64341267A17F}
 		{56B4AA3A-42BC-4CA6-A022-703A777332AF} = {9C454D45-326F-4EA1-8177-64341267A17F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {408269A6-9EA8-42FE-8C65-33A9DCF776B7}
 	EndGlobalSection
 EndGlobal

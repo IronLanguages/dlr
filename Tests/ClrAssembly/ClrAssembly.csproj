@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
     <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{BEE737B9-18D5-48D9-8672-9A896213C98B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -74,7 +74,7 @@
   </Target>
   <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample">
     <Csc TargetType="library" Sources="Src\fieldtests.cs" OutputAssembly="$(OutputPath)\$(Prefix)fieldtests.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\methodargs.cs" OutputAssembly="$(OutputPath)\$(Prefix)methodargs.dll" References="System.dll;$(OutputPath)\Microsoft.Scripting.dll;$(OutputPath)\$(Prefix)typesamples.dll" />
+    <Csc TargetType="library" Sources="Src\methodargs.cs" OutputAssembly="$(OutputPath)\$(Prefix)methodargs.dll" References="System.dll;System.Runtime.dll;$(OutputPath)\Microsoft.Scripting.dll;$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" Sources="Src\returnvalues.cs" OutputAssembly="$(OutputPath)\$(Prefix)returnvalues.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" Sources="Src\operators.cs" OutputAssembly="$(OutputPath)\$(Prefix)operators.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" Sources="Src\userdefinedconversions.cs" OutputAssembly="$(OutputPath)\$(Prefix)userdefinedconversions.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
