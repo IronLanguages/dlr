@@ -724,16 +724,12 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// </summary>
 		internal int inflate_flush(ZStream z, int r)
 		{
-			int n;
-			int p;
-			int q;
-			
-			// local copies of source and destination pointers
-			p = z.next_out_index;
-			q = ReadPos;
+		    // local copies of source and destination pointers
+			int p = z.next_out_index;
+			int q = ReadPos;
 			
 			// compute number of bytes to copy as far as End of Window
-			n = (int) ((q <= WritePos?WritePos:End) - q);
+			int n = (int) ((q <= WritePos?WritePos:End) - q);
 			if (n > z.avail_out)
 				n = z.avail_out;
 			if (n != 0 && r == (int)ZLibResultCode.Z_BUF_ERROR)
@@ -744,7 +740,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 			z.total_out += n;
 			
 			// update check information
-			if (this.needCheck)
+			if (needCheck)
 				z.adler = check = Adler32.GetAdler32Checksum(check, Window, q, n);
 			
 			// copy as far as End of Window

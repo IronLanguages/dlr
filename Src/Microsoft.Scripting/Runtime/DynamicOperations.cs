@@ -155,8 +155,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Gets the member name from the object obj.  Throws an exception if the member does not exist or is write-only.
         /// </summary>
         public object GetMember(object obj, string name, bool ignoreCase) {
-            CallSite<Func<CallSite, object, object>> site;
-            site = GetOrCreateSite<object, object>(_lc.CreateGetMemberBinder(name, ignoreCase));
+            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateGetMemberBinder(name, ignoreCase));
             return site.Target(site, obj);
         }
 
@@ -351,8 +350,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Converts the object obj to the type type including implicit conversions.
         /// </summary>
         public object ImplicitConvertTo(object obj, Type type) {
-            CallSite<Func<CallSite, object, object>> site;
-            site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, false));
+            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, false));
             return site.Target(site, obj);
         }
 
