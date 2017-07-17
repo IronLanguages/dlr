@@ -14,10 +14,7 @@
  * ***************************************************************************/
 
 using System.Linq.Expressions;
-#if !WIN8
 using DynamicExpression = System.Linq.Expressions.Expression;
-#endif
-
 using System;
 using System.Reflection;
 using System.Collections.Generic;

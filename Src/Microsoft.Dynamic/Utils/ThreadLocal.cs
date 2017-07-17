@@ -12,7 +12,6 @@
  *
  *
  * ***************************************************************************/
-#if !WIN8
 
 using System;
 using System.Threading;
@@ -28,7 +27,6 @@ namespace Microsoft.Scripting.Utils {
         private static readonly StorageInfo[] Updating = new StorageInfo[0];   // a marker used when updating the array
         private readonly bool _refCounted;
 
-        
         public ThreadLocal() {
         }
 
@@ -213,4 +211,3 @@ namespace Microsoft.Scripting.Utils {
         #endregion
     }
 }
-#endif
