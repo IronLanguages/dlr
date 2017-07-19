@@ -117,7 +117,6 @@ namespace Microsoft.Scripting {
 #endif
         }
 
-#if !CLR2
         // TODO: better APIs
         public virtual Stream OpenFileStream(string path, FileMode mode = FileMode.OpenOrCreate, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.Read, int bufferSize = 8192) {
 #if FEATURE_FILESYSTEM
@@ -139,55 +138,15 @@ namespace Microsoft.Scripting {
         public virtual Stream OpenOutputFileStream(string path) {
             return OpenFileStream(path, FileMode.Create, FileAccess.Write);
         }
-#else
-        public virtual Stream OpenFileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize) {
-#if FEATURE_FILESYSTEM
-            if (string.Equals("nul", path, StringComparison.InvariantCultureIgnoreCase)) {
-                return Stream.Null;
-            }
-            return new FileStream(path, mode, access, share, bufferSize);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-
-        // TODO: better APIs
-        public virtual Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share) {
-            return OpenFileStream(path, mode, access, share, 8912);
-        }
-
-        // TODO: better APIs
-        public virtual Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize) {
-            return OpenFileStream(path, mode, access, share, bufferSize);
-        }
-
-        // TODO: better APIs
-        public virtual Stream OpenInputFileStream(string path) {
-#if FEATURE_FILESYSTEM
-            return OpenFileStream(path, FileMode.Open, FileAccess.Read, FileShare.None, 8912);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-
-        // TODO: better APIs
-        public virtual Stream OpenOutputFileStream(string path) {
-#if FEATURE_FILESYSTEM
-            return OpenFileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 8912);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-#endif
 
         public virtual void DeleteFile(string path, bool deleteReadOnly) {
 #if FEATURE_FILESYSTEM
             FileInfo info = new FileInfo(path);
-#if !ANDROID
+
             if (deleteReadOnly && info.IsReadOnly) {
                 info.IsReadOnly = false;
             }
-#endif
+
             info.Delete();
 #else
             throw new NotImplementedException();

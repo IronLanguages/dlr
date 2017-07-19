@@ -533,180 +533,6 @@ namespace Microsoft.Scripting.Utils {
 
         #endregion
 
-        #region Win8
-#if WIN8
-        public static TypeCode GetTypeCode(this Enum e) {
-            return GetTypeCode(Enum.GetUnderlyingType(e.GetType()));
-        }
-
-        // TODO: reduce to numeric types?
-        public static TypeCode GetTypeCode(this Type type) {
-            if (type == typeof(int)) {
-                return TypeCode.Int32;
-            }
-            if (type == typeof(sbyte)) {
-                return TypeCode.SByte;
-            }
-            if (type == typeof(short)) {
-                return TypeCode.Int16;
-            }
-            if (type == typeof(long)) {
-                return TypeCode.Int64;
-            }
-            if (type == typeof(uint)) {
-                return TypeCode.UInt32;
-            }
-            if (type == typeof(byte)) {
-                return TypeCode.Byte;
-            }
-            if (type == typeof(ushort)) {
-                return TypeCode.UInt16;
-            }
-            if (type == typeof(ulong)) {
-                return TypeCode.UInt64;
-            }
-            if (type == typeof(bool)) {
-                return TypeCode.Boolean;
-            }
-            if (type == typeof(char)) {
-                return TypeCode.Char;
-            }
-
-            // TODO: do we need this?
-            if (type == typeof(string)) {
-                return TypeCode.String;
-            }
-            if (type == typeof(bool)) {
-                return TypeCode.Boolean;
-            }
-            if (type == typeof(double)) {
-                return TypeCode.Double;
-            }
-            if (type == typeof(float)) {
-                return TypeCode.Single;
-            }
-            if (type == typeof(decimal)) {
-                return TypeCode.Decimal;
-            }
-            if (type == typeof(DateTime)) {
-                return TypeCode.DateTime;
-            }
-            return TypeCode.Object;
-        }
-
-        public static IEnumerable<Type> GetImplementedInterfaces(this Type type) {
-            return type.GetTypeInfo().ImplementedInterfaces;
-        }
-
-        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo, bool nonPublic = false) {
-            var accessor = propertyInfo.GetMethod;
-            return nonPublic || accessor == null || accessor.IsPublic ? accessor : null;
-        }
-
-        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo, bool nonPublic = false) {
-            var accessor = propertyInfo.SetMethod;
-            return nonPublic || accessor == null || accessor.IsPublic ? accessor : null;
-        }
-
-        public static MethodInfo GetAddMethod(this EventInfo eventInfo, bool nonPublic = false) {
-            var accessor = eventInfo.AddMethod;
-            return nonPublic || accessor == null || accessor.IsPublic ? accessor : null;
-        }
-
-        public static MethodInfo GetRemoveMethod(this EventInfo eventInfo, bool nonPublic = false) {
-            var accessor = eventInfo.RemoveMethod;
-            return nonPublic || accessor == null || accessor.IsPublic ? accessor : null;
-        }
-
-        public static MethodInfo GetRaiseMethod(this EventInfo eventInfo, bool nonPublic = false) {
-            var accessor = eventInfo.RaiseMethod;
-            return nonPublic || accessor == null || accessor.IsPublic ? accessor : null;
-        }
-
-        public static MethodInfo GetMethod(this Type type, string name) {
-            return type.GetTypeInfo().GetDeclaredMethod(name);
-        }
-
-        // TODO: FlattenHierarchy
-        // TODO: inherited!
-        public static MethodInfo GetMethod(this Type type, string name, Type[] parameterTypes) {
-            return type.GetTypeInfo().GetDeclaredMethods(name).WithSignature(parameterTypes).Single();
-        }
-
-        public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingFlags) {
-            return type.GetMethods(name, bindingFlags).Single();
-        }
-
-        private static IEnumerable<MethodInfo> GetMethods(this Type type, string name, BindingFlags bindingFlags) {
-            return type.GetTypeInfo().GetDeclaredMethods(name).WithBindingFlags(bindingFlags);
-        }
-
-        public static MethodInfo GetMethod(this Delegate d) {
-            return d.GetMethodInfo();
-        }
-
-        // TODO: Callers should distinguish parameters from arguments. Stop using this method.
-        public static Type[] GetGenericArguments(this Type type) {
-            var info = type.GetTypeInfo();
-            return info.IsGenericTypeDefinition ? info.GenericTypeParameters : info.GenericTypeArguments;
-        }
-
-        public static Type[] GetGenericTypeArguments(this Type type) {
-            return type.GetTypeInfo().GenericTypeArguments;
-        }
-
-        public static Type[] GetGenericTypeParameters(this Type type) {
-            return type.GetTypeInfo().GenericTypeParameters;
-        }
-
-        public static bool IsAssignableFrom(this Type type, Type other) {
-            return type.GetTypeInfo().IsAssignableFrom(other.GetTypeInfo());
-        }
-
-        public static Type[] GetGenericParameterConstraints(this Type type) {
-            return type.GetTypeInfo().GetGenericParameterConstraints();
-        }
-
-        public static bool IsSubclassOf(this Type type, Type other) {
-            return type.GetTypeInfo().IsSubclassOf(other);
-        }
-
-        public static IEnumerable<Type> GetInterfaces(this Type type) {
-            return type.GetTypeInfo().ImplementedInterfaces;
-        }
-
-        public static Type[] GetRequiredCustomModifiers(this ParameterInfo parameter) {
-            return EmptyTypes;
-        }
-
-        public static Type[] GetOptionalCustomModifiers(this ParameterInfo parameter) {
-            return EmptyTypes;
-        }
-
-        public static IEnumerable<Module> GetModules(this Assembly assembly) {
-            return assembly.Modules;
-        }
-
-        private static string GetDefaultMemberName(this Type type) {
-            foreach (var ancestor in type.Ancestors()) {
-                var attr = ancestor.GetTypeInfo().GetCustomAttributes<DefaultMemberAttribute>().SingleOrDefault();
-                if (attr != null) {
-                    return attr.MemberName;
-                }
-            }
-
-            return null;
-        }
-
-        public static IEnumerable<MemberInfo> GetDefaultMembers(this Type type) {
-            string defaultMemberName = type.GetDefaultMemberName();
-            if (defaultMemberName != null) {
-                return type.GetInheritedMembers(defaultMemberName).WithBindingFlags(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
-            }
-
-            return Enumerable.Empty<MemberInfo>();
-        }
-#else
         public static Type[] GetGenericTypeArguments(this Type type) {
             return type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetTypeInfo().GetGenericArguments() : null;
         }
@@ -757,7 +583,6 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<T> GetCustomAttributes<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
             return Attribute.GetCustomAttributes(member, typeof(T), inherit).Cast<T>();
         }
-#endif
 #endif
 
         public static bool ContainsGenericParameters(this Type type) {
@@ -865,8 +690,6 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        #endregion
-
 #if FEATURE_REFEMIT
 #if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
         public static AssemblyBuilder DefineDynamicAssembly(AssemblyName name, AssemblyBuilderAccess access) {
@@ -892,7 +715,6 @@ namespace Microsoft.Scripting.Utils {
         // generic types to exist as long as they have different arities.
         public const char GenericArityDelimiter = '`';
 
-#if !WIN8
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method) {
             return FormatSignature(result, method, (t) => t.FullName);
         }
@@ -948,7 +770,6 @@ namespace Microsoft.Scripting.Utils {
             result.Append(")");
             return result;
         }
-#endif
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type) {
             return FormatTypeName(result, type, (t) => t.FullName);
@@ -1301,11 +1122,7 @@ namespace Microsoft.Scripting.Utils {
         #region Type Builder
 #if FEATURE_REFEMIT
 
-#if WIN8 // TODO: what is ReservedMask?
-        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | (MethodAttributes)0xD000;
-#else
         private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.ReservedMask;
-#endif
 
         public static MethodBuilder DefineMethodOverride(TypeBuilder tb, MethodAttributes extra, MethodInfo decl) {
             MethodAttributes finalAttrs = (decl.Attributes & ~MethodAttributesToEraseInOveride) | extra;

@@ -83,13 +83,7 @@ namespace Microsoft.Scripting.Generation {
             };
 
             if (outDir != null) {
-#if !CLR2 && !ANDROID
                 _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave, outDir, false, attributes);
-#else
-                //The API DefineDynamicAssembly is obsolete in Dev10.
-                _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave, outDir, 
-                    null, null, null, null, false, attributes);
-#endif
                 _myModule = _myAssembly.DefineDynamicModule(name.Name, _outFileName, isDebuggable);
             } else {
 #if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY

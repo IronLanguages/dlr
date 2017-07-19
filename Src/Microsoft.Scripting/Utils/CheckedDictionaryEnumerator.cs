@@ -12,7 +12,6 @@
  *
  *
  * ***************************************************************************/
-#if !WIN8
 
 using System.Linq.Expressions;
 
@@ -31,7 +30,7 @@ namespace Microsoft.Scripting.Utils {
         private void CheckEnumeratorState() {
             if (_enumeratorState == EnumeratorState.NotStarted)
                 throw Error.EnumerationNotStarted();
-            else if (_enumeratorState == EnumeratorState.Ended)
+            if (_enumeratorState == EnumeratorState.Ended)
                 throw Error.EnumerationFinished();
         }
 
@@ -115,5 +114,3 @@ namespace Microsoft.Scripting.Utils {
         }
     }
 }
-
-#endif

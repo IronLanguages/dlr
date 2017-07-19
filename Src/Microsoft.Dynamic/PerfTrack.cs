@@ -88,9 +88,8 @@ namespace Microsoft.Scripting {
             var keys = ArrayUtils.MakeArray(histogram.Keys);
             var values = ArrayUtils.MakeArray(histogram.Values);
             
-#if !WIN8 // TODO: 
             Array.Sort(values, keys);
-#endif   
+   
             for (int i = 0; i < keys.Length; i++) {
                 output.WriteLine("{0} {1}", keys[i], values[i]);
             }
