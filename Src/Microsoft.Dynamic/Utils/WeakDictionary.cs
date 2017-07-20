@@ -138,12 +138,11 @@ namespace Microsoft.Scripting.Utils {
                 // It makes sense to do the cleanup only if a GC has happened in the meantime.
                 // WeakReferences can become zero only during the GC.
 
-                bool garbage_collected;
                 int currentGC = GC.CollectionCount(0);
-                garbage_collected = currentGC != cleanupGC;
-                if (garbage_collected) cleanupGC = currentGC;
+                bool garbageCollected = currentGC != cleanupGC;
+                if (garbageCollected) cleanupGC = currentGC;
 
-                if (garbage_collected) {
+                if (garbageCollected) {
                     Cleanup();
                     cleanupVersion = version;
                 } else {
