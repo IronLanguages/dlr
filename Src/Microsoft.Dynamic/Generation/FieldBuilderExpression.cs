@@ -73,7 +73,6 @@ namespace Microsoft.Scripting.Generation {
 #if NETCOREAPP2_0
             return _finishedType.Value.GetDeclaredField(_builder.Name);
 #else
-            var tmp = _builder.MetadataToken;
             return _builder.DeclaringType.Module.ResolveField(
                 _builder.GetToken().Token
             );
