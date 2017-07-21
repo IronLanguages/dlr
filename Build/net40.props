@@ -53,6 +53,7 @@
     <Features>$(Features);FEATURE_ICLONEABLE</Features>
     <Features>$(Features);FEATURE_ANSICP</Features>
     <Features>$(Features);FEATURE_SORTKEY</Features>  
+    <Features>$(Features);FEATURE_ARGITERATOR</Features>
   </PropertyGroup>
   
   <ItemGroup>
