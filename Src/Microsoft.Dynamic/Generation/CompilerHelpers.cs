@@ -361,7 +361,11 @@ namespace Microsoft.Scripting.Generation {
                 ctors = FilterConstructorsToPublicAndProtected(ctors);
             }
 
-            if (t.IsValueType() && t != typeof(ArgIterator)) {
+            if (t.IsValueType()
+#if FEATURE_ARGITERATOR
+                && t != typeof(ArgIterator)
+#endif
+                ) {
                 // structs don't define a parameterless ctor, add a generic method for that.
                 List<MethodBase> result = new List<MethodBase>();
                 result.Add(GetStructDefaultCtor(t));
@@ -623,7 +627,7 @@ namespace Microsoft.Scripting.Generation {
             return (T)(object)LightCompile((LambdaExpression)lambda, compilationThreshold);
         }
 
-#if FEATURE_REFEMIT
+#if FEATURE_REFEMIT && !NETCOREAPP2_0
         /// <summary>
         /// Compiles the lambda into a method definition.
         /// </summary>

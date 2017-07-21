@@ -59,8 +59,7 @@
 
   <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
     <ReferencedPlatform>net45</ReferencedPlatform>
-    <ReferencedPlatform
-        Condition="'$(Configuration)' == 'v4Release' or '$(Configuration)' == 'v4Debug'">net40</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(TargetFramework)' != ''">$(TargetFramework)</ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Mono)' == 'true'">
@@ -73,7 +72,7 @@
   </PropertyGroup>
 
   <!-- References -->
-  <Import Project="$(DlrBuildDir)\$(ReferencedPlatform).props" />
+  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
   
   <PropertyGroup>
     <BaseOutputPath>$(DlrRootDir)\bin\$(Configuration)</BaseOutputPath>

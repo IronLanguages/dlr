@@ -37,7 +37,11 @@ namespace Microsoft.Scripting.Utils {
 
         private static TypeBuilder DefineDelegateType(string name) {
             if (_assembly == null) {
+#if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
+                AssemblyBuilder newAssembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DynamicDelegates"), AssemblyBuilderAccess.Run);
+#else
                 AssemblyBuilder newAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("DynamicDelegates"), AssemblyBuilderAccess.Run);
+#endif
                 Interlocked.CompareExchange(ref _assembly, newAssembly, null);
 
                 lock (_assembly) {

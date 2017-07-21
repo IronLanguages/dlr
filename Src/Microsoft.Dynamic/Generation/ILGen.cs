@@ -261,12 +261,14 @@ namespace Microsoft.Scripting.Generation {
             _ilg.EmitCall(opcode, methodInfo, optionalParameterTypes);
         }
 
+#if !NETCOREAPP2_0
         /// <summary>
         /// Emits an unmanaged indirect call instruction.
         /// </summary>
         public virtual void EmitCalli(OpCode opcode, CallingConvention unmanagedCallConv, Type returnType, Type[] parameterTypes) {
             _ilg.EmitCalli(opcode, unmanagedCallConv, returnType, parameterTypes);
         }
+#endif
 
         /// <summary>
         /// Emits a managed indirect call instruction.
@@ -811,7 +813,7 @@ namespace Microsoft.Scripting.Generation {
         // TODO: Can we always ldtoken and let restrictedSkipVisibility sort things out?
         public static bool ShouldLdtoken(Type t) {
 #if FEATURE_REFEMIT
-            if (t.GetTypeInfo() is TypeBuilder) {
+            if (t is TypeBuilder) {
                 return true;
             }
 #endif

@@ -16,7 +16,7 @@ solution: Dlr.sln
 sudo: required
 dist: trusty
 
-dotnet: 1.0.3
+dotnet: 2.0.0-preview2-006497
 
 script:
   - dotnet restore Dlr.sln --packages ./packages
