@@ -76,7 +76,6 @@
   <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample">
     <Csc TargetType="library" Sources="Src\fieldtests.cs" OutputAssembly="$(OutputPath)\$(Prefix)fieldtests.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <PropertyGroup>
-      <SystemRuntimeDll></SystemRuntimeDll>
       <SystemRuntimeDll Condition="'$(TargetFramework)' == 'netcoreapp2.0'">System.Runtime.dll</SystemRuntimeDll>
     </PropertyGroup>
     <Csc TargetType="library" Sources="Src\methodargs.cs" OutputAssembly="$(OutputPath)\$(Prefix)methodargs.dll" References="System.dll;$(SystemRuntimeDll);$(OutputPath)\Microsoft.Scripting.dll;$(OutputPath)\$(Prefix)typesamples.dll" />
