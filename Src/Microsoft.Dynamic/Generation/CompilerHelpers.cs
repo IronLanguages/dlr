@@ -361,17 +361,17 @@ namespace Microsoft.Scripting.Generation {
                 ctors = FilterConstructorsToPublicAndProtected(ctors);
             }
 
-            if (t.IsValueType()
-#if FEATURE_ARGITERATOR
-                && t != typeof(ArgIterator)
-#endif
-                ) {
-                // structs don't define a parameterless ctor, add a generic method for that.
-                List<MethodBase> result = new List<MethodBase>();
-                result.Add(GetStructDefaultCtor(t));
-                result.AddRange(ctors.Cast<ConstructorInfo, MethodBase>());
-                return result.ToArray();
-            } 
+            if (t.IsValueType()) {
+                try {
+                    // certain types (e.g. ArgIterator) will fail with BadImageFormatException
+                    MethodBase structDefaultCtor = GetStructDefaultCtor(t);
+
+                    // structs don't define a parameterless ctor, add a generic method for that.
+                    List<MethodBase> result = new List<MethodBase>() { structDefaultCtor };
+                    result.AddRange(ctors.Cast<ConstructorInfo, MethodBase>());
+                    return result.ToArray();
+                } catch (BadImageFormatException) { }
+            }
 
             return ctors.ToArray();
         }
