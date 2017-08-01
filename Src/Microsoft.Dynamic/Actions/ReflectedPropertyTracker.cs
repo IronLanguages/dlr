@@ -20,19 +20,15 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     public class ReflectedPropertyTracker : PropertyTracker {
-        private PropertyInfo _propInfo;
+        private readonly PropertyInfo _propInfo;
 
         public ReflectedPropertyTracker(PropertyInfo property) {
             _propInfo = property;
         }
 
-        public override string Name {
-            get { return _propInfo.Name; }
-        }
+        public override string Name => _propInfo.Name;
 
-        public override Type DeclaringType {
-            get { return _propInfo.DeclaringType; }
-        }
+        public override Type DeclaringType => _propInfo.DeclaringType;
 
         public override bool IsStatic {
             get {
@@ -42,9 +38,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public override Type PropertyType {
-            get { return _propInfo.PropertyType; }
-        }
+        public override Type PropertyType => _propInfo.PropertyType;
 
         public override MethodInfo GetGetMethod() {
             return _propInfo.GetGetMethod();
@@ -80,11 +74,7 @@ namespace Microsoft.Scripting.Actions {
             return _propInfo.GetIndexParameters();
         }
 
-        public PropertyInfo Property {
-            get {
-                return _propInfo;
-            }
-        }
+        public PropertyInfo Property => _propInfo;
 
         public override string ToString() {
             return _propInfo.ToString();

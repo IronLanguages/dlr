@@ -22,17 +22,23 @@ namespace Microsoft.Scripting.Debugging {
     /// </summary>
     [DebuggerDisplay("{Name}")]
     internal sealed class VariableInfo {
-        private bool _hidden;       // Indicates whether the symbol should be hidden during inspection
-        private bool _strongBoxed;  // Indicates whether the lifted value of the variable is exposed through byref or strongbox
-        private int _localIndex;    // Index within byref variables list or within strongbox variables list
-        private int _globalIndex;   // Index within the combined list
+        
+        /// <summary>
+        /// Index within byref variables list or within strongbox variables list.
+        /// </summary>
+        private readonly int _localIndex;
+
+        /// <summary>
+        /// Index within the combined list.
+        /// </summary>
+        private readonly int _globalIndex;
 
         internal VariableInfo(string name, Type type, bool parameter, bool hidden, bool strongBoxed, int localIndex, int globalIndex) {
             Name = name;
             VariableType = type;
             IsParameter = parameter;
-            _hidden = hidden;
-            _strongBoxed = strongBoxed;
+            Hidden = hidden;
+            IsStrongBoxed = strongBoxed;
             _localIndex = localIndex;
             _globalIndex = globalIndex;
         }
@@ -42,17 +48,13 @@ namespace Microsoft.Scripting.Debugging {
             Name = name;
             VariableType = type;
             IsParameter = parameter;
-            _hidden = hidden;
-            _strongBoxed = strongBoxed;
+            Hidden = hidden;
+            IsStrongBoxed = strongBoxed;
         }
 
-        internal bool Hidden {
-            get { return _hidden; }
-        }
+        internal bool Hidden { get; }
 
-        internal bool IsStrongBoxed {
-            get { return _strongBoxed; }
-        }
+        internal bool IsStrongBoxed { get; }
 
         internal int LocalIndex {
             get { Debug.Assert(_localIndex != Int32.MaxValue); return _localIndex; }

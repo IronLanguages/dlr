@@ -20,7 +20,6 @@ using System.Diagnostics;
 namespace Microsoft.Scripting.Debugging {
     [DebuggerDisplay("{Name}")]
     public sealed class FunctionInfo {
-        private readonly DebugSourceSpan[] _sequencePoints;
         private readonly IList<VariableInfo>[] _variableScopeMap;
         private readonly bool[] _traceLocations;
 
@@ -34,7 +33,7 @@ namespace Microsoft.Scripting.Debugging {
 
             GeneratorFactory = generatorFactory;
             Name = name;
-            _sequencePoints = sequencePoints;
+            SequencePoints = sequencePoints;
             _variableScopeMap = scopedVariables;
             Variables = variables;
             CustomPayload = customPayload;
@@ -58,9 +57,7 @@ namespace Microsoft.Scripting.Debugging {
         /// <summary>
         /// SequencePoints
         /// </summary>
-        internal DebugSourceSpan[] SequencePoints {
-            get { return _sequencePoints; }
-        }
+        internal DebugSourceSpan[] SequencePoints { get; }
 
         /// <summary>
         /// Gets the name.

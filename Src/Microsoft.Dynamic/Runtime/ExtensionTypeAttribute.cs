@@ -25,7 +25,6 @@ namespace Microsoft.Scripting.Runtime {
     [AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = true)]
     public sealed class ExtensionTypeAttribute : Attribute {
         private readonly Type _extensionType;
-        private readonly Type _extends;
 
         /// <summary>
         /// Marks a type in the assembly as being an extension type for another type.
@@ -40,7 +39,7 @@ namespace Microsoft.Scripting.Runtime {
                 throw Error.ExtensionMustBePublic(extensionType.FullName);
             }
 
-            _extends = extends;
+            Extends = extends;
             _extensionType = extensionType;
         }
 
@@ -56,11 +55,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// The type which is being extended by the extension type.
         /// </summary>
-        public Type Extends {
-            get {
-                return _extends;
-            }
-        }
+        public Type Extends { get; }
     }
 
 }

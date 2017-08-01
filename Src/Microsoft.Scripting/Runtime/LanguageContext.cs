@@ -31,15 +31,13 @@ namespace Microsoft.Scripting.Runtime {
     /// Provides language specific facilities which are typically called by the runtime.
     /// </summary>
     public abstract class LanguageContext {
-        private readonly ScriptDomainManager _domainManager;
-        private readonly ContextId _id;
         private DynamicOperations _operations;
 
         protected LanguageContext(ScriptDomainManager domainManager) {
             ContractUtils.RequiresNotNull(domainManager, "domainManager");
 
-            _domainManager = domainManager;
-            _id = domainManager.GenerateContextId();
+            DomainManager = domainManager;
+            ContextId = domainManager.GenerateContextId();
         }
        
         /// <summary>
@@ -47,16 +45,12 @@ namespace Microsoft.Scripting.Runtime {
         /// 
         /// ContextId's are used for filtering by Scope's.
         /// </summary>
-        public ContextId ContextId {
-            get { return _id; }
-        }
+        public ContextId ContextId { get; }
 
         /// <summary>
         /// Gets the ScriptDomainManager that this LanguageContext is running within.
         /// </summary>
-        public ScriptDomainManager DomainManager {
-            get { return _domainManager; }
-        }
+        public ScriptDomainManager DomainManager { get; }
 
         /// <summary>
         /// Whether the language can parse code and create source units.

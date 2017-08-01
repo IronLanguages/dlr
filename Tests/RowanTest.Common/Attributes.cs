@@ -68,8 +68,6 @@ namespace RowanTest.Common {
     /// }
     /// </summary>
     public class DisabledAttribute : Attribute {
-
-        private DisabledReason _disabledReason;
         private string _description;
 
         /// <summary>
@@ -78,7 +76,7 @@ namespace RowanTest.Common {
         /// <param name="dr">Reason the test is being disabled</param>
         /// <param name="description">Additional info</param>
         public DisabledAttribute(DisabledReason dr, string description) {
-            _disabledReason = dr;
+            Reason = dr;
             _description = description;
         }
 
@@ -100,9 +98,7 @@ namespace RowanTest.Common {
         /// <summary>
         /// Reason the test is disabled.
         /// </summary>
-        public DisabledReason Reason {
-            get { return _disabledReason; }
-        }
+        public DisabledReason Reason { get; }
 
         /// <summary>
         /// Additional info about the test being disabled. Typically this should

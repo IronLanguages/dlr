@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Actions.Calls {
     using Ast = Expression;
 
     internal sealed class ByRefReturnBuilder : ReturnBuilder {
-        private IList<int> _returnArgs;
+        private readonly IList<int> _returnArgs;
 
         public ByRefReturnBuilder(IList<int> returnArgs)
             : base(typeof(object)) {
@@ -60,10 +60,6 @@ namespace Microsoft.Scripting.Actions.Calls {
             return resolver.GetByRefArrayExpression(retArray);
         }
 
-        public override int CountOutParams {
-            get { return _returnArgs.Count; }
-        }
-
-
+        public override int CountOutParams => _returnArgs.Count;
     }
 }
