@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
     <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{75B776E7-2246-4E02-98A9-A99D3DA4DB54}</ProjectGuid>
     <OutputType>Exe</OutputType>

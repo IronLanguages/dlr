@@ -13,7 +13,6 @@
  *
  * ***************************************************************************/
 using System;
-using System.Configuration.Assemblies;
 using System.Reflection;
 using System.Security;
 using System.IO;
@@ -689,7 +688,7 @@ namespace Microsoft.Scripting.Metadata {
             m_record = record;
         }
 
-        public AssemblyHashAlgorithm HashAlgorithm {
+        public System.Configuration.Assemblies.AssemblyHashAlgorithm HashAlgorithm {
             get {
                 return m_record.Import.AssemblyTable.GetHashAlgorithm(m_record.Rid);
             }

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BuildNetCoreApp)' == 'true'">$(TargetFrameworks);netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
     <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{EB66B766-6354-4208-A3D4-AACBDCB5C3B3}</ProjectGuid>
     <OutputType>Library</OutputType>
