@@ -13,7 +13,6 @@
  *
  * ***************************************************************************/
 using System;
-using System.Configuration.Assemblies;
 using System.Reflection;
 
 namespace Microsoft.Scripting.Metadata {
@@ -1396,9 +1395,9 @@ namespace Microsoft.Scripting.Metadata {
             Table = block.GetRange(start, RowSize * numberOfRows);
         }
 
-        internal AssemblyHashAlgorithm GetHashAlgorithm(int rowId) {
+        internal System.Configuration.Assemblies.AssemblyHashAlgorithm GetHashAlgorithm(int rowId) {
             int rowOffset = (rowId - 1) * RowSize;
-            return (AssemblyHashAlgorithm)Table.ReadUInt32(rowOffset + HashAlgIdOffset);
+            return (System.Configuration.Assemblies.AssemblyHashAlgorithm)Table.ReadUInt32(rowOffset + HashAlgIdOffset);
         }
 
         internal AssemblyNameFlags GetFlags(int rowId) {
