@@ -100,12 +100,12 @@ test_script:
 
 artifacts:
   - path: Package/Release/**/dlr*.zip
-  - name: Zip Package
-  - type: Zip
+    name: Zip Package
+    type: Zip
 
   - path: Package/Release/**/*.nupkg
-  - name: NuGet Package
-  - type: NuGetPackage
+    name: NuGet Package
+    type: NuGetPackage
 
 #  # pushing a single file
 #  - path: test.zip
