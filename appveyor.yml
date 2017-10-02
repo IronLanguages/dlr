@@ -67,7 +67,7 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - msbuild Build.proj /t:Build /p:BuildFlavour=%CONFIGURATION% /verbosity:minimal /nologo
+  - make.cmd package-release
 
 # to disable automatic builds
 #build: off
