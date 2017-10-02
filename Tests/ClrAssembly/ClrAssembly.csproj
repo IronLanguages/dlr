@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BuildNetCoreApp)' == 'true'">$(TargetFrameworks);netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TargetFrameworks)' == ''">net40;net45;netcoreapp2.0</TargetFrameworks>
     <PlatformTarget>anycpu</PlatformTarget>
     <ProjectGuid>{BEE737B9-18D5-48D9-8672-9A896213C98B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -20,7 +19,7 @@
       <Output TaskParameter="Path" PropertyName="DotNetFrameworkPath" />
     </GetFrameworkPath>
   </Target>
-  <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="@(LoadOrderCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')">
+  <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="@(LoadOrderCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" Condition="'$(Staging)' != 'true'">
     <Csc TargetType="library" Sources="Src\loadorder\loadorder_1a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1a.dll" />
     <Csc TargetType="library" Sources="Src\loadorder\loadorder_1b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1b.dll" />
     <Csc TargetType="library" Sources="Src\loadorder\loadorder_1c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1c.dll" />
@@ -57,7 +56,7 @@
     <Csc TargetType="library" Sources="Src\loadorder\loadorder_7b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_7b.dll" />
     <Csc TargetType="library" Sources="Src\loadorder\loadorder_7c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_7c.dll" />
   </Target>
-  <Target Name="ReachType" DependsOnTargets="GetFrameworkPath">
+  <Target Name="ReachType" DependsOnTargets="GetFrameworkPath" Condition="'$(Staging)' != 'true'">
     <Csc TargetType="library" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
     <Csc TargetType="library" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
     <Csc TargetType="library" Sources="Src\loadexception.cs" References="$(OutputPath)\$(Prefix)missingtype.dll" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
@@ -70,10 +69,10 @@
     <Csc TargetType="library" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
     <Csc TargetType="library" Sources="Src\typeforwarder3.cs" References="$(OutputPath)\$(Prefix)typeforwardee3.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
-  <Target Name="TypeSample" Inputs="Src\TypeSamples.cs;Src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll">
+  <Target Name="TypeSample" Inputs="Src\TypeSamples.cs;Src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll" Condition="'$(Staging)' != 'true'">
     <Csc TargetType="library" Sources="Src\TypeSamples.cs;Src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
-  <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample">
+  <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(Staging)' != 'true'">
     <Csc TargetType="library" Sources="Src\fieldtests.cs" OutputAssembly="$(OutputPath)\$(Prefix)fieldtests.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <PropertyGroup>
       <SystemRuntimeDll Condition="'$(TargetFramework)' == 'netcoreapp2.0'">System.Runtime.dll</SystemRuntimeDll>
@@ -90,7 +89,7 @@
     <Csc TargetType="library" Sources="Src\baseclasscs.cs" OutputAssembly="$(OutputPath)\$(Prefix)baseclasscs.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" Sources="Src\dynamicobjmodel.cs" OutputAssembly="$(OutputPath)\$(Prefix)dynamicobjmodel.dll" References="$(OutputPath)\Microsoft.Dynamic.dll" />
   </Target>
-  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(OS)' != 'Unix'">
+  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample">
     <Vbc TargetType="library" Sources="Src\indexerdefinitionsvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)indexerdefinitionsvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Vbc TargetType="library" Sources="Src\defaultmembersvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)defaultmembersvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Vbc TargetType="library" Sources="Src\baseclassvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)baseclassvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
@@ -102,7 +101,7 @@
     <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="dummy.cs" />
+    <Compile Include="dummy.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
