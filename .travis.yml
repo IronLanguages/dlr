@@ -19,6 +19,7 @@ dist: trusty
 dotnet: 2.0.0
 
 script:
+  - ls -la /usr/lib/mono/4.5/
   - dotnet restore Dlr.sln --packages ./packages
   - msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
   - pushd bin/$CONFIGURATION
@@ -32,12 +33,12 @@ script:
   - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net45/Microsoft.Dynamic.Test.dll
   - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net40/Microsoft.Scripting.Test.dll
   - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net45/Microsoft.Scripting.Test.dll
+  - popd
 
 notifications:
   email:
     recipients:
-      - slide.o.mix@gmail.com
-      - ticotimo@gmail.com
+      - developers+int+211+854770831703316759@ironpython.groups.io
     on_success: always # default: change
     #on_failure: [always|never|change] # default: always
 
