@@ -54,6 +54,9 @@ nuget:
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
+install:
+- ps: (New-Object Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe', 'C:\Tools\NuGet\NuGet.exe')
+
 # scripts to run before build
 before_build:
   - nuget restore
@@ -76,12 +79,14 @@ build_script:
 test_script:
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/TestInternalDLR.exe'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/TestInternalDLR.exe'
+  - 'dotnet %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/netcoreapp2.0/TestInternalDLR.dll'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Metadata.exe'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Metadata.exe'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Dynamic.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Dynamic.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Scripting.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.6.1/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Scripting.Test.dll'
+  - 'dotnet %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/netcoreapp2.0/Metadata.dll'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Dynamic.Test.dll'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Dynamic.Test.dll'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Scripting.Test.dll'
+  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Scripting.Test.dll'
   #- make test
   #- Test\test-ipy-tc.cmd /category:Languages\IronPython\IronPython\2.X
 

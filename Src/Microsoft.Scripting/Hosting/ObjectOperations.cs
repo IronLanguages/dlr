@@ -41,19 +41,16 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     public sealed class ObjectOperations : MarshalByRefObject {
         private readonly DynamicOperations _ops;
-        private readonly ScriptEngine _engine;
 
         // friend class: DynamicOperations
         internal ObjectOperations(DynamicOperations ops, ScriptEngine engine) {
             Assert.NotNull(ops);
             Assert.NotNull(engine);
             _ops = ops;
-            _engine = engine;
+            Engine = engine;
         }
         
-        public ScriptEngine Engine {
-            get { return _engine; }
-        }
+        public ScriptEngine Engine { get; }
 
 #pragma warning disable 618
 

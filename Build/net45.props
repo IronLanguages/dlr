@@ -62,7 +62,6 @@
     <Features>$(Features);FEATURE_READONLY_DICTIONARY</Features>
     <Features>$(Features);FEATURE_SORTKEY</Features>
     <Features>$(Features);FEATURE_READONLY_COLLECTION_INTERFACE</Features>
-    <Features>$(Features);FEATURE_ARGITERATOR</Features>
   </PropertyGroup>
 
   

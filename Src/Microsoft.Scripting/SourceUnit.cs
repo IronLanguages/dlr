@@ -26,8 +26,6 @@ using System.Text;
 namespace Microsoft.Scripting {
     [DebuggerDisplay("{_path ?? \"<anonymous>\"}")]
     public sealed class SourceUnit {
-        private readonly SourceCodeKind _kind;
-        private readonly string _path;
         private readonly LanguageContext _language;
         private readonly TextContentProvider _contentProvider;
 
@@ -41,22 +39,16 @@ namespace Microsoft.Scripting {
         /// The format and semantics is host dependent (could be a path on file system or URL).
         /// Empty string for anonymous source units.
         /// </summary>
-        public string Path {
-            get { return _path; }
-        }
+        public string Path { get; }
 
-        public bool HasPath {
-            get { return _path != null; }
-        }
+        public bool HasPath => Path != null;
 
-        public SourceCodeKind Kind {
-            get { return _kind; }
-        }
+        public SourceCodeKind Kind { get; }
 
         public SymbolDocumentInfo Document {
             get {
                 // _path is valid to be null. In that case we cannot create a valid SymbolDocumentInfo.
-                return _path == null ? null : Expression.SymbolDocument(_path, _language.LanguageGuid, _language.VendorGuid);
+                return Path == null ? null : Expression.SymbolDocument(Path, _language.LanguageGuid, _language.VendorGuid);
             }
         }
 
@@ -91,8 +83,8 @@ namespace Microsoft.Scripting {
 
             _language = context;
             _contentProvider = contentProvider;
-            _kind = kind;
-            _path = path;
+            Kind = kind;
+            Path = path;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
