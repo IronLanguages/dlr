@@ -19,7 +19,6 @@ dist: trusty
 dotnet: 2.0.0
 
 script:
-  - ls -la /usr/lib/mono/4.5/
   - dotnet restore Dlr.sln --packages ./packages
   - msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=$CONFIGURATION"
   - pushd bin/$CONFIGURATION
