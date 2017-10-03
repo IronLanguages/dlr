@@ -112,6 +112,10 @@ artifacts:
     name: NuGet Package
     type: NuGetPackage
 
+  - path: *.binlog
+    name: Binary Build Log
+    type: File
+
 #  # pushing a single file
 #  - path: test.zip
 
