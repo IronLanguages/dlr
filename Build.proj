@@ -15,6 +15,7 @@
   </PropertyGroup>
 
   <Import Project="$(RootDir)\CurrentVersion.props" />
+
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
 
   <PropertyGroup>
@@ -62,7 +63,14 @@
       Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
-  <Target Name="Stage" DependsOnTargets="Build">
+  <Target Name="StageBuild" DependsOnTargets="Restore">
+    <MSBuild 
+      Projects="$(Solution)" 
+      Targets="Build"
+      Properties="$(BuildProperties);Configuration=$(BuildFlavour);Staging=true" />
+  </Target>
+
+  <Target Name="Stage" DependsOnTargets="StageBuild">
     <ItemGroup>
       <InfoFiles Include="$(RootDir)\LICENSE" />
       <InfoFiles Include="$(RootDir)\README.md" />
@@ -75,7 +83,7 @@
     <Copy DestinationFolder="$(StageDir)\lib\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
   
-  <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage" />
+  <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage;DebPackage" />
 
   <Target Name="MakePackageDir">
     <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
@@ -109,6 +117,10 @@
       <ZipFiles Include="$(StageDir)\lib\**;$(StageDir)\README.md;$(StageDir)\LICENSE" />
     </ItemGroup>
     <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\dlr-$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+  </Target>
+
+  <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
+    <!-- TODO: Implement deb packaging here -->
   </Target>
 </Project>
 
