@@ -66,7 +66,7 @@ msbuild /t:DistClean /p:BuildFlavour=Debug /verbosity:minimal /nologo /p:Platfor
 goto :main
 
 :main
-msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
+msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build.binlog
 goto :exit
 
 :exit
