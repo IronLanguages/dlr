@@ -112,7 +112,7 @@ artifacts:
     name: NuGet Package
     type: NuGetPackage
 
-  - path: ./*.binlog
+  - path: build.binlog
     name: Binary Build Log
     type: File
 
