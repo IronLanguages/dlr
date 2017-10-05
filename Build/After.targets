@@ -6,9 +6,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PlatformStageDir>$(StageDir)\lib\$(ReferencedPlatform)</PlatformStageDir>
-    <UnsignedItems>@(StageItem->'$(OutputPath)\%(Filename)%(Extension)')</UnsignedItems>
-    <UnsignedStaged>@(StageItem->'$(PlatformStageDir)\%(Filename)%(Extension)')</UnsignedStaged>
+    <UnsignedItems>@(StageItem)</UnsignedItems>
+    <UnsignedStaged>@(StageItem)</UnsignedStaged>
   </PropertyGroup>
 
   <Target Name="Stage"
@@ -17,6 +16,6 @@
           Outputs="$(UnsignedStaged)"
           Condition=" '$(Staging)' == 'true' ">
     <Error Text="StageDir is not set." Condition=" '$(StageDir)' == '' " />
-    <Copy SourceFiles="$(UnsignedItems)" DestinationFolder="$(PlatformStageDir)" />
+    <Copy SourceFiles="$(UnsignedItems)" DestinationFolder="$(MainStageDir)" />
   </Target>
 </Project>

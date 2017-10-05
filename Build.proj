@@ -10,15 +10,19 @@
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
+    <MSBuildCommunityTasksPath>$(RootDir)\Util\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+    <TargetFrameworks Condition=" '$(TargetFrameworks)' == '' ">net40;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
-  
+
   <Import Project="$(RootDir)\CurrentVersion.props" />
-  
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+
   <PropertyGroup>
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
   
-    <StageDir>$(RootDir)\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
+    <StageDir>$(RootDir)\Package\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
     <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(PackageVersion)</PackageDir>
   </PropertyGroup>
   
@@ -32,18 +36,7 @@
       BuildSysDir=$(BuildSysDir);
       Mono=$(Mono)
     </BuildProperties>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <ReferencedPlatform Include="net45">
-      <BuildPrefix></BuildPrefix>
-    </ReferencedPlatform>
-  </ItemGroup>
-
-  <ItemGroup>
-    <InfoFiles Include="$(RootDir)\LICENSE" />
-    <InfoFiles Include="$(RootDir)\README.md" />
-  </ItemGroup>
+  </PropertyGroup>  
 
   <Target Name="Restore">
     <MSBuild Projects="$(Solution)" Targets="Restore" />
@@ -53,34 +46,44 @@
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
-      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
   <Target Name="Rebuild">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Rebuild" 
-      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
   <Target Name="Clean">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Clean" 
-      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
-  <Target Name="Stage">
-    <MSBuild
-      Projects="$(Solution)"
+  <Target Name="StageBuild" DependsOnTargets="Restore">
+    <MSBuild 
+      Projects="$(Solution)" 
       Targets="Build"
-      Properties="$(BuildProperties);ReferencedPlatform=%(ReferencedPlatform.Identity);Configuration=%(ReferencedPlatform.BuildPrefix)$(BuildFlavour);Staging=true">
-      <Output TaskParameter="TargetOutputs" ItemName="StageOutputs" />
-    </MSBuild>
+      Properties="$(BuildProperties);Configuration=$(BuildFlavour);Staging=true" />
+  </Target>
+
+  <Target Name="Stage" DependsOnTargets="StageBuild">
+    <ItemGroup>
+      <InfoFiles Include="$(RootDir)\LICENSE" />
+      <InfoFiles Include="$(RootDir)\README.md" />
+    </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
+    <ItemGroup>
+      <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.dll" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.dll" />
+      <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.xml" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.xml" />
+    </ItemGroup>
+    <Copy DestinationFolder="$(StageDir)\lib\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
   
-  <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage" />
+  <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage;DebPackage" />
 
   <Target Name="MakePackageDir">
     <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
@@ -89,18 +92,11 @@
   <PropertyGroup>
     <NuGet>$(UtilDir)\NuGet\NuGet.exe</NuGet>
     <NuGet Condition=" '$(Mono)' != '' ">mono $(NuGet)</NuGet>
-
-    <Zip Condition="'$(OS)' == 'Windows_NT'">$(UtilDir)\Misc\zip.exe</Zip>
-    <Zip Condition="'$(OS)' != 'Windows_NT'">zip</Zip>
-
   </PropertyGroup>
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
       <NuSpecDir>$(RootDir)</NuSpecDir>
-    </Package>
-    <Package Include="Microsoft.Scripting.AspNet">
-      <NuSpecDir>$(RootDir)\Src\Hosts\MerlinWeb\Microsoft.Scripting.AspNet</NuSpecDir>
     </Package>
   </ItemGroup>
 
@@ -116,9 +112,15 @@
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
-          Inputs="@(StageOutputs)"
           Outputs="$(PackageDir)\dlr-$(PackageVersion).zip">
-    <Exec Command="$(Zip) -9 -r &quot;$(PackageDir)\dlr-$(PackageVersion).zip&quot; &quot;dlr-$(PackageVersion)&quot;" WorkingDirectory="$(StageDir)\.." />
+    <ItemGroup>
+      <ZipFiles Include="$(StageDir)\lib\**;$(StageDir)\README.md;$(StageDir)\LICENSE" />
+    </ItemGroup>
+    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\dlr-$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+  </Target>
+
+  <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
+    <!-- TODO: Implement deb packaging here -->
   </Target>
 </Project>
 
