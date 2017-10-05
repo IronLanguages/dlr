@@ -64,8 +64,7 @@
     <Csc TargetType="library" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
     <Csc TargetType="library" Sources="Src\typeforwarder1.cs" References="$(OutputPath)\$(Prefix)typeforwardee1.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
     <Csc TargetType="library" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
-    <Message Text="Need to reenable the Exec for Linux once a mono is released with https://github.com/mono/mono/pull/3625" />
-    <Exec Condition="'$(OS)' != 'Unix'" Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" />
+    <Exec Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" />
     <Csc TargetType="library" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
     <Csc TargetType="library" Sources="Src\typeforwarder3.cs" References="$(OutputPath)\$(Prefix)typeforwardee3.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
