@@ -1,10 +1,10 @@
 .PHONY: debug release test stage package clean
 
 release:
-	msbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Release /verbosity:minimal /nologo /bl:build.binlog
+	msbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Release /verbosity:minimal /nologo /bl:build-release.binlog
 
 debug:
-	msbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Debug /verbosity:minimal /nologo /bl:build.binlog
+	msbuild Build.proj /t:Build /p:Mono=true;BuildFlavour=Debug /verbosity:minimal /nologo /bl:build-release.binlog
 
 test:
 	msbuild Build.proj /t:Test /p:Mono=true;BuildFlavour=Release /verbosity:minimal /nologo
