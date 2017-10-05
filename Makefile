@@ -4,7 +4,7 @@ release:
 	msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=Release" /verbosity:minimal /nologo /bl:build-Release.binlog
 
 debug:
-	msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=Debug" /verbosity:minimal /nologo /bl:build-Release.binlog
+	msbuild Build.proj /t:Build "/p:Mono=true;BuildFlavour=Debug" /verbosity:minimal /nologo /bl:build-Debug.binlog
 
 test:
 	msbuild Build.proj /t:Test /p:Mono=true;BuildFlavour=Release /verbosity:minimal /nologo
