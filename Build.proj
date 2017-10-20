@@ -38,11 +38,11 @@
     </BuildProperties>
   </PropertyGroup>  
 
-  <Target Name="Restore">
+  <Target Name="RestoreReferences">
     <MSBuild Projects="$(Solution)" Targets="Restore" />
   </Target>
   
-  <Target Name="Build" DependsOnTargets="Restore">
+  <Target Name="Build" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
@@ -63,7 +63,7 @@
       Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
-  <Target Name="StageBuild" DependsOnTargets="Restore">
+  <Target Name="StageBuild" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"

@@ -15,13 +15,6 @@
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
 
-# branches to build
-#branches:
-  # whitelist
-  # Setting this prevents PRs from being auto-built
-  # only:
-  #  - master
-
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
 
@@ -116,15 +109,6 @@ artifacts:
     name: Binary Build Log
     type: File
 
-#  # pushing a single file
-#  - path: test.zip
-
-#  # pushing entire folder as a zip archive
-#  - path: logs
-
-#  # pushing all *.nupkg files in build directory recursively
-#  - path: '**\*.nupkg'
-
 
 #---------------------------------#
 #     deployment configuration    #
@@ -178,10 +162,8 @@ notifications:
   # Email
   - provider: Email
     to:
-      - slide.o.mix@gmail.com
-      - ticotimo@gmail.com
-    # use defaults for now
-    #subject: 'Build {{status}}'                  # optional
+      - developers+int+211+854770831703316759@ironpython.groups.io
+    subject: 'DLR Build {{status}}'
     #message: "{{message}}, {{commitId}}, ..."    # optional
     on_build_status_changed: true
 
