@@ -58,3 +58,4 @@ Languages/IronPython/Tests/vbproptest0.*.dll
 
 *.bak
 *.binlog
+*.ProjectImports.zip
