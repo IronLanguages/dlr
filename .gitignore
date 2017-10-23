@@ -6,8 +6,8 @@
 obj/
 bin/
 /bin/
-/Stage
-/Package
+/Package/Release/
+/Package/Stage/
 /Util/References
 
 # NuGet Packages
@@ -57,3 +57,4 @@ Languages/IronPython/Tests/the_dir/
 Languages/IronPython/Tests/vbproptest0.*.dll
 
 *.bak
+*.binlog
