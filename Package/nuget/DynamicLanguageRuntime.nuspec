@@ -20,7 +20,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="lib\**\*.*" target="lib" />
+    <file src="lib\**\*.dll" target="lib" />
     <file src="README.md;LICENSE" />
   </files>
 </package>
