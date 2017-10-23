@@ -97,7 +97,7 @@ test_script:
 #---------------------------------#
 
 artifacts:
-  - path: Package/Release/**/dlr*.zip
+  - path: Package/Release/**/DynamicLanguageRuntime*.zip
     name: Zip Package
     type: Zip
 

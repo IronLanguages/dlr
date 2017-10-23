@@ -6,6 +6,7 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <MainStageDir>$(StageDir)\$(TargetFramework)</MainStageDir>
     <UnsignedItems>@(StageItem)</UnsignedItems>
     <UnsignedStaged>@(StageItem)</UnsignedStaged>
   </PropertyGroup>

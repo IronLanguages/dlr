@@ -13,9 +13,14 @@
     <summary>Dynamic Language Runtime</summary>
     <language>en-US</language>
     <tags>dynamic dlr</tags>
+    <dependencies>
+      <group targetFramework="netcoreapp2.0">
+        <dependency id="System.CodeDom" version="4.4.0" />
+      </group>
+    </dependencies>
   </metadata>
   <files>
-    <file src="lib\**\*.*" target="lib" />
+    <file src="**\*.dll" target="lib" />
     <file src="README.md;LICENSE" />
   </files>
 </package>
