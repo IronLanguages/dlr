@@ -73,12 +73,12 @@
     <Csc TargetType="library" Sources="Src\TypeSamples.cs;Src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
   <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(Staging)' != 'true'">
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' AND '$(OS)' != 'Windows_NT' ">
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
       <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.dll" />
+      <MethodArgsReferences Include="..\..\packages\**\*-x64\native\System.Private.CoreLib.dll" />
       <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\mscorlib.dll" />
       <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.dll" />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.InteropServices.dll" />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\native\System.Private.CoreLib.dll" />
+      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.InteropServices.dll" />      
     </ItemGroup>
     <Csc TargetType="library" Sources="Src\fieldtests.cs" OutputAssembly="$(OutputPath)\$(Prefix)fieldtests.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
     <Csc TargetType="library" Sources="Src\methodargs.cs" OutputAssembly="$(OutputPath)\$(Prefix)methodargs.dll" References="@(MethodArgsReferences->Distinct());$(OutputPath)\Microsoft.Scripting.dll;$(OutputPath)\$(Prefix)typesamples.dll" />
