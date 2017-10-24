@@ -22,8 +22,8 @@
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
   
-    <StageDir>$(RootDir)\Package\Stage\$(BuildFlavour)\dlr-$(PackageVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\dlr-$(PackageVersion)</PackageDir>
+    <StageDir>$(RootDir)\Package\$(BuildFlavour)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
+    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
   </PropertyGroup>
   
   <PropertyGroup>  
@@ -38,11 +38,11 @@
     </BuildProperties>
   </PropertyGroup>  
 
-  <Target Name="Restore">
+  <Target Name="RestoreReferences">
     <MSBuild Projects="$(Solution)" Targets="Restore" />
   </Target>
   
-  <Target Name="Build" DependsOnTargets="Restore">
+  <Target Name="Build" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
@@ -63,7 +63,7 @@
       Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
   </Target>
 
-  <Target Name="StageBuild" DependsOnTargets="Restore">
+  <Target Name="StageBuild" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
@@ -80,7 +80,7 @@
       <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.dll" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.dll" />
       <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.xml" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.xml" />
     </ItemGroup>
-    <Copy DestinationFolder="$(StageDir)\lib\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
+    <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
   
   <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage;DebPackage" />
@@ -96,7 +96,7 @@
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
-      <NuSpecDir>$(RootDir)</NuSpecDir>
+      <NuSpecDir>$(RootDir)\Package\nuget</NuSpecDir>
     </Package>
   </ItemGroup>
 
@@ -112,11 +112,12 @@
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
-          Outputs="$(PackageDir)\dlr-$(PackageVersion).zip">
+          Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\lib\**;$(StageDir)\README.md;$(StageDir)\LICENSE" />
+      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
     </ItemGroup>
-    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\dlr-$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+    <Message Text="$(ZipFiles)" />
+    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
   </Target>
 
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
