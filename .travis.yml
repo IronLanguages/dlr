@@ -19,6 +19,8 @@ dist: trusty
 dotnet: 2.0.0
 
 script:
+  # remove this workaround when https://bugzilla.xamarin.com/show_bug.cgi?id=60340 is fixed and released
+  - (cd /usr/lib/mono/msbuild/15.0/bin/Roslyn ; sudo ln -s ../../../../4.5/csc.exe . ; sudo ln -s ../../../../4.5/csc.exe.config . ; sudo ln -s ../../../../4.5/csc.rsp .)
   - dotnet restore Dlr.sln --packages ./packages
   - make release
   - pushd bin/$CONFIGURATION
