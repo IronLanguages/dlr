@@ -74,7 +74,8 @@
   </Target>
   <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(Staging)' != 'true'">
     <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.dll" />
+      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.dll" Condition=" '$(OS)' != 'Windows_NT' " />
+      <MethodArgsReferences Include="System.Runtime.dll" Condition=" '$(OS)' == 'Windows_NT' " />
       <MethodArgsReferences Include="..\..\packages\**\*-x64\native\System.Private.CoreLib.dll" />
       <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\mscorlib.dll" />
       <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.dll" />
