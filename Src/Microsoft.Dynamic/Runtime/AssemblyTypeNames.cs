@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Runtime {
         public static IEnumerable<TypeName> GetTypeNames(Assembly assem, bool includePrivateTypes) {
             return from t in ReflectionUtils.GetAllTypesFromAssembly(assem, includePrivateTypes)
                    where !t.IsNested
-                   select new TypeName(t.AsType());
+                   select new TypeName(t);
         }
 
         static IEnumerable<TypeName> GetTypeNames(string[] namespaces, string[][] types) {

@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Actions {
         public DynamicMetaObject GetDocumentation(DynamicMetaObject target) {
             BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
 
-            DocumentationAttribute attr = target.LimitType.GetTypeInfo().GetCustomAttribute<DocumentationAttribute>();
+            DocumentationAttribute attr = target.LimitType.GetCustomAttribute<DocumentationAttribute>();
             string documentation = (attr != null) ? attr.Documentation : String.Empty;
 
             return new DynamicMetaObject(

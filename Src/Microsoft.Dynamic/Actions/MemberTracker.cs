@@ -134,7 +134,7 @@ namespace Microsoft.Scripting.Actions {
                 } else if ((evnt = member as EventInfo) != null) {
                     res = new EventTracker(evnt);
                 } else if ((type = member as TypeInfo) != null) {
-                    res = new NestedTypeTracker(type.AsType());
+                    res = new NestedTypeTracker(type);
                 } else {
                     throw Error.UnknownMemberType(member);
                 }
