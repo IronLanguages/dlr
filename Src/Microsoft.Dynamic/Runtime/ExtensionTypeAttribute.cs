@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Runtime {
             if (extends == null) {
                 throw new ArgumentNullException(nameof(extends));
             }
-            if (extensionType != null && !extensionType.GetTypeInfo().IsPublic && !extensionType.GetTypeInfo().IsNestedPublic) {
+            if (extensionType != null && !extensionType.IsPublic && !extensionType.IsNestedPublic) {
                 throw Error.ExtensionMustBePublic(extensionType.FullName);
             }
 

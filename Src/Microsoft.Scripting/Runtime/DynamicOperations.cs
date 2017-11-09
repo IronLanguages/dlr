@@ -231,14 +231,14 @@ namespace Microsoft.Scripting.Runtime {
         /// depending on what the langauge prefers.
         /// </summary>
         public object ConvertTo(object obj, Type type) {
-            if (type.GetTypeInfo().IsInterface || type.GetTypeInfo().IsClass) {
+            if (type.IsInterface || type.IsClass) {
                 CallSite<Func<CallSite, object, object>> site;
                 site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, null));
                 return site.Target(site, obj);
             }
 
             // TODO: We should probably cache these instead of using reflection all the time.
-            foreach (MethodInfo mi in typeof(DynamicOperations).GetTypeInfo().GetDeclaredMethods("ConvertTo")) {
+            foreach (MethodInfo mi in typeof(DynamicOperations).GetDeclaredMethods("ConvertTo")) {
                 if (mi.IsGenericMethod) {
                     try {
                         return mi.MakeGenericMethod(type).Invoke(this, new object[] { obj });

@@ -324,7 +324,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static bool IsProtected(this Type type) {
-            return type.GetTypeInfo().IsNestedFamily || type.GetTypeInfo().IsNestedFamORAssem;
+            return type.IsNestedFamily || type.IsNestedFamORAssem;
         }
 
         public static Type GetVisibleType(object value) {
@@ -460,7 +460,7 @@ namespace Microsoft.Scripting.Generation {
         /// </summary>
         public static Expression GetTryConvertReturnValue(Type type) {
             Expression res;
-            var info = type.GetTypeInfo();
+            var info = type;
             if (info.IsInterface || info.IsClass || (info.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))) {
                 res = AstUtils.Constant(null, type);
             } else {

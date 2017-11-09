@@ -534,11 +534,11 @@ namespace Microsoft.Scripting.Utils {
         #endregion
 
         public static Type[] GetGenericTypeArguments(this Type type) {
-            return type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetTypeInfo().GetGenericArguments() : null;
+            return type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
         public static Type[] GetGenericTypeParameters(this Type type) {
-            return type.IsGenericTypeDefinition ? type.GetTypeInfo().GetGenericArguments() : null;
+            return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
         public static IEnumerable<Module> GetModules(this Assembly assembly) {
@@ -586,59 +586,59 @@ namespace Microsoft.Scripting.Utils {
 #endif
 
         public static bool ContainsGenericParameters(this Type type) {
-            return type.GetTypeInfo().ContainsGenericParameters;
+            return type.ContainsGenericParameters;
         }
 
         public static bool IsInterface(this Type type) {
-            return type.GetTypeInfo().IsInterface;
+            return type.IsInterface;
         }
 
         public static bool IsClass(this Type type) {
-            return type.GetTypeInfo().IsClass;
+            return type.IsClass;
         }
 
         public static bool IsGenericType(this Type type) {
-            return type.GetTypeInfo().IsGenericType;
+            return type.IsGenericType;
         }
 
         public static bool IsGenericTypeDefinition(this Type type) {
-            return type.GetTypeInfo().IsGenericTypeDefinition;
+            return type.IsGenericTypeDefinition;
         }
 
         public static bool IsSealed(this Type type) {
-            return type.GetTypeInfo().IsSealed;
+            return type.IsSealed;
         }
 
         public static bool IsAbstract(this Type type) {
-            return type.GetTypeInfo().IsAbstract;
+            return type.IsAbstract;
         }
 
         public static bool IsPublic(this Type type) {
-            return type.GetTypeInfo().IsPublic;
+            return type.IsPublic;
         }
 
         public static bool IsVisible(this Type type) {
-            return type.GetTypeInfo().IsVisible;
+            return type.IsVisible;
         }
         
         public static Type GetBaseType(this Type type) {
-            return type.GetTypeInfo().BaseType;
+            return type.BaseType;
         }
 
         public static bool IsValueType(this Type type) {
-            return type.GetTypeInfo().IsValueType;
+            return type.IsValueType;
         }
 
         public static bool IsEnum(this Type type) {
-            return type.GetTypeInfo().IsEnum;
+            return type.IsEnum;
         }
 
         public static bool IsPrimitive(this Type type) {
-            return type.GetTypeInfo().IsPrimitive;
+            return type.IsPrimitive;
         }
 
         public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
-            return type.GetTypeInfo().GenericParameterAttributes;
+            return type.GenericParameterAttributes;
         }
         
         public static Type[] EmptyTypes = new Type[0];
@@ -1059,7 +1059,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<Type> Ancestors(this Type type) {
             do {
                 yield return type;
-                type = type.GetTypeInfo().BaseType;
+                type = type.BaseType;
             } while (type != null);
         }
 
@@ -1126,7 +1126,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static MethodBuilder DefineMethodOverride(TypeBuilder tb, MethodAttributes extra, MethodInfo decl) {
             MethodAttributes finalAttrs = (decl.Attributes & ~MethodAttributesToEraseInOveride) | extra;
-            if (!decl.DeclaringType.GetTypeInfo().IsInterface) {
+            if (!decl.DeclaringType.IsInterface) {
                 finalAttrs &= ~MethodAttributes.NewSlot;
             }
 
@@ -1253,7 +1253,7 @@ namespace Microsoft.Scripting.Utils {
                         type.IsSealed &&
                         type.IsDefined(ea, false)) {
 
-                        foreach (MethodInfo method in type.AsType().GetDeclaredMethods()) {
+                        foreach (MethodInfo method in type.GetDeclaredMethods()) {
                             if (method.IsPublic && method.IsStatic && method.IsDefined(ea, false)) {
                                 yield return method;
                             }
@@ -1518,7 +1518,7 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             }
 #endif
-            if (!_extendedType.GetTypeInfo().ContainsGenericParameters) {
+            if (!_extendedType.ContainsGenericParameters) {
                 return false;
             }
 

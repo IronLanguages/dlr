@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Runtime {
                     ));
                 }
 
-                if (!type.GetTypeInfo().IsSubclassOf(typeof(LanguageContext))) {
+                if (!type.IsSubclassOf(typeof(LanguageContext))) {
                     throw new InvalidOperationException(
                         $"Failed to load language '{_displayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
                 }

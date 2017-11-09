@@ -55,24 +55,7 @@ namespace System.IO {
         Inheritable = 16
     }
 }
-#else
-namespace System {
-    public static class TypeExtensions {
-#if !FEATURE_TYPE_INFO
-        public static Type GetTypeInfo(this Type type) {
-            return type;
-        }
 
-        public static InterfaceMapping GetRuntimeInterfaceMap(this Type type, Type iface) {
-            return type.GetInterfaceMap(iface);
-        }
-#endif
-
-        public static Type AsType(this Type type) {
-            return type;
-        }
-    }
-}
 #endif
 
 #if !FEATURE_SERIALIZATION

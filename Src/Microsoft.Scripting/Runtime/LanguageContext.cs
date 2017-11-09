@@ -397,7 +397,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             public override DynamicMetaObject FallbackConvert(DynamicMetaObject self, DynamicMetaObject errorSuggestion) {
-                if (Type.GetTypeInfo().IsAssignableFrom(self.LimitType.GetTypeInfo())) {
+                if (Type.IsAssignableFrom(self.LimitType)) {
                     return new DynamicMetaObject(
                         Expression.Convert(self.Expression, Type),
                         BindingRestrictions.GetTypeRestriction(self.Expression, self.LimitType)
@@ -591,7 +591,7 @@ namespace Microsoft.Scripting.Runtime {
                 return false;
             }
 
-            return typeof(Delegate).GetTypeInfo().IsAssignableFrom(obj.GetType().GetTypeInfo());
+            return typeof(Delegate).IsAssignableFrom(obj.GetType());
         }
 
         #endregion

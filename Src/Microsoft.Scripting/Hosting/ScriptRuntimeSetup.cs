@@ -96,7 +96,7 @@ namespace Microsoft.Scripting.Hosting {
             get { return _hostType; }
             set {
                 ContractUtils.RequiresNotNull(value, "value");
-                ContractUtils.Requires(typeof(ScriptHost).GetTypeInfo().IsAssignableFrom(value.GetTypeInfo()), "value", "Must be ScriptHost or a derived type of ScriptHost");
+                ContractUtils.Requires(typeof(ScriptHost).IsAssignableFrom(value), "value", "Must be ScriptHost or a derived type of ScriptHost");
                 CheckFrozen();
                 _hostType = value;
             }

@@ -79,8 +79,8 @@ namespace Microsoft.Scripting.Hosting {
 
             object noDefaultRefs;
             if (!setup.Options.TryGetValue("NoDefaultReferences", out noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
-                LoadAssembly(typeof(string).GetTypeInfo().Assembly);
-                LoadAssembly(typeof(Debug).GetTypeInfo().Assembly);
+                LoadAssembly(typeof(string).Assembly);
+                LoadAssembly(typeof(Debug).Assembly);
             }
         }
 

@@ -126,7 +126,7 @@ namespace Microsoft.Scripting.Generation {
             //    inner ring assemblies have dependency on outer ring assemlies via generated IL.
             // 3) Verify inner ring assemblies.
             // 4) Verify outer ring assemblies.
-            Assembly core = typeof(Expression).GetTypeInfo().Assembly;
+            Assembly core = typeof(Expression).Assembly;
             Type assemblyGen = core.GetType(typeof(Expression).Namespace + ".Compiler.AssemblyGen");
             //The type may not exist.
             string[] coreAssemblyLocations = null;
