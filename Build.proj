@@ -114,7 +114,7 @@
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
           Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
+      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
     <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>

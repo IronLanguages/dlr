@@ -21,6 +21,7 @@
   </metadata>
   <files>
     <file src="**\*.dll" target="lib" />
+    <file src="**\*.xml" target="lib" />
     <file src="README.md;LICENSE" />
   </files>
 </package>
