@@ -24,7 +24,7 @@ using Microsoft.Scripting.Utils;
 using System.Text;
 
 namespace Microsoft.Scripting {
-    [DebuggerDisplay("{_path ?? \"<anonymous>\"}")]
+    [DebuggerDisplay("{Path ?? \"<anonymous>\"}")]
     public sealed class SourceUnit {
         private readonly LanguageContext _language;
         private readonly TextContentProvider _contentProvider;
