@@ -1184,7 +1184,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private void CompileMethodCallExpression(Expression expr) {
             var node = (MethodCallExpression)expr;
-            
+
             var parameters = node.Method.GetParameters();
 
             // TODO:
@@ -1199,33 +1199,16 @@ namespace Microsoft.Scripting.Interpreter {
                 _forceCompile = true;
             }
 
-            // CF bug workaround
-            // TODO: can we do better if the delegate targets LightLambda.Run* method?
-            if (PlatformAdaptationLayer.IsCompactFramework && 
-                node.Method.Name == "Invoke" && typeof(Delegate).IsAssignableFrom(node.Object.Type) && !node.Method.IsStatic) {
-                    
-                Compile(
-                    AstUtils.Convert(
-                        Expression.Call(
-                            node.Object,
-                            node.Object.Type.GetMethod("DynamicInvoke"),
-                            Expression.NewArrayInit(typeof(object), node.Arguments.Map((e) => AstUtils.Convert(e, typeof(object))))
-                        ),
-                        node.Type
-                    )
-                );
 
-            } else {
-                if (!node.Method.IsStatic) {
-                    Compile(node.Object);
-                }
-
-                foreach (var arg in node.Arguments) {
-                    Compile(arg);
-                }
-
-                EmitCall(node.Method, parameters);
+            if (!node.Method.IsStatic) {
+                Compile(node.Object);
             }
+
+            foreach (var arg in node.Arguments) {
+                Compile(arg);
+            }
+
+            EmitCall(node.Method, parameters);
         }
 
         public void EmitCall(MethodInfo method) {
@@ -1414,21 +1397,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             // TODO: do not create a new Call Expression
-            if (PlatformAdaptationLayer.IsCompactFramework) {
-                // Workaround for a bug in Compact Framework
-                Compile(
-                    AstUtils.Convert(
-                        Expression.Call(
-                            node.Expression,
-                            node.Expression.Type.GetMethod("DynamicInvoke"),
-                            Expression.NewArrayInit(typeof(object), node.Arguments.Map((e) => AstUtils.Convert(e, typeof(object))))
-                        ),
-                        node.Type
-                    )
-                );
-            } else {
-                CompileMethodCallExpression(Expression.Call(node.Expression, node.Expression.Type.GetMethod("Invoke"), node.Arguments));
-            }
+            CompileMethodCallExpression(Expression.Call(node.Expression, node.Expression.Type.GetMethod("Invoke"), node.Arguments));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "expr")]

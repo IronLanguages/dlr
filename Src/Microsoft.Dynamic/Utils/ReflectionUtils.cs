@@ -878,9 +878,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if FEATURE_LCG
-        public static bool IsDynamicMethod(MethodBase method) {
-            return !PlatformAdaptationLayer.IsCompactFramework && IsDynamicMethodInternal(method);
-        }
+        public static bool IsDynamicMethod(MethodBase method) => IsDynamicMethodInternal(method);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool IsDynamicMethodInternal(MethodBase method) {
