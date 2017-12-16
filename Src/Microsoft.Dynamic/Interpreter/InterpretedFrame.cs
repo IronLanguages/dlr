@@ -89,13 +89,16 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public object Pop() {
-            return Data[--StackIndex];
+            var val = Data[--StackIndex];
+            Data[StackIndex] = null;
+            return val;
         }
 
         public object Pop(int n) {
-            int si = StackIndex - n;
-            StackIndex = si;
-            return Data[si];
+            StackIndex -= n;
+            var val = Data[StackIndex];
+            Array.Clear(Data, StackIndex, n);
+            return val;
         }
 
         internal void SetStackDepth(int depth) {
