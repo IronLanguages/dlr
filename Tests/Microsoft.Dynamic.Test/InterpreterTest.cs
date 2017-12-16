@@ -10,6 +10,7 @@ namespace Microsoft.Dynamic.Test {
 
             public static void CheckCount() {
                 GC.Collect();
+                GC.Collect(); // make Mono happy
                 GC.WaitForPendingFinalizers();
                 Assert.Zero(cnt);
             }
