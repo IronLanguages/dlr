@@ -127,14 +127,6 @@ namespace Microsoft.Scripting.Math {
             return MakeReal(d);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")] // TODO: fix
-        public static implicit operator Complex64(BigInteger i) {
-            ContractUtils.RequiresNotNull(i, "i");
-
-            // throws an overflow exception if we can't handle the value.
-            return MakeReal((double)i);
-        }
-
         public static implicit operator Complex64(BigInt i) {
             // throws an overflow exception if we can't handle the value.
             return MakeReal((double)i);

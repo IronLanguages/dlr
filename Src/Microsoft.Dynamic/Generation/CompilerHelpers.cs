@@ -13,10 +13,6 @@
  *
  * ***************************************************************************/
 
-using BigInt = System.Numerics.BigInteger;
-
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,18 +20,21 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Interpreter;
-using Microsoft.Scripting.Math;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Generation {
+
     // TODO: keep this?
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference")]
     public delegate void ActionRef<T0, T1>(ref T0 arg0, ref T1 arg1);
@@ -857,19 +856,19 @@ namespace Microsoft.Scripting.Generation {
         #region Factories
 
         public static BigInteger CreateBigInteger(bool isNegative, byte[] data) {
-            return new BigInteger(CreateBigInt(isNegative, data));
+            return CreateBigInt(isNegative, data);
         }
 
-        public static BigInt CreateBigInt(int value) {
-            return (BigInt)value;
+        public static BigInteger CreateBigInt(int value) {
+            return (BigInteger)value;
         }
 
-        public static BigInt CreateBigInt(long value) {
-            return (BigInt)value;
+        public static BigInteger CreateBigInt(long value) {
+            return (BigInteger)value;
         }
 
-        public static BigInt CreateBigInt(bool isNegative, byte[] data) {
-            BigInt res = new BigInt(data);
+        public static BigInteger CreateBigInt(bool isNegative, byte[] data) {
+            BigInteger res = new BigInteger(data);
             return isNegative ? -res : res;
         }
 

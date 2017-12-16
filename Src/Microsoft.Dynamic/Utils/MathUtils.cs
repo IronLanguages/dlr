@@ -13,13 +13,12 @@
  *
  * ***************************************************************************/
 
-using BigInt = System.Numerics.BigInteger;
 using Complex = System.Numerics.Complex;
 
 using System;
 using System.Text;
 using System.Collections.Generic;
-using Microsoft.Scripting.Math;
+using System.Numerics;
 
 namespace Microsoft.Scripting.Utils {
     using Math = System.Math;
@@ -661,7 +660,7 @@ namespace Microsoft.Scripting.Utils {
             return four;
         }
 
-        public static BigInt GetRandBits(this Random generator, int bits) {
+        public static BigInteger GetRandBits(this Random generator, int bits) {
             ContractUtils.Requires(bits > 0);
 
             // equivalent to (bits + 7) / 8 without possibility of overflow
@@ -678,29 +677,27 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if (bits <= 32) {
-                return (BigInt)GetWord(bytes, 0, bits);
-            } else if (bits <= 64) {
+                return GetWord(bytes, 0, bits);
+            }
+
+            if (bits <= 64) {
                 ulong a = GetWord(bytes, 0, bits);
                 ulong b = GetWord(bytes, 32, bits);
-                return (BigInt)(a | (b << 32));
+                return (a | (b << 32));
             }
             
-            return new BigInt(bytes);
+            return new BigInteger(bytes);
         }
 
         public static BigInteger Random(this Random generator, BigInteger limit) {
-            return new BigInteger(generator.Random(limit.Value));
-        }
-
-        public static BigInt Random(this Random generator, BigInt limit) {
             ContractUtils.Requires(limit.Sign > 0, "limit");
             ContractUtils.RequiresNotNull(generator, "generator");
 
-            BigInt res = BigInt.Zero;
+            BigInteger res = BigInteger.Zero;
 
             while (true) {
                 // if we've run out of significant digits, we can return the total
-                if (limit == BigInt.Zero) {
+                if (limit == BigInteger.Zero) {
                     return res;
                 }
 
@@ -732,34 +729,17 @@ namespace Microsoft.Scripting.Utils {
                 byte[] randomData = new byte[index + 2];
                 generator.NextBytes(randomData);
                 randomData[index + 1] = (byte)0;
-                res += new BigInt(randomData);
-                res += (BigInt)generator.Next(hiData) << ((index + 1) * 8);
+                res += new BigInteger(randomData);
+                res += (BigInteger)generator.Next(hiData) << ((index + 1) * 8);
 
                 // sum it with a uniform random number for the remainder of the bigint
-                limit = new BigInt(data);
+                limit = new BigInteger(data);
             }
-        }
-
-        public static bool TryToFloat64(this BigInt self, out double result) {
-            return StringUtils.TryParseDouble(
-                self.ToString(),
-                System.Globalization.NumberStyles.Number,
-                System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
-                out result
-            );
-        }
-
-        public static double ToFloat64(this BigInt self) {
-            return double.Parse(
-                self.ToString(),
-                System.Globalization.NumberStyles.Number,
-                System.Globalization.CultureInfo.InvariantCulture.NumberFormat
-            );
         }
 
         public static bool TryToFloat64(this BigInteger self, out double result) {
             return StringUtils.TryParseDouble(
-                self.ToString(10),
+                self.ToString(),
                 System.Globalization.NumberStyles.Number,
                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
                 out result
@@ -768,27 +748,18 @@ namespace Microsoft.Scripting.Utils {
 
         public static double ToFloat64(this BigInteger self) {
             return double.Parse(
-                self.ToString(10),
+                self.ToString(),
                 System.Globalization.NumberStyles.Number,
                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat
             );
         }
-
-        // Like GetBitCount(Abs(x)), except 0 maps to 0
+        
         public static int BitLength(BigInteger x) {
-            if (x.IsZero()) {
-                return 0;
-            }
-
-            return x.Abs().GetBitCount();
-        }
-
-        public static int BitLength(BigInt x) {
             if (x.IsZero) {
                 return 0;
             }
 
-            byte[] bytes = BigInt.Abs(x).ToByteArray();
+            byte[] bytes = BigInteger.Abs(x).ToByteArray();
             int index = bytes.Length;
             while (bytes[--index] == 0) ;
 
@@ -887,7 +858,7 @@ namespace Microsoft.Scripting.Utils {
 
         #region Extending BigInt with BigInteger API
 
-        public static bool AsInt32(this BigInt self, out int ret) {
+        public static bool AsInt32(this BigInteger self, out int ret) {
             if (self >= Int32.MinValue && self <= Int32.MaxValue) {
                 ret = (Int32)self;
                 return true;
@@ -896,7 +867,7 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static bool AsInt64(this BigInt self, out long ret) {
+        public static bool AsInt64(this BigInteger self, out long ret) {
             if (self >= Int64.MinValue && self <= Int64.MaxValue) {
                 ret = (long)self;
                 return true;
@@ -906,7 +877,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [CLSCompliant(false)]
-        public static bool AsUInt32(this BigInt self, out uint ret) {
+        public static bool AsUInt32(this BigInteger self, out uint ret) {
             if (self >= UInt32.MinValue && self <= UInt32.MaxValue) {
                 ret = (UInt32)self;
                 return true;
@@ -916,7 +887,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [CLSCompliant(false)]
-        public static bool AsUInt64(this BigInt self, out ulong ret) {
+        public static bool AsUInt64(this BigInteger self, out ulong ret) {
             if (self >= UInt64.MinValue && self <= UInt64.MaxValue) {
                 ret = (UInt64)self;
                 return true;
@@ -925,62 +896,66 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static BigInt Abs(this BigInt self) {
-            return BigInt.Abs(self);
+        public static BigInteger Abs(this BigInteger self) {
+            return BigInteger.Abs(self);
         }
 
-        public static bool IsZero(this BigInt self) {
+        public static bool IsZero(this BigInteger self) {
             return self.IsZero;
         }
 
-        public static bool IsPositive(this BigInt self) {
+        public static bool IsPositive(this BigInteger self) {
             return self.Sign > 0;
         }
 
-        public static bool IsNegative(this BigInt self) {
+        public static bool IsNegative(this BigInteger self) {
             return self.Sign < 0;
         }
 
-        public static double Log(this BigInt self) {
-            return BigInt.Log(self);
+        public static double Log(this BigInteger self) {
+            return BigInteger.Log(self);
         }
 
-        public static double Log(this BigInt self, double baseValue) {
-            return BigInt.Log(self, baseValue);
+        public static double Log(this BigInteger self, double baseValue) {
+            return BigInteger.Log(self, baseValue);
         }
 
-        public static double Log10(this BigInt self) {
-            return BigInt.Log10(self);
+        public static double Log10(this BigInteger self) {
+            return BigInteger.Log10(self);
         }
 
-        public static BigInt Power(this BigInt self, int exp) {
-            return BigInt.Pow(self, exp);
+        public static BigInteger Power(this BigInteger self, int exp) {
+            return BigInteger.Pow(self, exp);
         }
 
-        public static BigInt Power(this BigInt self, long exp) {
+        public static BigInteger Power(this BigInteger self, long exp) {
             if (exp < 0) {
                 throw ExceptionUtils.MakeArgumentOutOfRangeException(nameof(exp), exp, "Must be at least 0");
             }
 
             // redirection possible?
             if (exp <= int.MaxValue) {
-                return BigInt.Pow(self, (int)exp);
+                return BigInteger.Pow(self, (int)exp);
             }
 
             // manual implementation
             if (self.IsOne) {
-                return BigInt.One;
-            } else if (self.IsZero) {
-                return BigInt.Zero;
-            } else if (self == BigInt.MinusOne) {
-                if (exp % 2 == 0) {
-                    return BigInt.One;
-                } else {
-                    return BigInt.MinusOne;
-                }
+                return BigInteger.One;
             }
 
-            BigInt result = BigInt.One;
+            if (self.IsZero) {
+                return BigInteger.Zero;
+            }
+
+            if (self == BigInteger.MinusOne) {
+                if (exp % 2 == 0) {
+                    return BigInteger.One;
+                } 
+
+                return BigInteger.MinusOne;
+            }
+
+            BigInteger result = BigInteger.One;
             while (exp != 0) {
                 if (exp % 2 != 0) {
                     result *= self;
@@ -992,15 +967,15 @@ namespace Microsoft.Scripting.Utils {
             return result;
         }
 
-        public static BigInt ModPow(this BigInt self, int power, BigInt mod) {
-            return BigInt.ModPow(self, power, mod);
+        public static BigInteger ModPow(this BigInteger self, int power, BigInteger mod) {
+            return BigInteger.ModPow(self, power, mod);
         }
 
-        public static BigInt ModPow(this BigInt self, BigInt power, BigInt mod) {
-            return BigInt.ModPow(self, power, mod);
+        public static BigInteger ModPow(this BigInteger self, BigInteger power, BigInteger mod) {
+            return BigInteger.ModPow(self, power, mod);
         }
 
-        public static string ToString(this BigInt self, int radix) {
+        public static string ToString(this BigInteger self, int radix) {
             const string symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             if (radix < 2 || radix > 36) {
@@ -1008,10 +983,10 @@ namespace Microsoft.Scripting.Utils {
             }
 
             bool isNegative = false;
-            if (self < BigInt.Zero) {
+            if (self < BigInteger.Zero) {
                 self = -self;
                 isNegative = true;
-            } else if (self == BigInt.Zero) {
+            } else if (self == BigInteger.Zero) {
                 return "0";
             }
 
@@ -1036,7 +1011,7 @@ namespace Microsoft.Scripting.Utils {
         #region Exposing underlying data
 
         [CLSCompliant(false)]
-        public static uint[] GetWords(this BigInt self) {
+        public static uint[] GetWords(this BigInteger self) {
             if (self.IsZero) {
                 return new uint[] { 0 };
             }
@@ -1065,29 +1040,29 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [CLSCompliant(false)]
-        public static uint GetWord(this BigInt self, int index) {
+        public static uint GetWord(this BigInteger self, int index) {
             return GetWords(self)[index];
         }
 
-        public static int GetWordCount(this BigInt self) {
+        public static int GetWordCount(this BigInteger self) {
             int index;
             byte[] bytes;
             GetHighestByte(self, out index, out bytes);
             return index / 4 + 1; // return (index + 1 + 3) / 4;
         }
 
-        public static int GetByteCount(this BigInt self) {
+        public static int GetByteCount(this BigInteger self) {
             int index;
             byte[] bytes;
             GetHighestByte(self, out index, out bytes);
             return index + 1;
         }
 
-        public static int GetBitCount(this BigInt self) {
+        public static int GetBitCount(this BigInteger self) {
             if (self.IsZero) {
                 return 1;
             }
-            byte[] bytes = BigInt.Abs(self).ToByteArray();
+            byte[] bytes = BigInteger.Abs(self).ToByteArray();
 
             int index = bytes.Length;
             while (bytes[--index] == 0) ;
@@ -1099,8 +1074,8 @@ namespace Microsoft.Scripting.Utils {
             return count;
         }
 
-        private static byte GetHighestByte(BigInt self, out int index, out byte[] byteArray) {
-            byte[] bytes = BigInt.Abs(self).ToByteArray();
+        private static byte GetHighestByte(BigInteger self, out int index, out byte[] byteArray) {
+            byte[] bytes = BigInteger.Abs(self).ToByteArray();
             if (self.IsZero) {
                 byteArray = bytes;
                 index = 0;
