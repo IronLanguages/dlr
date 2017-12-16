@@ -70,9 +70,6 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/TestInternalDLR.exe'
-  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/TestInternalDLR.exe'
-  - 'dotnet %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/netcoreapp2.0/TestInternalDLR.dll'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Metadata.exe'
   - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Metadata.exe'
   - 'dotnet %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/netcoreapp2.0/Metadata.dll'

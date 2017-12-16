@@ -15,12 +15,15 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using RowanTest.Common;
 using System.Reflection;
 using Microsoft.Scripting.Utils;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
-namespace TestInternalDLR {
-    public class TestReflectionServices : BaseTest {
+namespace Microsoft.Dynamic.Test {
+    [TestFixture]
+    public class TestReflectionServices {
+        [Test]
         public void TestExtensionMethods1() {
             bool expectExact = typeof(Enumerable).Assembly.FullName == "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 
@@ -121,8 +124,8 @@ namespace TestInternalDLR {
             }
 
             foreach (string name in expected.Keys) {
-                Assert(actual.ContainsKey(name));
-                Assert(expectExact ? expected[name] == actual[name] : expected[name] >= actual[name]);
+                Assert.IsTrue(actual.ContainsKey(name));
+                Assert.IsTrue(expectExact ? expected[name] == actual[name] : expected[name] >= actual[name]);
             }
         }
     }
