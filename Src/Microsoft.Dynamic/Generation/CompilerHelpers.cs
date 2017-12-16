@@ -858,16 +858,12 @@ namespace Microsoft.Scripting.Generation {
         [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(int value) => CreateBigInteger(value);
 
-        public static BigInteger CreateBigInteger(int value) {
-            return value;
-        }
+        public static BigInteger CreateBigInteger(int value) => value;
 
         [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(long value) => CreateBigInteger(value);
 
-        public static BigInteger CreateBigInteger(long value) {
-            return value;
-        }
+        public static BigInteger CreateBigInteger(long value) => value;
 
         [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(bool isNegative, byte[] data) => CreateBigInteger(isNegative, data);
