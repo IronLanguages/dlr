@@ -52,73 +52,57 @@ namespace Microsoft.Scripting.Ast {
 
         // The helper API should return ConstantExpression after SymbolConstantExpression goes away
         public static Expression Constant(object value) {
-            if (value == null) {
-                return NullLiteral;
-            }
-
-            if (value is BigInteger) {
-                return BigIntConstant((BigInteger)value);
-            }
-
-            if (value is Complex) {
-                return ComplexConstant((Complex)value);
-            }
-
-            if (value is Complex64) {
-                return Complex64Constant((Complex64)value);
-            }
-
-            if (value is Type) {
-                return Expression.Constant(value, typeof(Type));
-            }
-
-            if (value is ConstructorInfo) {
-                return Expression.Constant(value, typeof(ConstructorInfo));
-            }
-
-            if (value is EventInfo) {
-                return Expression.Constant(value, typeof(EventInfo));
-            }
-
-            if (value is FieldInfo) {
-                return Expression.Constant(value, typeof(FieldInfo));
-            }
-
-            if (value is MethodInfo) {
-                return Expression.Constant(value, typeof(MethodInfo));
-            }
-
-            if (value is PropertyInfo) {
-                return Expression.Constant(value, typeof(PropertyInfo));
-            } else {
-                Type t = value.GetType();
-                if (!t.IsEnum) {
-                    switch (t.GetTypeCode()) {
-                        case TypeCode.Boolean:
-                            return (bool)value ? TrueLiteral : FalseLiteral;
-                        case TypeCode.Int32:
-                            int x = (int)value;
-                            int cacheIndex = x + 2;
-                            if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
-                                ConstantExpression res;
-                                if ((res = IntCache[cacheIndex]) == null) {
-                                    IntCache[cacheIndex] = res = Constant(x, typeof(int));
+            switch (value) {
+                case null:
+                    return NullLiteral;
+                case BigInteger bigInteger:
+                    return BigIntegerConstant(bigInteger);
+                case Complex complex:
+                    return ComplexConstant(complex);
+                case Complex64 complex64:
+                    return Complex64Constant(complex64);
+                case Type type:
+                    return Expression.Constant(value, typeof(Type));
+                case ConstructorInfo constructorInfo:
+                    return Expression.Constant(value, typeof(ConstructorInfo));
+                case EventInfo eventInfo:
+                    return Expression.Constant(value, typeof(EventInfo));
+                case FieldInfo fieldInfo:
+                    return Expression.Constant(value, typeof(FieldInfo));
+                case MethodInfo methodInfo:
+                    return Expression.Constant(value, typeof(MethodInfo));
+                case PropertyInfo propertyInfo:
+                    return Expression.Constant(value, typeof(PropertyInfo));
+                default: {
+                    Type t = value.GetType();
+                    if (!t.IsEnum) {
+                        switch (t.GetTypeCode()) {
+                            case TypeCode.Boolean:
+                                return (bool)value ? TrueLiteral : FalseLiteral;
+                            case TypeCode.Int32:
+                                int x = (int)value;
+                                int cacheIndex = x + 2;
+                                if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
+                                    ConstantExpression res;
+                                    if ((res = IntCache[cacheIndex]) == null) {
+                                        IntCache[cacheIndex] = res = Constant(x, typeof(int));
+                                    }
+                                    return res;
                                 }
-                                return res;
-                            }
-                            break;
-                        case TypeCode.String:
-                            if (String.IsNullOrEmpty((string)value)) {
-                                return EmptyStringLiteral;
-                            }
-                            break;
+                                break;
+                            case TypeCode.String:
+                                if (String.IsNullOrEmpty((string)value)) {
+                                    return EmptyStringLiteral;
+                                }
+                                break;
+                        }
                     }
+                    return Expression.Constant(value);
                 }
-                return Expression.Constant(value);
             }
         }
 
-        private static Expression BigIntConstant(BigInteger value) {
+        private static Expression BigIntegerConstant(BigInteger value) {
             int ival;
             if (value.AsInt32(out ival)) {
                 return Expression.Call(
