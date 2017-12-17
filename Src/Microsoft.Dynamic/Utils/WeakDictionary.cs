@@ -251,8 +251,7 @@ namespace Microsoft.Scripting.Utils {
         private readonly int hashCode;
 
         public WeakObject(object obj) {
-            // CF throws doesn't support long weak references (NotSuportedException is thrown)
-            weakReference = new WeakReference(obj, !PlatformAdaptationLayer.IsCompactFramework);
+            weakReference = new WeakReference(obj, true);
             hashCode = (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
         }
 

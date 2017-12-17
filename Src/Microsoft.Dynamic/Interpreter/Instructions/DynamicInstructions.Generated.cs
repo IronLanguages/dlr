@@ -59,11 +59,6 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction CreateUntypedInstruction(CallSiteBinder binder, int argCount) {
-            // DLR Ref.Emits an UpdateAndExecute delegate for sites with more than 10 parameters
-            if (argCount > 10 && PlatformAdaptationLayer.IsCompactFramework) {
-                return null;
-            }
-            
             switch (argCount) {
                 #region Generated Untyped Dynamic Instructions
 
