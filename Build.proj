@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+
   <PropertyGroup>
     <BuildFlavour Condition=" '$(BuildFlavour)' == '' ">Debug</BuildFlavour>
     <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
     <Solution>$(RootDir)\Dlr.sln</Solution>
-    
+
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
     <MSBuildCommunityTasksPath>$(RootDir)\Util\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-    <TargetFrameworks Condition=" '$(TargetFrameworks)' == '' ">net40;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(RootDir)\CurrentVersion.props" />
@@ -25,7 +25,7 @@
     <StageDir>$(RootDir)\Package\$(BuildFlavour)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
     <PackageDir>$(RootDir)\Package\$(BuildFlavour)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
   </PropertyGroup>
-  
+
   <PropertyGroup>  
     <BuildProperties>
       RootDir=$(RootDir);
@@ -41,7 +41,7 @@
   <Target Name="RestoreReferences">
     <MSBuild Projects="$(Solution)" Targets="Restore" />
   </Target>
-  
+
   <Target Name="Build" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
@@ -82,7 +82,7 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
-  
+
   <Target Name="Package" DependsOnTargets="ZipPackage;NuGetPackage;DebPackage" />
 
   <Target Name="MakePackageDir">
@@ -123,5 +123,6 @@
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
     <!-- TODO: Implement deb packaging here -->
   </Target>
+
 </Project>
 

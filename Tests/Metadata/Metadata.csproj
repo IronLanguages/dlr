@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
+
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TargetFrameworks)' == ''">net40;net45;netcoreapp2.0</TargetFrameworks>
-    <PlatformTarget>anycpu</PlatformTarget>
-    <ProjectGuid>{848BBEB0-63E6-4736-B60C-23A9D733593D}</ProjectGuid>
+    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Metadata</RootNamespace>
-    <AssemblyName>Metadata</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
     <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
+
 </Project>
