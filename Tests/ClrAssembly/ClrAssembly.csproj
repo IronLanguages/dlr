@@ -49,12 +49,16 @@
   </Target>
 
   <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
+    <PropertyGroup>
+      <VbcToolPath Condition="'$(VbcToolPath)' == '' AND '$(BuildingInsideVisualStudio)' != 'true'">$(MSBuildFrameworkToolsPath)</VbcToolPath>
+    </PropertyGroup>
+
     <ItemGroup>
       <VbcReferencePath Include="@(ReferencePath)" />
       <VbcReferencePath Include="$(OutputPath)$(Prefix)typesamples.dll" />
     </ItemGroup>
 
-    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" />
+    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" ToolPath="$(VbcToolPath)" />
   </Target>
 
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveReferences;LoadOrder;ReachType;CSManyArea;VBManyArea" Condition="'$(Staging)' != 'true'" />
