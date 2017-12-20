@@ -48,17 +48,13 @@
     <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typesamples.dll" Sources="%(AreaCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaCSFile.Filename).dll" />
   </Target>
 
-  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
-    <PropertyGroup>
-      <VbcToolPath Condition="'$(VbcToolPath)' == '' AND '$(BuildingInsideVisualStudio)' != 'true'">$(MSBuildFrameworkToolsPath)</VbcToolPath>
-    </PropertyGroup>
-
+  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample" Condition="'$(MSBuildRuntimeType)' != 'Mono'">
     <ItemGroup>
       <VbcReferencePath Include="@(ReferencePath)" />
       <VbcReferencePath Include="$(OutputPath)$(Prefix)typesamples.dll" />
     </ItemGroup>
 
-    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" ToolPath="$(VbcToolPath)" />
+    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" />
   </Target>
 
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveReferences;LoadOrder;ReachType;CSManyArea;VBManyArea" Condition="'$(Staging)' != 'true'" />
