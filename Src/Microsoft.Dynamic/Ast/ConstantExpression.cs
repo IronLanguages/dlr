@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Ast {
             int ival;
             if (value.AsInt32(out ival)) {
                 return Expression.Call(
-                    new Func<int, BigInteger>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
+                    new Func<int, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(ival)
                 );
             }
@@ -114,13 +114,13 @@ namespace Microsoft.Scripting.Ast {
             long lval;
             if (value.AsInt64(out lval)) {
                 return Expression.Call(
-                    new Func<long, BigInteger>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
+                    new Func<long, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(lval)
                 );
             }
 
             return Expression.Call(
-                new Func<bool, byte[], BigInteger>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
+                new Func<bool, byte[], BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                 Constant(value.Sign < 0),
                 CreateArray<byte>(value.Abs().ToByteArray())
             );

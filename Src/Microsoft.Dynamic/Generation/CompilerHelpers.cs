@@ -855,19 +855,31 @@ namespace Microsoft.Scripting.Generation {
 
         #region Factories
 
-        public static BigInteger CreateBigInteger(bool isNegative, byte[] data) {
-            return CreateBigInt(isNegative, data);
-        }
-
+        [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(int value) {
-            return (BigInteger)value;
+            return value;
         }
 
+        public static BigInteger CreateBigInteger(int value) {
+            return value;
+        }
+
+        [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(long value) {
-            return (BigInteger)value;
+            return value;
         }
 
+        public static BigInteger CreateBigInteger(long value) {
+            return value;
+        }
+
+        [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(bool isNegative, byte[] data) {
+            BigInteger res = new BigInteger(data);
+            return isNegative ? -res : res;
+        }
+
+        public static BigInteger CreateBigInteger(bool isNegative, byte[] data) {
             BigInteger res = new BigInteger(data);
             return isNegative ? -res : res;
         }
