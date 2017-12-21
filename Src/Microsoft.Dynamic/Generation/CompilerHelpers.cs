@@ -856,28 +856,21 @@ namespace Microsoft.Scripting.Generation {
         #region Factories
 
         [Obsolete("Use CreateBigInteger instead.")]
-        public static BigInteger CreateBigInt(int value) {
-            return value;
-        }
+        public static BigInteger CreateBigInt(int value) => CreateBigInteger(value);
 
         public static BigInteger CreateBigInteger(int value) {
             return value;
         }
 
         [Obsolete("Use CreateBigInteger instead.")]
-        public static BigInteger CreateBigInt(long value) {
-            return value;
-        }
+        public static BigInteger CreateBigInt(long value) => CreateBigInteger(value);
 
         public static BigInteger CreateBigInteger(long value) {
             return value;
         }
 
         [Obsolete("Use CreateBigInteger instead.")]
-        public static BigInteger CreateBigInt(bool isNegative, byte[] data) {
-            BigInteger res = new BigInteger(data);
-            return isNegative ? -res : res;
-        }
+        public static BigInteger CreateBigInt(bool isNegative, byte[] data) => CreateBigInteger(isNegative, data);
 
         public static BigInteger CreateBigInteger(bool isNegative, byte[] data) {
             BigInteger res = new BigInteger(data);
