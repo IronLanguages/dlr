@@ -13,12 +13,10 @@
  *
  * ***************************************************************************/
 
-using BigInt = System.Numerics.BigInteger;
-
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
-using Microsoft.Scripting.Math;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -43,8 +41,7 @@ namespace Microsoft.Scripting.Interpreter {
                     { typeof(double), InstructionFactory<double>.Factory },
                     { typeof(char), InstructionFactory<char>.Factory },
                     { typeof(string), InstructionFactory<string>.Factory },
-                    { typeof(BigInt), InstructionFactory<BigInt>.Factory },
-                    { typeof(BigInteger), InstructionFactory<BigInteger>.Factory }  
+                    { typeof(BigInteger), InstructionFactory<BigInteger>.Factory }
                 };
             }
 

@@ -13,18 +13,19 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
-using BigInt = System.Numerics.BigInteger;
 using Complex = System.Numerics.Complex;
 
 using System;
+using System.Linq.Expressions;
+using System.Numerics;
 using System.Reflection;
+
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Math;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
     public static partial class Utils {
         private static readonly ConstantExpression TrueLiteral = Expression.Constant(true, typeof(bool));
@@ -51,56 +52,53 @@ namespace Microsoft.Scripting.Ast {
 
         // The helper API should return ConstantExpression after SymbolConstantExpression goes away
         public static Expression Constant(object value) {
-            if (value == null) {
-                return NullLiteral;
-            }
-
-            BigInteger bi = value as BigInteger;
-            if ((object)bi != null) {
-                return BigIntegerConstant(bi);
-            } else if (value is BigInt) {
-                return BigIntConstant((BigInt)value);
-            } else if (value is Complex) {
-                return ComplexConstant((Complex)value);
-            } else if (value is Complex64) {
-                return Complex64Constant((Complex64)value);
-            } else if (value is Type) {
-                return Expression.Constant(value, typeof(Type));
-            } else if (value is ConstructorInfo) {
-                return Expression.Constant(value, typeof(ConstructorInfo));
-            } else if (value is EventInfo) {
-                return Expression.Constant(value, typeof(EventInfo));
-            } else if (value is FieldInfo) {
-                return Expression.Constant(value, typeof(FieldInfo));
-            } else if (value is MethodInfo) {
-                return Expression.Constant(value, typeof(MethodInfo));
-            } else if (value is PropertyInfo) {
-                return Expression.Constant(value, typeof(PropertyInfo));
-            } else {
-                Type t = value.GetType();
-                if (!t.IsEnum) {
-                    switch (t.GetTypeCode()) {
-                        case TypeCode.Boolean:
-                            return (bool)value ? TrueLiteral : FalseLiteral;
-                        case TypeCode.Int32:
-                            int x = (int)value;
-                            int cacheIndex = x + 2;
-                            if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
-                                ConstantExpression res;
-                                if ((res = IntCache[cacheIndex]) == null) {
-                                    IntCache[cacheIndex] = res = Constant(x, typeof(int));
+            switch (value) {
+                case null:
+                    return NullLiteral;
+                case BigInteger bigInteger:
+                    return BigIntegerConstant(bigInteger);
+                case Complex complex:
+                    return ComplexConstant(complex);
+                case Complex64 complex64:
+                    return Complex64Constant(complex64);
+                case Type type:
+                    return Expression.Constant(value, typeof(Type));
+                case ConstructorInfo constructorInfo:
+                    return Expression.Constant(value, typeof(ConstructorInfo));
+                case EventInfo eventInfo:
+                    return Expression.Constant(value, typeof(EventInfo));
+                case FieldInfo fieldInfo:
+                    return Expression.Constant(value, typeof(FieldInfo));
+                case MethodInfo methodInfo:
+                    return Expression.Constant(value, typeof(MethodInfo));
+                case PropertyInfo propertyInfo:
+                    return Expression.Constant(value, typeof(PropertyInfo));
+                default: {
+                    Type t = value.GetType();
+                    if (!t.IsEnum) {
+                        switch (t.GetTypeCode()) {
+                            case TypeCode.Boolean:
+                                return (bool)value ? TrueLiteral : FalseLiteral;
+                            case TypeCode.Int32:
+                                int x = (int)value;
+                                int cacheIndex = x + 2;
+                                if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
+                                    ConstantExpression res;
+                                    if ((res = IntCache[cacheIndex]) == null) {
+                                        IntCache[cacheIndex] = res = Constant(x, typeof(int));
+                                    }
+                                    return res;
                                 }
-                                return res;
-                            }
-                            break;
-                        case TypeCode.String:
-                            if (String.IsNullOrEmpty((string)value)) {
-                                return EmptyStringLiteral;
-                            }
-                            break;
+                                break;
+                            case TypeCode.String:
+                                if (String.IsNullOrEmpty((string)value)) {
+                                    return EmptyStringLiteral;
+                                }
+                                break;
+                        }
                     }
+                    return Expression.Constant(value);
                 }
-                return Expression.Constant(value);
             }
         }
 
@@ -108,7 +106,7 @@ namespace Microsoft.Scripting.Ast {
             int ival;
             if (value.AsInt32(out ival)) {
                 return Expression.Call(
-                    new Func<int, BigInteger>(BigInteger.Create).GetMethodInfo(),
+                    new Func<int, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(ival)
                 );
             }
@@ -116,37 +114,13 @@ namespace Microsoft.Scripting.Ast {
             long lval;
             if (value.AsInt64(out lval)) {
                 return Expression.Call(
-                    new Func<long, BigInteger>(BigInteger.Create).GetMethodInfo(),
+                    new Func<long, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(lval)
                 );
             }
 
             return Expression.Call(
                 new Func<bool, byte[], BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
-                Constant(value.Sign < 0),
-                CreateArray<byte>(value.Abs().ToByteArray())
-            );
-        }
-
-        private static Expression BigIntConstant(BigInt value) {
-            int ival;
-            if (value.AsInt32(out ival)) {
-                return Expression.Call(
-                    new Func<int, BigInt>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
-                    Constant(ival)
-                );
-            }
-
-            long lval;
-            if (value.AsInt64(out lval)) {
-                return Expression.Call(
-                    new Func<long, BigInt>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
-                    Constant(lval)
-                );
-            }
-
-            return Expression.Call(
-                new Func<bool, byte[], BigInt>(CompilerHelpers.CreateBigInt).GetMethodInfo(),
                 Constant(value.Sign < 0),
                 CreateArray<byte>(value.Abs().ToByteArray())
             );
