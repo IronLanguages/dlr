@@ -13,15 +13,12 @@
  *
  * ***************************************************************************/
 
-using Complex = System.Numerics.Complex;
-
 using System;
 using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection;
 
 using Microsoft.Scripting.Generation;
-using Microsoft.Scripting.Math;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
@@ -59,8 +56,6 @@ namespace Microsoft.Scripting.Ast {
                     return BigIntegerConstant(bigInteger);
                 case Complex complex:
                     return ComplexConstant(complex);
-                case Complex64 complex64:
-                    return Complex64Constant(complex64);
                 case Type type:
                     return Expression.Constant(value, typeof(Type));
                 case ConstructorInfo constructorInfo:
@@ -157,26 +152,5 @@ namespace Microsoft.Scripting.Ast {
             }
         }
 
-        private static Expression Complex64Constant(Complex64 value) {
-            if (value.Real != 0.0) {
-                if (value.Imag != 0.0) {
-                    return Expression.Call(
-                        new Func<double, double, Complex64>(Complex64.Make).GetMethodInfo(),
-                        Constant(value.Real),
-                        Constant(value.Imag)
-                    );
-                } else {
-                    return Expression.Call(
-                        new Func<double, Complex64>(Complex64.MakeReal).GetMethodInfo(),
-                        Constant(value.Real)
-                    );
-                }
-            } else {
-                return Expression.Call(
-                    new Func<double, Complex64>(Complex64.MakeImaginary).GetMethodInfo(),
-                    Constant(value.Imag)
-                );
-            }
-        }
     }
 }
