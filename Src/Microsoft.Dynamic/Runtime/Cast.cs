@@ -107,7 +107,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private static InvalidCastException InvalidCast(object o, string typeName) {
-            return new InvalidCastException(String.Format("Cannot cast {0} to {1}", o == null ? "(null)" : o.GetType().Name, typeName));
+            return new InvalidCastException($"Cannot cast {o?.GetType().Name ?? "(null)"} to {typeName}");
         }
     }
 }

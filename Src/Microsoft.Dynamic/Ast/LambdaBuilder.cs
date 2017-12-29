@@ -533,7 +533,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(returnType, "returnType");
 
             bool action = returnType == typeof(void);
-            int paramCount = parameterList == null ? 0 : parameterList.Count;
+            int paramCount = parameterList?.Count ?? 0;
 
             Type[] typeArgs = new Type[paramCount + (action ? 0 : 1)];
             for (int i = 0; i < paramCount; i++) {

@@ -258,12 +258,12 @@ namespace Microsoft.Scripting.Actions {
         
         public ArgumentType GetArgumentKind(int index) {
             // TODO: Contract.Requires(index >= 0 && index < _argumentCount, "index");
-            return _infos != null ? _infos[index].Kind : ArgumentType.Simple;
+            return _infos?[index].Kind ?? ArgumentType.Simple;
         }
 
         public string GetArgumentName(int index) {
             ContractUtils.Requires(index >= 0 && index < _argumentCount);
-            return _infos != null ? _infos[index].Name : null;
+            return _infos?[index].Name;
         }
 
         /// <summary>

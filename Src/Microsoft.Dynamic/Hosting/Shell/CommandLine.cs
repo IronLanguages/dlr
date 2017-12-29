@@ -318,7 +318,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             string s = ReadStatement(out continueInteraction);
 
             if (continueInteraction == false) {
-                return (_terminatingExitCode == null) ? 0 : _terminatingExitCode;
+                return _terminatingExitCode ?? 0;
             }
 
             if (String.IsNullOrEmpty(s)) {

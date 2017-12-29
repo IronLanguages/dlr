@@ -175,12 +175,12 @@ namespace Microsoft.Scripting.Debugging {
             // If the TryStatement has any Catch blocks we need to insert the exception
             // event as a first statement so that we can be notified of first-chance exceptions.
             if (node.Handlers != null && node.Handlers.Count > 0) {
-                newHandlers = new List<MSAst.CatchBlock>();
+                newHandlers = new List<CatchBlock>();
 
                 foreach (var catchBlock in node.Handlers) {
-                    MSAst.ParameterExpression exceptionVar = catchBlock.Variable != null ? catchBlock.Variable : Ast.Parameter(catchBlock.Test, null);
+                    ParameterExpression exceptionVar = catchBlock.Variable ?? Ast.Parameter(catchBlock.Test, null);
 
-                    MSAst.Expression debugMarker, thread;
+                    Expression debugMarker, thread;
                     if (_transformToGenerator) {
                         debugMarker = Ast.Call(
                             typeof(RuntimeOps).GetMethod("GetCurrentSequencePointForGeneratorFrame"),
@@ -204,7 +204,7 @@ namespace Microsoft.Scripting.Debugging {
                         ),
                         AstUtils.If(
                             Ast.Equal(_globalDebugMode, AstUtils.Constant((int)DebugMode.FullyEnabled)),
-                            (_pushFrame != null) ? _pushFrame : Ast.Empty(),
+                            _pushFrame ?? Ast.Empty(),
                             Ast.Call(
                                 typeof(RuntimeOps).GetMethod("OnTraceEvent"),
                                thread,
@@ -243,7 +243,7 @@ namespace Microsoft.Scripting.Debugging {
                 node = Ast.MakeTry(
                     node.Type,
                     node.Body,
-                    newFinally != null ? newFinally : node.Finally,
+                    newFinally ?? node.Finally,
                     node.Fault,
                     newHandlers != null ? (IEnumerable<CatchBlock>)newHandlers : node.Handlers
                 );
@@ -399,7 +399,7 @@ namespace Microsoft.Scripting.Debugging {
                                     )
                                 ),
                                 Ast.Block(
-                                    (_pushFrame != null) ? _pushFrame : Ast.Empty(),
+                                    _pushFrame ?? Ast.Empty(),
                                     tracebackCall
                                 )
                             )

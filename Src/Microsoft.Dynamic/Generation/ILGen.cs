@@ -760,7 +760,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private void EmitSimpleConstant(object value) {
-            if (!TryEmitConstant(value, value == null ? typeof(object) : value.GetType())) {
+            if (!TryEmitConstant(value, value?.GetType() ?? typeof(object))) {
                 throw Error.CanotEmitConstant(value, value.GetType());
             }
         }

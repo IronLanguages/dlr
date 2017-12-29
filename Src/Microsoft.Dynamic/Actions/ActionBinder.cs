@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.Actions {
                     }
                 }
             }
-            throw Error.InvalidCast(obj != null ? obj.GetType().Name : "(null)", toType.Name);
+            throw Error.InvalidCast(obj?.GetType().Name ?? "(null)", toType.Name);
         }
 
         /// <summary>

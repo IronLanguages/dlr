@@ -112,7 +112,7 @@ namespace Microsoft.Scripting.Ast {
             allVars.AddRange(_temps);
 
             // Collect temps that don't have to be closed over
-            var innerTemps = new ReadOnlyCollectionBuilder<ParameterExpression>(1 + (_labelTemps != null ? _labelTemps.Count : 0));
+            var innerTemps = new ReadOnlyCollectionBuilder<ParameterExpression>(1 + (_labelTemps?.Count ?? 0));
             innerTemps.Add(_gotoRouter);
             if (_labelTemps != null) {
                 foreach (LabelInfo info in _labelTemps.Values) {

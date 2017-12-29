@@ -248,7 +248,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public int Count {
             get {
-                int count = _data != null ? _data.Count : 0;
+                int count = _data?.Count ?? 0;
 
                 lock (this) {
                     foreach (var key in GetExtraKeys()) {
