@@ -20,17 +20,12 @@ using System;
 namespace Microsoft.Scripting.Actions {
     [Obsolete("Use ExtensionBinaryOperationBinder or ExtensionUnaryOperationBinder")]
     public abstract class OperationBinder : DynamicMetaObjectBinder {
-        private string _operation;
 
         protected OperationBinder(string operation) {
-            _operation = operation;
+            Operation = operation;
         }
 
-        public string Operation {
-            get {
-                return _operation;
-            }
-        }
+        public string Operation { get; }
 
         public DynamicMetaObject FallbackOperation(DynamicMetaObject target, DynamicMetaObject[] args) {
             return FallbackOperation(target, args, null);
@@ -54,11 +49,11 @@ namespace Microsoft.Scripting.Actions {
 
         public override bool Equals(object obj) {
             OperationBinder oa = obj as OperationBinder;
-            return oa != null && oa._operation == _operation;
+            return oa != null && oa.Operation == Operation;
         }
 
         public override int GetHashCode() {
-            return 0x10000000 ^ _operation.GetHashCode();
+            return 0x10000000 ^ Operation.GetHashCode();
         }
     }
 }

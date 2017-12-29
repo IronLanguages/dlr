@@ -473,8 +473,8 @@ namespace Microsoft.Scripting.Interpreter {
             _cases = cases;
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
             int target;

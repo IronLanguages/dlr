@@ -40,13 +40,9 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        public bool InClosure {
-            get { return (_flags & InClosureFlag) != 0; }
-        }
+        public bool InClosure => (_flags & InClosureFlag) != 0;
 
-        public bool InClosureOrBoxed {
-            get { return InClosure | IsBoxed; }
-        }
+        public bool InClosureOrBoxed => InClosure | IsBoxed;
 
         internal LocalVariable(int index, bool closure, bool boxed) {
             Index = index;
@@ -64,25 +60,15 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     public struct LocalDefinition {
-        private readonly int _index;
-        private readonly ParameterExpression _parameter;
 
         internal LocalDefinition(int localIndex, ParameterExpression parameter) {
-            _index = localIndex;
-            _parameter = parameter;
+            Index = localIndex;
+            Parameter = parameter;
         }
 
-        public int Index {
-            get {
-                return _index;
-            }
-        }
+        public int Index { get; }
 
-        public ParameterExpression Parameter {
-            get {
-                return _parameter;
-            }
-        }
+        public ParameterExpression Parameter { get; }
 
         public override bool Equals(object obj) {
             if (obj is LocalDefinition) {
@@ -94,10 +80,10 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override int GetHashCode() {
-            if (_parameter == null) {
+            if (Parameter == null) {
                 return 0;
             }
-            return _parameter.GetHashCode() ^ _index.GetHashCode();
+            return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
 
         public static bool operator ==(LocalDefinition self, LocalDefinition other) {

@@ -23,8 +23,8 @@ namespace Microsoft.Scripting.Interpreter {
             _elementCount = elementCount;
         }
 
-        public override int ConsumedStack { get { return _elementCount; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => _elementCount;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             TElement[] array = new TElement[_elementCount];
@@ -39,8 +39,8 @@ namespace Microsoft.Scripting.Interpreter {
     public sealed class NewArrayInstruction<TElement> : Instruction {
         internal NewArrayInstruction() { }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             int length = (int)frame.Pop();

@@ -29,29 +29,19 @@ namespace Microsoft.Scripting.ComInterop {
             _typeLibDesc = typeLibDesc;
         }
 
-        public string Name {
-            get { return _typeLibDesc.Name; }
-        }
+        public string Name => _typeLibDesc.Name;
 
-        public Guid Guid {
-            get { return _typeLibDesc.Guid; }
-        }
+        public Guid Guid => _typeLibDesc.Guid;
 
-        public short VersionMajor {
-            get { return _typeLibDesc.VersionMajor; }
-        }
+        public short VersionMajor => _typeLibDesc.VersionMajor;
 
-        public short VersionMinor {
-            get { return _typeLibDesc.VersionMinor; }
-        }
+        public short VersionMinor => _typeLibDesc.VersionMinor;
 
-        public ComTypeLibDesc TypeLibDesc {
-            get { return _typeLibDesc; }
-        }
+        public ComTypeLibDesc TypeLibDesc => _typeLibDesc;
 
         // TODO: internal
         public string[] GetMemberNames() {
-            return new string[] { this.Name, "Guid", "Name", "VersionMajor", "VersionMinor" };
+            return new string[] { Name, "Guid", "Name", "VersionMajor", "VersionMinor" };
         }
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) {
