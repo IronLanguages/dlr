@@ -220,16 +220,17 @@ namespace Microsoft.Scripting.Actions {
             IDictionaryEnumerator dictEnum = dict.GetEnumerator();
             while (dictEnum.MoveNext()) {
                 DictionaryEntry de = dictEnum.Entry;
-                
-                if (de.Key is string) {
-                    splattedNames.Add((string)de.Key);
+
+                string s = de.Key as string;
+                if (s != null) {
+                    splattedNames.Add(s);
                     splattedArgs.Add(
                         DynamicMetaObject.Create(
                             de.Value,
                             Ast.Call(
                                 AstUtils.Convert(dictMo.Expression, typeof(IDictionary)),
                                 typeof(IDictionary).GetMethod("get_Item"),
-                                AstUtils.Constant(de.Key as string)
+                                AstUtils.Constant(s)
                             )
                         )
                     );

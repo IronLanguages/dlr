@@ -20,6 +20,7 @@ using System.Dynamic;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")] // TODO: fix
     public abstract class CodeDomCodeGen {
         // This is the key used in the UserData of the CodeDom objects to track
@@ -55,43 +56,49 @@ namespace Microsoft.Scripting.Runtime {
             return src;
         }
 
-        virtual protected void WriteArgumentReferenceExpression(CodeArgumentReferenceExpression e) {
+        protected virtual void WriteArgumentReferenceExpression(CodeArgumentReferenceExpression e) {
             _writer.Write(e.ParameterName);
         }
 
-        virtual protected void WriteSnippetExpression(CodeSnippetExpression e) {
+        protected virtual void WriteSnippetExpression(CodeSnippetExpression e) {
             _writer.Write(e.Value);
         }
 
-        virtual protected void WriteSnippetStatement(CodeSnippetStatement s) {
+        protected virtual void WriteSnippetStatement(CodeSnippetStatement s) {
             _writer.Write(s.Value);
             _writer.Write('\n');
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")] // TODO: fix
         protected void WriteStatement(CodeStatement s) {
             // Save statement source location
             if (s.LinePragma != null) {
                 _writer.MapLocation(s.LinePragma);
             }
 
-            if (s is CodeExpressionStatement) {
-                WriteExpressionStatement((CodeExpressionStatement)s);
-            } else if (s is CodeSnippetStatement) {
-                WriteSnippetStatement((CodeSnippetStatement)s);
+            switch (s) {
+                case CodeExpressionStatement statement:
+                    WriteExpressionStatement(statement);
+                    break;
+                case CodeSnippetStatement statement:
+                    WriteSnippetStatement(statement);
+                    break;
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")] // TODO: fix
         protected void WriteExpression(CodeExpression e) {
-            if (e is CodeSnippetExpression) {
-                WriteSnippetExpression((CodeSnippetExpression)e);
-            } else if (e is CodePrimitiveExpression) {
-                WritePrimitiveExpression((CodePrimitiveExpression)e);
-            } else if (e is CodeMethodInvokeExpression) {
-                WriteCallExpression((CodeMethodInvokeExpression)e);
-            } else if (e is CodeArgumentReferenceExpression) {
-                WriteArgumentReferenceExpression((CodeArgumentReferenceExpression)e);
+            switch (e) {
+                case CodeSnippetExpression expression:
+                    WriteSnippetExpression(expression);
+                    break;
+                case CodePrimitiveExpression expression:
+                    WritePrimitiveExpression(expression);
+                    break;
+                case CodeMethodInvokeExpression expression:
+                    WriteCallExpression(expression);
+                    break;
+                case CodeArgumentReferenceExpression expression:
+                    WriteArgumentReferenceExpression(expression);
+                    break;
             }
         }
 
