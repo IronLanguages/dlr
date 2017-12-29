@@ -15,12 +15,8 @@
 
 #if FEATURE_COM
 
-using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Globalization;
-using Marshal = System.Runtime.InteropServices.Marshal;
 
 namespace Microsoft.Scripting.ComInterop {
 

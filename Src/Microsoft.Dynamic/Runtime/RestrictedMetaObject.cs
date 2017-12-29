@@ -16,9 +16,8 @@
 using System.Linq.Expressions;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Dynamic;
+
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Runtime {

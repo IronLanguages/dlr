@@ -41,12 +41,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * Jean-loup Gailly(jloup@gzip.org) and Mark Adler(madler@alumni.caltech.edu)
 * and contributors of zlib.
 */
-using System;
-using System.IO;
 
 namespace ComponentAce.Compression.Libs.ZLib
 {
-	
 	/// <summary>
 	/// Exceptions that occur in ZStream
 	/// </summary>

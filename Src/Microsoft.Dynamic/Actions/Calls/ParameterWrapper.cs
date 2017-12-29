@@ -17,11 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Dynamic;
-using Microsoft.Scripting.Actions;
+
 using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Generation;
-using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Actions.Calls {
     [Flags]

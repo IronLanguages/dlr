@@ -15,11 +15,11 @@
 #if FEATURE_FULL_CONSOLE
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Scripting.Utils;
 using System.Text;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting.Shell {
     public sealed class SuperConsole : BasicConsole {

@@ -13,11 +13,10 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 

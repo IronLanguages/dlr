@@ -13,15 +13,11 @@
  *
  * ***************************************************************************/
 
-
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Reflection;
 
 using Microsoft.Scripting.Utils;
-using System.Security;
 
 namespace Microsoft.Scripting.Interpreter {
     internal sealed partial class DynamicInstructionN : Instruction {

@@ -13,15 +13,11 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Generation;
-using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {

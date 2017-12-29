@@ -13,10 +13,6 @@
  *
  * ***************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Microsoft.Scripting.Actions.Calls {
     public enum Candidate {
         Equivalent = 0,

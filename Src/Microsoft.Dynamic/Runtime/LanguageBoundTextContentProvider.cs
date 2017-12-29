@@ -13,9 +13,8 @@
  *
  * ***************************************************************************/
 
-using System.IO;
-using System.Dynamic;
 using System.Text;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
