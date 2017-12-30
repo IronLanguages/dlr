@@ -85,10 +85,6 @@ namespace Microsoft.Scripting.Actions {
             return methods;
         }
 
-        public override DynamicMetaObject GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
-            return base.GetValue(resolverFactory, binder, instanceType);
-        }
-
         public override MemberTracker BindToInstance(DynamicMetaObject instance) {
             if (ContainsInstance) {
                 return new BoundMemberTracker(this, instance);
