@@ -13,14 +13,11 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Runtime;
 using System.Collections.Generic;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     internal interface IBoxableInstruction {

@@ -14,13 +14,11 @@
  * ***************************************************************************/
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
 using System.Dynamic;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Security.Permissions;
+using System.Linq.Expressions;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {

@@ -13,12 +13,9 @@
  *
  * ***************************************************************************/
 
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
-using System.Dynamic;
-using System.Collections.Generic;
-using Microsoft.Scripting.Actions;
-using Microsoft.Scripting.Runtime;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {

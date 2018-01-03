@@ -14,12 +14,10 @@
  * ***************************************************************************/
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
-using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace Microsoft.Scripting.ComInterop {
 

@@ -13,17 +13,8 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using System.Diagnostics;
 
 namespace Microsoft.Scripting {
     /// <summary>

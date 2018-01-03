@@ -13,10 +13,8 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System.Collections.Generic;
-using Microsoft.Scripting.Runtime;
+using System.Linq.Expressions;
 
 namespace Microsoft.Scripting.Actions {
     /// <summary>

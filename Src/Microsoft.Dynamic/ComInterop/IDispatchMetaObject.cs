@@ -14,11 +14,9 @@
  * ***************************************************************************/
 
 #if FEATURE_COM
+using System.Dynamic;
 using System.Linq.Expressions;
 
-using System;
-using System.Diagnostics;
-using System.Dynamic;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {

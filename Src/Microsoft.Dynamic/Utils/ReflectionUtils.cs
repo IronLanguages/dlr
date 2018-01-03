@@ -29,13 +29,9 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
-using System.Runtime.InteropServices;
-using System.Dynamic;
-using System.Linq.Expressions;
 
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 #if !CLR45
 namespace System.Reflection {
