@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.Utils {
             Expression[] res = new Expression[objects.Length];
             for (int i = 0; i < objects.Length; i++) {
                 DynamicMetaObject mo = objects[i];
-                res[i] = mo != null ? mo.Expression : null;
+                res[i] = mo?.Expression;
             }
 
             return res;

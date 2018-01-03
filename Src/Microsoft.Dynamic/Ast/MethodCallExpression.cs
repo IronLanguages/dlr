@@ -207,7 +207,7 @@ namespace Microsoft.Scripting.Ast {
                 current++;
             }
             ContractUtils.Requires(consumed == arguments.Length, "arguments", "Incorrect number of arguments");
-            return Expression.Call(instance, method, clone != null ? clone : arguments);
+            return Expression.Call(instance, method, clone ?? arguments);
         }
 
         private static Expression CreateDefaultValueExpression(ParameterInfo parameter) {

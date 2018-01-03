@@ -1158,7 +1158,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             Type[] types = new Type[_maxAccessedCollapsedArg + 1];
             for (int i = 0; i < types.Length; i++) {
                 var arg = GetSplattedItem(_actualArguments.ToSplattedItemIndex(i));
-                types[i] = (arg != null) ? arg.GetType() : null;
+                types[i] = arg?.GetType();
             }
             return types;
         }

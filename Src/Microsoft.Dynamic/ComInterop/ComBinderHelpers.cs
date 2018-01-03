@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.ComInterop {
                         );
 
                         IStrongBox value = curArgument.Value as IStrongBox;
-                        object boxedValue = value != null ? value.Value : null;
+                        object boxedValue = value?.Value;
 
                         newArgs[i] = new DynamicMetaObject(
                             boxedValueAccessor,

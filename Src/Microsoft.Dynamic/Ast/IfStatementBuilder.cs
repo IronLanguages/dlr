@@ -49,7 +49,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         internal static Expression BuildConditions(IList<IfStatementTest> clauses, Expression @else) {
-            Expression result = @else != null ? @else : Utils.Empty();
+            Expression result = @else ?? Utils.Empty();
 
             // This should probably be using SwitchExpression to avoid stack
             // overflow if we have lots of "else" clauses.

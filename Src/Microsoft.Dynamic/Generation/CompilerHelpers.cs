@@ -160,7 +160,7 @@ namespace Microsoft.Scripting.Generation {
         public static bool TypesEqual(IList args, int start, Type[] types) {
             for (int i = 0; i < types.Length; i++) {
                 object arg = args[start + i];
-                if (types[i] != (arg != null ? arg.GetType() : null)) {
+                if (types[i] != arg?.GetType()) {
                     return false;
                 }
             }

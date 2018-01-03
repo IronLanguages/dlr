@@ -258,7 +258,7 @@ namespace Microsoft.Scripting.Actions {
             if (error == null) {
                 MakeSuccessfulMemberAccess(getMemInfo, self, propSelf, targetType, members, memberType);
             } else {
-                getMemInfo.Body.FinishError(getMemInfo.ErrorSuggestion != null ? getMemInfo.ErrorSuggestion.Expression : error);
+                getMemInfo.Body.FinishError(getMemInfo.ErrorSuggestion?.Expression ?? error);
             }
         }
 

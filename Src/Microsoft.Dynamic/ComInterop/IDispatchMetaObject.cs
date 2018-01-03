@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
             ComBinder.ComGetMemberBinder comBinder = binder as ComBinder.ComGetMemberBinder;
-            bool canReturnCallables = comBinder == null ? false : comBinder._CanReturnCallables;
+            bool canReturnCallables = comBinder?._CanReturnCallables ?? false;
 
             ContractUtils.RequiresNotNull(binder, "binder");
 

@@ -192,7 +192,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] Append<T>(T[] array, T item) {
-            System.Array.Resize<T>(ref array, (array == null) ? 1 : array.Length + 1);
+            System.Array.Resize<T>(ref array, array?.Length + 1 ?? 1);
             array[array.Length - 1] = item;
             return array;
         }
@@ -206,8 +206,8 @@ namespace Microsoft.Scripting.Utils {
                 throw new ArgumentOutOfRangeException(nameof(additionalItemCount));
             }
 
-            int j = (array == null) ? 0 : array.Length;
-            System.Array.Resize<T>(ref array, j + items.Count + additionalItemCount);
+            int j = array?.Length ?? 0;
+            Array.Resize<T>(ref array, j + items.Count + additionalItemCount);
 
             for (int i = 0; i < items.Count; i++, j++) {
                 array[j] = items[i];
