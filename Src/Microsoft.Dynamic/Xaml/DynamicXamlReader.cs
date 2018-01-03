@@ -134,19 +134,11 @@ namespace Microsoft.Scripting.Runtime {
                     _info = info;
                 }
 
-                public override object GetValue(object instance) {
-                    return base.GetValue(instance);
-                }
-
                 public override void SetValue(object instance, object value) {
                     object target = _writer._operations.GetMember(_writer._scope, (string)value);
 
                     _info.AddEventHandler(instance, (Delegate)_writer._operations.ConvertTo(target, _info.EventHandlerType));
                 }
-            }
-
-            public override void WriteStartObject(XamlType xamlType) {                
-                base.WriteStartObject(xamlType);
             }
 
             public override void WriteValue(object value) {
