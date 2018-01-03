@@ -158,8 +158,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public override IEnumerable<string> GetDynamicMemberNames() {
             foreach (object o in _keys) {
-                string s = o as string;
-                if (s != null) {
+                if (o is string s) {
                     yield return s;
                 }
             }

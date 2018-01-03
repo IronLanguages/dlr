@@ -221,8 +221,7 @@ namespace Microsoft.Scripting.Actions {
             while (dictEnum.MoveNext()) {
                 DictionaryEntry de = dictEnum.Entry;
 
-                string s = de.Key as string;
-                if (s != null) {
+                if (de.Key is string s) {
                     splattedNames.Add(s);
                     splattedArgs.Add(
                         DynamicMetaObject.Create(
