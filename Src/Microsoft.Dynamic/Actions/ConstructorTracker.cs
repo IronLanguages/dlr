@@ -24,23 +24,13 @@ namespace Microsoft.Scripting.Actions {
             _ctor = ctor;
         }
 
-        public override Type DeclaringType {
-            get { return _ctor.DeclaringType; }
-        }
+        public override Type DeclaringType => _ctor.DeclaringType;
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Constructor; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Constructor;
 
-        public override string Name {
-            get { return _ctor.Name; }
-        }
+        public override string Name => _ctor.Name;
 
-        public bool IsPublic {
-            get {
-                return _ctor.IsPublic;
-            }
-        }
+        public bool IsPublic => _ctor.IsPublic;
 
         public override string ToString() {
             return _ctor.ToString();

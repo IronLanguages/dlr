@@ -15,25 +15,22 @@
 
 namespace Microsoft.Scripting.Runtime {
     public class Extensible<T> {
-        private readonly T _value;
 
         public Extensible() { }
-        public Extensible(T value) { this._value = value; }
+        public Extensible(T value) { Value = value; }
 
-        public T Value {
-            get { return _value; }
-        }
+        public T Value { get; }
 
         public override bool Equals(object obj) {
-            return _value.Equals(obj);
+            return Value.Equals(obj);
         }
 
         public override int GetHashCode() {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
 
         public override string ToString() {
-            return _value.ToString();
+            return Value.ToString();
         }
 
         public static implicit operator T(Extensible<T> extensible) {

@@ -24,31 +24,17 @@ namespace Microsoft.Scripting.Actions {
             _type = type;
         }
 
-        public override Type DeclaringType {
-            get { return _type.DeclaringType; }
-        }
+        public override Type DeclaringType => _type.DeclaringType;
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Type; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Type;
 
-        public override string Name {
-            get { return _type.Name; }
-        }
+        public override string Name => _type.Name;
 
-        public override bool IsPublic {
-            get {
-                return _type.IsPublic();
-            }
-        }
+        public override bool IsPublic => _type.IsPublic();
 
-        public override Type Type {
-            get { return _type; }
-        }
+        public override Type Type => _type;
 
-        public override bool IsGenericType {
-            get { return _type.IsGenericType(); }
-        }
+        public override bool IsGenericType => _type.IsGenericType();
 
         public override string ToString() {
             return _type.ToString();
