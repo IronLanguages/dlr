@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
-    <PlatformTarget Condition="'$(TargetFramework)' == 'netcoreapp2.0'">x64</PlatformTarget>
+    <PlatformTarget Condition="'$(TargetFramework)' == 'netcoreapp2.0' AND '$(OS)' != 'Windows_NT'">x64</PlatformTarget>
     <RootNamespace>merlintest</RootNamespace>
     <AssemblyName>merlintest.dummy</AssemblyName>
   </PropertyGroup>
@@ -23,96 +23,78 @@
     </GetFrameworkPath>
   </Target>
 
-  <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="@(LoadOrderCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" Condition="'$(Staging)' != 'true'">
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_1a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_1b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_1c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_1c.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2c.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2d.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2d.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2e.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2e.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2f.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2f.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2g.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2g.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_2h.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_2h.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3c.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3d.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3d.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3e.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3e.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3f.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3f.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3g.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3g.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3h.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3h.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_3i.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_3i.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_4.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_4.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_4a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_4a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_4b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_4b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_4c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_4c.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_5.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_5.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_5a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_5a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_5b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_5b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_5c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_5c.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_6a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_6a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_6b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_6b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_7a.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_7a.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_7b.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_7b.dll" />
-    <Csc TargetType="library" Sources="Src\loadorder\loadorder_7c.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadorder_7c.dll" />
+  <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="%(LoadOrderCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(LoadOrderCSFile.Filename).dll" />
   </Target>
 
-  <Target Name="ReachType" DependsOnTargets="GetFrameworkPath" Condition="'$(Staging)' != 'true'">
-    <Csc TargetType="library" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
-    <Csc TargetType="library" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
-    <Csc TargetType="library" Sources="Src\loadexception.cs" References="$(OutputPath)\$(Prefix)missingtype.dll" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
+  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="GetFrameworkPath">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="Src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
     <Delete Files="$(OutputPath)\$(Prefix)missingtype.dll" />
-    <Csc TargetType="library" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
-    <Csc TargetType="library" Sources="Src\typeforwarder1.cs" References="$(OutputPath)\$(Prefix)typeforwardee1.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
-    <Csc TargetType="library" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee1.dll" Sources="Src\typeforwarder1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
     <Exec Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" />
-    <Csc TargetType="library" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
-    <Csc TargetType="library" Sources="Src\typeforwarder3.cs" References="$(OutputPath)\$(Prefix)typeforwardee3.dll" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee3.dll" Sources="Src\typeforwarder3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
 
-  <Target Name="TypeSample" Inputs="Src\TypeSamples.cs;Src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll" Condition="'$(Staging)' != 'true'">
-    <Csc TargetType="library" Sources="Src\TypeSamples.cs;Src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
+  <Target Name="TypeSample" Inputs="Src\TypeSamples.cs;Src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\TypeSamples.cs;Src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
 
-  <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(Staging)' != 'true'">
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.dll" Condition=" '$(OS)' != 'Windows_NT' " />
-      <MethodArgsReferences Include="System.Runtime.dll" Condition=" '$(OS)' == 'Windows_NT' " />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\native\System.Private.CoreLib.dll" />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\mscorlib.dll" />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.dll" />
-      <MethodArgsReferences Include="..\..\packages\**\*-x64\lib\netcoreapp2.0\System.Runtime.InteropServices.dll" />      
+  <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typesamples.dll" Sources="%(AreaCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaCSFile.Filename).dll" />
+  </Target>
+
+  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample" Condition="'$(MSBuildRuntimeType)' != 'Mono'">
+    <ItemGroup>
+      <VbcReferencePath Include="@(ReferencePath)" />
+      <VbcReferencePath Include="$(OutputPath)$(Prefix)typesamples.dll" />
     </ItemGroup>
-    <Csc TargetType="library" Sources="Src\fieldtests.cs" OutputAssembly="$(OutputPath)\$(Prefix)fieldtests.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\methodargs.cs" OutputAssembly="$(OutputPath)\$(Prefix)methodargs.dll" References="@(MethodArgsReferences->Distinct());$(OutputPath)\Microsoft.Scripting.dll;$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\returnvalues.cs" OutputAssembly="$(OutputPath)\$(Prefix)returnvalues.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\operators.cs" OutputAssembly="$(OutputPath)\$(Prefix)operators.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\userdefinedconversions.cs" OutputAssembly="$(OutputPath)\$(Prefix)userdefinedconversions.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\delegatedefinitions.cs" OutputAssembly="$(OutputPath)\$(Prefix)delegatedefinitions.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\eventdefinitions.cs" OutputAssembly="$(OutputPath)\$(Prefix)eventdefinitions.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\propertydefinitions.cs" OutputAssembly="$(OutputPath)\$(Prefix)propertydefinitions.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\indexerdefinitionscs.cs" OutputAssembly="$(OutputPath)\$(Prefix)indexerdefinitionscs.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\defaultmemberscs.cs" OutputAssembly="$(OutputPath)\$(Prefix)defaultmemberscs.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\baseclasscs.cs" OutputAssembly="$(OutputPath)\$(Prefix)baseclasscs.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Csc TargetType="library" Sources="Src\dynamicobjmodel.cs" OutputAssembly="$(OutputPath)\$(Prefix)dynamicobjmodel.dll" References="$(OutputPath)\Microsoft.Dynamic.dll" />
+
+    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" />
   </Target>
 
-  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" DependsOnTargets="TypeSample" Condition="'$(Staging)' != 'true' AND '$(OS)' != 'Unix'">
-    <Vbc TargetType="library" Sources="Src\indexerdefinitionsvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)indexerdefinitionsvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Vbc TargetType="library" Sources="Src\defaultmembersvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)defaultmembersvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
-    <Vbc TargetType="library" Sources="Src\baseclassvb.vb" OutputAssembly="$(OutputPath)\$(Prefix)baseclassvb.dll" References="$(OutputPath)\$(Prefix)typesamples.dll" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveReferences;LoadOrder;ReachType;CSManyArea;VBManyArea" Condition="'$(Staging)' != 'true'" />
+  
+  <Target Name="CleanAssemblies" AfterTargets="Clean">
+    <Delete Files="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(AreaVBFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(LoadOrderCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(ReachTypeOutput)" />
+    <Delete Files="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
-
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="LoadOrder;ReachType;CSManyArea;VBManyArea" />
 
   <ItemGroup>
-    <AreaCSFile Include="Src\*.cs" />
+    <AreaCSFile Include="Src\fieldtests.cs" />
+    <AreaCSFile Include="Src\methodargs.cs" />
+    <AreaCSFile Include="Src\returnvalues.cs" />
+    <AreaCSFile Include="Src\operators.cs" />
+    <AreaCSFile Include="Src\userdefinedconversions.cs" />
+    <AreaCSFile Include="Src\delegatedefinitions.cs" />
+    <AreaCSFile Include="Src\eventdefinitions.cs" />
+    <AreaCSFile Include="Src\propertydefinitions.cs" />
+    <AreaCSFile Include="Src\indexerdefinitionscs.cs" />
+    <AreaCSFile Include="Src\defaultmemberscs.cs" />
+    <AreaCSFile Include="Src\baseclasscs.cs" />
+    <AreaCSFile Include="Src\dynamicobjmodel.cs" />
+
     <AreaVBFile Include="Src\*.vb" />
     <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
+
+    <ReachTypeInput Include="Src\loadtypesample.cs" />
+    <ReachTypeInput Include="Src\missingtype.cs" />
+    <ReachTypeInput Include="Src\loadexception.cs" />
+    <ReachTypeInput Include="Src\typeforwardee1.cs" />
+    <ReachTypeInput Include="Src\typeforwarder1.cs" />
+    <ReachTypeInput Include="Src\typeforwardee2.cs" />
+    <ReachTypeInput Include="Src\typeforwarder2.il" />
+    <ReachTypeInput Include="Src\typeforwardee3.cs" />
+    <ReachTypeInput Include="Src\typeforwarder3.cs" />
+
+    <ReachTypeOutput Include="@(ReachTypeInput->'$(OutputPath)\$(Prefix)%(Filename).dll')" Exclude="$(OutputPath)\$(Prefix)missingtype.dll" />
   </ItemGroup>
 
   <ItemGroup>
