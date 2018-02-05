@@ -15,7 +15,7 @@ before_install:
 sudo: required
 dist: trusty
 
-dotnet: 2.0.0
+dotnet: 2.1.4
 
 script:
   - dotnet restore Dlr.sln --packages ./packages
