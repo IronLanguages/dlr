@@ -380,14 +380,16 @@ namespace Microsoft.Scripting.Utils {
         public int GetIdFromObject(T value) {
             lock (_synchObject) {
                 foreach (KeyValuePair<int, object> kv in _dict) {
-                    if (kv.Value is WeakObject) {
-                        object target = ((WeakObject)kv.Value).Target;
-                        if (target != null && target.Equals(value))
-                            return kv.Key;
-                    } else if (kv.Value is T) {
-                        object target = (T)(kv.Value);
-                        if (target.Equals(value))
-                            return kv.Key;
+                    switch (kv.Value) {
+                        case WeakObject weakObject:
+                            object target = weakObject.Target;
+                            if (target != null && target.Equals(value))
+                                return kv.Key;
+                            break;
+                        case T t:
+                            if (t.Equals(value))
+                                return kv.Key;
+                            break;
                     }
                 }
             }

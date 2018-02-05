@@ -299,8 +299,8 @@ namespace Microsoft.Scripting.ComInterop {
                 return true;
             }
 
-            if (instance.Value is IPseudoComObject) {
-                instance = ((IPseudoComObject)instance.Value).GetMetaObject(instance.Expression);
+            if (instance.Value is IPseudoComObject o) {
+                instance = o.GetMetaObject(instance.Expression);
                 return true;
             }
 
