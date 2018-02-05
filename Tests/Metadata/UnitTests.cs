@@ -17,72 +17,66 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using NUnit.Framework;
+
 using Microsoft.Scripting.Metadata;
 
 namespace Metadata {
-    internal static class UnitTests {
-        public static void Run() {
-            TestEmpty();
-
-            TestIndexOf("xx", '\0', -1);
-            TestIndexOf("", '\0', -1);
-            TestIndexOf("", 'x', -1);
-            TestIndexOf(".", '.', 0);
-            TestIndexOf(".", 'x', -1);
-            TestIndexOf("hello.world", '.', 5);
-            TestIndexOf("helloworld", '.', -1);
-            TestIndexOf("helloworld.", '.', 10);
-
-            TestPrefixSuffix("Func`4", '`', "Func", "4");
-            TestPrefixSuffix("Func`", '`', "Func", "");
-            TestPrefixSuffix("`", '`', "", "");
-            TestPrefixSuffix("Func", '`', null, null);
-
-            TestEquals();
-            TestAllPrefixes("System.Collections.Generic");
-            TestDict();
-        }
-
-        private static unsafe void TestEmpty() {
+    [TestFixture]
+    public class UnitTests {
+        [Test]
+        public unsafe void TestEmpty() {
             byte[] empty = new byte[] { 0 };
             fixed (byte* fempty = &empty[0]) {
                 MetadataName e = new MetadataName(fempty, null);
-                Assert(e.Equals(MetadataName.Empty));
-                Assert(e.Equals(MetadataNamePart.Empty));
+                Assert.That(e, Is.EqualTo(MetadataName.Empty));
+                Assert.That(e, Is.EqualTo(MetadataNamePart.Empty));
                 
-                Assert(MetadataName.Empty.IsEmpty);
-                Assert(MetadataName.Empty.GetHashCode() == e.GetHashCode());
-                Assert(MetadataName.Empty.Equals(e));
-                Assert(MetadataName.Empty.Equals(MetadataNamePart.Empty));
-                Assert(MetadataName.Empty.GetLength() == 0);
-                Assert(MetadataName.Empty.ToString() == "");
-                Assert(MetadataName.Empty.GetExtent().Equals(MetadataNamePart.Empty));
+                Assert.That(MetadataName.Empty.IsEmpty, Is.True);
+                Assert.That(MetadataName.Empty.GetHashCode(), Is.EqualTo(e.GetHashCode()));
+                Assert.That(MetadataName.Empty, Is.EqualTo(e));
+                Assert.That(MetadataName.Empty, Is.EqualTo(MetadataNamePart.Empty));
+                Assert.That(MetadataName.Empty.GetLength(), Is.EqualTo(0));
+                Assert.That(MetadataName.Empty.ToString(), Is.EqualTo(""));
+                Assert.That(MetadataName.Empty.GetExtent(), Is.EqualTo(MetadataNamePart.Empty));
 
-                Assert(MetadataNamePart.Empty.Length == 0);
-                Assert(MetadataNamePart.Empty.Equals(e));
-                Assert(MetadataNamePart.Empty.Equals(MetadataName.Empty));
-                Assert(MetadataNamePart.Empty.GetPart(0).Equals((object)MetadataNamePart.Empty));
-                Assert(MetadataNamePart.Empty.GetPart(0).Equals(MetadataNamePart.Empty));
-                Assert(MetadataNamePart.Empty.GetPart(0, 0).Equals(MetadataNamePart.Empty));
-                Assert(MetadataNamePart.Empty.ToString() == "");
-                Assert(MetadataNamePart.Empty.IndexOf(1) == -1);
-                Assert(MetadataNamePart.Empty.IndexOf(1, 0, 0) == -1);
-                Assert(MetadataNamePart.Empty.LastIndexOf(1, 0, 0) == -1);
-                Assert(MetadataNamePart.Empty.IndexOf(0) == -1);
-                Assert(MetadataNamePart.Empty.IndexOf(0, 0, 0) == -1);
-                Assert(MetadataNamePart.Empty.LastIndexOf(0, 0, 0) == -1);
+                Assert.That(MetadataNamePart.Empty.Length, Is.EqualTo(0));
+                Assert.That(MetadataNamePart.Empty, Is.EqualTo(e));
+                Assert.That(MetadataNamePart.Empty, Is.EqualTo(MetadataName.Empty));
+                Assert.That(MetadataNamePart.Empty.GetPart(0), Is.EqualTo((object)MetadataNamePart.Empty));
+                Assert.That(MetadataNamePart.Empty.GetPart(0), Is.EqualTo(MetadataNamePart.Empty));
+                Assert.That(MetadataNamePart.Empty.GetPart(0, 0), Is.EqualTo(MetadataNamePart.Empty));
+                Assert.That(MetadataNamePart.Empty.ToString(), Is.EqualTo(""));
+                Assert.That(MetadataNamePart.Empty.IndexOf(1), Is.EqualTo(-1));
+                Assert.That(MetadataNamePart.Empty.IndexOf(1, 0, 0), Is.EqualTo(-1));
+                Assert.That(MetadataNamePart.Empty.LastIndexOf(1, 0, 0), Is.EqualTo(-1));
+                Assert.That(MetadataNamePart.Empty.IndexOf(0), Is.EqualTo(-1));
+                Assert.That(MetadataNamePart.Empty.IndexOf(0, 0, 0), Is.EqualTo(-1));
+                Assert.That(MetadataNamePart.Empty.LastIndexOf(0, 0, 0), Is.EqualTo(-1));
             }
         }
 
-        private static unsafe void TestIndexOf(string str, char c, int expected) {
+        [TestCase("xx", '\0', -1)]
+        [TestCase("", '\0', -1)]
+        [TestCase("", 'x', -1)]
+        [TestCase(".", '.', 0)]
+        [TestCase(".", 'x', -1)]
+        [TestCase("hello.world", '.', 5)]
+        [TestCase("helloworld", '.', -1)]
+        [TestCase("helloworld.", '.', 10)]
+        public unsafe void TestIndexOf(string str, char c, int expected) {
             byte[] bytes = Encoding.UTF8.GetBytes(str + '\0');
             fixed (byte* fbytes = &bytes[0]) {
                 MetadataName name = new MetadataName(fbytes, null);
-                Assert(name.IndexOf(checked((byte)c)) == expected);
+                Assert.That(name.IndexOf(checked((byte)c)), Is.EqualTo(expected));
             }
         }
 
-        private static unsafe void TestPrefixSuffix(string str, char separator, string expectedPrefix, string expectedSuffix) {
+        [TestCase("Func`4", '`', "Func", "4")]
+        [TestCase("Func`", '`', "Func", "")]
+        [TestCase("`", '`', "", "")]
+        [TestCase("Func", '`', null, null)]
+        public unsafe void TestPrefixSuffix(string str, char separator, string expectedPrefix, string expectedSuffix) {
             byte[] bytes = Encoding.UTF8.GetBytes(str + '\0');
             fixed (byte* fbytes = &bytes[0]) {
                 MetadataName name = new MetadataName(fbytes, null);
@@ -91,18 +85,19 @@ namespace Metadata {
                 MetadataNamePart extent = name.GetExtent();
 
                 int index = extent.IndexOf((byte)separator);
-                Assert((index < 0) == (expectedPrefix == null));
+                Assert.That((index < 0), Is.EqualTo((expectedPrefix == null)));
 
                 if (index >= 0) {
                     prefix = extent.GetPart(0, index);
-                    Assert(prefix.ToString() == expectedPrefix);
+                    Assert.That(prefix.ToString(), Is.EqualTo(expectedPrefix));
                     suffix = extent.GetPart(index + 1);
-                    Assert(suffix.ToString() == expectedSuffix);
+                    Assert.That(suffix.ToString(), Is.EqualTo(expectedSuffix));
                 }
             }
         }
 
-        private static unsafe void TestEquals() {
+        [Test]
+        public unsafe void TestEquals() {
             byte[] b1 = Encoding.UTF8.GetBytes("hello\0");
             byte[] b2 = Encoding.UTF8.GetBytes("__hello__\0");
             byte[] b3 = Encoding.UTF8.GetBytes("__hell\0");
@@ -110,20 +105,21 @@ namespace Metadata {
             
             fixed (byte* fb1 = &b1[0]) {
                 MetadataName name = new MetadataName(fb1, null);
-                Assert(name.Equals(b2, 2, 5));
-                Assert(!name.Equals(b2, 2, 6));
-                Assert(!name.Equals(b2, 2, 4));
-                Assert(!name.Equals(b2, 1, 4));
+                Assert.That(name.Equals(b2, 2, 5), Is.True);
+                Assert.That(name.Equals(b2, 2, 6), Is.False);
+                Assert.That(name.Equals(b2, 2, 4), Is.False);
+                Assert.That(name.Equals(b2, 1, 4), Is.False);
             }
 
             fixed (byte* fb4 = &b4[0]) {
                 MetadataName name = new MetadataName(fb4, null);
-                Assert(name.Equals(b2, 2, 0));
-                Assert(!name.Equals(b2, 0, 1));
+                Assert.That(name.Equals(b2, 2, 0), Is.True);
+                Assert.That(name.Equals(b2, 0, 1), Is.False);
             }
         }
 
-        private static unsafe void TestAllPrefixes(string ns) {
+        [TestCase("System.Collections.Generic")]
+        public unsafe void TestAllPrefixes(string ns) {
             byte[] bytes = Encoding.UTF8.GetBytes(ns + '\0');
             fixed (byte* fbytes = &bytes[0]) {
                 MetadataNamePart name = new MetadataName(fbytes, null).GetExtent();
@@ -131,18 +127,19 @@ namespace Metadata {
 
                 while (true) {
                     int nextDot = name.LastIndexOf((byte)'.', dot - 1, dot);
-                    Assert(nextDot == ns.LastIndexOf('.', dot - 1, dot));
+                    Assert.That(nextDot, Is.EqualTo(ns.LastIndexOf('.', dot - 1, dot)));
                     dot = nextDot;
                     if (dot < 0) {
                         break;
                     }
-                    Assert(name.GetPart(0, dot).ToString() == ns.Substring(0, dot));
-                    Assert(name.GetPart(dot + 1).ToString() == ns.Substring(dot + 1));
+                    Assert.That(name.GetPart(0, dot).ToString(), Is.EqualTo(ns.Substring(0, dot)));
+                    Assert.That(name.GetPart(dot + 1).ToString(), Is.EqualTo(ns.Substring(dot + 1)));
                 }
             }
         }
 
-        private static unsafe void TestDict() {
+        [Test]
+        public unsafe void TestDict() {
             Dictionary<MetadataNamePart, int> dict = new Dictionary<MetadataNamePart, int>();
             byte[] bytes = Encoding.UTF8.GetBytes("A.B.XXXXXXXXX" + '\0');
             fixed (byte* fbytes = &bytes[0]) {
@@ -159,19 +156,13 @@ namespace Metadata {
                     dict.Add(parts[i], i);
                 }
 
-                Assert(dict.Count == parts.Length);
+                Assert.That(dict.Count, Is.EqualTo(parts.Length));
 
                 for (int i = 0; i < parts.Length; i++) {
                     int value;
-                    Assert(dict.TryGetValue(parts[i], out value));
-                    Assert(value == i);
+                    Assert.That(dict.TryGetValue(parts[i], out value), Is.True);
+                    Assert.That(value, Is.EqualTo(i));
                 }
-            }
-        }
-
-        internal static void Assert(bool cond) {
-            if (!cond) {
-                throw new ApplicationException();
             }
         }
     }

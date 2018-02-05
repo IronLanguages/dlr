@@ -60,34 +60,18 @@ before_package:
 
 # scripts to run after build
 after_build:
+  - ps: .\make.ps1 package
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - make.cmd package-release
+  - ps: .\make.ps1
 
 # to disable automatic builds
 #build: off
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Metadata.exe'
-  - '%APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Metadata.exe'
-  - 'dotnet %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/netcoreapp2.0/Metadata.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Dynamic.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Dynamic.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net40/Microsoft.Scripting.Test.dll'
-  - '%APPVEYOR_BUILD_FOLDER%/packages/NUnit.ConsoleRunner/3.7.0/tools/nunit3-console.exe %APPVEYOR_BUILD_FOLDER%/bin/%CONFIGURATION%/net45/Microsoft.Scripting.Test.dll'
-  #- make test
-  #- Test\test-ipy-tc.cmd /category:Languages\IronPython\IronPython\2.X
-
-# to run custom scripts after tests
-#after_test:
-  # upload results to AppVeyor
-  # NOTE: our test runner returns an exit code with number of failures
-  # AppVeyor misinterprets that and does not upload test results
-  # Workaround in that case is to add to "on_failure:" and "on_success:"
-  # to force an upload
-  #- ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\Test\TestResult.xml))
+  - ps: .\make.ps1 test-all
 
 #---------------------------------#
 #      artifacts configuration    #
@@ -107,48 +91,17 @@ artifacts:
     type: File
 
 
-#---------------------------------#
-#     deployment configuration    #
-#---------------------------------#
-
-# providers: Local, FTP, WebDeploy, AzureCS, AzureBlob, S3, NuGet, Environment
-# provider names are case-sensitive!
-#deploy:
-
-#    # Deploying to NuGet feed
-#  - provider: NuGet
-#    server: https://my.nuget.server/feed
-#    api_key:
-#      secure: FYWX6NfjZIVw==
-#    skip_symbols: false
-#    symbol_server: https://your.symbol.server/feed
-#    artifact: MyPackage.nupkg
-
-#    # Deploy to GitHub Releases
-#  - provider: GitHub
-#    artifact: /.*\.nupkg/           # upload all NuGet packages to release assets
-#    draft: false
-#    prerelease: false
-#    on:
-#      branch: master                # release from master branch only
-#      appveyor_repo_tag: true       # deploy on tag push only
-
-#        global handlers          #
-#---------------------------------#
-
-# on successful build
-on_success:
-  # upload test results to AppVeyor
-  #- ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\Test\TestResult.xml))
-
-# on build failure
 on_failure:
-  # upload test results to AppVeyor
-  #- ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\Test\TestResult.xml))
-
-# after build failure or success
-#on_finish:
-#  - do something
+  - ps: Write-Host "Uploading test results"
+  - ps: $wc = New-Object 'System.Net.WebClient'; foreach($file in (Get-ChildItem -Include '*-result.xml' -Recurse)) { $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $file) }
+  - ps: $wc = New-Object 'System.Net.WebClient'; foreach($file in (Get-ChildItem -Include '*.trx' -Recurse)) { $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", $file) }
+  - ps: Write-Host "Done uploading test results"
+  
+on_success:
+  - ps: Write-Host "Uploading test results"
+  - ps: $wc = New-Object 'System.Net.WebClient'; foreach($file in (Get-ChildItem -Include '*-result.xml' -Recurse)) { $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $file) }
+  - ps: $wc = New-Object 'System.Net.WebClient'; foreach($file in (Get-ChildItem -Include '*.trx' -Recurse)) { $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", $file) }
+  - ps: Write-Host "Done uploading test results"
   
 #---------------------------------#
 #         notifications           #

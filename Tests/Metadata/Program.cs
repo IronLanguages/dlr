@@ -791,7 +791,6 @@ namespace Metadata {
                 Console.WriteLine("  /ep              compares enumerating properties and events vs. methods and fields");
                 Console.WriteLine("  /t               test all APIs, no output, catch any expected exception");
                 Console.WriteLine("  /f               simple fuzzing test");
-                Console.WriteLine("  /u               unit tests");
                 Console.WriteLine("  /d [options]     dump");
                 Console.WriteLine("                     n ... namespace tree (default)");
                 Console.WriteLine("                     p ... PE file headers");
@@ -813,7 +812,6 @@ namespace Metadata {
             // options:
             bool test = argList.Remove("/t");
             bool fuzz = argList.Remove("/f");
-            bool unitTests = argList.Remove("/u");
             bool useReflection = argList.Remove("/ref");
             bool loadAssemblies = argList.Remove("/load");
             bool enumProperties = argList.Remove("/ep");
@@ -835,10 +833,6 @@ namespace Metadata {
 
             if (useReflection) {
                 loadAssemblies = true;
-            }
-
-            if (unitTests) {
-                UnitTests.Run();
             }
 
             string dumpOptions;

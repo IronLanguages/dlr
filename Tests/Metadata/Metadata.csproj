@@ -7,11 +7,22 @@
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
+    <StartupObject>Metadata.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
     <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
+    <ItemGroup>
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.7.0" />
+    <PackageReference Include="NUnitLite" Version="3.9.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net40' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
+  </ItemGroup>
+
 
 </Project>

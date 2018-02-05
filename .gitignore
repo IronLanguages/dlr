@@ -9,6 +9,7 @@ bin/
 /Package/Release/
 /Package/Stage/
 /Util/References
+TestResults
 
 # NuGet Packages
 packages/*
@@ -59,3 +60,4 @@ Languages/IronPython/Tests/vbproptest0.*.dll
 *.bak
 *.binlog
 *.ProjectImports.zip
+*result.xml
