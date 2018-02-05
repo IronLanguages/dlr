@@ -8,30 +8,19 @@ mono:
 
 solution: Dlr.sln
 
-#before_install:
-#  - curl https://api.nuget.org/downloads/nuget.exe -o nuget.exe
-#  - mono nuget.exe install NUnit
-#  - mono nuget.exe install NUnitLite
+before_install:
+  - wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.1/powershell_6.0.1-1.ubuntu.14.04_amd64.deb
+  - sudo dpkg -i powershell_6.0.1-1.ubuntu.14.04_amd64.deb
 
 sudo: required
 dist: trusty
 
-dotnet: 2.0.0
+dotnet: 2.1.4
 
 script:
-  # remove this workaround when https://bugzilla.xamarin.com/show_bug.cgi?id=60340 is fixed and released
-  - (cd /usr/lib/mono/msbuild/15.0/bin/Roslyn ; sudo ln -s ../../../../4.5/csc.exe . ; sudo ln -s ../../../../4.5/csc.exe.config . ; sudo ln -s ../../../../4.5/csc.rsp .)
   - dotnet restore Dlr.sln --packages ./packages
-  - make release
-  - pushd bin/$CONFIGURATION
-  - mono ./net40/Metadata.exe
-  - mono ./net45/Metadata.exe
-  - dotnet ./netcoreapp2.0/Metadata.dll
-  - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net40/Microsoft.Dynamic.Test.dll
-  - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net45/Microsoft.Dynamic.Test.dll
-  - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net40/Microsoft.Scripting.Test.dll
-  - mono ./../../packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe ./net45/Microsoft.Scripting.Test.dll
-  - popd
+  - pwsh make.ps1 release
+  - pwsh make.ps1 test-all
 
 notifications:
   email:
