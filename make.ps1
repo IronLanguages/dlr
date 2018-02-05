@@ -150,14 +150,6 @@ switch -wildcard ($target) {
     "package"       { Main "Package" "Release" }
     "test-*"        { Test $target.Substring(5) "Release" $frameworks }
 
-    # utility targets
-    "ngen"          {
-        if(!$global:isUnix) {
-            $imagePath = [System.IO.Path]::Combine($_BASEDIR, "bin\$configuration\net45\ipy.exe")
-            & "${env:SystemRoot}\Microsoft.NET\Framework\v4.0.30319\ngen.exe" install $imagePath 
-        }
-    }
-
     default { Write-Error "No target '$target'" ; Exit -1 }
 }
 
