@@ -90,7 +90,7 @@
   </Target>
 
   <PropertyGroup>
-    <NuGet>$(UtilDir)\NuGet\NuGet.exe</NuGet>
+    <NuGet>$(UtilDir)\NuGet\nuget.exe</NuGet>
     <NuGet Condition=" '$(Mono)' != '' ">mono $(NuGet)</NuGet>
   </PropertyGroup>
 
