@@ -20,7 +20,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="**\*.dll" target="lib" />
+    <file src="**\*.dll" target="lib" exclude="**\Microsoft.VisualStudio.CodeCoverage.Shim.dll" />
     <file src="**\*.xml" target="lib" />
     <file src="README.md;LICENSE" />
   </files>
