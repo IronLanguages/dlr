@@ -33,20 +33,6 @@ using System.Text;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 
-#if !CLR45
-namespace System.Reflection {
-    public static class RuntimeReflectionExtensions {
-        public static MethodInfo GetRuntimeBaseDefinition(this MethodInfo method) {
-            return method.GetBaseDefinition();
-        }
-
-        public static IEnumerable<MethodInfo> GetRuntimeMethods(this Type type) {
-            return type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        }
-    }
-}
-#endif
-
 namespace Microsoft.Scripting.Utils {
     public static class ReflectionUtils {
         #region Accessibility
@@ -549,15 +535,9 @@ namespace Microsoft.Scripting.Utils {
             return Type.GetTypeCode(type);
         }
 
-#if CLR45
         public static MethodInfo GetMethod(this Delegate d) {
             return d.GetMethodInfo();
         }
-#else
-        public static MethodInfo GetMethodInfo(this Delegate d) {
-            return d.Method;
-        }
-#endif
 
         public static bool IsDefined(this Assembly assembly, Type attributeType) {
             return assembly.IsDefined(attributeType, false);
@@ -570,16 +550,6 @@ namespace Microsoft.Scripting.Utils {
         public static T GetCustomAttribute<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
             return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
-
-#if !CLR45
-        public static IEnumerable<T> GetCustomAttributes<T>(this Assembly assembly, bool inherit = false) where T : Attribute {
-            return Attribute.GetCustomAttributes(assembly, typeof(T), inherit).Cast<T>();
-        }
-
-        public static IEnumerable<T> GetCustomAttributes<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
-            return Attribute.GetCustomAttributes(member, typeof(T), inherit).Cast<T>();
-        }
-#endif
 
         public static bool ContainsGenericParameters(this Type type) {
             return type.ContainsGenericParameters;
