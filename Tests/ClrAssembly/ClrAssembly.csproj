@@ -3,7 +3,7 @@
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
 
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
     <PlatformTarget Condition="'$(TargetFramework)' == 'netcoreapp2.0' AND '$(OS)' != 'Windows_NT'">x64</PlatformTarget>
     <RootNamespace>merlintest</RootNamespace>
     <AssemblyName>merlintest.dummy</AssemblyName>

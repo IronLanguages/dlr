@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net40', 'net45','netcoreapp2.0')
+    [String[]] $frameworks=@('net45','netcoreapp2.0')
 )
 
 [int] $global:Result = 0
@@ -30,19 +30,6 @@ if(!$global:isUnix) {
 
 # Details for running tests on the various frameworks
 $_FRAMEWORKS = @{
-    "net40" = @{
-        "runner" = [System.IO.Path]::Combine($_BASEDIR, 'packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe');
-        "tests" = @{ "Microsoft.Dynamic.Test" = "Microsoft.Dynamic.Test.dll"; "Microsoft.Scripting.Test"= "Microsoft.Scripting.Test.dll"; "Metadata" = "Metadata.exe" };
-        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--result:__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__/__TESTFILE__' );
-        "filterArg" = '--where:"__FILTER__"';
-        "filters" = @{
-            "all" = "";
-            # "smoke" = "Category==StandardCPython";
-            # "cpython" = "Category==StandardCPython || Category==AllCPython";
-            # "ironpython" = "Category==IronPython";
-            # "single" = "name==__TESTNAME__";
-        };
-    };
     "net45" = @{
         "runner" = "dotnet";
         "tests" = @{ "Microsoft.Dynamic.Test" = "Tests/Microsoft.Dynamic.Test/Microsoft.Dynamic.Test.csproj"; "Microsoft.Scripting.Test" = "Tests/Microsoft.Scripting.Test/Microsoft.Scripting.Test.csproj"; "Metadata" = "Tests/Metadata/Metadata.csproj" };
