@@ -835,12 +835,12 @@ namespace Microsoft.Scripting.Utils {
         /// Creates a closed delegate for the given (dynamic)method.
         /// </summary>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target) {
-            DynamicMethod dm = methodInfo as DynamicMethod;
-            if (dm != null) {
+#if FEATURE_LCG
+            if (methodInfo is DynamicMethod dm) {
                 return dm.CreateDelegate(delegateType, target);
-            } else {
-                return Delegate.CreateDelegate(delegateType, target, methodInfo);
             }
+#endif
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 
 #if FEATURE_LCG

@@ -72,10 +72,10 @@ namespace Microsoft.Scripting.Metadata {
             try {
                 stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Delete | FileShare.ReadWrite);
 
-#if NETCOREAPP2_0
-                file = MemoryMappedFile.CreateFromFile(stream, null, 0, MemoryMappedFileAccess.Read, HandleInheritability.None, true);
-#else
+#if NET45
                 file = MemoryMappedFile.CreateFromFile(stream, null, 0, MemoryMappedFileAccess.Read, null, HandleInheritability.None, true);
+#else
+                file = MemoryMappedFile.CreateFromFile(stream, null, 0, MemoryMappedFileAccess.Read, HandleInheritability.None, true);
 #endif
                 accessor = file.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read);
                 mapping = new MemoryMapping();

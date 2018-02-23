@@ -12,7 +12,7 @@
  *
  *
  * ***************************************************************************/
-#if FEATURE_NATIVE
+#if FEATURE_NATIVE || NETCOREAPP2_0
 
 using System;
 using System.Runtime.InteropServices;
