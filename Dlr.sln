@@ -32,7 +32,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49
 	ProjectSection(SolutionItems) = preProject
 		Build\After.targets = Build\After.targets
 		Build\Common.proj = Build\Common.proj
-		Build\net40.props = Build\net40.props
 		Build\net45.props = Build\net45.props
 		Build\netcoreapp2.0.props = Build\netcoreapp2.0.props
 	EndProjectSection
