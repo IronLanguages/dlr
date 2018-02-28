@@ -36,25 +36,13 @@ namespace Microsoft.Scripting.Utils {
     }
 
     public static class CollectionUtils {
-#if !FEATURE_VARIANCE
-        public static IEnumerable<T> Cast<S, T>(this IEnumerable<S> sequence) where S : T {
-            foreach (var item in sequence) {
-                yield return (T)item;
-            }
-        }
-#else
         public static IEnumerable<T> Cast<S, T>(this IEnumerable<S> sequence) where S : T {
             return (IEnumerable<T>)sequence;
         }
-#endif
 
         public static IEnumerable<TSuper> ToCovariant<T, TSuper>(IEnumerable<T> enumerable)
             where T : TSuper {
-#if FEATURE_VARIANCE
             return (IEnumerable<TSuper>)enumerable;
-#else
-            return new CovariantConvertor<T, TSuper>(enumerable);
-#endif
         }
 
         public static void AddRange<T>(ICollection<T> collection, IEnumerable<T> items) {
