@@ -1,4 +1,4 @@
-/* ****************************************************************************
+﻿/* ****************************************************************************
  *
  * Copyright (c) Microsoft Corporation. 
  *
@@ -246,7 +246,7 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             });
         }
-        
+
         #endregion
 
         #region Member Inheritance
@@ -255,7 +255,7 @@ namespace Microsoft.Scripting.Utils {
         // ----------------------------------------------------------------------
         // While hiding applies to all members of a type, overriding deals with object layout and is applicable only to instance fields 
         // and virtual methods. The CTS provides two forms of member overriding, new slot and expect existing slot. A member of a derived 
-        // type that is marked as a new slot will always get a new slot in the object�s layout, guaranteeing that the base field or method 
+        // type that is marked as a new slot will always get a new slot in the object抯 layout, guaranteeing that the base field or method 
         // is available in the object by using a qualified reference that combines the name of the base type with the name of the member 
         // and its type or signature. A member of a derived type that is marked as expect existing slot will re-use (i.e., share or override) 
         // a slot that corresponds to a member of the same kind (field or method), name, and type if one already exists from the base type; 
@@ -263,11 +263,11 @@ namespace Microsoft.Scripting.Utils {
         //
         // The general algorithm that is used for determining the names in a type and the layout of objects of the type is roughly as follows:
         // - Flatten the inherited names (using the hide by name or hide by name-and-signature rule) ignoring accessibility rules. 
-        // - For each new member that is marked �expect existing slot? look to see if an exact match on kind (i.e., field or method), 
+        // - For each new member that is marked expect existing slot, look to see if an exact match on kind (i.e., field or method), 
         //   name, and signature exists and use that slot if it is found, otherwise allocate a new slot. 
         // - After doing this for all new members, add these new member-kind/name/signatures to the list of members of this type 
         // - Finally, remove any inherited names that match the new members based on the hide by name or hide by name-and-signature rules.
-        
+
         // NOTE: Following GetXxx only implement overriding, not hiding specified by hide-by-name or hide-by-name-and-signature flags.
 
         public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
@@ -325,7 +325,7 @@ namespace Microsoft.Scripting.Utils {
         // -------------------------
         // [Note: The CLS (see Partition I) refers to instance, virtual, and static properties.  
         // The signature of a property (from the Type column) can be used to distinguish a static property, 
-        // since instance and virtual properties will have the �HASTHIS?bit set in the signature (?3.2.1)
+        // since instance and virtual properties will have the HASTHIS bit set in the signature (§23.2.1)
         // while a static property will not.  The distinction between an instance and a virtual property 
         // depends on the signature of the getter and setter methods, which the CLS requires to be either 
         // both virtual or both instance. end note]
