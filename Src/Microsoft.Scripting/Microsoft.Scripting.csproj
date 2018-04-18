@@ -1,39 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
+    <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
 
-  <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
-    <BaseAddress>857735168</BaseAddress>
-    <CodeAnalysisRuleSet>$(AssemblyName).ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+        <BaseAddress>857735168</BaseAddress>
+        <CodeAnalysisRuleSet>$(AssemblyName).ruleset</CodeAnalysisRuleSet>
+        <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+        <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
-    <PackageReference Include="System.CodeDom" Version="4.4.0" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
+        <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+        <PackageReference Include="System.CodeDom" Version="4.4.0" />
+    </ItemGroup>
 
-  <Import Project="$(BeforeTargetFiles)" />
+    <Import Project="$(BeforeTargetFiles)" />
 
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
+    <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
 
-  <ItemGroup>
-    <!-- if the file does not exist it's not picked up automatically -->
-    <Compile Remove="Properties\CurrentVersion.Generated.cs" />
-    <Compile Include="Properties\CurrentVersion.Generated.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <!-- if the file does not exist it's not picked up automatically -->
+        <Compile Remove="Properties\CurrentVersion.Generated.cs" />
+        <Compile Include="Properties\CurrentVersion.Generated.cs" />
+    </ItemGroup>
 
-  <Import Project="$(AfterTargetFiles)" />
+    <Import Project="$(AfterTargetFiles)" />
 
-  <Target Name="AfterBuildEnds" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
+    <Target Name="AfterBuildEnds" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 
 </Project>

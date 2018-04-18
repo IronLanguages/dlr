@@ -263,7 +263,7 @@ namespace Microsoft.Scripting.Utils {
         //
         // The general algorithm that is used for determining the names in a type and the layout of objects of the type is roughly as follows:
         // - Flatten the inherited names (using the hide by name or hide by name-and-signature rule) ignoring accessibility rules. 
-        // - For each new member that is marked “expect existing slot”, look to see if an exact match on kind (i.e., field or method), 
+        // - For each new member that is marked “expect existing slot? look to see if an exact match on kind (i.e., field or method), 
         //   name, and signature exists and use that slot if it is found, otherwise allocate a new slot. 
         // - After doing this for all new members, add these new member-kind/name/signatures to the list of members of this type 
         // - Finally, remove any inherited names that match the new members based on the hide by name or hide by name-and-signature rules.
@@ -325,7 +325,7 @@ namespace Microsoft.Scripting.Utils {
         // -------------------------
         // [Note: The CLS (see Partition I) refers to instance, virtual, and static properties.  
         // The signature of a property (from the Type column) can be used to distinguish a static property, 
-        // since instance and virtual properties will have the “HASTHIS” bit set in the signature (§23.2.1)
+        // since instance and virtual properties will have the “HASTHIS?bit set in the signature (?3.2.1)
         // while a static property will not.  The distinction between an instance and a virtual property 
         // depends on the signature of the getter and setter methods, which the CLS requires to be either 
         // both virtual or both instance. end note]
@@ -696,7 +696,7 @@ namespace Microsoft.Scripting.Utils {
                 result.Append(' ');
             }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0
+#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETSTANDARD2_0
             MethodBuilder builder = method as MethodBuilder;
             if (builder != null) {
                 result.Append(builder.Signature);
