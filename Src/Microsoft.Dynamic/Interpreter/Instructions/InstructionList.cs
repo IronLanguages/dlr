@@ -323,19 +323,18 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             if (type == null || type.IsValueType()) {
-                if (value is bool) {
-                    EmitLoad((bool)value);
+                if (value is bool b) {
+                    EmitLoad(b);
                     return;
                 } 
                 
-                if (value is int) {
-                    int i = (int)value;
+                if (value is int i) {
                     if (i >= PushIntMinCachedValue && i <= PushIntMaxCachedValue) {
                         if (_ints == null) {
                             _ints = new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
                         }
                         i -= PushIntMinCachedValue;
-                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(value)));
+                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
                         return;
                     }
                 }

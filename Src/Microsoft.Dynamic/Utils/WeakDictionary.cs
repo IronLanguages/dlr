@@ -362,19 +362,18 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public T GetObjectFromId(int id) {
-            object ret;
-            if (_dict.TryGetValue(id, out ret)) {
-                WeakObject weakObj = ret as WeakObject;
-                if (weakObj != null) {
+            if (_dict.TryGetValue(id, out object ret)) {
+                if (ret is WeakObject weakObj) {
                     return (T)weakObj.Target;
                 }
-                if (ret is T) {
-                    return (T)ret;
+                if (ret is T variable) {
+                    return variable;
                 }
 
                 throw new InvalidOperationException("Unexpected dictionary content: type " + ret.GetType());
-            } else
-                return default(T);
+            }
+
+            return default(T);
         }
 
         public int GetIdFromObject(T value) {

@@ -49,8 +49,8 @@ namespace Microsoft.Scripting {
         }
 
         public override bool Equals(object obj) {
-            if (obj is IndexSpan) {
-                return Equals((IndexSpan)obj);
+            if (obj is IndexSpan span) {
+                return Equals(span);
             }
             return false;
         }

@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public override bool Equals(object obj) {
-            return obj is AssemblyQualifiedTypeName && Equals((AssemblyQualifiedTypeName)obj);
+            return obj is AssemblyQualifiedTypeName name && Equals(name);
         }
 
         public override int GetHashCode() {

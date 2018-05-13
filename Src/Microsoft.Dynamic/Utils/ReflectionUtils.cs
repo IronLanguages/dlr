@@ -1448,7 +1448,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public override bool Equals(object obj) {
-            return obj is ExtensionMethodInfo && Equals((ExtensionMethodInfo)obj);
+            return obj is ExtensionMethodInfo info && Equals(info);
         }
 
         public bool Equals(ExtensionMethodInfo other) {

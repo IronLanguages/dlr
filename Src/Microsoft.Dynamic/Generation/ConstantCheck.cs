@@ -77,13 +77,13 @@ namespace Microsoft.Scripting.Generation {
                 return false;
             }
     
-            if (value is bool) {
-                if ((bool)value) {
+            if (value is bool b) {
+                if (b) {
                     return IsConstant(node.Left, true) && IsConstant(node.Right, true);
-                } else {
-                    // if left isn't a constant it has to be evaluated
-                    return IsConstant(node.Left, false);
                 }
+
+                // if left isn't a constant it has to be evaluated
+                return IsConstant(node.Left, false);
             }
             return false;
         }
@@ -95,13 +95,14 @@ namespace Microsoft.Scripting.Generation {
                 return false;
             }
 
-            if (value is bool) {
-                if ((bool)value) {
+            if (value is bool b) {
+                if (b) {
                     return IsConstant(node.Left, true);
-                } else {
-                    return IsConstant(node.Left, false) && IsConstant(node.Right, false);
                 }
+
+                return IsConstant(node.Left, false) && IsConstant(node.Right, false);
             }
+
             return false;
         }
 
@@ -115,7 +116,7 @@ namespace Microsoft.Scripting.Generation {
 
         private static bool Check(TypeBinaryExpression node, object value) {
             // allow constant TypeIs expressions to be optimized away
-            if (value is bool && (bool)value) {
+            if (value is bool b && b) {
                 return node.TypeOperand.IsAssignableFrom(node.Expression.Type);
             }
             return false;

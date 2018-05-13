@@ -71,10 +71,9 @@ namespace Microsoft.Scripting.Hosting {
         /// Gets an option as a strongly typed value.
         /// </summary>
         public T GetOption<T>(string name, T defaultValue) {
-            object value;
-            if (_options != null && _options.TryGetValue(name, out value)) {
-                if (value is T) {
-                    return (T)value;
+            if (_options != null && _options.TryGetValue(name, out object value)) {
+                if (value is T variable) {
+                    return variable;
                 }
                 return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
             }
