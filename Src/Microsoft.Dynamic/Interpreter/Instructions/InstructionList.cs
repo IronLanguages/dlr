@@ -334,7 +334,7 @@ namespace Microsoft.Scripting.Interpreter {
                             _ints = new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
                         }
                         i -= PushIntMinCachedValue;
-                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
+                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(value)));
                         return;
                     }
                 }
