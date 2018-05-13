@@ -768,7 +768,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 				z.total_out += n;
 				
 				// update check information
-				if (this.needCheck)
+				if (needCheck)
 					z.adler = check = Adler32.GetAdler32Checksum(check, Window, q, n);
 				
 				// copy

@@ -186,7 +186,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public CallSignature InsertArgumentAt(int index, Argument info) {
-            if (this.IsSimple) {
+            if (IsSimple) {
                 if (info.IsSimple) {
                     return new CallSignature(_argumentCount + 1);
                 }

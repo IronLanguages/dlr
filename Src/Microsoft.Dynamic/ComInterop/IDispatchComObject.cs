@@ -377,7 +377,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (cpc == null) {
                 // No ICPC - this object does not support events
                 events = ComTypeDesc.EmptyEvents;
-            } else if ((classTypeInfo = GetCoClassTypeInfo(this.RuntimeCallableWrapper, typeInfo)) == null) {
+            } else if ((classTypeInfo = GetCoClassTypeInfo(RuntimeCallableWrapper, typeInfo)) == null) {
                 // no class info found - this object may support events
                 // but we could not discover those
                 events = ComTypeDesc.EmptyEvents;

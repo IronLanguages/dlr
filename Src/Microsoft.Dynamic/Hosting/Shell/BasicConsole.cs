@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             _creatingThread = Thread.CurrentThread;            
 
             // Create the default handler
-            this.ConsoleCancelEventHandler = delegate(object sender, ConsoleCancelEventArgs e) {
+            ConsoleCancelEventHandler = delegate(object sender, ConsoleCancelEventArgs e) {
                 if (e.SpecialKey == ConsoleSpecialKey.ControlC) {
                     e.Cancel = true;
                     _ctrlCEvent.Set();
@@ -77,9 +77,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e) {
                 // Dispatch the registered handler
-                ConsoleCancelEventHandler handler = this.ConsoleCancelEventHandler;
+                ConsoleCancelEventHandler handler = ConsoleCancelEventHandler;
                 if (handler != null) {
-                    this.ConsoleCancelEventHandler(sender, e);
+                    ConsoleCancelEventHandler(sender, e);
                 }
             };
 

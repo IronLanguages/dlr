@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Utils {
         private readonly GCHandle _gcHandle;
 
         public WeakHandle(object target, bool trackResurrection) {
-            this._gcHandle = GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
+            _gcHandle = GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         public object Target {

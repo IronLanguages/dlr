@@ -84,7 +84,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override IList<string> GetMemberNames() {
             HashSet<string> members = new HashSet<string>();
-            foreach (Type type in this.Types) {
+            foreach (Type type in Types) {
                 GetMemberNames(type, members);
             }
 
