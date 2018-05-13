@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Actions {
                 return _restrictions;
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _restrictions = value;
             }
         }

@@ -42,7 +42,7 @@ namespace Microsoft.Scripting {
 
         public SyntaxErrorException(string message, SourceUnit sourceUnit, SourceSpan span, int errorCode, Severity severity)
             : base(message) {
-            ContractUtils.RequiresNotNull(message, "message");
+            ContractUtils.RequiresNotNull(message, nameof(message));
 
             _span = span;
             _severity = severity;
@@ -60,7 +60,7 @@ namespace Microsoft.Scripting {
 
         public SyntaxErrorException(string message, string path, string code, string line, SourceSpan span, int errorCode, Severity severity)
             : base(message) {
-            ContractUtils.RequiresNotNull(message, "message");
+            ContractUtils.RequiresNotNull(message, nameof(message));
 
             _span = span;
             _severity = severity;
@@ -85,7 +85,7 @@ namespace Microsoft.Scripting {
         [SecurityCritical]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2140:TransparentMethodsMustNotReferenceCriticalCodeFxCopRule")]
         public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            ContractUtils.RequiresNotNull(info, "info");
+            ContractUtils.RequiresNotNull(info, nameof(info));
 
             base.GetObjectData(info, context);
             info.AddValue("Span", _span);

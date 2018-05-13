@@ -51,7 +51,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public AssemblyGen(AssemblyName name, string outDir, string outFileExtension, bool isDebuggable) {
-            ContractUtils.RequiresNotNull(name, "name");
+            ContractUtils.RequiresNotNull(name, nameof(name));
 
 #if FEATURE_FILESYSTEM
             if (outFileExtension == null) {
@@ -283,8 +283,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         internal TypeBuilder DefineType(string name, Type parent, TypeAttributes attr, bool preserveName) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(parent, "parent");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(parent, nameof(parent));
 
             StringBuilder sb = new StringBuilder(name);
             if (!preserveName) {

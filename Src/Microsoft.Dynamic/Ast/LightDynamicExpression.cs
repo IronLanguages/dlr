@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Ast {
         private readonly CallSiteBinder _binder;
 
         protected LightDynamicExpression(CallSiteBinder binder) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
             _binder = binder;
         }
 
@@ -150,7 +150,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightTypedDynamicExpression1(CallSiteBinder binder, Type returnType, Expression arg0)
             : base(binder, arg0) {
-            ContractUtils.RequiresNotNull(returnType, "returnType");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
         }
 
@@ -184,8 +184,8 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightDynamicExpression2(CallSiteBinder binder, Expression arg0, Expression arg1)
             : base(binder) {
-            ContractUtils.RequiresNotNull(arg0, "arg0");
-            ContractUtils.RequiresNotNull(arg1, "arg1");
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
             _arg0 = arg0;
             _arg1 = arg1;
         }
@@ -249,7 +249,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightTypedDynamicExpression2(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1)
             : base(binder, arg0, arg1) {
-            ContractUtils.RequiresNotNull(returnType, "returnType");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
         }
 
@@ -283,9 +283,9 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightDynamicExpression3(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
             : base(binder) {
-            ContractUtils.RequiresNotNull(arg0, "arg0");
-            ContractUtils.RequiresNotNull(arg1, "arg1");
-            ContractUtils.RequiresNotNull(arg2, "arg2");
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
+            ContractUtils.RequiresNotNull(arg2, nameof(arg2));
             _arg0 = arg0;
             _arg1 = arg1;
             _arg2 = arg2;
@@ -392,10 +392,10 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightDynamicExpression4(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(binder) {
-            ContractUtils.RequiresNotNull(arg0, "arg0");
-            ContractUtils.RequiresNotNull(arg1, "arg1");
-            ContractUtils.RequiresNotNull(arg2, "arg2");
-            ContractUtils.RequiresNotNull(arg3, "arg3");
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
+            ContractUtils.RequiresNotNull(arg2, nameof(arg2));
+            ContractUtils.RequiresNotNull(arg3, nameof(arg3));
             _arg0 = arg0;
             _arg1 = arg1;
             _arg2 = arg2;

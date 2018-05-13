@@ -45,9 +45,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static LoopExpression Loop(Expression test, Expression increment, Expression body, Expression @else, LabelTarget @break, LabelTarget @continue) {
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
             if (test != null) {
-                ContractUtils.Requires(test.Type == typeof(bool), "test", "Test must be boolean");
+                ContractUtils.Requires(test.Type == typeof(bool), nameof(test), "Test must be boolean");
                 if (@break == null) {
                     @break = Expression.Label();
                 }

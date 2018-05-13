@@ -60,7 +60,7 @@ namespace Microsoft.Scripting.Runtime {
         private const int ClearThreshold = 50;
 
         public DynamicOperations(LanguageContext lc) {
-            ContractUtils.RequiresNotNull(lc, "lc");
+            ContractUtils.RequiresNotNull(lc, nameof(lc));
             _lc = lc;
         }
 

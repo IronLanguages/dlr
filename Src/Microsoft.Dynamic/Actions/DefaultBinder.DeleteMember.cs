@@ -35,8 +35,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public DynamicMetaObject DeleteMember(string name, DynamicMetaObject target, OverloadResolverFactory resolutionFactory, DynamicMetaObject errorSuggestion) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(target, "target");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(target, nameof(target));
 
             return MakeDeleteMemberTarget(
                 new SetOrDeleteMemberInfo(

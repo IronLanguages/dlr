@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public SimpleArgBuilder(ParameterInfo info, Type parameterType, int index, bool isParams, bool isParamsDict)
             : base(info) {
             ContractUtils.Requires(index >= 0);
-            ContractUtils.RequiresNotNull(parameterType, "parameterType");
+            ContractUtils.RequiresNotNull(parameterType, nameof(parameterType));
 
             _index = index;
             _parameterType = parameterType;

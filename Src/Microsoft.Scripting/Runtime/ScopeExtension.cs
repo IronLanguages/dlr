@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Runtime {
         public Scope Scope { get; }
 
         public ScopeExtension(Scope scope) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
             Scope = scope;
         }
     }

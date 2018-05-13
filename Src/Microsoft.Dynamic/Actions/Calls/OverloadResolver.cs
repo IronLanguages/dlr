@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private List<ParameterExpression> _temps;
 
         protected OverloadResolver(ActionBinder binder) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             _binder = binder;
             _maxAccessedCollapsedArg = -1;
@@ -132,7 +132,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public BindingTarget ResolveOverload(string methodName, IList<OverloadInfo> methods, NarrowingLevel minLevel, NarrowingLevel maxLevel) {
-            ContractUtils.RequiresNotNullItems(methods, "methods");
+            ContractUtils.RequiresNotNullItems(methods, nameof(methods));
             ContractUtils.Requires(minLevel <= maxLevel);
 
             if (_candidateSets != null) {

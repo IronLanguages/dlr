@@ -39,7 +39,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         public static TracePipeline CreateInstance(DebugContext debugContext) {
-            ContractUtils.RequiresNotNull(debugContext, "debugContext");
+            ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
 
             if (debugContext.DebugCallback != null)
                 throw new InvalidOperationException(ErrorStrings.DebugContextAlreadyConnectedToTracePipeline);
@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Debugging {
 
         public bool TrySetNextStatement(string sourceFile, SourceSpan sourceSpan) {
             VerifyNotClosed();
-            ContractUtils.RequiresNotNull(sourceFile, "sourceFile");
+            ContractUtils.RequiresNotNull(sourceFile, nameof(sourceFile));
             ContractUtils.Requires(sourceSpan != SourceSpan.Invalid && sourceSpan != SourceSpan.None, ErrorStrings.InvalidSourceSpan);
 
             // Find the thread object.  We also check if the current thread is in FrameExit traceback.

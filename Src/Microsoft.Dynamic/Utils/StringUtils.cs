@@ -32,13 +32,13 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static string GetSuffix(string str, char separator, bool includeSeparator) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
             int last = str.LastIndexOf(separator);
             return (last != -1) ? str.Substring(includeSeparator ? last : last + 1) : null;
         }
 
         public static string GetLongestPrefix(string str, char separator, bool includeSeparator) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
             int last = str.LastIndexOf(separator);
             return (last != -1) ? str.Substring(0, (includeSeparator || last == 0) ? last : last - 1) : null;
         }
@@ -56,12 +56,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static string[] Split(string str, string separator, int maxComponents, StringSplitOptions options) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
             return str.Split(new string[] { separator }, maxComponents, options);
         }
 
         public static string[] Split(string str, char[] separators, int maxComponents, StringSplitOptions options) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
             return str.Split(separators, maxComponents, options);
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Utils {
         /// Splits text and optionally indents first lines - breaks along words, not characters.
         /// </summary>
         public static string SplitWords(string text, bool indentFirst, int lineWidth) {
-            ContractUtils.RequiresNotNull(text, "text");
+            ContractUtils.RequiresNotNull(text, nameof(text));
 
             const string indent = "    ";
 
@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.Utils {
                 if (indentFirst || res.Length != 0) res.Append(indent);
 
                 if (len == 0) {
-                    int copying = System.Math.Min(lineWidth, text.Length - start);
+                    int copying = Math.Min(lineWidth, text.Length - start);
                     res.Append(text, start, copying);
                     start += copying;
                 } else {
@@ -99,13 +99,13 @@ namespace Microsoft.Scripting.Utils {
                     start += len;
                 }
                 res.AppendLine();
-                len = System.Math.Min(lineWidth, text.Length - start);
+                len = Math.Min(lineWidth, text.Length - start);
             }
             return res.ToString();
         }
 
         public static string AddSlashes(string str) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
 
             // TODO: optimize
             StringBuilder result = new StringBuilder(str.Length);

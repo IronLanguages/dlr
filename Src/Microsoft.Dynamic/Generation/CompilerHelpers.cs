@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Generation {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static object GetMissingValue(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsByRef) type = type.GetElementType();
             if (type.IsEnum()) return Activator.CreateInstance(type);
@@ -498,8 +498,8 @@ namespace Microsoft.Scripting.Generation {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static bool TryGetTypeConverter(Type fromType, Type toType, out TypeConverter converter) {
-            ContractUtils.RequiresNotNull(fromType, "fromType");
-            ContractUtils.RequiresNotNull(toType, "toType");
+            ContractUtils.RequiresNotNull(fromType, nameof(fromType));
+            ContractUtils.RequiresNotNull(toType, nameof(toType));
 
             // try available type conversions...
             foreach (TypeConverterAttribute tca in toType.GetCustomAttributes(typeof(TypeConverterAttribute), true)) {

@@ -81,7 +81,7 @@ namespace Microsoft.Scripting {
         }
 
         public ErrorCounter(ErrorSink/*!*/ sink) {
-            ContractUtils.RequiresNotNull(sink, "sink");
+            ContractUtils.RequiresNotNull(sink, nameof(sink));
             _sink = sink;
         }
         

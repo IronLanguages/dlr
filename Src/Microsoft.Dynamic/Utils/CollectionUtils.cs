@@ -46,11 +46,10 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void AddRange<T>(ICollection<T> collection, IEnumerable<T> items) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(items, "items");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(items, nameof(items));
 
-            List<T> list = collection as List<T>;
-            if (list != null) {
+            if (collection is List<T> list) {
                 list.AddRange(items);
             } else {
                 foreach (T item in items) {
@@ -74,7 +73,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerator<TSuper> ToCovariant<T, TSuper>(IEnumerator<T> enumerator)
             where T : TSuper {
 
-            ContractUtils.RequiresNotNull(enumerator, "enumerator");
+            ContractUtils.RequiresNotNull(enumerator, nameof(enumerator));
 
             while (enumerator.MoveNext()) {
                 yield return enumerator.Current;
@@ -85,12 +84,12 @@ namespace Microsoft.Scripting.Utils {
             private IEnumerable<T> _enumerable;
 
             public CovariantConvertor(IEnumerable<T> enumerable) {
-                ContractUtils.RequiresNotNull(enumerable, "enumerable");
+                ContractUtils.RequiresNotNull(enumerable, nameof(enumerable));
                 _enumerable = enumerable;
             }
 
             public IEnumerator<TSuper> GetEnumerator() {
-                return CollectionUtils.ToCovariant<T, TSuper>(_enumerable.GetEnumerator());
+                return ToCovariant<T, TSuper>(_enumerable.GetEnumerator());
             }
 
             IEnumerator IEnumerable.GetEnumerator() {
@@ -153,7 +152,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int Max(this IEnumerable<int> values) {
-            ContractUtils.RequiresNotNull(values, "values");
+            ContractUtils.RequiresNotNull(values, nameof(values));
 
             int result = Int32.MinValue;
             foreach (var value in values) {
@@ -165,8 +164,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static bool TrueForAll<T>(IEnumerable<T> collection, Predicate<T> predicate) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(predicate, "predicate");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(predicate, nameof(predicate));
 
             foreach (T item in collection) {
                 if (!predicate(item)) return false;
@@ -176,8 +175,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IList<TRet> ConvertAll<T, TRet>(IList<T> collection, Func<T, TRet> predicate) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(predicate, "predicate");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(predicate, nameof(predicate));
 
             List<TRet> res = new List<TRet>(collection.Count);
             foreach (T item in collection) {
@@ -188,8 +187,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IEnumerable<TRet> Select<TRet>(this IEnumerable enumerable, Func<object, TRet> selector) {
-            ContractUtils.RequiresNotNull(enumerable, "enumerable");
-            ContractUtils.RequiresNotNull(selector, "selector");
+            ContractUtils.RequiresNotNull(enumerable, nameof(enumerable));
+            ContractUtils.RequiresNotNull(selector, nameof(selector));
 
             foreach (object item in enumerable) {
                 yield return selector(item);
@@ -198,8 +197,8 @@ namespace Microsoft.Scripting.Utils {
 
 
         public static List<T> GetRange<T>(IList<T> list, int index, int count) {
-            ContractUtils.RequiresNotNull(list, "list");
-            ContractUtils.RequiresArrayRange(list, index, count, "index", "count");
+            ContractUtils.RequiresNotNull(list, nameof(list));
+            ContractUtils.RequiresArrayRange(list, index, count, nameof(index), nameof(count));
 
             List<T> result = new List<T>(count);
             int stop = index + count;
@@ -210,12 +209,11 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void InsertRange<T>(IList<T> collection, int index, IEnumerable<T> items) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(items, "items");
-            ContractUtils.RequiresArrayInsertIndex(collection, index, "index");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(items, nameof(items));
+            ContractUtils.RequiresArrayInsertIndex(collection, index, nameof(index));
 
-            List<T> list = collection as List<T>;
-            if (list != null) {
+            if (collection is List<T> list) {
                 list.InsertRange(index, items);
             } else {
                 int i = index;
@@ -226,11 +224,10 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void RemoveRange<T>(IList<T> collection, int index, int count) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresArrayRange(collection, index, count, "index", "count");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresArrayRange(collection, index, count, nameof(index), nameof(count));
 
-            List<T> list = collection as List<T>;
-            if (list != null) {
+            if (collection is List<T> list) {
                 list.RemoveRange(index, count);
             } else {
                 for (int i = index + count - 1; i >= index; i--) {
@@ -240,8 +237,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int FindIndex<T>(this IList<T> collection, Predicate<T> predicate) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(predicate, "predicate");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(predicate, nameof(predicate));
 
             for (int i = 0; i < collection.Count; i++) {
                 if (predicate(collection[i])) {
@@ -252,8 +249,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IList<T> ToSortedList<T>(this ICollection<T> collection, Comparison<T> comparison) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(comparison, "comparison");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(comparison, nameof(comparison));
 
             var array = new T[collection.Count];
             collection.CopyTo(array, 0);
@@ -262,7 +259,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] ToReverseArray<T>(this IList<T> list) {
-            ContractUtils.RequiresNotNull(list, "list");
+            ContractUtils.RequiresNotNull(list, nameof(list));
             T[] result = new T[list.Count];
             for (int i = 0; i < result.Length; i++) {
                 result[i] = list[result.Length - 1 - i];

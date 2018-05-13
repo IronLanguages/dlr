@@ -260,12 +260,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         public void PrintLanguageHelp(StringBuilder output) {
-            ContractUtils.RequiresNotNull(output, "output");
+            ContractUtils.RequiresNotNull(output, nameof(output));
 
-            string commandLine, comments;
-            string[,] options, environmentVariables;
-
-            CreateOptionsParser().GetHelp(out commandLine, out options, out environmentVariables, out comments);
+            CreateOptionsParser().GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
 
             // only display language specific options if one or more optinos exists.
             if (commandLine != null || options != null || environmentVariables != null || comments != null) {

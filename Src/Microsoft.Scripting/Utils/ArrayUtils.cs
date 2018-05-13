@@ -45,8 +45,8 @@ namespace Microsoft.Scripting.Utils {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "1#")] // TODO: fix
         public static void PrintTable(StringBuilder output, string[,] table) {
-            ContractUtils.RequiresNotNull(output, "output");
-            ContractUtils.RequiresNotNull(table, "table");
+            ContractUtils.RequiresNotNull(output, nameof(output));
+            ContractUtils.RequiresNotNull(table, nameof(table));
 
             int maxWidth = 0;
             for (int i = 0; i < table.GetLength(0); i++) {
@@ -153,7 +153,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] Append<T>(T[] array, T item) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
 
             Array.Resize<T>(ref array, array.Length + 1);
             array[array.Length - 1] = item;
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] AppendRange<T>(T[] array, IList<T> items, int additionalItemCount) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if (additionalItemCount < 0) throw new ArgumentOutOfRangeException(nameof(additionalItemCount));
 
             int j = array.Length;
@@ -221,7 +221,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] RemoveLast<T>(T[] array) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
 
             Array.Resize(ref array, array.Length - 1);
             return array;
@@ -232,7 +232,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] RemoveAt<T>(T[] array, int indexToRemove) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             ContractUtils.Requires(indexToRemove >= 0 && indexToRemove < array.Length, "index");
 
             T[] result = new T[array.Length - 1];
@@ -251,9 +251,9 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] InsertAt<T>(T[] array, int index, params T[] items) {
-            ContractUtils.RequiresNotNull(array, "array");
-            ContractUtils.RequiresNotNull(items, "items");
-            ContractUtils.Requires(index >= 0 && index <= array.Length, "index");
+            ContractUtils.RequiresNotNull(array, nameof(array));
+            ContractUtils.RequiresNotNull(items, nameof(items));
+            ContractUtils.Requires(index >= 0 && index <= array.Length, nameof(index));
 
             if (items.Length == 0) {
                 return Copy(array);

@@ -37,9 +37,9 @@ namespace Microsoft.Scripting.Actions.Calls {
         public ActualArguments(IList<DynamicMetaObject> args, IList<DynamicMetaObject> namedArgs, IList<string> argNames,
             int hiddenCount, int collapsedCount, int firstSplattedArg, int splatIndex) {
 
-            ContractUtils.RequiresNotNullItems(args, "args");
-            ContractUtils.RequiresNotNullItems(namedArgs, "namedArgs");
-            ContractUtils.RequiresNotNullItems(argNames, "argNames");
+            ContractUtils.RequiresNotNullItems(args, nameof(args));
+            ContractUtils.RequiresNotNullItems(namedArgs, nameof(namedArgs));
+            ContractUtils.RequiresNotNullItems(argNames, nameof(argNames));
             ContractUtils.Requires(namedArgs.Count == argNames.Count);
 
             ContractUtils.Requires(splatIndex == -1 || firstSplattedArg == -1 || firstSplattedArg >= 0 && firstSplattedArg <= splatIndex);

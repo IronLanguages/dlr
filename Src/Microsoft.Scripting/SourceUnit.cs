@@ -65,7 +65,7 @@ namespace Microsoft.Scripting {
         }
 
         public ScriptCodeParseResult GetCodeProperties(CompilerOptions options) {
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             _language.CompileSourceCode(this, options, ErrorSink.Null);
             return _parseResult ?? ScriptCodeParseResult.Complete;
@@ -202,8 +202,8 @@ namespace Microsoft.Scripting {
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </summary>
         public ScriptCode Compile(CompilerOptions options, ErrorSink errorSink) {
-            ContractUtils.RequiresNotNull(errorSink, "errorSink");
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(errorSink, nameof(errorSink));
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             return _language.CompileSourceCode(this, options, errorSink);
         }
@@ -219,7 +219,7 @@ namespace Microsoft.Scripting {
         /// Executes against a specified scope and reports errors to the given error sink.
         /// </summary>
         public object Execute(Scope scope, ErrorSink errorSink) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
 
             ScriptCode compiledCode = Compile(_language.GetCompilerOptions(scope), errorSink);
 

@@ -70,10 +70,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         /// <exception cref="InvalidOptionException">On error.</exception>
         public void Parse(string[] args, ScriptRuntimeSetup setup, LanguageSetup languageSetup, PlatformAdaptationLayer platform) {
-            ContractUtils.RequiresNotNull(args, "args");
-            ContractUtils.RequiresNotNull(setup, "setup");
-            ContractUtils.RequiresNotNull(languageSetup, "languageSetup");
-            ContractUtils.RequiresNotNull(platform, "platform");
+            ContractUtils.RequiresNotNull(args, nameof(args));
+            ContractUtils.RequiresNotNull(setup, nameof(setup));
+            ContractUtils.RequiresNotNull(languageSetup, nameof(languageSetup));
+            ContractUtils.RequiresNotNull(platform, nameof(platform));
 
             _args = args;
             _runtimeSetup = setup;

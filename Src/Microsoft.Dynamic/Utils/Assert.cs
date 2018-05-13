@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Utils {
 
         [Conditional("DEBUG")]
         public static void IsTrue(Func<bool> predicate) {
-            ContractUtils.RequiresNotNull(predicate, "predicate");
+            ContractUtils.RequiresNotNull(predicate, nameof(predicate));
             Debug.Assert(predicate());
         }
     }

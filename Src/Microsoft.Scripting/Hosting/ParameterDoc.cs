@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public ParameterDoc(string name, string typeName, string documentation, ParameterFlags paramFlags) {
-            ContractUtils.RequiresNotNull(name, "name");
+            ContractUtils.RequiresNotNull(name, nameof(name));
 
             _name = name;
             _flags = paramFlags;

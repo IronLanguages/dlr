@@ -48,10 +48,10 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public CompilerContext(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink, ParserSink parserSink) {
-            ContractUtils.RequiresNotNull(sourceUnit, "sourceUnit");
-            ContractUtils.RequiresNotNull(errorSink, "errorSink");
-            ContractUtils.RequiresNotNull(parserSink, "parserSink");
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(sourceUnit, nameof(sourceUnit));
+            ContractUtils.RequiresNotNull(errorSink, nameof(errorSink));
+            ContractUtils.RequiresNotNull(parserSink, nameof(parserSink));
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             SourceUnit = sourceUnit;
             Options = options;

@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
             string name = binder.Name;
 
             if (name == _info.Name) {

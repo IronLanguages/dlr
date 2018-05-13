@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.Actions {
 
         [Obsolete("Use ExtensionBinaryOperationBinder or ExtensionUnaryOperationBinder")]
         public virtual DynamicMetaObject BindOperation(OperationBinder binder, params DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
             return binder.FallbackOperation(this, args);
         }
     }

@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.Runtime {
         private readonly Dictionary<Type, LanguageConfiguration> _loadedProviderTypes;
 
         public DlrConfiguration(bool debugMode, bool privateBinding, IDictionary<string, object> options) {
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(options, nameof(options));
             DebugMode = debugMode;
             PrivateBinding = privateBinding;
             Options = options;
@@ -166,10 +166,10 @@ namespace Microsoft.Scripting.Runtime {
                 paramName ?? "fileExtensions",
                 "File extension should not be null, empty or duplicated between languages"
             );
-            ContractUtils.RequiresNotNull(displayName, paramName ?? "displayName");
+            ContractUtils.RequiresNotNull(displayName, paramName ?? nameof(displayName));
 
             if (string.IsNullOrEmpty(displayName)) {
-                ContractUtils.Requires(names.Count > 0, paramName ?? "displayName", "Must have a non-empty display name or a a non-empty list of language names");
+                ContractUtils.Requires(names.Count > 0, paramName ?? nameof(displayName), "Must have a non-empty display name or a a non-empty list of language names");
                 displayName = names[0];
             }
 
@@ -211,9 +211,8 @@ namespace Microsoft.Scripting.Runtime {
 
         internal bool TryLoadLanguage(ScriptDomainManager manager, AssemblyQualifiedTypeName providerName, out LanguageContext language) {
             Assert.NotNull(manager);
-            LanguageConfiguration config;
 
-            if (_languageConfigurations.TryGetValue(providerName, out config)) {
+            if (_languageConfigurations.TryGetValue(providerName, out LanguageConfiguration config)) {
                 language = LoadLanguageContext(manager, config);
                 return true;
             }
@@ -260,7 +259,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public string[] GetLanguageNames(LanguageContext context) {
-            ContractUtils.RequiresNotNull(context, "context");
+            ContractUtils.RequiresNotNull(context, nameof(context));
 
             List<string> result = new List<string>();
             

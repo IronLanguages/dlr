@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.Generation {
 
         // TODO: remove Python dependency
         public ILGen(ILGenerator ilg) {
-            ContractUtils.RequiresNotNull(ilg, "ilg");
+            ContractUtils.RequiresNotNull(ilg, nameof(ilg));
 
             _ilg = ilg;
         }
@@ -369,7 +369,7 @@ namespace Microsoft.Scripting.Generation {
         /// Emits a Ldind* instruction for the appropriate type
         /// </summary>
         public void EmitLoadValueIndirect(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsValueType()) {
                 if (type == typeof(int)) {
@@ -405,7 +405,7 @@ namespace Microsoft.Scripting.Generation {
         /// Emits a Stind* instruction for the appropriate type.
         /// </summary>
         public void EmitStoreValueIndirect(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsValueType()) {
                 if (type == typeof(int)) {
@@ -435,7 +435,7 @@ namespace Microsoft.Scripting.Generation {
         // Emits the Ldelem* instruction for the appropriate type
         //CONFORMING
         public void EmitLoadElement(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (!type.IsValueType()) {
                 Emit(OpCodes.Ldelem_Ref);
@@ -484,7 +484,7 @@ namespace Microsoft.Scripting.Generation {
         /// Emits a Stelem* instruction for the appropriate type.
         /// </summary>
         public void EmitStoreElement(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsEnum()) {
                 Emit(OpCodes.Stelem, type);
@@ -526,14 +526,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitType(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             Emit(OpCodes.Ldtoken, type);
             EmitCall(typeof(Type), "GetTypeFromHandle");
         }
 
         public void EmitUnbox(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             Emit(OpCodes.Unbox_Any, type);
         }
 
@@ -542,7 +542,7 @@ namespace Microsoft.Scripting.Generation {
         #region Fields, properties and methods
 
         public void EmitPropertyGet(PropertyInfo pi) {
-            ContractUtils.RequiresNotNull(pi, "pi");
+            ContractUtils.RequiresNotNull(pi, nameof(pi));
 
             if (!pi.CanRead) {
                 throw Error.CantReadProperty();
@@ -552,7 +552,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitPropertySet(PropertyInfo pi) {
-            ContractUtils.RequiresNotNull(pi, "pi");
+            ContractUtils.RequiresNotNull(pi, nameof(pi));
 
             if (!pi.CanWrite) {
                 throw Error.CantWriteProperty();
@@ -562,7 +562,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitFieldAddress(FieldInfo fi) {
-            ContractUtils.RequiresNotNull(fi, "fi");
+            ContractUtils.RequiresNotNull(fi, nameof(fi));
 
             if (fi.IsStatic) {
                 Emit(OpCodes.Ldsflda, fi);
@@ -572,7 +572,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitFieldGet(FieldInfo fi) {
-            ContractUtils.RequiresNotNull(fi, "fi");
+            ContractUtils.RequiresNotNull(fi, nameof(fi));
 
             if (fi.IsStatic) {
                 Emit(OpCodes.Ldsfld, fi);
@@ -582,7 +582,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitFieldSet(FieldInfo fi) {
-            ContractUtils.RequiresNotNull(fi, "fi");
+            ContractUtils.RequiresNotNull(fi, nameof(fi));
 
             if (fi.IsStatic) {
                 Emit(OpCodes.Stsfld, fi);
@@ -593,7 +593,7 @@ namespace Microsoft.Scripting.Generation {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         public void EmitNew(ConstructorInfo ci) {
-            ContractUtils.RequiresNotNull(ci, "ci");
+            ContractUtils.RequiresNotNull(ci, nameof(ci));
 
             if (ci.DeclaringType.ContainsGenericParameters()) {
                 throw Error.IllegalNew_GenericParams(ci.DeclaringType);
@@ -604,8 +604,8 @@ namespace Microsoft.Scripting.Generation {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         public void EmitNew(Type type, Type[] paramTypes) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(paramTypes, "paramTypes");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
             ConstructorInfo ci = type.GetConstructor(paramTypes);
             ContractUtils.Requires(ci != null, "type", Strings.TypeDoesNotHaveConstructorForTheSignature);
@@ -613,7 +613,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitCall(MethodInfo mi) {
-            ContractUtils.RequiresNotNull(mi, "mi");
+            ContractUtils.RequiresNotNull(mi, nameof(mi));
 
             if (mi.IsVirtual && !mi.DeclaringType.IsValueType()) {
                 Emit(OpCodes.Callvirt, mi);
@@ -623,22 +623,22 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitCall(Type type, String name) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(name, "name");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(name, nameof(name));
 
             MethodInfo mi = type.GetMethod(name);
-            ContractUtils.Requires(mi != null, "type", Strings.TypeDoesNotHaveMethodForName);
+            ContractUtils.Requires(mi != null, nameof(type), Strings.TypeDoesNotHaveMethodForName);
 
             EmitCall(mi);
         }
 
         public void EmitCall(Type type, String name, Type[] paramTypes) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(paramTypes, "paramTypes");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
             MethodInfo mi = type.GetMethod(name, paramTypes);
-            ContractUtils.Requires(mi != null, "type", Strings.TypeDoesNotHaveMethodForNameSignature);
+            ContractUtils.Requires(mi != null, nameof(type), Strings.TypeDoesNotHaveMethodForNameSignature);
 
             EmitCall(mi);
         }

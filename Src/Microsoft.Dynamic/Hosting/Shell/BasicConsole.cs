@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public TextWriter Output {
             get { return _output; }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _output = value;
             }
         }
@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public TextWriter ErrorOutput {
             get { return _errorOutput; }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _errorOutput = value;
             }
         }

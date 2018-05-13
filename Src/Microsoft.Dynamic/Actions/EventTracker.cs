@@ -122,8 +122,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public void AddHandler(object target, object handler, DynamicDelegateCreator delegateCreator) {
-            ContractUtils.RequiresNotNull(handler, "handler");
-            ContractUtils.RequiresNotNull(delegateCreator, "delegateCreator");
+            ContractUtils.RequiresNotNull(handler, nameof(handler));
+            ContractUtils.RequiresNotNull(delegateCreator, nameof(delegateCreator));
 
             Delegate delegateHandler;
             HandlerList stubs;

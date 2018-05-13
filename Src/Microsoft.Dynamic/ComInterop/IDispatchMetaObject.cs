@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             ComMethodDesc method;
             if (_self.TryGetMemberMethod(binder.Name, out method) ||
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             ComMethodDesc method;
             if (_self.TryGetGetItem(out method)) {
@@ -75,7 +75,7 @@ namespace Microsoft.Scripting.ComInterop {
             ComBinder.ComGetMemberBinder comBinder = binder as ComBinder.ComGetMemberBinder;
             bool canReturnCallables = comBinder?._CanReturnCallables ?? false;
 
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             ComMethodDesc method;
             ComEventDesc @event;
@@ -139,7 +139,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindGetIndex(GetIndexBinder binder, DynamicMetaObject[] indexes) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             ComMethodDesc getItem;
             if (_self.TryGetGetItem(out getItem)) {
@@ -152,10 +152,9 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            ComMethodDesc setItem;
-            if (_self.TryGetSetItem(out setItem)) {
+            if (_self.TryGetSetItem(out ComMethodDesc setItem)) {
 
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref indexes);
                 isByRef = isByRef.AddLast(false);
@@ -173,7 +172,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value) {
-            ContractUtils.RequiresNotNull(binder, "binder");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
 
             return
                 // 1. Check for simple property put
