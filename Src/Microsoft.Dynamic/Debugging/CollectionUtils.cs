@@ -30,16 +30,24 @@ namespace Microsoft.Scripting.Debugging {
                 return false;
             }
             var cmp = EqualityComparer<T>.Default;
-            var f = first.GetEnumerator();
-            var s = second.GetEnumerator();
-            while (f.MoveNext()) {
-                s.MoveNext();
 
-                if (!cmp.Equals(f.Current, s.Current)) {
-                    return false;
+            IEnumerator<T> f = null;
+            try {
+                f = first.GetEnumerator();
+                using (var s = second.GetEnumerator()) {
+                    while (f.MoveNext()) {
+                        s.MoveNext();
+
+                        if (!cmp.Equals(f.Current, s.Current)) {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
             }
-            return true;
+            finally {
+                f?.Dispose();
+            }
         }
 
         internal static int ListHashCode<T>(this IEnumerable<T> list) {

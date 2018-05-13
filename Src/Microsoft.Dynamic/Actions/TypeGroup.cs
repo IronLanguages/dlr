@@ -153,9 +153,10 @@ namespace Microsoft.Scripting.Actions {
 
         private Type SampleType {
             get {
-                IEnumerator<Type> e = Types.GetEnumerator();
-                e.MoveNext();
-                return e.Current;
+                using (IEnumerator<Type> e = Types.GetEnumerator()) {
+                    e.MoveNext();
+                    return e.Current;
+                }
             }
         }
 
