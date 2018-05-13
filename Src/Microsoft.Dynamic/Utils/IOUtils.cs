@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Utils {
         /// Returns <c>true</c> if the line is found, <b>false</b> otherwise.
         /// </returns>
         public static bool SeekLine(TextReader reader, int line) {
-            ContractUtils.RequiresNotNull(reader, "reader");
+            ContractUtils.RequiresNotNull(reader, nameof(reader));
             if (line < 1) throw new ArgumentOutOfRangeException(nameof(line));
             if (line == 1) return true;
 
@@ -61,7 +61,7 @@ namespace Microsoft.Scripting.Utils {
         /// Returns <c>null</c>, if the reader is at the end position.
         /// </summary>
         public static string ReadTo(TextReader reader, char terminator) {
-            ContractUtils.RequiresNotNull(reader, "reader");
+            ContractUtils.RequiresNotNull(reader, nameof(reader));
 
             StringBuilder result = new StringBuilder();
             int ch;
@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Utils {
         /// <c>false</c> otherwise.
         /// </summary>
         public static bool SeekTo(TextReader reader, char c) {
-            ContractUtils.RequiresNotNull(reader, "reader");
+            ContractUtils.RequiresNotNull(reader, nameof(reader));
 
             for (; ; ) {
                 int ch = reader.Read();

@@ -692,8 +692,8 @@ namespace Microsoft.Scripting.Utils {
         public static BigInteger GetRandBits(this Random generator, int bits) => GetRandBits(generator.NextBytes, bits);
 
         public static BigInteger Random(this Random generator, BigInteger limit) {
-            ContractUtils.Requires(limit.Sign > 0, "limit");
-            ContractUtils.RequiresNotNull(generator, "generator");
+            ContractUtils.Requires(limit.Sign > 0, nameof(limit));
+            ContractUtils.RequiresNotNull(generator, nameof(generator));
 
             BigInteger res = BigInteger.Zero;
 

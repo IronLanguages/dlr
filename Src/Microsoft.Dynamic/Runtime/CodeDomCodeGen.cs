@@ -36,9 +36,9 @@ namespace Microsoft.Scripting.Runtime {
         abstract protected string QuoteString(string val);
 
         public SourceUnit GenerateCode(CodeMemberMethod codeDom, LanguageContext context, string path, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(codeDom, "codeDom");
-            ContractUtils.RequiresNotNull(context, "context");
-            ContractUtils.Requires(path == null || path.Length > 0, "path");
+            ContractUtils.RequiresNotNull(codeDom, nameof(codeDom));
+            ContractUtils.RequiresNotNull(context, nameof(context));
+            ContractUtils.Requires(path == null || path.Length > 0, nameof(path));
 
             // Convert the CodeDom to source code
             _writer?.Close();
@@ -105,8 +105,7 @@ namespace Microsoft.Scripting.Runtime {
         protected void WritePrimitiveExpression(CodePrimitiveExpression e) {
             object val = e.Value;
 
-            string strVal = val as string;
-            if (strVal != null) {
+            if (val is string strVal) {
                 _writer.Write(QuoteString(strVal));
             } else {
                 _writer.Write(val);

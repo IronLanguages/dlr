@@ -75,7 +75,7 @@ namespace Microsoft.Scripting.Runtime {
         /// if no value was previously set or the previous value.
         /// </summary>
         public ScopeExtension SetExtension(ContextId languageContextId, ScopeExtension extension) {
-            ContractUtils.RequiresNotNull(extension, "extension");
+            ContractUtils.RequiresNotNull(extension, nameof(extension));
 
             lock (_extensionsLock) {
                 if (languageContextId.Id >= _extensions.Length) {

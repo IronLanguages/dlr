@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Ast {
         /// <param name="expression">An <see cref="Expression"/> to convert to void. </param>
         /// <returns>An <see cref="Expression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.ConvertChecked" /> and the <see cref="P:System.Linq.Expressions.UnaryExpression.Operand" /> and <see cref="P:System.Linq.Expressions.Expression.Type" /> property set to void.</returns>
         public static Expression Void(Expression expression) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             if (expression.Type == typeof(void)) {
                 return expression;
             }
@@ -36,7 +36,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static Expression Convert(Expression expression, Type type) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             if (expression.Type == type) {
                 return expression;

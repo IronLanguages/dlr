@@ -28,7 +28,7 @@ namespace Microsoft.Scripting {
         new public static readonly SourceCodeReader Null = new SourceCodeReader(TextReader.Null, null);
 
         public SourceCodeReader(TextReader textReader, Encoding encoding) {
-            ContractUtils.RequiresNotNull(textReader, "textReader");
+            ContractUtils.RequiresNotNull(textReader, nameof(textReader));
 
             Encoding = encoding;
             BaseReader = textReader;

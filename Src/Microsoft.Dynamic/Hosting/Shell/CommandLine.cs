@@ -96,9 +96,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// either run a single file, a single command, or enter the interactive loop.
         /// </summary>
         public void Run(ScriptEngine engine, IConsole console, ConsoleOptions options) {
-            ContractUtils.RequiresNotNull(engine, "engine");
-            ContractUtils.RequiresNotNull(console, "console");
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(engine, nameof(engine));
+            ContractUtils.RequiresNotNull(console, nameof(console));
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             _engine = engine;
             _options = options;

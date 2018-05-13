@@ -18,7 +18,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.Scripting.Utils;
-using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Ast {
     public static partial class Utils {
@@ -38,7 +37,7 @@ namespace Microsoft.Scripting.Ast {
         /// Generalized AND semantics.
         /// </summary>
         public static Expression CoalesceTrue(Expression left, Expression right, MethodInfo isTrue, out ParameterExpression temp) {
-            ContractUtils.RequiresNotNull(isTrue, "isTrue");
+            ContractUtils.RequiresNotNull(isTrue, nameof(isTrue));
             return CoalesceInternal(left, right, isTrue, false, out temp);
         }
 
@@ -48,13 +47,13 @@ namespace Microsoft.Scripting.Ast {
         /// Generalized OR semantics.
         /// </summary>
         public static Expression CoalesceFalse(Expression left, Expression right, MethodInfo isTrue, out ParameterExpression temp) {
-            ContractUtils.RequiresNotNull(isTrue, "isTrue");
+            ContractUtils.RequiresNotNull(isTrue, nameof(isTrue));
             return CoalesceInternal(left, right, isTrue, true, out temp);
         }
 
         private static Expression CoalesceInternal(Expression left, Expression right, MethodInfo isTrue, bool isReverse, out ParameterExpression temp) {
-            ContractUtils.RequiresNotNull(left, "left");
-            ContractUtils.RequiresNotNull(right, "right");
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
 
             // A bit too strict, but on a safe side.
             ContractUtils.Requires(left.Type == right.Type, "Expression types must match");
@@ -73,7 +72,7 @@ namespace Microsoft.Scripting.Ast {
                 condition = Expression.Call(isTrue, Expression.Assign(temp, left));
             } else {
                 ContractUtils.Requires(TypeUtils.CanCompareToNull(left.Type), "left", "Incorrect left expression type");
-                condition = Expression.Equal(Expression.Assign(temp, left), AstUtils.Constant(null, left.Type));
+                condition = Expression.Equal(Expression.Assign(temp, left), Constant(null, left.Type));
             }
 
             Expression t, f;
@@ -89,8 +88,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static Expression Coalesce(LambdaBuilder builder, Expression left, Expression right) {
-            ParameterExpression temp;
-            Expression result = Coalesce(left, right, out temp);
+            Expression result = Coalesce(left, right, out ParameterExpression temp);
             builder.AddHiddenVariable(temp);
             return result;
         }
@@ -101,9 +99,8 @@ namespace Microsoft.Scripting.Ast {
         /// Generalized AND semantics.
         /// </summary>
         public static Expression CoalesceTrue(LambdaBuilder builder, Expression left, Expression right, MethodInfo isTrue) {
-            ContractUtils.RequiresNotNull(isTrue, "isTrue");
-            ParameterExpression temp;
-            Expression result = CoalesceTrue(left, right, isTrue, out temp);
+            ContractUtils.RequiresNotNull(isTrue, nameof(isTrue));
+            Expression result = CoalesceTrue(left, right, isTrue, out ParameterExpression temp);
             builder.AddHiddenVariable(temp);
             return result;
         }
@@ -114,9 +111,8 @@ namespace Microsoft.Scripting.Ast {
         /// Generalized OR semantics.
         /// </summary>
         public static Expression CoalesceFalse(LambdaBuilder builder, Expression left, Expression right, MethodInfo isTrue) {
-            ContractUtils.RequiresNotNull(isTrue, "isTrue");
-            ParameterExpression temp;
-            Expression result = CoalesceFalse(left, right, isTrue, out temp);
+            ContractUtils.RequiresNotNull(isTrue, nameof(isTrue));
+            Expression result = CoalesceFalse(left, right, isTrue, out ParameterExpression temp);
             builder.AddHiddenVariable(temp);
             return result;
         }

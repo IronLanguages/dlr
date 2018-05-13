@@ -33,8 +33,8 @@ namespace Microsoft.Scripting.Ast {
         /// to parameters and instance if necessary.
         /// </summary>
         public static MethodCallExpression SimpleCallHelper(MethodInfo method, params Expression[] arguments) {
-            ContractUtils.RequiresNotNull(method, "method");
-            ContractUtils.Requires(method.IsStatic, "method", "Method must be static");
+            ContractUtils.RequiresNotNull(method, nameof(method));
+            ContractUtils.Requires(method.IsStatic, nameof(method), "Method must be static");
             return SimpleCallHelper(null, method, arguments);
         }
 
@@ -43,9 +43,9 @@ namespace Microsoft.Scripting.Ast {
         /// to parameters and instance if necessary.
         /// </summary>
         public static MethodCallExpression SimpleCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
-            ContractUtils.RequiresNotNull(method, "method");
-            ContractUtils.Requires(instance != null ^ method.IsStatic, "instance");
-            ContractUtils.RequiresNotNullItems(arguments, "arguments");
+            ContractUtils.RequiresNotNull(method, nameof(method));
+            ContractUtils.Requires(instance != null ^ method.IsStatic, nameof(instance));
+            ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
 
             ParameterInfo[] parameters = method.GetParameters();
 

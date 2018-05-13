@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public ParameterWrapper(ParameterInfo info, Type type, string name, ParameterBindingFlags flags) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             
             Type = type;
             ParameterInfo = info;

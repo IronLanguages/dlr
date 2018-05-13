@@ -22,7 +22,7 @@ using AstUtils = Microsoft.Scripting.Ast.Utils;
 namespace Microsoft.Scripting.Ast {
     public partial class Utils {
         public static Expression DebugMarker(string marker) {
-            ContractUtils.RequiresNotNull(marker, "marker");
+            ContractUtils.RequiresNotNull(marker, nameof(marker));
 #if DEBUG
             return CallDebugWriteLine(marker);
 #else
@@ -32,8 +32,8 @@ namespace Microsoft.Scripting.Ast {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "marker")]
         public static Expression DebugMark(Expression expression, string marker) {
-            ContractUtils.RequiresNotNull(expression, "expression");
-            ContractUtils.RequiresNotNull(marker, "marker");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(marker, nameof(marker));
 
 #if DEBUG
             return Expression.Block(

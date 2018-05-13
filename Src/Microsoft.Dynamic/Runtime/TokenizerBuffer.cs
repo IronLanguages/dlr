@@ -113,8 +113,8 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public void Initialize(TextReader reader, SourceLocation initialLocation, int initialCapacity, bool multiEolns) {
-            ContractUtils.RequiresNotNull(reader, "reader");
-            ContractUtils.Requires(initialCapacity > 0, "initialCapacity");
+            ContractUtils.RequiresNotNull(reader, nameof(reader));
+            ContractUtils.Requires(initialCapacity > 0, nameof(initialCapacity));
 
             _reader = reader;
 

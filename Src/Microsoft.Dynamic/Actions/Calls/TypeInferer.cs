@@ -579,8 +579,8 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// </summary>
     public class InferenceResult {
         public InferenceResult(Type type, BindingRestrictions restrictions) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(restrictions, "restrictions");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(restrictions, nameof(restrictions));
 
             Type = type;
             Restrictions = restrictions;

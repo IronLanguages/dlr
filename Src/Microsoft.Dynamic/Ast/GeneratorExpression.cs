@@ -88,13 +88,13 @@ namespace Microsoft.Scripting.Ast {
         internal bool IsEnumerable => Utils.IsEnumerableType(Type);
     }
 
-    public partial class Utils {        
+    public partial class Utils {
         /// <summary>
         /// Creates a generator with type IEnumerable{T}, where T is the label.Type
         /// </summary>
         public static GeneratorExpression Generator(LabelTarget label, Expression body) {
-            ContractUtils.RequiresNotNull(label, "label");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(label, nameof(label));
+            ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.Requires(label.Type != typeof(void), "label", "label must have a non-void type");
 
             return new GeneratorExpression("generator", typeof(IEnumerable<>).MakeGenericType(label.Type), label, body, true);
@@ -109,9 +109,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static GeneratorExpression Generator(string name, LabelTarget label, Expression body, Type type, bool rewriteAssignments) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(body, "body");
-            ContractUtils.RequiresNotNull(label, "label");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(body, nameof(body));
+            ContractUtils.RequiresNotNull(label, nameof(label));
             ContractUtils.Requires(label.Type != typeof(void), "label", "label must have a non-void type");
             ContractUtils.Requires(body.Type == typeof(void), "body", "generator body must have a void type");
 
@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.Ast {
                 throw GeneratorTypeMustBeEnumerableOfT(label.Type);
             }
 
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
 
             return new GeneratorExpression(name, type, label, body, rewriteAssignments);
         }
@@ -182,7 +182,7 @@ namespace Microsoft.Scripting.Ast {
             bool rewriteAssignments,
             IEnumerable<ParameterExpression> parameters)
         {
-            ContractUtils.RequiresNotNull(delegateType, "delegateType");
+            ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
             ContractUtils.Requires(delegateType.IsSubclassOf(typeof(MulticastDelegate)), "Lambda type parameter must be derived from System.Delegate");
             Type generatorType = delegateType.GetMethod("Invoke").GetReturnType();
 

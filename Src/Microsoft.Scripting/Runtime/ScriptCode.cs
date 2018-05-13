@@ -26,7 +26,7 @@ namespace Microsoft.Scripting {
         private readonly SourceUnit _sourceUnit;
 
         protected ScriptCode(SourceUnit sourceUnit) {
-            ContractUtils.RequiresNotNull(sourceUnit, "sourceUnit");
+            ContractUtils.RequiresNotNull(sourceUnit, nameof(sourceUnit));
 
             _sourceUnit = sourceUnit;
         }

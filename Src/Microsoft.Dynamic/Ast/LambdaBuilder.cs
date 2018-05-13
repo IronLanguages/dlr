@@ -113,7 +113,7 @@ namespace Microsoft.Scripting.Ast {
                 return _body;
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _body = value;
             }
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Scripting.Ast {
         /// Parameters collection.
         /// </summary>
         public ParameterExpression Parameter(Type type, string name) {
-            ContractUtils.RequiresNotNull(type, "type");            
+            ContractUtils.RequiresNotNull(type, nameof(type));
             ParameterExpression result = Expression.Parameter(type, name);
             _params.Add(result);
             _visibleVars.Add(new KeyValuePair<ParameterExpression, bool>(result, false));
@@ -169,7 +169,7 @@ namespace Microsoft.Scripting.Ast {
         /// Parameters collection.
         /// </summary>
         public ParameterExpression ClosedOverParameter(Type type, string name) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             ParameterExpression result = Expression.Parameter(type, name);
             _params.Add(result);
             _visibleVars.Add(new KeyValuePair<ParameterExpression, bool>(result, true));
@@ -195,7 +195,7 @@ namespace Microsoft.Scripting.Ast {
         /// Parameters collection.
         /// </summary>
         public ParameterExpression CreateHiddenParameter(string name, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             ParameterExpression result = Expression.Parameter(type, name);
             _params.Add(result);
             return result;
@@ -209,10 +209,10 @@ namespace Microsoft.Scripting.Ast {
         /// the order of parameters explicitly by maniuplating the parameter list)
         /// </summary>
         public ParameterExpression CreateParamsArray(Type type, string name) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.Requires(type.IsArray, "type");
-            ContractUtils.Requires(type.GetArrayRank() == 1, "type");
-            ContractUtils.Requires(ParamsArray == null, "type", "Already have parameter array");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.Requires(type.IsArray, nameof(type));
+            ContractUtils.Requires(type.GetArrayRank() == 1, nameof(type));
+            ContractUtils.Requires(ParamsArray == null, nameof(type), "Already have parameter array");
 
             return ParamsArray = Parameter(type, name);
         }
@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Ast {
         /// created outside of the builder.
         /// </summary>
         public void AddHiddenVariable(ParameterExpression temp) {
-            ContractUtils.RequiresNotNull(temp, "temp");
+            ContractUtils.RequiresNotNull(temp, nameof(temp));
             _locals.Add(temp);
         }
 

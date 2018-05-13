@@ -32,8 +32,8 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Catch(Type type, Expression body) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(body, nameof(body));
             if (_finally != null) {
                 throw Error.FinallyAlreadyDefined();
             }
@@ -75,8 +75,8 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Catch(ParameterExpression holder, Expression body) {
-            ContractUtils.RequiresNotNull(holder, "holder");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(holder, nameof(holder));
+            ContractUtils.RequiresNotNull(body, nameof(body));
 
             if (_finally != null) {
                 throw Error.FinallyAlreadyDefined();
@@ -91,9 +91,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Filter(Type type, Expression condition, Expression body) {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(condition, "condition");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(condition, nameof(condition));
+            ContractUtils.RequiresNotNull(body, nameof(body));
 
             _catchBlocks.Add(Expression.Catch(type, body, condition));
             return this;
@@ -104,9 +104,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Filter(ParameterExpression holder, Expression condition, Expression body) {
-            ContractUtils.RequiresNotNull(holder, "holder");
-            ContractUtils.RequiresNotNull(condition, "condition");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(holder, nameof(holder));
+            ContractUtils.RequiresNotNull(condition, nameof(condition));
+            ContractUtils.RequiresNotNull(body, nameof(body));
 
             _catchBlocks.Add(Expression.Catch(holder, body, condition));
             return this;
@@ -117,7 +117,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Finally(Expression body) {
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
             if (_finally != null) {
                 throw Error.FinallyAlreadyDefined();
             } else if (_fault != null) {
@@ -139,7 +139,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public TryStatementBuilder Fault(params Expression[] body) {
-            ContractUtils.RequiresNotNullItems(body, "body");
+            ContractUtils.RequiresNotNullItems(body, nameof(body));
 
             if (_finally != null) {
                 throw Error.CannotHaveFaultAndFinally();
@@ -157,7 +157,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static implicit operator Expression(TryStatementBuilder builder) {
-            ContractUtils.RequiresNotNull(builder, "builder");
+            ContractUtils.RequiresNotNull(builder, nameof(builder));
             return builder.ToExpression();
         }
 

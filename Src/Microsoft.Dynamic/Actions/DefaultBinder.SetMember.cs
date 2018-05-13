@@ -69,10 +69,10 @@ namespace Microsoft.Scripting.Actions {
         /// Provides overload resolution and method binding for any calls which need to be performed for the SetMember.
         /// </param>
         public DynamicMetaObject SetMember(string name, DynamicMetaObject target, DynamicMetaObject value, OverloadResolverFactory resolverFactory) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(target, "target");
-            ContractUtils.RequiresNotNull(value, "value");
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(target, nameof(target));
+            ContractUtils.RequiresNotNull(value, nameof(value));
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
 
             return MakeSetMemberTarget(
                 new SetOrDeleteMemberInfo(name, resolverFactory),
@@ -126,10 +126,10 @@ namespace Microsoft.Scripting.Actions {
         /// specific error code is provided by ActionBinder.MakeMissingMemberErrorForAssign which can be overridden by the language.
         /// </param>
         public DynamicMetaObject SetMember(string name, DynamicMetaObject target, DynamicMetaObject value, DynamicMetaObject errorSuggestion, OverloadResolverFactory resolverFactory) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(target, "target");
-            ContractUtils.RequiresNotNull(value, "value");
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(target, nameof(target));
+            ContractUtils.RequiresNotNull(value, nameof(value));
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
 
             return MakeSetMemberTarget(
                 new SetOrDeleteMemberInfo(name, resolverFactory),

@@ -75,7 +75,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Execute code within a given scope and returns the result.
         /// </summary>
         public dynamic Execute(ScriptScope scope) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
             return _code.Run(scope.Scope);
         }
 

@@ -104,8 +104,8 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start) {
-            ContractUtils.RequiresNotNull(variable, "variable");
-            ContractUtils.Requires(start >= 0, "start", "start must be positive");
+            ContractUtils.RequiresNotNull(variable, nameof(variable));
+            ContractUtils.Requires(start >= 0, nameof(start), "start must be positive");
 
             LocalVariable result = new LocalVariable(_localCount++, false, false);
             _maxLocalCount = System.Math.Max(_localCount, _maxLocalCount);

@@ -39,8 +39,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public DynamicMetaObject ConvertTo(Type toType, ConversionResultKind kind, DynamicMetaObject arg, OverloadResolverFactory resolverFactory, DynamicMetaObject errorSuggestion) {
-            ContractUtils.RequiresNotNull(toType, "toType");
-            ContractUtils.RequiresNotNull(arg, "arg");
+            ContractUtils.RequiresNotNull(toType, nameof(toType));
+            ContractUtils.RequiresNotNull(arg, nameof(arg));
 
             // try all the conversions - first look for conversions against the expression type,
             // these can be done w/o any additional tests.  Then look for conversions against the 

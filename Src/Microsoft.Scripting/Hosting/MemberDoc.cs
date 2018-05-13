@@ -26,8 +26,8 @@ namespace Microsoft.Scripting.Hosting {
         private readonly MemberKind _kind;
 
         public MemberDoc(string name, MemberKind kind) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.Requires(kind >= MemberKind.None && kind <= MemberKind.Namespace, "kind");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.Requires(kind >= MemberKind.None && kind <= MemberKind.Namespace, nameof(kind));
 
             _name = name;
             _kind = kind;

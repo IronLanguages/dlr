@@ -72,8 +72,8 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="errorSuggestion">The result should the object be uncallable.</param>
         /// <returns>A MetaObject representing the call or the error.</returns>
         public DynamicMetaObject Call(CallSignature signature, DynamicMetaObject errorSuggestion, OverloadResolverFactory resolverFactory, DynamicMetaObject target, params DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNullItems(args, "args");
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
+            ContractUtils.RequiresNotNullItems(args, nameof(args));
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
 
             TargetInfo targetInfo = GetTargetInfo(target, args);
 

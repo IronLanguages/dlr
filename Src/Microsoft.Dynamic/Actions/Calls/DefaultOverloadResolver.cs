@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Actions {
 
         public DefaultOverloadResolver(ActionBinder binder, IList<DynamicMetaObject> args, CallSignature signature, CallTypes callType)
             : base(binder) {
-            ContractUtils.RequiresNotNullItems(args, "args");
+            ContractUtils.RequiresNotNullItems(args, nameof(args));
 
             Debug.Assert((callType == CallTypes.ImplicitInstance ? 1 : 0) + signature.ArgumentCount == args.Count);
             _args = args;

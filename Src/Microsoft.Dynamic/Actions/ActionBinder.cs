@@ -110,8 +110,8 @@ namespace Microsoft.Scripting.Actions {
         /// Converts the provided expression to the given type.  The expression is safe to evaluate multiple times.
         /// </summary>
         public virtual Expression ConvertExpression(Expression expr, Type toType, ConversionResultKind kind, OverloadResolverFactory resolverFactory) {
-            ContractUtils.RequiresNotNull(expr, "expr");
-            ContractUtils.RequiresNotNull(toType, "toType");
+            ContractUtils.RequiresNotNull(expr, nameof(expr));
+            ContractUtils.RequiresNotNull(toType, nameof(toType));
 
             Type exprType = expr.Type;
 
@@ -256,10 +256,10 @@ namespace Microsoft.Scripting.Actions {
         /// value being assigned as the last entry if isAssignment is true.</param>
         /// <returns></returns>
         public virtual ErrorInfo MakeStaticPropertyInstanceAccessError(PropertyTracker tracker, bool isAssignment, IList<DynamicMetaObject> parameters) {
-            ContractUtils.RequiresNotNull(tracker, "tracker");
-            ContractUtils.Requires(tracker.IsStatic, "tracker", Strings.ExpectedStaticProperty);
-            ContractUtils.RequiresNotNull(parameters, "parameters");
-            ContractUtils.RequiresNotNullItems(parameters, "parameters");
+            ContractUtils.RequiresNotNull(tracker, nameof(tracker));
+            ContractUtils.Requires(tracker.IsStatic, nameof(tracker), Strings.ExpectedStaticProperty);
+            ContractUtils.RequiresNotNull(parameters, nameof(parameters));
+            ContractUtils.RequiresNotNullItems(parameters, nameof(parameters));
 
             string message = isAssignment ? Strings.StaticAssignmentFromInstanceError(tracker.Name, tracker.DeclaringType.Name) :
                                             Strings.StaticAccessFromInstanceError(tracker.Name, tracker.DeclaringType.Name);

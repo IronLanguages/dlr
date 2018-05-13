@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static string[] Split(string str, char[] separators, int maxComponents, StringSplitOptions options) {
-            ContractUtils.RequiresNotNull(str, "str");
+            ContractUtils.RequiresNotNull(str, nameof(str));
             return str.Split(separators, maxComponents, options);
         }
     }

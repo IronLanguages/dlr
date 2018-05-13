@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Runtime {
         /// and if so throw it.
         /// </summary>
         public static Expression Rewrite(Expression expression) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             
             return new LightExceptionRewriter().Rewrite(expression);
         }
@@ -66,7 +66,7 @@ namespace Microsoft.Scripting.Runtime {
         /// expression re-written version of the same expression.
         /// </summary>
         public static Expression RewriteLazy(Expression expression) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             return new LightExceptionConvertingExpression(expression, false);
         }
@@ -78,7 +78,7 @@ namespace Microsoft.Scripting.Runtime {
         /// for light exceptions then it will propagate the light exception up.
         /// </summary>
         public static Expression RewriteExternal(Expression expression) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             return CheckAndThrow(new LightExceptionConvertingExpression(expression, true));
         }
@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Returns an object which represents a light exception.
         /// </summary>
         public static object Throw(Exception exceptionValue) {
-            ContractUtils.RequiresNotNull(exceptionValue, "exceptionValue");
+            ContractUtils.RequiresNotNull(exceptionValue, nameof(exceptionValue));
 
             return new LightException(exceptionValue);
         }
@@ -96,7 +96,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Returns an object which represents a light exception.
         /// </summary>
         public static Expression Throw(Expression exceptionValue) {
-            ContractUtils.RequiresNotNull(exceptionValue, "exceptionValue");
+            ContractUtils.RequiresNotNull(exceptionValue, nameof(exceptionValue));
 
             return new LightThrowExpression(exceptionValue);
         }
@@ -105,8 +105,8 @@ namespace Microsoft.Scripting.Runtime {
         /// Returns an object which represents a light exception.
         /// </summary>
         public static Expression Throw(Expression exceptionValue, Type retType) {
-            ContractUtils.RequiresNotNull(exceptionValue, "exceptionValue");
-            ContractUtils.RequiresNotNull(retType, "type");
+            ContractUtils.RequiresNotNull(exceptionValue, nameof(exceptionValue));
+            ContractUtils.RequiresNotNull(retType, nameof(retType));
 
             return Expression.Convert(new LightThrowExpression(exceptionValue), retType);
         }
@@ -117,8 +117,8 @@ namespace Microsoft.Scripting.Runtime {
         /// Otherwise a normal throwing expression is returned.
         /// </summary>
         public static Expression Throw(this DynamicMetaObjectBinder binder, Expression exceptionValue) {
-            ContractUtils.RequiresNotNull(binder, "binder");
-            ContractUtils.RequiresNotNull(exceptionValue, "exceptionValue");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
+            ContractUtils.RequiresNotNull(exceptionValue, nameof(exceptionValue));
 
             if (binder.SupportsLightThrow()) {
                 return Throw(exceptionValue);
@@ -133,9 +133,9 @@ namespace Microsoft.Scripting.Runtime {
         /// Otherwise a normal throwing expression is returned.
         /// </summary>
         public static Expression Throw(this DynamicMetaObjectBinder binder, Expression exceptionValue, Type retType) {
-            ContractUtils.RequiresNotNull(binder, "binder");
-            ContractUtils.RequiresNotNull(exceptionValue, "exceptionValue");
-            ContractUtils.RequiresNotNull(retType, "type");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
+            ContractUtils.RequiresNotNull(exceptionValue, nameof(exceptionValue));
+            ContractUtils.RequiresNotNull(retType, nameof(retType));
 
             if (binder.SupportsLightThrow()) {
                 return Throw(exceptionValue, retType);
@@ -148,8 +148,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Throws the exception if the value represents a light exception
         /// </summary>
         public static object CheckAndThrow(object value) {
-            LightException lightEx = value as LightException;
-            if (lightEx != null) {
+            if (value is LightException lightEx) {
                 ThrowException(lightEx);
             }
             return value;
@@ -163,7 +162,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Wraps the expression in a check and rethrow.
         /// </summary>
         public static Expression CheckAndThrow(Expression expr) {
-            ContractUtils.RequiresNotNull(expr, "expr");
+            ContractUtils.RequiresNotNull(expr, nameof(expr));
             ContractUtils.Requires(expr.Type == typeof(object), "checked expression must be type of object");
 
             return new LightCheckAndThrowExpression(expr);

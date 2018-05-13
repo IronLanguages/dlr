@@ -13,11 +13,10 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.Scripting.Actions.Calls;
@@ -32,7 +31,7 @@ namespace Microsoft.Scripting.Actions {
         private readonly FieldInfo _field;
 
         public FieldTracker(FieldInfo field) {
-            ContractUtils.RequiresNotNull(field, "field");
+            ContractUtils.RequiresNotNull(field, nameof(field));
             _field = field;
         }
 
