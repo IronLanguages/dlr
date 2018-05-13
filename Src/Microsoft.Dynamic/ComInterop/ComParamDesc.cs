@@ -53,8 +53,8 @@ namespace Microsoft.Scripting.ComInterop {
 
             if (!String.IsNullOrEmpty(name)) {
                 // This is a parameter, not a return value
-                this._isOut = (elemDesc.desc.paramdesc.wParamFlags & PARAMFLAG.PARAMFLAG_FOUT) != 0;
-                this._isOpt = (elemDesc.desc.paramdesc.wParamFlags & PARAMFLAG.PARAMFLAG_FOPT) != 0;
+                _isOut = (elemDesc.desc.paramdesc.wParamFlags & PARAMFLAG.PARAMFLAG_FOUT) != 0;
+                _isOpt = (elemDesc.desc.paramdesc.wParamFlags & PARAMFLAG.PARAMFLAG_FOPT) != 0;
                 // TODO: The PARAMDESCEX struct has a memory issue that needs to be resolved.  For now, we ignore it.
                 //_defaultValue = PARAMDESCEX.GetDefaultValue(ref elemDesc.desc.paramdesc);
             }
@@ -64,9 +64,9 @@ namespace Microsoft.Scripting.ComInterop {
             TYPEDESC typeDesc = elemDesc.tdesc;
             while (true) {
                 if (_vt == VarEnum.VT_PTR) {
-                    this._byRef = true;
+                    _byRef = true;
                 } else if (_vt == VarEnum.VT_ARRAY) {
-                    this._isArray = true;
+                    _isArray = true;
                 } else {
                     break;
                 }

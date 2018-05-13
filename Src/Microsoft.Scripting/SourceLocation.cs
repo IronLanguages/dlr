@@ -178,11 +178,7 @@ namespace Microsoft.Scripting {
         /// Whether the location is a valid location.
         /// </summary>
         /// <returns>True if the location is valid, False otherwise.</returns>
-        public bool IsValid {
-            get {
-                return this._line != 0 && this._column != 0;
-            }
-        }
+        public bool IsValid => _line != 0 && _column != 0;
 
         public override bool Equals(object obj) {
             if (!(obj is SourceLocation)) return false;

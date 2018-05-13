@@ -33,8 +33,8 @@ namespace Microsoft.Scripting {
         /// <param name="end">The end of the span.</param>
         public SourceSpan(SourceLocation start, SourceLocation end) {
             ValidateLocations(start, end);
-            this._start = start;
-            this._end = end;
+            _start = start;
+            _end = end;
         }
 
         private static void ValidateLocations(SourceLocation start, SourceLocation end) {

@@ -504,7 +504,7 @@ namespace Microsoft.Scripting.Metadata {
             const ulong MASK_00000000000000001111111111111111 = 0x0000FFFF0000FFFFUL;
             const ulong MASK_11111111111111111111111111111111 = 0x00000000FFFFFFFFUL;
 
-            ulong count = (ulong)this.ValidTables;
+            ulong count = (ulong)ValidTables;
             count = (count & MASK_01010101010101010101010101010101) + ((count >> 1) & MASK_01010101010101010101010101010101);
             count = (count & MASK_00110011001100110011001100110011) + ((count >> 2) & MASK_00110011001100110011001100110011);
             count = (count & MASK_00001111000011110000111100001111) + ((count >> 4) & MASK_00001111000011110000111100001111);

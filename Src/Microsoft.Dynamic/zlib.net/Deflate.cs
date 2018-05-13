@@ -1789,7 +1789,7 @@ namespace ComponentAce.Compression.Libs.ZLib
             this.level = level;
 
             this.strategy = strategy;
-            this.method = (byte)Z_DEFLATED;
+            method = Z_DEFLATED;
 
             return deflateReset(strm);
         }

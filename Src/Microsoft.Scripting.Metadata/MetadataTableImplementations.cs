@@ -1703,7 +1703,7 @@ namespace Microsoft.Scripting.Metadata {
 
         internal uint GetName(int rowId) {
             int rowOffset = (rowId - 1) * RowSize;
-            return this.Table.ReadReference(rowOffset + NameOffset, IsStringHeapRefSizeSmall);
+            return Table.ReadReference(rowOffset + NameOffset, IsStringHeapRefSizeSmall);
         }
     }
 

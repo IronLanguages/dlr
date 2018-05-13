@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.Runtime {
         #region IEquatable<ContextId> Members
 
         public bool Equals(ContextId other) {
-            return this._id == other._id;
+            return _id == other._id;
         }
 
         #endregion
