@@ -67,11 +67,10 @@ namespace Microsoft.Scripting.Utils {
             if (first.Count != second.Count) {
                 return false;
             }
+
             var cmp = EqualityComparer<T>.Default;
 
-            IEnumerator<T> f = null;
-            try {
-                f = first.GetEnumerator();
+            using (var f = first.GetEnumerator()) {
                 using (var s = second.GetEnumerator()) {
                     while (f.MoveNext()) {
                         s.MoveNext();
@@ -80,11 +79,9 @@ namespace Microsoft.Scripting.Utils {
                             return false;
                         }
                     }
+
                     return true;
                 }
-            }
-            finally {
-                f?.Dispose();
             }
         }
 
