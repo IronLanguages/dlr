@@ -97,10 +97,9 @@ namespace Microsoft.Scripting {
         }
 
         public static T GetOption<T>(IDictionary<string, object> options, string name, T defaultValue) {
-            object value;
-            if (options != null && options.TryGetValue(name, out value)) {
-                if (value is T) {
-                    return (T)value;
+            if (options != null && options.TryGetValue(name, out object value)) {
+                if (value is T variable) {
+                    return variable;
                 }
                 return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
             }

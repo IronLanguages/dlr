@@ -90,7 +90,7 @@ namespace System.Reflection {
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
         public override bool Equals(object obj) {
-            return obj is MetadataToken && Equals((MetadataToken)obj);
+            return obj is MetadataToken token && Equals(token);
         }
 
         // SECURITY: Nothing unsafe here.
@@ -173,7 +173,7 @@ namespace Microsoft.Scripting.Metadata {
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
         public override bool Equals(object obj) {
-            return obj is MetadataRecord && Equals((MetadataRecord)obj);
+            return obj is MetadataRecord record && Equals(record);
         }
 
         // SECURITY: Nothing unsafe here.

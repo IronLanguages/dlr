@@ -71,8 +71,7 @@ namespace Microsoft.Scripting.Interpreter {
         public ParameterExpression Parameter { get; }
 
         public override bool Equals(object obj) {
-            if (obj is LocalDefinition) {
-                LocalDefinition other = (LocalDefinition)obj;
+            if (obj is LocalDefinition other) {
                 return other.Index == Index && other.Parameter == Parameter;
             }
 
