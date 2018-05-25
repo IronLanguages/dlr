@@ -660,8 +660,8 @@ namespace Microsoft.Scripting.Utils {
             return four;
         }
 
-        public static BigInteger GetRandBits(this Random generator, int bits) {
-            ContractUtils.Requires(bits > 0);
+        public static BigInteger GetRandBits(Action<byte[]> NextBytes, int bits) {
+            ContractUtils.Requires(bits > 0, nameof(bits));
 
             // equivalent to (bits + 7) / 8 without possibility of overflow
             int count = bits % 8 == 0 ? bits / 8 : bits / 8 + 1;
@@ -669,7 +669,7 @@ namespace Microsoft.Scripting.Utils {
             // Pad the end (most significant) with zeros if we align to the byte
             // to ensure that we end up with a positive value
             byte[] bytes = new byte[bits % 8 == 0 ? count + 1 : count];
-            generator.NextBytes(bytes);
+            NextBytes(bytes);
             if (bits % 8 == 0) {
                 bytes[bytes.Length - 1] = 0;
             } else {
@@ -688,6 +688,8 @@ namespace Microsoft.Scripting.Utils {
             
             return new BigInteger(bytes);
         }
+
+        public static BigInteger GetRandBits(this Random generator, int bits) => GetRandBits(generator.NextBytes, bits);
 
         public static BigInteger Random(this Random generator, BigInteger limit) {
             ContractUtils.Requires(limit.Sign > 0, "limit");
