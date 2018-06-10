@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="handler">The handler to be added.</param>
         /// <returns>The original event with handler added.</returns>
         private object InPlaceAdd(object handler) {
-            ContractUtils.RequiresNotNull(handler, "handler");
+            ContractUtils.RequiresNotNull(handler, nameof(handler));
             VerifyHandler(handler);
 
             ComEventSink comEventSink = ComEventSink.FromRuntimeCallableWrapper(_rcw, _sourceIid, true);
@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="handler">The handler to be removed.</param>
         /// <returns>The original event with handler removed.</returns>
         private object InPlaceSubtract(object handler) {
-            ContractUtils.RequiresNotNull(handler, "handler");
+            ContractUtils.RequiresNotNull(handler, nameof(handler));
             VerifyHandler(handler);
 
             ComEventSink comEventSink = ComEventSink.FromRuntimeCallableWrapper(_rcw, _sourceIid, false);

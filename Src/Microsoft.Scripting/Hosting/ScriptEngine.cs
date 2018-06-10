@@ -92,7 +92,7 @@ namespace Microsoft.Scripting.Hosting {
         /// See the Operations property for why you might want to call this.
         /// </summary>
         public ObjectOperations CreateOperations(ScriptScope scope) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
 
             return new ObjectOperations(_language.Operations, this);
         }
@@ -244,7 +244,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ScriptScope CreateScope(IDictionary<string, object> dictionary)
         {
-            ContractUtils.RequiresNotNull(dictionary, "dictionary");
+            ContractUtils.RequiresNotNull(dictionary, nameof(dictionary));
             return new ScriptScope(this, _language.CreateScope(dictionary));
         }
 
@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Accesses to the ScriptScope will turn into get, set, and delete members against the object.
         /// </summary>
         public ScriptScope CreateScope(IDynamicMetaObjectProvider storage) {
-            ContractUtils.RequiresNotNull(storage, "storage");
+            ContractUtils.RequiresNotNull(storage, nameof(storage));
 
             return new ScriptScope(this, _language.CreateScope(storage));
         }
@@ -273,7 +273,7 @@ namespace Microsoft.Scripting.Hosting {
         /// This method helps with this scenario.
         /// </summary>
         public ScriptScope GetScope(string path) {
-            ContractUtils.RequiresNotNull(path, "path");
+            ContractUtils.RequiresNotNull(path, nameof(path));
             Scope scope = _language.GetScope(path);
             return (scope != null) ? new ScriptScope(this, scope) : null;
         }
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The ScriptSource's Path property defaults to <c>null</c>.
         /// </summary>
         public ScriptSource CreateScriptSourceFromString(string expression) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             return CreateScriptSource(new SourceStringContentProvider(expression), null, SourceCodeKind.AutoDetect);
         }
@@ -301,8 +301,8 @@ namespace Microsoft.Scripting.Hosting {
         /// The ScriptSource's Path property defaults to <c>null</c>.
         /// </summary>
         public ScriptSource CreateScriptSourceFromString(string code, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(code, "code");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(code, nameof(code));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
 
             return CreateScriptSource(new SourceStringContentProvider(code), null, kind);
         }
@@ -313,7 +313,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The default SourceCodeKind is AutoDetect.
         /// </summary>
         public ScriptSource CreateScriptSourceFromString(string expression, string path) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             return CreateScriptSource(new SourceStringContentProvider(expression), path, SourceCodeKind.AutoDetect);
         }
@@ -322,8 +322,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Return a ScriptSource object from string contents.  These are helpers for creating ScriptSources' with the right language binding.
         /// </summary>
         public ScriptSource CreateScriptSourceFromString(string code, string path, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(code, "code");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(code, nameof(code));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
 
             return CreateScriptSource(new SourceStringContentProvider(code), path, kind);
         }
@@ -367,9 +367,9 @@ namespace Microsoft.Scripting.Hosting {
         /// The ScriptSource's Path property will be the path argument.
         /// </summary>
         public ScriptSource CreateScriptSourceFromFile(string path, Encoding encoding, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(path, "path");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(path, nameof(path));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
             if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
             return new ScriptSource(this, _language.CreateFileUnit(path, encoding, kind));
@@ -445,7 +445,7 @@ namespace Microsoft.Scripting.Hosting {
         ///     CodeExpressionStatement (for holding MethodInvoke)
         /// </summary>
         public ScriptSource CreateScriptSource(CodeObject content, string path, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(content, "content");
+            ContractUtils.RequiresNotNull(content, nameof(content));
             if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
             return new ScriptSource(this, _language.GenerateSourceCode(content, path, kind));
@@ -460,7 +460,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The encoding defaults to Encoding.Default.
         /// </summary>
         public ScriptSource CreateScriptSource(StreamContentProvider content, string path) {
-            ContractUtils.RequiresNotNull(content, "content");
+            ContractUtils.RequiresNotNull(content, nameof(content));
 
             return CreateScriptSource(content, path, StringUtils.DefaultEncoding, SourceCodeKind.File);
         }
@@ -471,8 +471,8 @@ namespace Microsoft.Scripting.Hosting {
         /// The default SourceCodeKind is File.
         /// </summary>
         public ScriptSource CreateScriptSource(StreamContentProvider content, string path, Encoding encoding) {
-            ContractUtils.RequiresNotNull(content, "content");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(content, nameof(content));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
 
             return CreateScriptSource(content, path, encoding, SourceCodeKind.File);
         }
@@ -483,9 +483,9 @@ namespace Microsoft.Scripting.Hosting {
         /// The encoding defaults to Encoding.Default.
         /// </summary>
         public ScriptSource CreateScriptSource(StreamContentProvider content, string path, Encoding encoding, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(content, "content");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(content, nameof(content));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
 
             return CreateScriptSource(new LanguageBoundTextContentProvider(_language, content, encoding, path), path, kind);
         }
@@ -496,8 +496,8 @@ namespace Microsoft.Scripting.Hosting {
         /// This helper lets you own the content provider so that you can implement a stream over internal host data structures, such as an editor's text representation.
         /// </summary>
         public ScriptSource CreateScriptSource(TextContentProvider contentProvider, string path, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(contentProvider, "contentProvider");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
             if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
             return new ScriptSource(this, _language.CreateSourceUnit(contentProvider, path, kind));

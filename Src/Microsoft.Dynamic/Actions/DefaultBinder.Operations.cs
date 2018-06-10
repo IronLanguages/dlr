@@ -39,9 +39,9 @@ namespace Microsoft.Scripting.Actions {
 
         [Obsolete("You should use the overload which takes ExpressionType instead")]
         public DynamicMetaObject DoOperation(string operation, OverloadResolverFactory resolverFactory, params DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNull(operation, "operation");
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
-            ContractUtils.RequiresNotNullItems(args, "args");
+            ContractUtils.RequiresNotNull(operation, nameof(operation));
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
+            ContractUtils.RequiresNotNullItems(args, nameof(args));
 
             return MakeGeneralOperatorRule(operation, resolverFactory, args);   // Then try comparison / other ExpressionType
         }
@@ -51,8 +51,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public DynamicMetaObject DoOperation(ExpressionType operation, OverloadResolverFactory resolverFactory, params DynamicMetaObject[] args) {
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
-            ContractUtils.RequiresNotNullItems(args, "args");
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
+            ContractUtils.RequiresNotNullItems(args, nameof(args));
 
             return MakeGeneralOperatorRule(operation, resolverFactory, args);   // Then try comparison / other ExpressionType
         }

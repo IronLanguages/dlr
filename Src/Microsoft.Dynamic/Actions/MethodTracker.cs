@@ -31,13 +31,13 @@ namespace Microsoft.Scripting.Actions {
         private readonly MethodInfo _method;
 
         internal MethodTracker(MethodInfo method) {
-            ContractUtils.RequiresNotNull(method, "method");
+            ContractUtils.RequiresNotNull(method, nameof(method));
             _method = method;
             IsStatic = method.IsStatic;
         }
 
         internal MethodTracker(MethodInfo method, bool isStatic) {
-            ContractUtils.RequiresNotNull(method, "method");
+            ContractUtils.RequiresNotNull(method, nameof(method));
             _method = method;
             IsStatic = isStatic;
         }

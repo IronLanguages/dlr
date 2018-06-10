@@ -110,9 +110,9 @@ namespace Microsoft.Scripting.Actions {
         /// <returns>A meta object which results from the call.</returns>
         public DynamicMetaObject CallMethod(DefaultOverloadResolver resolver, IList<MethodBase> targets, BindingRestrictions restrictions, string name, 
             NarrowingLevel minLevel, NarrowingLevel maxLevel, out BindingTarget target) {
-            ContractUtils.RequiresNotNull(resolver, "resolver");
-            ContractUtils.RequiresNotNullItems(targets, "targets");
-            ContractUtils.RequiresNotNull(restrictions, "restrictions");
+            ContractUtils.RequiresNotNull(resolver, nameof(resolver));
+            ContractUtils.RequiresNotNullItems(targets, nameof(targets));
+            ContractUtils.RequiresNotNull(restrictions, nameof(restrictions));
 
             // attempt to bind to an individual method
             target = resolver.ResolveOverload(name ?? GetTargetName(targets), targets, minLevel, maxLevel);

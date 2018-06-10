@@ -31,8 +31,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public ScriptRuntimeSetup RuntimeSetup { get { return _runtimeSetup; } }
 
         public ConsoleHostOptionsParser(ConsoleHostOptions options, ScriptRuntimeSetup runtimeSetup) {
-            ContractUtils.RequiresNotNull(options, "options");
-            ContractUtils.RequiresNotNull(runtimeSetup, "runtimeSetup");
+            ContractUtils.RequiresNotNull(options, nameof(options));
+            ContractUtils.RequiresNotNull(runtimeSetup, nameof(runtimeSetup));
 
             _options = options;
             _runtimeSetup = runtimeSetup;
@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <exception cref="InvalidOptionException"></exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public void Parse(string[] args) {
-            ContractUtils.RequiresNotNull(args, "args");
+            ContractUtils.RequiresNotNull(args, nameof(args));
 
             int i = 0;
             while (i < args.Length) {

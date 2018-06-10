@@ -119,9 +119,9 @@ namespace Microsoft.Scripting.Actions {
         /// so that it has an opportunity to perform custom boxing.
         /// </returns>
         public DynamicMetaObject GetMember(string name, DynamicMetaObject target, OverloadResolverFactory resolverFactory, bool isNoThrow, DynamicMetaObject errorSuggestion) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(target, "target");
-            ContractUtils.RequiresNotNull(resolverFactory, "resolverFactory");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(target, nameof(target));
+            ContractUtils.RequiresNotNull(resolverFactory, nameof(resolverFactory));
 
             return MakeGetMemberTarget(
                 new GetMemberInfo(
@@ -160,8 +160,8 @@ namespace Microsoft.Scripting.Actions {
         /// so that it has an opportunity to perform custom boxing.
         /// </returns>
         public DynamicMetaObject GetMember(string name, DynamicMetaObject target, bool isNoThrow, DynamicMetaObject errorSuggestion) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(target, "target");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(target, nameof(target));
 
             return MakeGetMemberTarget(
                 new GetMemberInfo(

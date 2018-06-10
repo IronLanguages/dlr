@@ -55,8 +55,8 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public ScriptDomainManager(DynamicRuntimeHostingProvider hostingProvider, DlrConfiguration configuration) {
-            ContractUtils.RequiresNotNull(hostingProvider, "hostingProvider");
-            ContractUtils.RequiresNotNull(configuration, "configuration");
+            ContractUtils.RequiresNotNull(hostingProvider, nameof(hostingProvider));
+            ContractUtils.RequiresNotNull(configuration, nameof(configuration));
 
             configuration.Freeze();
 
@@ -76,13 +76,13 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public LanguageContext GetLanguage(Type providerType) {
-            ContractUtils.RequiresNotNull(providerType, "providerType");
+            ContractUtils.RequiresNotNull(providerType, nameof(providerType));
             return GetLanguageByTypeName(providerType.AssemblyQualifiedName);
         }
 
         public LanguageContext GetLanguageByTypeName(string providerAssemblyQualifiedTypeName) {
-            ContractUtils.RequiresNotNull(providerAssemblyQualifiedTypeName, "providerAssemblyQualifiedTypeName");
-            var aqtn = AssemblyQualifiedTypeName.ParseArgument(providerAssemblyQualifiedTypeName, "providerAssemblyQualifiedTypeName");
+            ContractUtils.RequiresNotNull(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
+            var aqtn = AssemblyQualifiedTypeName.ParseArgument(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
 
             LanguageContext language;
             if (!_configuration.TryLoadLanguage(this, aqtn, out language)) {
@@ -92,7 +92,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public bool TryGetLanguage(string languageName, out LanguageContext language) {
-            ContractUtils.RequiresNotNull(languageName, "languageName");
+            ContractUtils.RequiresNotNull(languageName, nameof(languageName));
             return _configuration.TryLoadLanguage(this, languageName, false, out language);
         }
 
@@ -133,7 +133,7 @@ namespace Microsoft.Scripting.Runtime {
         public event EventHandler<AssemblyLoadedEventArgs> AssemblyLoaded;
 
         public bool LoadAssembly(Assembly assembly) {
-            ContractUtils.RequiresNotNull(assembly, "assembly");
+            ContractUtils.RequiresNotNull(assembly, nameof(assembly));
 
             lock (_loadedAssemblies) {
                 if (_loadedAssemblies.Contains(assembly)) {

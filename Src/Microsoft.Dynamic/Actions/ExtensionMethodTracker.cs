@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Actions {
     public class ExtensionMethodTracker : MethodTracker {
         internal ExtensionMethodTracker(MethodInfo method, bool isStatic, Type declaringType)
             : base(method, isStatic) {
-            ContractUtils.RequiresNotNull(declaringType, "declaringType");
+            ContractUtils.RequiresNotNull(declaringType, nameof(declaringType));
             DeclaringType = declaringType;
         }
 

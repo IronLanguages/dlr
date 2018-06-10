@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Runtime {
         private DynamicOperations _operations;
 
         protected LanguageContext(ScriptDomainManager domainManager) {
-            ContractUtils.RequiresNotNull(domainManager, "domainManager");
+            ContractUtils.RequiresNotNull(domainManager, nameof(domainManager));
 
             DomainManager = domainManager;
             ContextId = domainManager.GenerateContextId();
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Runtime {
 
         // TODO: remove
         public ScopeExtension EnsureScopeExtension(Scope scope) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
             ScopeExtension extension = scope.GetExtension(ContextId);
 
             if (extension == null) {
@@ -179,9 +179,9 @@ namespace Microsoft.Scripting.Runtime {
         /// <returns>The reader.</returns>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         public virtual SourceCodeReader GetSourceReader(Stream stream, Encoding defaultEncoding, string path) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(defaultEncoding, "defaultEncoding");
-            ContractUtils.Requires(stream.CanRead && stream.CanSeek, "stream", "The stream must support reading and seeking");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(defaultEncoding, nameof(defaultEncoding));
+            ContractUtils.Requires(stream.CanRead && stream.CanSeek, nameof(stream), "The stream must support reading and seeking");
 
             var result = new StreamReader(stream, defaultEncoding, true);
             result.Peek();
@@ -217,7 +217,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public virtual int ExecuteProgram(SourceUnit program) {
-            ContractUtils.RequiresNotNull(program, "program");
+            ContractUtils.RequiresNotNull(program, nameof(program));
 
             object returnValue = program.Execute();
 
@@ -297,7 +297,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public SourceUnit CreateSnippet(string code, string id, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(code, "code");
+            ContractUtils.RequiresNotNull(code, nameof(code));
 
             return CreateSourceUnit(new SourceStringContentProvider(code), id, kind);
         }
@@ -311,33 +311,33 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public SourceUnit CreateFileUnit(string path, Encoding encoding, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(path, "path");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(path, nameof(path));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
 
             TextContentProvider provider = new LanguageBoundTextContentProvider(this, new FileStreamContentProvider(DomainManager.Platform, path), encoding, path);
             return CreateSourceUnit(provider, path, kind);
         }
 
         public SourceUnit CreateFileUnit(string path, string content) {
-            ContractUtils.RequiresNotNull(path, "path");
-            ContractUtils.RequiresNotNull(content, "content");
+            ContractUtils.RequiresNotNull(path, nameof(path));
+            ContractUtils.RequiresNotNull(content, nameof(content));
 
             TextContentProvider provider = new SourceStringContentProvider(content);
             return CreateSourceUnit(provider, path, SourceCodeKind.File);
         }
 
         public SourceUnit CreateSourceUnit(StreamContentProvider contentProvider, string path, Encoding encoding, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(contentProvider, "contentProvider");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
             ContractUtils.Requires(CanCreateSourceCode);
 
             return new SourceUnit(this, new LanguageBoundTextContentProvider(this, contentProvider, encoding, path), path, kind);
         }
 
         public SourceUnit CreateSourceUnit(TextContentProvider contentProvider, string path, SourceCodeKind kind) {
-            ContractUtils.RequiresNotNull(contentProvider, "contentProvider");
-            ContractUtils.Requires(kind.IsValid(), "kind");
+            ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
+            ContractUtils.Requires(kind.IsValid(), nameof(kind));
             ContractUtils.Requires(CanCreateSourceCode);
 
             return new SourceUnit(this, contentProvider, path, kind);
