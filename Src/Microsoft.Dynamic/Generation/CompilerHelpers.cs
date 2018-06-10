@@ -566,7 +566,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static Type[] GetExpressionTypes(Expression[] expressions) {
-            ContractUtils.RequiresNotNull(expressions, "expressions");
+            ContractUtils.RequiresNotNull(expressions, nameof(expressions));
 
             Type[] res = new Type[expressions.Length];
             for (int i = 0; i < res.Length; i++) {

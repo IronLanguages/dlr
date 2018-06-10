@@ -81,7 +81,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns <c>null</c> if the parser cannot compile the code due to errors.
         /// </remarks>
         public CompiledCode Compile(ErrorListener errorListener) {
-            ContractUtils.RequiresNotNull(errorListener, "errorListener");
+            ContractUtils.RequiresNotNull(errorListener, nameof(errorListener));
 
             return CompileInternal(null, errorListener);
         }
@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </remarks>
         public CompiledCode Compile(CompilerOptions compilerOptions) {
-            ContractUtils.RequiresNotNull(compilerOptions, "compilerOptions");
+            ContractUtils.RequiresNotNull(compilerOptions, nameof(compilerOptions));
 
             return CompileInternal(compilerOptions, null);
         }
@@ -101,8 +101,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </remarks>
         public CompiledCode Compile(CompilerOptions compilerOptions, ErrorListener errorListener) {
-            ContractUtils.RequiresNotNull(errorListener, "errorListener");
-            ContractUtils.RequiresNotNull(compilerOptions, "compilerOptions");
+            ContractUtils.RequiresNotNull(errorListener, nameof(errorListener));
+            ContractUtils.RequiresNotNull(compilerOptions, nameof(compilerOptions));
 
             return CompileInternal(compilerOptions, errorListener);
         }
@@ -125,7 +125,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="SyntaxErrorException">Code cannot be compiled.</exception>
         public dynamic Execute(ScriptScope scope) {
-            ContractUtils.RequiresNotNull(scope, "scope");
+            ContractUtils.RequiresNotNull(scope, nameof(scope));
 
             return _unit.Execute(scope.Scope);
         }

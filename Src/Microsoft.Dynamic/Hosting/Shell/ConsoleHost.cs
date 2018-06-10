@@ -128,7 +128,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected virtual IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options) {
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             if (options.TabCompletion) {
                 return CreateSuperConsole(commandLine, options.ColorfulConsole);
@@ -448,7 +448,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         protected static void PrintException(TextWriter output, Exception e) {
             Debug.Assert(output != null);
-            ContractUtils.RequiresNotNull(e, "e");
+            ContractUtils.RequiresNotNull(e, nameof(e));
 
             while (e != null) {
                 output.WriteLine(e);

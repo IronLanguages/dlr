@@ -175,8 +175,8 @@ namespace Microsoft.Scripting {
         /// TypeLoadException will be raised unless policy has been applied by the administrator to redirect bindings.
         /// </summary>
         public static ScriptCode[] LoadFromAssembly(ScriptDomainManager runtime, Assembly assembly) {
-            ContractUtils.RequiresNotNull(runtime, "runtime");
-            ContractUtils.RequiresNotNull(assembly, "assembly");
+            ContractUtils.RequiresNotNull(runtime, nameof(runtime));
+            ContractUtils.RequiresNotNull(assembly, nameof(assembly));
 
             // get the type which has our cached code...
             Type t = assembly.GetType("DLRCachedCode");

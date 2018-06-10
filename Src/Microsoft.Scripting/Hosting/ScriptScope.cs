@@ -151,7 +151,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="handle"/> is a <c>null</c> reference.</exception>
         public void SetVariable(string name, ObjectHandle handle) {
-            ContractUtils.RequiresNotNull(handle, "handle");
+            ContractUtils.RequiresNotNull(handle, nameof(handle));
             SetVariable(name, handle.Unwrap());
         }
 #endif

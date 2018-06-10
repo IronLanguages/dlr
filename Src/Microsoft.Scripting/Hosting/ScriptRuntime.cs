@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Both Runtime and ScriptHost are collocated in the current app-domain.
         /// </summary>
         public ScriptRuntime(ScriptRuntimeSetup setup) {
-            ContractUtils.RequiresNotNull(setup, "setup");
+            ContractUtils.RequiresNotNull(setup, nameof(setup));
 
             // Do this first, so we detect configuration errors immediately
             DlrConfiguration config = setup.ToConfiguration();
@@ -108,7 +108,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Both Runtime and ScriptHost are collocated in the specified app-domain.
         /// </summary>
         public static ScriptRuntime CreateRemote(AppDomain domain, ScriptRuntimeSetup setup) {
-            ContractUtils.RequiresNotNull(domain, "domain");
+            ContractUtils.RequiresNotNull(domain, nameof(domain));
             return (ScriptRuntime)domain.CreateInstanceAndUnwrap(
                 typeof(ScriptRuntime).Assembly.FullName, 
                 typeof(ScriptRuntime).FullName, 
@@ -133,7 +133,7 @@ namespace Microsoft.Scripting.Hosting {
         #region Engines
 
         public ScriptEngine GetEngine(string languageName) {
-            ContractUtils.RequiresNotNull(languageName, "languageName");
+            ContractUtils.RequiresNotNull(languageName, nameof(languageName));
 
             ScriptEngine engine;
             if (!TryGetEngine(languageName, out engine)) {
@@ -144,14 +144,14 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public ScriptEngine GetEngineByTypeName(string assemblyQualifiedTypeName) {
-            ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, "assemblyQualifiedTypeName");
+            ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, nameof(assemblyQualifiedTypeName));
             return GetEngine(Manager.GetLanguageByTypeName(assemblyQualifiedTypeName));
         }
 
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         public ScriptEngine GetEngineByFileExtension(string fileExtension) {
-            ContractUtils.RequiresNotNull(fileExtension, "fileExtension");
+            ContractUtils.RequiresNotNull(fileExtension, nameof(fileExtension));
 
             ScriptEngine engine;
             if (!TryGetEngineByFileExtension(fileExtension, out engine)) {
@@ -252,7 +252,7 @@ namespace Microsoft.Scripting.Hosting {
         /// path is empty, contains one or more of the invalid characters defined in GetInvalidPathChars or doesn't have an extension.
         /// </exception>
         public ScriptScope ExecuteFile(string path) {
-            ContractUtils.RequiresNotEmpty(path, "path");
+            ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
             ScriptEngine engine;
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <exception cref="InvalidOperationException">language does not have any search paths</exception>
         /// <exception cref="FileNotFoundException">file does exist in language's search path</exception>
         public ScriptScope UseFile(string path) {
-            ContractUtils.RequiresNotEmpty(path, "path");
+            ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
             ScriptEngine engine;
@@ -326,7 +326,7 @@ namespace Microsoft.Scripting.Hosting {
                 }
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 lock (_lock) {
                     _globals = value;
                     Manager.Globals = value.Scope;

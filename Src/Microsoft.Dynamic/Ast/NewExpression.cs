@@ -21,8 +21,8 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Ast {
     public static partial class Utils {
         public static NewExpression SimpleNewHelper(ConstructorInfo constructor, params Expression[] arguments) {
-            ContractUtils.RequiresNotNull(constructor, "constructor");
-            ContractUtils.RequiresNotNullItems(arguments, "arguments");
+            ContractUtils.RequiresNotNull(constructor, nameof(constructor));
+            ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
 
             ParameterInfo[] parameters = constructor.GetParameters();
             ContractUtils.Requires(arguments.Length == parameters.Length, "arguments", "Incorrect number of arguments");

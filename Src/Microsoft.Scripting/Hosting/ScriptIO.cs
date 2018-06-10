@@ -57,8 +57,8 @@ namespace Microsoft.Scripting.Hosting {
         /// <param name="stream">Binary stream to write data to.</param>
         /// <param name="encoding">Encoding used to convert textual data written to the output by the script.</param>
         public void SetOutput(Stream stream, Encoding encoding) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             _io.SetOutput(stream, new StreamWriter(stream, encoding));
         }
 
@@ -66,33 +66,33 @@ namespace Microsoft.Scripting.Hosting {
         /// Used if the host handles both kinds of data (textual and binary) by itself.
         /// </summary>
         public void SetOutput(Stream stream, TextWriter writer) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(writer, "writer");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(writer, nameof(writer));
             _io.SetOutput(stream, writer);
         }
 
         public void SetErrorOutput(Stream stream, Encoding encoding) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             _io.SetErrorOutput(stream, new StreamWriter(stream, encoding));
         }
 
         public void SetErrorOutput(Stream stream, TextWriter writer) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(writer, "writer");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(writer, nameof(writer));
             _io.SetErrorOutput(stream, writer);
         }
 
         public void SetInput(Stream stream, Encoding encoding) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             _io.SetInput(stream, new StreamReader(stream, encoding), encoding);
         }
 
         public void SetInput(Stream stream, TextReader reader, Encoding encoding) {
-            ContractUtils.RequiresNotNull(stream, "stream");
-            ContractUtils.RequiresNotNull(reader, "writer");
-            ContractUtils.RequiresNotNull(encoding, "encoding");
+            ContractUtils.RequiresNotNull(stream, nameof(stream));
+            ContractUtils.RequiresNotNull(reader, nameof(reader));
+            ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             _io.SetInput(stream, reader, encoding);
         }
 

@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Actions {
 
         protected ExtensionBinaryOperationBinder(string operation)
             : base(ExpressionType.Extension) {
-            ContractUtils.RequiresNotNull(operation, "operation");
+            ContractUtils.RequiresNotNull(operation, nameof(operation));
             _operation = operation;
         }
 

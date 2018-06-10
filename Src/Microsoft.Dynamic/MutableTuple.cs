@@ -116,7 +116,7 @@ namespace Microsoft.Scripting {
         /// (e.g. a Tuple`2 which contains a Tuple`128 and a Tuple`8 if we had a size of 136).
         /// </summary>
         public static Type MakeTupleType(params Type[] types) {
-            ContractUtils.RequiresNotNull(types, "types");
+            ContractUtils.RequiresNotNull(types, nameof(types));
 
             return MakeTupleType(types, 0, types.Length);
         }
@@ -125,7 +125,7 @@ namespace Microsoft.Scripting {
         /// Gets the number of usable slots in the provided Tuple type including slots available in nested tuples.
         /// </summary>
         public static int GetSize(Type tupleType) {
-            ContractUtils.RequiresNotNull(tupleType, "tupleType");
+            ContractUtils.RequiresNotNull(tupleType, nameof(tupleType));
 
             int count = 0;
             lock (_sizeDict) {
@@ -165,8 +165,8 @@ namespace Microsoft.Scripting {
         /// tuple the values are added in their nested forms.
         /// </summary>
         public static MutableTuple MakeTuple(Type tupleType, params object[] args) {
-            ContractUtils.RequiresNotNull(tupleType, "tupleType");
-            ContractUtils.RequiresNotNull(args, "args");
+            ContractUtils.RequiresNotNull(tupleType, nameof(tupleType));
+            ContractUtils.RequiresNotNull(args, nameof(args));
 
             return MakeTuple(tupleType, 0, args.Length, args);
         }
@@ -175,7 +175,7 @@ namespace Microsoft.Scripting {
         /// Gets the values from a tuple including unpacking nested values.
         /// </summary>
         public static object[] GetTupleValues(MutableTuple tuple) {
-            ContractUtils.RequiresNotNull(tuple, "tuple");
+            ContractUtils.RequiresNotNull(tuple, nameof(tuple));
 
             List<object> res = new List<object>();
 
@@ -195,9 +195,9 @@ namespace Microsoft.Scripting {
         /// Gets the series of properties that needs to be accessed to access a logical item in a potentially nested tuple.
         /// </summary>
         internal static IEnumerable<PropertyInfo> GetAccessProperties(Type tupleType, int size, int index) {
-            ContractUtils.RequiresNotNull(tupleType, "tupleType");
+            ContractUtils.RequiresNotNull(tupleType, nameof(tupleType));
 
-            if (index < 0 || index >= size) throw new ArgumentException("index");
+            if (index < 0 || index >= size) throw new ArgumentException(nameof(index));
 
             foreach (int curIndex in GetAccessPath(size, index)) {
                 PropertyInfo pi = tupleType.GetInheritedProperties("Item" + String.Format("{0:D3}", curIndex)).First();

@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public ILGen DefineExplicitInterfaceImplementation(MethodInfo baseMethod) {
-            ContractUtils.RequiresNotNull(baseMethod, "baseMethod");
+            ContractUtils.RequiresNotNull(baseMethod, nameof(baseMethod));
 
             MethodAttributes attrs = baseMethod.Attributes & ~(MethodAttributes.Abstract | MethodAttributes.Public);
             attrs |= MethodAttributes.NewSlot | MethodAttributes.Final;

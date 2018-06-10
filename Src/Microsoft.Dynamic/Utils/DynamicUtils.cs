@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="objects">An array of <see cref="DynamicMetaObject"/> instances to extract expressions from.</param>
         /// <returns>The array of expressions.</returns>
         public static Expression[] GetExpressions(DynamicMetaObject[] objects) {
-            ContractUtils.RequiresNotNull(objects, "objects");
+            ContractUtils.RequiresNotNull(objects, nameof(objects));
 
             Expression[] res = new Expression[objects.Length];
             for (int i = 0; i < objects.Length; i++) {
@@ -86,8 +86,8 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="args">The arguments that are passed for the binding (as received in a BindDelegate call)</param>
         /// <returns>A delegate which represents the interpreted binding.</returns>
         public static T/*!*/ LightBind<T>(this DynamicMetaObjectBinder/*!*/ binder, object[]/*!*/ args, int compilationThreshold) where T : class {
-            ContractUtils.RequiresNotNull(binder, "binder");
-            ContractUtils.RequiresNotNull(args, "args");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
+            ContractUtils.RequiresNotNull(args, nameof(args));
 
             return GenericInterpretedBinder<T>.Instance.Bind(binder, compilationThreshold < 0 ? LightCompiler.DefaultCompilationThreshold : compilationThreshold, args);
         }

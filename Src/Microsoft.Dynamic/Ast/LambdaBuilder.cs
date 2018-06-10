@@ -64,7 +64,7 @@ namespace Microsoft.Scripting.Ast {
                 return _name;
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _name = value;
             }
         }
@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.Ast {
                 return _returnType;
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _returnType = value;
             }
         }

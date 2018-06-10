@@ -23,8 +23,8 @@ namespace Microsoft.Scripting.Utils {
         public readonly AssemblyName AssemblyName;
 
         public AssemblyQualifiedTypeName(string typeName, AssemblyName assemblyName) {
-            ContractUtils.RequiresNotNull(typeName, "typeName");
-            ContractUtils.RequiresNotNull(assemblyName, "assemblyName");
+            ContractUtils.RequiresNotNull(typeName, nameof(typeName));
+            ContractUtils.RequiresNotNull(assemblyName, nameof(assemblyName));
 
             TypeName = typeName;
             AssemblyName = assemblyName;
@@ -37,7 +37,7 @@ namespace Microsoft.Scripting.Utils {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public AssemblyQualifiedTypeName(string assemblyQualifiedTypeName) {
-            ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, "assemblyQualifiedTypeName");
+            ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, nameof(assemblyQualifiedTypeName));
 
             int firstColon = assemblyQualifiedTypeName.IndexOf(",");
             if (firstColon != -1) {

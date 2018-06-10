@@ -28,8 +28,8 @@ namespace Microsoft.Scripting.Hosting {
         private readonly ParameterDoc _returnParam;        
 
         public OverloadDoc(string name, string documentation, ICollection<ParameterDoc> parameters) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNullItems(parameters, "parameters");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNullItems(parameters, nameof(parameters));
 
             _name = name;
             _params = parameters;
@@ -37,8 +37,8 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public OverloadDoc(string name, string documentation, ICollection<ParameterDoc> parameters, ParameterDoc returnParameter) {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNullItems(parameters, "parameters");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNullItems(parameters, nameof(parameters));
 
             _name = name;
             _params = parameters;
