@@ -530,7 +530,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private static Type GetLambdaType(Type returnType, IList<ParameterExpression> parameterList) {
-            ContractUtils.RequiresNotNull(returnType, "returnType");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
 
             bool action = returnType == typeof(void);
             int paramCount = parameterList?.Count ?? 0;

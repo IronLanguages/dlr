@@ -134,7 +134,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static T[] RotateRight<T>(T[] array, int count) {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if ((count < 0) || (count > array.Length)) throw new ArgumentOutOfRangeException(nameof(count));
 
             T[] result = new T[array.Length];
@@ -328,8 +328,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int GetValueHashCode<T>(this T[] array, int start, int count) {
-            ContractUtils.RequiresNotNull(array, "array");
-            ContractUtils.RequiresArrayRange(array.Length, start, count, "start", "count");
+            ContractUtils.RequiresNotNull(array, nameof(array));
+            ContractUtils.RequiresArrayRange(array.Length, start, count, nameof(start), nameof(count));
             
             if (count == 0) {
                 return 0;

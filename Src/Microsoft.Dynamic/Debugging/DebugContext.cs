@@ -13,13 +13,13 @@
  *
  * ***************************************************************************/
 
-using MSAst = System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Debugging.CompilerServices {
@@ -57,9 +57,9 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         /// <summary>
         /// Transforms a LambdaExpression to a debuggable LambdaExpression
         /// </summary>
-        public MSAst.LambdaExpression TransformLambda(MSAst.LambdaExpression lambda, DebugLambdaInfo lambdaInfo) {
-            ContractUtils.RequiresNotNull(lambda, "lambda");
-            ContractUtils.RequiresNotNull(lambdaInfo, "lambdaInfo");
+        public LambdaExpression TransformLambda(LambdaExpression lambda, DebugLambdaInfo lambdaInfo) {
+            ContractUtils.RequiresNotNull(lambda, nameof(lambda));
+            ContractUtils.RequiresNotNull(lambdaInfo, nameof(lambdaInfo));
 
             return new DebuggableLambdaBuilder(this, lambdaInfo).Transform(lambda);
         }
@@ -67,8 +67,8 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         /// <summary>
         /// Transforms a LambdaExpression to a debuggable LambdaExpression
         /// </summary>
-        public MSAst.LambdaExpression TransformLambda(MSAst.LambdaExpression lambda) {
-            ContractUtils.RequiresNotNull(lambda, "lambda");
+        public LambdaExpression TransformLambda(LambdaExpression lambda) {
+            ContractUtils.RequiresNotNull(lambda, nameof(lambda));
             return new DebuggableLambdaBuilder(this, new DebugLambdaInfo(null, null, false, null, null, null)).Transform(lambda);
         }
 
@@ -76,7 +76,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         /// Resets a state associated with a source file that's maintained in the DebugContext
         /// </summary>
         public void ResetSourceFile(string sourceFileName) {
-            ContractUtils.RequiresNotNull(sourceFileName, "sourceFileName");
+            ContractUtils.RequiresNotNull(sourceFileName, nameof(sourceFileName));
             _sourceFiles.Remove(sourceFileName);
         }
 

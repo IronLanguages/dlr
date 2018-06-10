@@ -127,17 +127,17 @@ namespace Microsoft.Scripting.Ast {
         /// Will add conversions (Expression.Convert()), deals with default parameter values and params arrays.
         /// </summary>
         public static Expression ComplexCallHelper(MethodInfo method, params Expression[] arguments) {
-            ContractUtils.RequiresNotNull(method, "method");
-            ContractUtils.Requires(method.IsStatic, "method", "Method must be static");
+            ContractUtils.RequiresNotNull(method, nameof(method));
+            ContractUtils.Requires(method.IsStatic, nameof(method), "Method must be static");
             return ComplexCallHelper(null, method, arguments);
         }
 
         // FxCop is wrong on this one. "method" is required as MethodInfo by the call to "Call" factory
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static Expression ComplexCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
-            ContractUtils.RequiresNotNull(method, "method");
-            ContractUtils.RequiresNotNullItems(arguments, "arguments");
-            ContractUtils.Requires(instance != null ^ method.IsStatic, "instance");
+            ContractUtils.RequiresNotNull(method, nameof(method));
+            ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
+            ContractUtils.Requires(instance != null ^ method.IsStatic, nameof(instance));
 
             ParameterInfo[] parameters = method.GetParameters();
             bool hasParamArray = parameters.Length > 0 && parameters[parameters.Length - 1].IsParamArray();

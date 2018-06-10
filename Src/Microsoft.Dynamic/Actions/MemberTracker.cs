@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public static MemberTracker FromMemberInfo(MemberInfo member, Type extending) {
-            ContractUtils.RequiresNotNull(member, "member");
+            ContractUtils.RequiresNotNull(member, nameof(member));
 
             lock (_trackers) {
                 MemberTracker res;

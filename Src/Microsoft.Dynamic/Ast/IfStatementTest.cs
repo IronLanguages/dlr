@@ -32,9 +32,9 @@ namespace Microsoft.Scripting.Ast {
 
     public partial class Utils {
         public static IfStatementTest IfCondition(Expression test, Expression body) {
-            ContractUtils.RequiresNotNull(test, "test");
-            ContractUtils.RequiresNotNull(body, "body");
-            ContractUtils.Requires(test.Type == typeof(bool), "test", "Test must be boolean");
+            ContractUtils.RequiresNotNull(test, nameof(test));
+            ContractUtils.RequiresNotNull(body, nameof(body));
+            ContractUtils.Requires(test.Type == typeof(bool), nameof(test), "Test must be boolean");
 
             return new IfStatementTest(test, body);
         }

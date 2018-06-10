@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Actions {
 
         public TopNamespaceTracker(ScriptDomainManager manager)
             : base(null) {
-            ContractUtils.RequiresNotNull(manager, "manager");
+            ContractUtils.RequiresNotNull(manager, nameof(manager));
             SetTopPackage(this);
             DomainManager = manager;
             HierarchyLock = new object();
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.Actions {
         /// <returns>true if the assembly was loaded for the first time. 
         /// false if the assembly had already been loaded before</returns>
         public bool LoadAssembly(Assembly assem) {
-            ContractUtils.RequiresNotNull(assem, "assem");
+            ContractUtils.RequiresNotNull(assem, nameof(assem));
 
             lock (HierarchyLock) {
                 if (_packageAssemblies.Contains(assem)) {

@@ -652,7 +652,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitString(string value) {
-            ContractUtils.RequiresNotNull(value, "value");
+            ContractUtils.RequiresNotNull(value, nameof(value));
             Emit(OpCodes.Ldstr, value);
         }
 
@@ -906,8 +906,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private bool TryEmitCast(Type from, Type to, bool implicitOnly) {
-            ContractUtils.RequiresNotNull(from, "from");
-            ContractUtils.RequiresNotNull(to, "to");
+            ContractUtils.RequiresNotNull(from, nameof(from));
+            ContractUtils.RequiresNotNull(to, nameof(to));
 
             // No cast necessary if identical types
             if (from == to) {
@@ -1060,7 +1060,7 @@ namespace Microsoft.Scripting.Generation {
         /// the same objects.
         /// </summary>
         public void EmitBoxing(Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsValueType()) {
                 if (type == typeof(void)) {
@@ -1404,7 +1404,7 @@ namespace Microsoft.Scripting.Generation {
         /// The array is strongly typed.
         /// </summary>
         public void EmitArray<T>(IList<T> items) {
-            ContractUtils.RequiresNotNull(items, "items");
+            ContractUtils.RequiresNotNull(items, nameof(items));
 
             EmitInt(items.Count);
             Emit(OpCodes.Newarr, typeof(T));
@@ -1421,9 +1421,9 @@ namespace Microsoft.Scripting.Generation {
         /// which is provided with the current item index to emit.
         /// </summary>
         public void EmitArray(Type elementType, int count, EmitArrayHelper emit) {
-            ContractUtils.RequiresNotNull(elementType, "elementType");
-            ContractUtils.RequiresNotNull(emit, "emit");
-            ContractUtils.Requires(count >= 0, "count", Strings.CountCannotBeNegative);
+            ContractUtils.RequiresNotNull(elementType, nameof(elementType));
+            ContractUtils.RequiresNotNull(emit, nameof(emit));
+            ContractUtils.Requires(count >= 0, nameof(count), Strings.CountCannotBeNegative);
 
             EmitInt(count);
             Emit(OpCodes.Newarr, elementType);
@@ -1443,8 +1443,8 @@ namespace Microsoft.Scripting.Generation {
         /// are already emitted.
         /// </summary>
         public void EmitArray(Type arrayType) {
-            ContractUtils.RequiresNotNull(arrayType, "arrayType");
-            ContractUtils.Requires(arrayType.IsArray, "arrayType", Strings.ArrayTypeMustBeArray);
+            ContractUtils.RequiresNotNull(arrayType, nameof(arrayType));
+            ContractUtils.Requires(arrayType.IsArray, nameof(arrayType), Strings.ArrayTypeMustBeArray);
 
             int rank = arrayType.GetArrayRank();
             if (rank == 1) {
