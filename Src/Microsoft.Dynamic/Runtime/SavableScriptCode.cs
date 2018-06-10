@@ -219,7 +219,7 @@ namespace Microsoft.Scripting {
         }
 
         public override string ToString() {
-            return String.Format("ScriptCode '{0}' from {1}", SourceUnit.Path, LanguageContext.GetType().Name);
+            return $"ScriptCode '{SourceUnit.Path}' from {LanguageContext.GetType().Name}";
         }
     }
 }

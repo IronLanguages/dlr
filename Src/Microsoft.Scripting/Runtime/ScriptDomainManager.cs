@@ -112,7 +112,7 @@ namespace Microsoft.Scripting.Runtime {
         public LanguageContext GetLanguageByExtension(string fileExtension) {
             LanguageContext language;
             if (!TryGetLanguageByFileExtension(fileExtension, out language)) {
-                throw new ArgumentException(String.Format("Unknown file extension: '{0}'", fileExtension));
+                throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
             return language;
         }

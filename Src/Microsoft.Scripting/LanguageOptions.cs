@@ -121,7 +121,8 @@ namespace Microsoft.Scripting {
             if (collection != null) {
                 foreach (var item in collection) {
                     if (item == null) {
-                        throw new ArgumentException(String.Format("Invalid value for option {0}: collection shouldn't containt null items", name));
+                        throw new ArgumentException(
+                            $"Invalid value for option {name}: collection shouldn't containt null items");
                     }
                 }
 
@@ -134,7 +135,7 @@ namespace Microsoft.Scripting {
                 return new ReadOnlyCollection<string>(StringUtils.Split(strValue, separators, Int32.MaxValue, StringSplitOptions.RemoveEmptyEntries));
             }
 
-            throw new ArgumentException(String.Format("Invalid value for option {0}", name));
+            throw new ArgumentException($"Invalid value for option {name}");
         }
 
         public static ReadOnlyCollection<string> GetSearchPathsOption(IDictionary<string, object> options) {

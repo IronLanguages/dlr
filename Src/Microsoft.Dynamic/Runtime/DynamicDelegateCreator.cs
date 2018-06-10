@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Runtime {
             Delegate result = callableObject as Delegate;
             if (result != null) {
                 if (!delegateType.IsAssignableFrom(result.GetType())) {
-                    throw ScriptingRuntimeHelpers.SimpleTypeError(String.Format("Cannot cast {0} to {1}.", result.GetType(), delegateType));
+                    throw ScriptingRuntimeHelpers.SimpleTypeError($"Cannot cast {result.GetType()} to {delegateType}.");
                 }
 
                 return result;

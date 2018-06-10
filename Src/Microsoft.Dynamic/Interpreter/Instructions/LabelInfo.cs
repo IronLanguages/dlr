@@ -113,7 +113,7 @@ namespace Microsoft.Scripting.Interpreter {
             _acrossBlockJump = true;
 
             if (HasMultipleDefinitions) {
-                throw new InvalidOperationException(String.Format("Ambiguous jump {0}", _node.Name));
+                throw new InvalidOperationException($"Ambiguous jump {_node.Name}");
             }
 
             // We didn't find an outward jump. Look for a jump across blocks

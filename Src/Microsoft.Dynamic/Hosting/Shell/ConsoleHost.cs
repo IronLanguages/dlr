@@ -245,7 +245,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             string[,] optionsHelp = Options.GetHelp();
 
-            sb.AppendLine(String.Format("Usage: {0}.exe [<dlr-options>] [--] [<language-specific-command-line>]", ExeName));
+            sb.AppendLine($"Usage: {ExeName}.exe [<dlr-options>] [--] [<language-specific-command-line>]");
             sb.AppendLine();
 
             sb.AppendLine("DLR options (both slash or dash could be used to prefix options):");

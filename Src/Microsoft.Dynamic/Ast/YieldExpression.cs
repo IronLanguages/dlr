@@ -90,7 +90,8 @@ namespace Microsoft.Scripting.Ast {
                         TypeUtils.AreAssignable(target.Type, value.GetType())) {
                         value = Expression.Quote(value);
                     }
-                    throw new ArgumentException(string.Format("Expression of type '{0}' cannot be yielded to a generator label of type '{1}'", value.Type, target.Type));
+                    throw new ArgumentException(
+                        $"Expression of type '{value.Type}' cannot be yielded to a generator label of type '{target.Type}'");
                 }
             }
 
