@@ -89,8 +89,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static bool TrueForAll<T>(this IEnumerable<T> collection, Predicate<T> predicate) {
-            ContractUtils.RequiresNotNull(collection, "collection");
-            ContractUtils.RequiresNotNull(predicate, "predicate");
+            ContractUtils.RequiresNotNull(collection, nameof(collection));
+            ContractUtils.RequiresNotNull(predicate, nameof(predicate));
 
             foreach (T item in collection) {
                 if (!predicate(item)) return false;

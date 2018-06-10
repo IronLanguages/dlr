@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="value">The constant value to check for.</param>
         /// <returns>true/false</returns>
         public static bool Check(Expression expression, object value) {
-            ContractUtils.RequiresNotNull(expression, "expression");
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             return IsConstant(expression, value);
         }
 

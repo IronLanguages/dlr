@@ -152,8 +152,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public void RemoveHandler(object target, object handler, IEqualityComparer<object> objectComparer) {
-            ContractUtils.RequiresNotNull(handler, "handler");
-            ContractUtils.RequiresNotNull(objectComparer, "objectComparer");
+            ContractUtils.RequiresNotNull(handler, nameof(handler));
+            ContractUtils.RequiresNotNull(objectComparer, nameof(objectComparer));
 
             Delegate delegateHandler;
             if (_eventInfo.EventHandlerType.IsAssignableFrom(handler.GetType())) {

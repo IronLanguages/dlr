@@ -77,11 +77,11 @@ namespace Microsoft.Scripting.Ast {
             return MakeYield(target, value, -1);
         }
         public static YieldExpression YieldReturn(LabelTarget target, Expression value, int yieldMarker) {
-            ContractUtils.RequiresNotNull(value, "value");
+            ContractUtils.RequiresNotNull(value, nameof(value));
             return MakeYield(target, value, yieldMarker);
         }
         public static YieldExpression MakeYield(LabelTarget target, Expression value, int yieldMarker) {
-            ContractUtils.RequiresNotNull(target, "target");
+            ContractUtils.RequiresNotNull(target, nameof(target));
             ContractUtils.Requires(target.Type != typeof(void), "target", "generator label must have a non-void type");
             if (value != null) {
                 if (!TypeUtils.AreReferenceAssignable(target.Type, value.Type)) {

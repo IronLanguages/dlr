@@ -223,7 +223,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="eventInfo"></param>
         /// <returns></returns>
         public static Type GetEventHandlerType(EventInfo eventInfo) {
-            ContractUtils.RequiresNotNull(eventInfo, "eventInfo");
+            ContractUtils.RequiresNotNull(eventInfo, nameof(eventInfo));
             return eventInfo.EventHandlerType;
         }
 

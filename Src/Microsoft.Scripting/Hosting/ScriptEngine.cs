@@ -601,8 +601,8 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="NotSupportedException">The language doesn't allow to set search paths.</exception>
         public void SetSearchPaths(ICollection<string> paths) {
-            ContractUtils.RequiresNotNull(paths, "paths");
-            ContractUtils.RequiresNotNullItems(paths, "paths");
+            ContractUtils.RequiresNotNull(paths, nameof(paths));
+            ContractUtils.RequiresNotNullItems(paths, nameof(paths));
 
             _language.SetSearchPaths(paths);
         }

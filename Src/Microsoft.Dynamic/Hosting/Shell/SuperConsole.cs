@@ -203,7 +203,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         public SuperConsole(CommandLine commandLine, bool colorful)
             : base(colorful) {
-            ContractUtils.RequiresNotNull(commandLine, "commandLine");
+            ContractUtils.RequiresNotNull(commandLine, nameof(commandLine));
             _commandLine = commandLine;
         }
 

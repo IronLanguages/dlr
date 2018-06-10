@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Ast {
 
     public partial class Utils {
         public static TryStatementBuilder Try(Expression body) {
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
             return new TryStatementBuilder(body);
         }
 

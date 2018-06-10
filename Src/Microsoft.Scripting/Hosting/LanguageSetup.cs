@@ -55,10 +55,10 @@ namespace Microsoft.Scripting.Hosting {
         /// Creates a new LanguageSetup with the provided options
         /// </summary>
         public LanguageSetup(string typeName, string displayName, IEnumerable<string> names, IEnumerable<string> fileExtensions) {
-            ContractUtils.RequiresNotEmpty(typeName, "typeName");
-            ContractUtils.RequiresNotNull(displayName, "displayName");
-            ContractUtils.RequiresNotNull(names, "names");
-            ContractUtils.RequiresNotNull(fileExtensions, "fileExtensions");
+            ContractUtils.RequiresNotEmpty(typeName, nameof(typeName));
+            ContractUtils.RequiresNotNull(displayName, nameof(displayName));
+            ContractUtils.RequiresNotNull(names, nameof(names));
+            ContractUtils.RequiresNotNull(fileExtensions, nameof(fileExtensions));
 
             _typeName = typeName;
             _displayName = displayName;
@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Hosting {
         public string TypeName {
             get { return _typeName; }
             set {
-                ContractUtils.RequiresNotEmpty(value, "value");
+                ContractUtils.RequiresNotEmpty(value, nameof(value));
                 CheckFrozen();
                 _typeName = value;
             }
@@ -99,7 +99,7 @@ namespace Microsoft.Scripting.Hosting {
         public string DisplayName {
             get { return _displayName; }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 CheckFrozen();
                 _displayName = value;
             }

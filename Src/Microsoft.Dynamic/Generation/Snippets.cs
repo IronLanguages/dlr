@@ -220,9 +220,9 @@ namespace Microsoft.Scripting.Generation {
 
 #if FEATURE_LCG
         public DynamicILGen CreateDynamicMethod(string methodName, Type returnType, Type[] parameterTypes, bool isDebuggable) {
-            ContractUtils.RequiresNotEmpty(methodName, "methodName");
-            ContractUtils.RequiresNotNull(returnType, "returnType");
-            ContractUtils.RequiresNotNullItems(parameterTypes, "parameterTypes");
+            ContractUtils.RequiresNotEmpty(methodName, nameof(methodName));
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
+            ContractUtils.RequiresNotNullItems(parameterTypes, nameof(parameterTypes));
 
 #if FEATURE_REFEMIT
             if (Snippets.Shared.SaveSnippets) {

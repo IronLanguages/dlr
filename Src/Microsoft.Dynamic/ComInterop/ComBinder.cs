@@ -55,8 +55,8 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="delayInvocation">true if member evaluation may be delayed.</param>
         /// <returns>true if operation was bound successfully; otherwise, false.</returns>
         public static bool TryBindGetMember(GetMemberBinder binder, DynamicMetaObject instance, out DynamicMetaObject result, bool delayInvocation) {
-            ContractUtils.RequiresNotNull(binder, "binder");
-            ContractUtils.RequiresNotNull(instance, "instance");
+            ContractUtils.RequiresNotNull(binder, nameof(binder));
+            ContractUtils.RequiresNotNull(instance, nameof(instance));
 
             if (TryGetMetaObject(ref instance)) {
                 var comGetMember = new ComGetMemberBinder(binder, delayInvocation);
@@ -270,9 +270,8 @@ namespace Microsoft.Scripting.ComInterop {
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static IList<KeyValuePair<string, object>> GetDynamicDataMembers(object value, IEnumerable<string> names) {
-            ContractUtils.RequiresNotNull(value, "value");
-            ContractUtils.Requires(IsComObject(value), "value", Strings.ComObjectExpected);
-
+            ContractUtils.RequiresNotNull(value, nameof(value));
+            ContractUtils.Requires(IsComObject(value), nameof(value), Strings.ComObjectExpected);
 
             return ComObject.ObjectToComObject(value).GetMembers(names);
         }

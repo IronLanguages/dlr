@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.Hosting {
         /// what the langauge prefers.
         /// </summary>
         public object ConvertTo(object obj, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ConvertTo(obj, type);
         }
@@ -240,7 +240,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Converts the object obj to the type type including explicit conversions which may lose information.
         /// </summary>
         public object ExplicitConvertTo(object obj, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ExplicitConvertTo(obj, type);
         }
@@ -275,7 +275,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Converts the object obj to the type type including implicit conversions.
         /// </summary>
         public object ImplicitConvertTo(object obj, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ImplicitConvertTo(obj, type);
         }
@@ -522,7 +522,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Though delegates are preferable for calls they may not always be usable for remote objects.
         /// </summary>
         public ObjectHandle Invoke([NotNull]ObjectHandle obj, params ObjectHandle[] parameters) {
-            ContractUtils.RequiresNotNull(parameters, "parameters");
+            ContractUtils.RequiresNotNull(parameters, nameof(parameters));
 
             return new ObjectHandle((object)Invoke(GetLocalObject(obj), GetLocalObjects(parameters)));
         }
@@ -670,7 +670,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Converts the object obj to the type type including explicit conversions which may lose information.
         /// </summary>
         public ObjectHandle ExplicitConvertTo([NotNull]ObjectHandle obj, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             return new ObjectHandle(_ops.ExplicitConvertTo(GetLocalObject(obj), type));
         }
@@ -718,7 +718,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Converts the object obj to the type type including implicit conversions.
         /// </summary>
         public ObjectHandle ImplicitConvertTo([NotNull]ObjectHandle obj, Type type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             return new ObjectHandle(_ops.ImplicitConvertTo(GetLocalObject(obj), type));
         }
@@ -928,7 +928,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Helper to unwrap an object - in the future maybe we should validate the current app domain.
         /// </summary>
         private static object GetLocalObject([NotNull]ObjectHandle obj) {
-            ContractUtils.RequiresNotNull(obj, "obj");
+            ContractUtils.RequiresNotNull(obj, nameof(obj));
 
             return obj.Unwrap();
         }

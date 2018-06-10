@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Hosting {
         public Type HostType {
             get { return _hostType; }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 ContractUtils.Requires(typeof(ScriptHost).IsAssignableFrom(value), "value", "Must be ScriptHost or a derived type of ScriptHost");
                 CheckFrozen();
                 _hostType = value;
@@ -118,7 +118,7 @@ namespace Microsoft.Scripting.Hosting {
                 return _hostArguments;
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 CheckFrozen();
                 _hostArguments = value;
             }
@@ -187,7 +187,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Reads setup from a specified XML stream.
         /// </summary>
         public static ScriptRuntimeSetup ReadConfiguration(Stream configFileStream) {
-            ContractUtils.RequiresNotNull(configFileStream, "configFileStream");
+            ContractUtils.RequiresNotNull(configFileStream, nameof(configFileStream));
             var setup = new ScriptRuntimeSetup();
             Configuration.Section.LoadRuntimeSetup(setup, configFileStream);
             return setup;
@@ -197,7 +197,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Reads setup from a specified XML file.
         /// </summary>
         public static ScriptRuntimeSetup ReadConfiguration(string configFilePath) {
-            ContractUtils.RequiresNotNull(configFilePath, "configFilePath");
+            ContractUtils.RequiresNotNull(configFilePath, nameof(configFilePath));
 
             using (var stream = File.OpenRead(configFilePath)) {
                 return ReadConfiguration(stream);
