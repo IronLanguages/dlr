@@ -261,7 +261,7 @@ namespace Microsoft.Scripting.Generation {
             _ilg.EmitCall(opcode, methodInfo, optionalParameterTypes);
         }
 
-#if !NETCOREAPP2_0
+#if !(NETCOREAPP2_0 || NETSTANDARD2_0)
         /// <summary>
         /// Emits an unmanaged indirect call instruction.
         /// </summary>
