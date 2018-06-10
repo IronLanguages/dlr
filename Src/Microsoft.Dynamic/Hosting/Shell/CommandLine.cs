@@ -257,8 +257,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         internal static bool IsFatalException(Exception e) {
-            ThreadAbortException tae = e as ThreadAbortException;
-            if (tae != null) {
+            if (e is ThreadAbortException tae) {
 #if !FEATURE_EXCEPTION_STATE
                 return true;
 #else
@@ -291,8 +290,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             } catch (ThreadAbortException) {
 #else
             } catch (ThreadAbortException tae) {
-                KeyboardInterruptException pki = tae.ExceptionState as KeyboardInterruptException;
-                if (pki != null) {
+                if (tae.ExceptionState is KeyboardInterruptException pki) {
                     UnhandledException(tae);
                     Thread.ResetAbort();
                 } else {

@@ -38,8 +38,7 @@ namespace Microsoft.Scripting.Actions {
             ContractUtils.RequiresNotNullItems(args, nameof(args));
 
             // Try to call BindOperation
-            var emo = target as OperationMetaObject;
-            if (emo != null) {
+            if (target is OperationMetaObject emo) {
                 return emo.BindOperation(this, args);
             }
 
@@ -48,8 +47,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override bool Equals(object obj) {
-            OperationBinder oa = obj as OperationBinder;
-            return oa != null && oa.Operation == Operation;
+            return obj is OperationBinder oa && oa.Operation == Operation;
         }
 
         public override int GetHashCode() {

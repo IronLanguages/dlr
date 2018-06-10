@@ -365,8 +365,7 @@ namespace Microsoft.Scripting.Debugging {
                     scopedVars = _funcInfo.VariableScopeMap[0];
                 }
 
-                ScopeData scopeData;
-                if (!_variables.TryGetValue(scopedVars, out scopeData)) {
+                if (!_variables.TryGetValue(scopedVars, out ScopeData scopeData)) {
                     scopeData = new ScopeData();
                     _variables.Add(scopedVars, scopeData);
                 }

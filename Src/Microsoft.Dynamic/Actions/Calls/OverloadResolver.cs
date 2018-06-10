@@ -284,8 +284,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private void AddTarget(MethodCandidate target) {
             int count = target.ParameterCount;
-            CandidateSet set;
-            if (!_candidateSets.TryGetValue(count, out set)) {
+            if (!_candidateSets.TryGetValue(count, out CandidateSet set)) {
                 set = new CandidateSet(count);
                 _candidateSets[count] = set;
             }

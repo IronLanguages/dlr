@@ -39,8 +39,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override bool Equals(object obj) {
-            var euob = obj as ExtensionUnaryOperationBinder;
-            return euob != null && base.Equals(obj) && _operation == euob._operation;
+            return obj is ExtensionUnaryOperationBinder euob && base.Equals(obj) && _operation == euob._operation;
         }
     }
 }

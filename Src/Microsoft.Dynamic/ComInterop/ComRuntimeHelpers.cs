@@ -364,8 +364,7 @@ namespace Microsoft.Scripting.ComInterop {
             // GetNativeVariantForObject is very expensive for values that marshal as VT_DISPATCH
             // also is is extremely common scenario when object at hand is an RCW. 
             // Therefore we are going to test for IDispatch before defaulting to GetNativeVariantForObject.
-            IDispatch disp = obj as IDispatch;
-            if (disp != null) {
+            if (obj is IDispatch disp) {
                 variant.AsDispatch = obj;
                 return;
             }

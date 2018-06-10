@@ -162,8 +162,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public bool TryGetEngine(string languageName, out ScriptEngine engine) {
-            LanguageContext language;
-            if (!Manager.TryGetLanguage(languageName, out language)) {
+            if (!Manager.TryGetLanguage(languageName, out LanguageContext language)) {
                 engine = null;
                 return false;
             }
@@ -255,9 +254,8 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
-            ScriptEngine engine;
-            if (!TryGetEngineByFileExtension(extension, out engine)) {
-                throw new ArgumentException(String.Format("File extension '{0}' is not associated with any language.", extension));
+            if (!TryGetEngineByFileExtension(extension, out ScriptEngine engine)) {
+                throw new ArgumentException($"File extension '{extension}' is not associated with any language.");
             }
 
             return engine.ExecuteFile(path);
@@ -271,8 +269,7 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
-            ScriptEngine engine;
-            if (!TryGetEngineByFileExtension(extension, out engine)) {
+            if (!TryGetEngineByFileExtension(extension, out ScriptEngine engine)) {
                 throw new ArgumentException($"File extension '{extension}' is not associated with any language.");
             }
 

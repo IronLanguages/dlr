@@ -32,8 +32,7 @@ namespace Microsoft.Scripting.ComInterop {
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            ComMethodDesc method;
-            if (_self.TryGetMemberMethod(binder.Name, out method) ||
+            if (_self.TryGetMemberMethod(binder.Name, out ComMethodDesc method) ||
                 _self.TryGetMemberMethodExplicit(binder.Name, out method)) {
 
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref args);
@@ -46,9 +45,7 @@ namespace Microsoft.Scripting.ComInterop {
         public override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            ComMethodDesc method;
-            if (_self.TryGetGetItem(out method)) {
-
+            if (_self.TryGetGetItem(out ComMethodDesc method)) {
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref args);
                 return BindComInvoke(args, method, binder.CallInfo, isByRef);
             }
@@ -141,9 +138,7 @@ namespace Microsoft.Scripting.ComInterop {
         public override DynamicMetaObject BindGetIndex(GetIndexBinder binder, DynamicMetaObject[] indexes) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            ComMethodDesc getItem;
-            if (_self.TryGetGetItem(out getItem)) {
-
+            if (_self.TryGetGetItem(out ComMethodDesc getItem)) {
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref indexes);
                 return BindComInvoke(indexes, getItem, binder.CallInfo , isByRef);
             }

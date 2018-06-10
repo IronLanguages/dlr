@@ -65,8 +65,7 @@ namespace Microsoft.Scripting.Utils {
         /// element is already present.
         /// </summary>
         public void Add(TKey key, TValue value) {
-            KeyInfo keyInfo;
-            if (_dict.TryGetValue(key, out keyInfo)) {
+            if (_dict.TryGetValue(key, out KeyInfo keyInfo)) {
                 // remove original entry from the linked list
                 _list.Remove(keyInfo.List);
             } else if (_list.Count == _maxSize) {
@@ -90,8 +89,7 @@ namespace Microsoft.Scripting.Utils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public TValue this[TKey key] {
             get {
-                TValue res;
-                if (TryGetValue(key, out res)) {
+                if (TryGetValue(key, out TValue res)) {
                     return res;
                 }
                 throw new KeyNotFoundException();

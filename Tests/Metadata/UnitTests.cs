@@ -159,8 +159,7 @@ namespace Metadata {
                 Assert.That(dict.Count, Is.EqualTo(parts.Length));
 
                 for (int i = 0; i < parts.Length; i++) {
-                    int value;
-                    Assert.That(dict.TryGetValue(parts[i], out value), Is.True);
+                    Assert.That(dict.TryGetValue(parts[i], out int value), Is.True);
                     Assert.That(value, Is.EqualTo(i));
                 }
             }

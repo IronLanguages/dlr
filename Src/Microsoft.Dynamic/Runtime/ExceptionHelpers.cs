@@ -52,8 +52,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Returns all the stack traces associates with an exception
         /// </summary>
         public static IList<StackTrace> GetExceptionStackTraces(Exception rethrow) {
-            List<StackTrace> result;
-            return TryGetAssociatedStackTraces(rethrow, out result) ? result : null;
+            return TryGetAssociatedStackTraces(rethrow, out List<StackTrace> result) ? result : null;
         }
 
         private static void AssociateStackTraces(Exception e, List<StackTrace> traces) {

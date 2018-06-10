@@ -52,8 +52,7 @@ namespace Microsoft.Scripting.Runtime {
         protected internal override bool TrySetExtraValue(string key, object value) {
             EnsureBoxes();
 
-            int index;
-            if (_boxes.TryGetValue(key, out index)) {
+            if (_boxes.TryGetValue(key, out int index)) {
                 _locals[index] = value;
                 return true;
             }
@@ -64,8 +63,7 @@ namespace Microsoft.Scripting.Runtime {
         protected internal override bool TryGetExtraValue(string key, out object value) {
             EnsureBoxes();
 
-            int index;
-            if (_boxes.TryGetValue(key, out index)) {
+            if (_boxes.TryGetValue(key, out int index)) {
                 value = _locals[index];
                 return true;
             }

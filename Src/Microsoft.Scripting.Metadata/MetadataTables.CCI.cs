@@ -243,8 +243,7 @@ namespace Microsoft.Scripting.Metadata {
         /// O(log(#generic parameters in module))
         /// </summary>
         public int GetGenericParameterCount() {
-            int count;
-            m_record.Import.GenericParamTable.FindGenericParametersForType(m_record.Rid, out count);
+            m_record.Import.GenericParamTable.FindGenericParametersForType(m_record.Rid, out int count);
             return count;
         }
     }
@@ -564,9 +563,8 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public PropertyAccessors GetAccessors() {
-            int methodCount;
             var import = m_record.Import;
-            int semanticsRow = import.MethodSemanticsTable.FindSemanticMethodsForProperty(m_record.Rid, out methodCount);
+            int semanticsRow = import.MethodSemanticsTable.FindSemanticMethodsForProperty(m_record.Rid, out int methodCount);
             
             uint getter = 0, setter = 0;
             for (ushort i = 0; i < methodCount; i++) {

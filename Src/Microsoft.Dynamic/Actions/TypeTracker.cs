@@ -63,8 +63,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
         public static explicit operator Type(TypeTracker tracker) {
-            TypeGroup tg = tracker as TypeGroup;
-            if (tg != null) {
+            if (tracker is TypeGroup tg) {
                 Type res;
                 if (!tg.TryGetNonGenericType(out res)) {
                     throw ScriptingRuntimeHelpers.SimpleTypeError("expected non-generic type, got generic-only type");

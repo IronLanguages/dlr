@@ -69,8 +69,7 @@ namespace Microsoft.Scripting.Runtime {
         #region IDictionary<object, object> Members
 
         void IDictionary<object, object>.Add(object key, object value) {
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 lock (this) {
                     if (_data == null) InitializeData();
                     if (TrySetExtraValue(strKey, value))
@@ -109,8 +108,7 @@ namespace Microsoft.Scripting.Runtime {
                 }
 
                 foreach (var key in GetExtraKeys()) {
-                    object dummy;
-                    if (TryGetExtraValue(key, out dummy) && dummy != Uninitialized.Instance) {
+                    if (TryGetExtraValue(key, out object dummy) && dummy != Uninitialized.Instance) {
                         res.Add(key);
                     }
                 }
@@ -120,8 +118,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         bool IDictionary<object, object>.Remove(object key) {
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 lock (this) {
                     if (TrySetExtraValue(strKey, Uninitialized.Instance)) return true;
 
@@ -138,8 +135,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public bool TryGetValue(object key, out object value) {
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 lock (this) {
                     if (TryGetExtraValue(strKey, out value) && value != Uninitialized.Instance) return true;
 
@@ -202,8 +198,7 @@ namespace Microsoft.Scripting.Runtime {
                 throw new KeyNotFoundException(key.ToString());
             }
             set {
-                string strKey = key as string;
-                if (strKey != null) {
+                if (key is string strKey) {
                     lock (this) {
                         if (TrySetExtraValue(strKey, value)) return;
 
@@ -270,8 +265,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public bool Remove(object key) {
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 if (TrySetExtraValue(strKey, Uninitialized.Instance)) {
                     return true;
                 }
@@ -300,8 +294,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             foreach (var o in GetExtraKeys()) {
-                object val;
-                if (TryGetExtraValue(o, out val) && val != Uninitialized.Instance) {
+                if (TryGetExtraValue(o, out object val) && val != Uninitialized.Instance) {
                     yield return new KeyValuePair<object, object>(o, val);
                 }
             }

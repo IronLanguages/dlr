@@ -180,8 +180,7 @@ namespace Microsoft.Scripting.Runtime {
         public static IList<string> GetStringMembers(IList<object> members) {
             List<string> res = new List<string>();
             foreach (object o in members) {
-                string str = o as string;
-                if (str != null) {
+                if (o is string str) {
                     res.Add(str);
                 }
             }
@@ -190,8 +189,7 @@ namespace Microsoft.Scripting.Runtime {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
         public static void SetEvent(EventTracker eventTracker, object value) {
-            EventTracker et = value as EventTracker;
-            if (et != null) {
+            if (value is EventTracker et) {
                 if (et != eventTracker) {
                     throw Error.UnexpectedEvent(eventTracker.DeclaringType.Name,
                                                 eventTracker.Name,

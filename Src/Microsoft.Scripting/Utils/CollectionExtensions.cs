@@ -32,13 +32,11 @@ namespace Microsoft.Scripting.Utils {
                 return EmptyReadOnlyCollection<T>.Instance;
             }
 
-            var roCollection = enumerable as ReadOnlyCollection<T>;
-            if (roCollection != null) {
+            if (enumerable is ReadOnlyCollection<T> roCollection) {
                 return roCollection;
             }
 
-            var collection = enumerable as ICollection<T>;
-            if (collection != null) {
+            if (enumerable is ICollection<T> collection) {
                 int count = collection.Count;
                 if (count == 0) {
                     return EmptyReadOnlyCollection<T>.Instance;
@@ -53,8 +51,7 @@ namespace Microsoft.Scripting.Utils {
             return new ReadOnlyCollection<T>(new List<T>(enumerable).ToArray());
         }
         internal static T[] ToArray<T>(this IEnumerable<T> enumerable) {
-            var c = enumerable as ICollection<T>;
-            if (c != null) {
+            if (enumerable is ICollection<T> c) {
                 var result = new T[c.Count];
                 c.CopyTo(result, 0);
                 return result;

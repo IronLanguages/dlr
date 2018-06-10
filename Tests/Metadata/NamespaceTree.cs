@@ -128,8 +128,7 @@ namespace Metadata {
                 NamespaceTreeNode ns = null;
 
                 while (true) {
-                    NamespaceTreeNode existing;
-                    if (_names.TryGetValue(prefix, out existing)) {
+                    if (_names.TryGetValue(prefix, out NamespaceTreeNode existing)) {
                         if (ns == null) {
                             existing.AddType(typeDef);
                         } else {

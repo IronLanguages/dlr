@@ -163,25 +163,21 @@ namespace Microsoft.Scripting.Actions {
                 return IsSideEffectFree(((UnaryExpression)rewritten).Operand);
             }
 
-            BinaryExpression be = rewritten as BinaryExpression;
-            if (be != null) {
+            if (rewritten is BinaryExpression be) {
                 if (be.Method == null && IsSideEffectFree(be.Left) && IsSideEffectFree(be.Right)) {
                     return true;
                 }
             }
 
-            MethodCallExpression mc = rewritten as MethodCallExpression;
-            if (mc != null && mc.Method != null) {
+            if (rewritten is MethodCallExpression mc && mc.Method != null) {
                 return mc.Method.IsDefined(typeof(NoSideEffectsAttribute), false);
             }
 
-            ConditionalExpression ce = rewritten as ConditionalExpression;
-            if (ce != null) {
+            if (rewritten is ConditionalExpression ce) {
                 return IsSideEffectFree(ce.Test) && IsSideEffectFree(ce.IfTrue) && IsSideEffectFree(ce.IfFalse);
             }
 
-            MemberExpression me = rewritten as MemberExpression;
-            if (me != null && me.Member is System.Reflection.FieldInfo) {
+            if (rewritten is MemberExpression me && me.Member is FieldInfo) {
                 return false;
             }
 

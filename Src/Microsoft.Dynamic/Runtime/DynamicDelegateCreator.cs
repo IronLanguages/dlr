@@ -51,8 +51,7 @@ namespace Microsoft.Scripting.Runtime {
         public Delegate GetDelegate(object callableObject, Type delegateType) {
             ContractUtils.RequiresNotNull(delegateType, "delegateType");
 
-            Delegate result = callableObject as Delegate;
-            if (result != null) {
+            if (callableObject is Delegate result) {
                 if (!delegateType.IsAssignableFrom(result.GetType())) {
                     throw ScriptingRuntimeHelpers.SimpleTypeError($"Cannot cast {result.GetType()} to {delegateType}.");
                 }
@@ -60,8 +59,7 @@ namespace Microsoft.Scripting.Runtime {
                 return result;
             }
 
-            IDynamicMetaObjectProvider dynamicObject = callableObject as IDynamicMetaObjectProvider;
-            if (dynamicObject != null) {
+            if (callableObject is IDynamicMetaObjectProvider dynamicObject) {
 
                 MethodInfo invoke;
 

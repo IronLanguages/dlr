@@ -328,8 +328,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             public override bool Equals(object obj) {
-                ComGetMemberBinder other = obj as ComGetMemberBinder;
-                return other != null &&
+                return obj is ComGetMemberBinder other &&
                     _CanReturnCallables == other._CanReturnCallables &&
                     _originalBinder.Equals(other._originalBinder);
             }

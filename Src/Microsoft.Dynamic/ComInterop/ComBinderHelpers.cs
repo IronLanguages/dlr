@@ -14,14 +14,13 @@
  * ***************************************************************************/
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.ComInterop {
     internal static class ComBinderHelpers {
@@ -38,14 +37,13 @@ namespace Microsoft.Scripting.ComInterop {
                 type == typeof(CurrencyWrapper)) {
 
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 
         internal static bool IsByRef(DynamicMetaObject mo) {
-            ParameterExpression pe = mo.Expression as ParameterExpression;
-            return pe != null && pe.IsByRef;
+            return mo.Expression is ParameterExpression pe && pe.IsByRef;
         }
 
         internal static bool IsStrongBoxArg(DynamicMetaObject o) {
@@ -67,7 +65,6 @@ namespace Microsoft.Scripting.ComInterop {
                 // set new arg infos to their original values or set default ones
                 // we will do this fixup early so that we can assume we always have
                 // arginfos in COM binder.
-
                 if (IsByRef(curArgument)) {
                     newArgs[i] = curArgument;
                     isByRefArg[i] = true;

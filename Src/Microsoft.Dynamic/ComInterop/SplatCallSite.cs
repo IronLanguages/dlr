@@ -40,8 +40,7 @@ namespace Microsoft.Scripting.ComInterop {
             Debug.Assert(args != null);
 
             // If it is a delegate, just let DynamicInvoke do the binding.
-            var d = _callable as Delegate;
-            if (d != null) {
+            if (_callable is Delegate d) {
                 return d.DynamicInvoke(args);
             }
 

@@ -1307,8 +1307,7 @@ namespace Microsoft.Scripting.Utils {
         internal static Dictionary<Type, Type> BindGenericParameters(Type/*!*/ openType, Type/*!*/ closedType, bool ignoreUnboundParameters) {
             var binding = new Dictionary<Type, Type>();
             BindGenericParameters(openType, closedType, (parameter, type) => {
-                Type existing;
-                if (binding.TryGetValue(parameter, out existing)) {
+                if (binding.TryGetValue(parameter, out Type existing)) {
                     return type == existing;
                 }
 

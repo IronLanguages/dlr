@@ -33,8 +33,7 @@ namespace Microsoft.Scripting.Actions {
         /// Given an operator returns the OperatorInfo associated with the operator or null
         /// </summary>
         public static OperatorInfo GetOperatorInfo(ExpressionType op) {
-            OperatorInfo res;
-            _infos.TryGetValue(op, out res);
+            _infos.TryGetValue(op, out OperatorInfo res);
             return res;
         }
 

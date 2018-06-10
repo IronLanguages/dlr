@@ -103,8 +103,7 @@ namespace Microsoft.Scripting {
         }
 
         public static void IncrementEntry<TKey>(IDictionary<TKey, int> histogram, TKey key) {
-            int value;
-            histogram.TryGetValue(key, out value);
+            histogram.TryGetValue(key, out int value);
             histogram[key] = value + 1;
         }
 
@@ -166,10 +165,8 @@ namespace Microsoft.Scripting {
             totalEvents++;
             lock (categoryEvents) {
                 string name = key.ToString();
-                Exception ex = key as Exception;
-                if (ex != null) name = ex.GetType().ToString();
-                int v;
-                if (!categoryEvents.TryGetValue(name, out v)) categoryEvents[name] = 1;
+                if (key is Exception ex) name = ex.GetType().ToString();
+                if (!categoryEvents.TryGetValue(name, out int v)) categoryEvents[name] = 1;
                 else categoryEvents[name] = v + 1;
 
                 if (!summaryStats.TryGetValue(category, out v)) summaryStats[category] = 1;

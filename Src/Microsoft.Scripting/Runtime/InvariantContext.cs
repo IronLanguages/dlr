@@ -44,23 +44,21 @@ namespace Microsoft.Scripting.Runtime {
                 return Operations.ConvertTo<T>(res);
             }
 
-            StringDictionaryExpando dictStorage = scope.Storage as StringDictionaryExpando;
-            if (dictStorage != null && dictStorage.Dictionary.TryGetValue(name, out res)) {
-                return Operations.ConvertTo<T>(res);                
+            if (scope.Storage is StringDictionaryExpando dictStorage &&
+                dictStorage.Dictionary.TryGetValue(name, out res)) {
+                return Operations.ConvertTo<T>(res);
             }
 
             return base.ScopeGetVariable<T>(scope, name);
         }
 
         public override dynamic ScopeGetVariable(Scope scope, string name) {
-            var storage = scope.Storage as ScopeStorage;
-            object res;
-            if (storage != null && storage.TryGetValue(name, false, out res)) {
+            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object res)) {
                 return res;
             }
 
-            StringDictionaryExpando dictStorage = scope.Storage as StringDictionaryExpando;
-            if (dictStorage != null && dictStorage.Dictionary.TryGetValue(name, out res)) {
+            if (scope.Storage is StringDictionaryExpando dictStorage &&
+                dictStorage.Dictionary.TryGetValue(name, out res)) {
                 return res;
             }
 
@@ -68,14 +66,12 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public override void ScopeSetVariable(Scope scope, string name, object value) {
-            var storage = scope.Storage as ScopeStorage;
-            if (storage != null) {
+            if (scope.Storage is ScopeStorage storage) {
                 storage.SetValue(name, false, value);
                 return;
             }
 
-            StringDictionaryExpando dictStorage = scope.Storage as StringDictionaryExpando;
-            if (dictStorage != null) {
+            if (scope.Storage is StringDictionaryExpando dictStorage) {
                 dictStorage.Dictionary[name] = value;
                 return;
             }
@@ -84,13 +80,11 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public override bool ScopeTryGetVariable(Scope scope, string name, out dynamic value) {
-            var storage = scope.Storage as ScopeStorage;
-            if (storage != null && storage.TryGetValue(name, false, out value)) {
+            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out value)) {
                 return true;
             }
 
-            StringDictionaryExpando dictStorage = scope.Storage as StringDictionaryExpando;
-            if (dictStorage != null && dictStorage.Dictionary.TryGetValue(name, out value)) {
+            if (scope.Storage is StringDictionaryExpando dictStorage && dictStorage.Dictionary.TryGetValue(name, out value)) {
                 return true;
             }
 

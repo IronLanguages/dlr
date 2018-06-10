@@ -41,13 +41,9 @@ namespace Microsoft.Scripting.ComInterop {
             Guid = typeAttr.guid;
 
             for (int i = 0; i < typeAttr.cImplTypes; i++) {
-                int hRefType;
-                typeInfo.GetRefTypeOfImplType(i, out hRefType);
-                ComTypes.ITypeInfo currentTypeInfo;
-                typeInfo.GetRefTypeInfo(hRefType, out currentTypeInfo);
-
-                ComTypes.IMPLTYPEFLAGS implTypeFlags;
-                typeInfo.GetImplTypeFlags(i, out implTypeFlags);
+                typeInfo.GetRefTypeOfImplType(i, out int hRefType);
+                typeInfo.GetRefTypeInfo(hRefType, out ComTypes.ITypeInfo currentTypeInfo);
+                typeInfo.GetImplTypeFlags(i, out ComTypes.IMPLTYPEFLAGS implTypeFlags);
 
                 bool isSourceItf = (implTypeFlags & ComTypes.IMPLTYPEFLAGS.IMPLTYPEFLAG_FSOURCE) != 0;
                 AddInterface(currentTypeInfo, isSourceItf);

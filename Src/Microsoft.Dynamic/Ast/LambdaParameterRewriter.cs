@@ -28,8 +28,7 @@ namespace Microsoft.Scripting.Ast {
         // We don't need to worry about parameter shadowing, because we're
         // replacing the instances consistently everywhere
         protected override Expression VisitParameter(ParameterExpression node) {
-            ParameterExpression result;
-            if (_map.TryGetValue(node, out result)) {
+            if (_map.TryGetValue(node, out ParameterExpression result)) {
                 return result;
             }
             return node;

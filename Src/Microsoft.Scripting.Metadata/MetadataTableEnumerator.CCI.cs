@@ -41,8 +41,11 @@ namespace Microsoft.Scripting.Metadata {
             m_type = type;
             m_tables = parent.m_tables;
 
-            int start, count;
-            m_indirection = parent.m_tables.m_import.GetEnumeratorRange(type, parent.Token, out start, out count);
+            m_indirection = parent.m_tables.m_import.GetEnumeratorRange(
+                type,
+                parent.Token,
+                out int start,
+                out int count);
             
             m_startRid = start;
             m_endRid = start + count;

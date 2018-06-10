@@ -585,8 +585,7 @@ namespace Microsoft.Scripting.Hosting {
         /// is write-only.
         /// </summary>
         public bool TryGetMember([NotNull]ObjectHandle obj, string name, out ObjectHandle value) {
-            object val;
-            if (TryGetMember(GetLocalObject(obj), name, out val)) {
+            if (TryGetMember(GetLocalObject(obj), name, out object val)) {
                 value = new ObjectHandle(val);
                 return true;
             }

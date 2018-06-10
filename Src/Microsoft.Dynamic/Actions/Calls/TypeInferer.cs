@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
@@ -26,8 +27,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Actions.Calls {
     public static class TypeInferer {
         private static ArgumentInputs EnsureInputs(Dictionary<Type, ArgumentInputs> dict, Type type) {
-            ArgumentInputs res;
-            if (!dict.TryGetValue(type, out res)) {
+            if (!dict.TryGetValue(type, out ArgumentInputs res)) {
                 dict[type] = res = new ArgumentInputs(type);
             }
             return res;
@@ -53,8 +53,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             var restrictions = new Dictionary<DynamicMetaObject, BindingRestrictions>();
             bool noMethod = false;
             foreach (Type t in genArgs) {
-                ArgumentInputs inps;
-                if (!inputs.TryGetValue(t, out inps)) {
+                if (!inputs.TryGetValue(t, out ArgumentInputs inps)) {
                     continue;
                 }
 
@@ -221,8 +220,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Checks to see if the x type parameter is dependent upon the y type parameter.
         /// </summary>
         private static bool IsDependentConstraint(Dictionary<Type, List<Type>> dependencies, Type x, Type y) {
-            List<Type> childDeps;
-            if (dependencies.TryGetValue(x, out childDeps)) {
+            if (dependencies.TryGetValue(x, out List<Type> childDeps)) {
                 foreach (Type t in childDeps) {
                     if (t == y) {
                         return true;

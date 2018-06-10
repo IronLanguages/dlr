@@ -65,13 +65,11 @@ namespace Microsoft.Scripting.Actions {
             Debug.Assert(childName.IndexOf('.') == -1); // This is the simple name, not the full name
             Debug.Assert(_packageAssemblies.Contains(assem)); // Parent namespace must contain all the assemblies of the child
 
-            MemberTracker ret;
-            if (_dict.TryGetValue(childName, out ret)) {
+            if (_dict.TryGetValue(childName, out MemberTracker ret)) {
                 // If we have a module, then we add the assembly to the InnerModule
                 // If it's not a module, we'll wipe it out below, eg "def System(): pass" then 
                 // "import System" will result in the namespace being visible.
-                NamespaceTracker package = ret as NamespaceTracker;
-                if (package != null) {
+                if (ret is NamespaceTracker package) {
                     if (!package._packageAssemblies.Contains(assem)) {
                         package._packageAssemblies.Add(assem);
                         package.UpdateSubtreeIds();

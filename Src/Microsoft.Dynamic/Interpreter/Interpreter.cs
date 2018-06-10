@@ -118,8 +118,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private ExceptionHandlingResult HandleException(InterpretedFrame frame, Exception exception) {
             frame.SaveTraceToException(exception);
-            ExceptionHandler handler;
-            frame.InstructionIndex += GotoHandler(frame, exception, out handler);
+            frame.InstructionIndex += GotoHandler(frame, exception, out ExceptionHandler handler);
 
             if (handler == null || handler.IsFault) {
                 // run finally/fault blocks:
@@ -134,8 +133,7 @@ namespace Microsoft.Scripting.Interpreter {
             
 #if FEATURE_THREAD
             // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
-            var abort = exception as ThreadAbortException;
-            if (abort != null) {
+            if (exception is ThreadAbortException abort) {
                 _anyAbortException = abort;
                 frame.CurrentAbortHandler = handler;
             }

@@ -221,8 +221,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
             Debug.Assert(!node.NodeType.IsReadWriteAssignment());
 
-            var param = node.Left as ParameterExpression;
-            if (param != null && node.NodeType == ExpressionType.Assign) {
+            if (node.Left is ParameterExpression param && node.NodeType == ExpressionType.Assign) {
                 var left = VisitVariable(param, ExpressionAccess.Write);
                 var right = Visit(node.Right);
 

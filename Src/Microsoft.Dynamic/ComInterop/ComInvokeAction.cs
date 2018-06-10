@@ -41,8 +41,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
-            DynamicMetaObject res;
-            if (ComBinder.TryBindInvoke(this, target, args, out res)) {
+            if (ComBinder.TryBindInvoke(this, target, args, out DynamicMetaObject res)) {
                 return res;
             }
 
