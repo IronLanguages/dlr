@@ -29,17 +29,22 @@ namespace Microsoft.Scripting.Debugging {
             if (first.Count != second.Count) {
                 return false;
             }
-            var cmp = EqualityComparer<T>.Default;
-            var f = first.GetEnumerator();
-            var s = second.GetEnumerator();
-            while (f.MoveNext()) {
-                s.MoveNext();
 
-                if (!cmp.Equals(f.Current, s.Current)) {
-                    return false;
+            var cmp = EqualityComparer<T>.Default;
+
+            using (var f = first.GetEnumerator()) {
+                using (var s = second.GetEnumerator()) {
+                    while (f.MoveNext()) {
+                        s.MoveNext();
+
+                        if (!cmp.Equals(f.Current, s.Current)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
             }
-            return true;
         }
 
         internal static int ListHashCode<T>(this IEnumerable<T> list) {

@@ -67,17 +67,22 @@ namespace Microsoft.Scripting.Utils {
             if (first.Count != second.Count) {
                 return false;
             }
-            var cmp = EqualityComparer<T>.Default;
-            var f = first.GetEnumerator();
-            var s = second.GetEnumerator();
-            while (f.MoveNext()) {
-                s.MoveNext();
 
-                if (!cmp.Equals(f.Current, s.Current)) {
-                    return false;
+            var cmp = EqualityComparer<T>.Default;
+
+            using (var f = first.GetEnumerator()) {
+                using (var s = second.GetEnumerator()) {
+                    while (f.MoveNext()) {
+                        s.MoveNext();
+
+                        if (!cmp.Equals(f.Current, s.Current)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
             }
-            return true;
         }
 
         // Name needs to be different so it doesn't conflict with Enumerable.Select

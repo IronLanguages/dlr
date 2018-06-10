@@ -119,29 +119,29 @@ namespace Microsoft.Scripting.Interpreter {
                 Func<int, int> labelIndexer, IList<KeyValuePair<int, object>> debugCookies) {
 
                 var result = new List<InstructionView>();
-                int index = 0;
                 int stackDepth = 0;
                 int continuationsDepth = 0;
 
-                var cookieEnumerator = (debugCookies != null ? debugCookies : new KeyValuePair<int, object>[0]).GetEnumerator();
-                var hasCookie = cookieEnumerator.MoveNext();
+                using (var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator()) {
+                    var hasCookie = cookieEnumerator.MoveNext();
 
-                for (int i = 0; i < instructions.Count; i++) {
-                    object cookie = null;
-                    while (hasCookie && cookieEnumerator.Current.Key == i) {
-                        cookie = cookieEnumerator.Current.Value;
-                        hasCookie = cookieEnumerator.MoveNext();
+                    for (int i = 0; i < instructions.Count; i++) {
+                        object cookie = null;
+                        while (hasCookie && cookieEnumerator.Current.Key == i) {
+                            cookie = cookieEnumerator.Current.Value;
+                            hasCookie = cookieEnumerator.MoveNext();
+                        }
+
+                        int stackDiff = instructions[i].StackBalance;
+                        int contDiff = instructions[i].ContinuationsBalance;
+                        string name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
+                        result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
+
+                        stackDepth += stackDiff;
+                        continuationsDepth += contDiff;
                     }
-
-                    int stackDiff = instructions[i].StackBalance;
-                    int contDiff = instructions[i].ContinuationsBalance;
-                    string name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
-                    result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
-                    
-                    index++;
-                    stackDepth += stackDiff;
-                    continuationsDepth += contDiff;
                 }
+
                 return result.ToArray();
             }
 
