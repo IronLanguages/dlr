@@ -273,12 +273,13 @@ namespace Microsoft.Scripting.Hosting {
 
             ScriptEngine engine;
             if (!TryGetEngineByFileExtension(extension, out engine)) {
-                throw new ArgumentException(string.Format("File extension '{0}' is not associated with any language.", extension));
+                throw new ArgumentException($"File extension '{extension}' is not associated with any language.");
             }
 
             var searchPaths = engine.GetSearchPaths();
             if (searchPaths.Count == 0) {
-                throw new InvalidOperationException(string.Format("No search paths defined for language '{0}'", engine.Setup.DisplayName));
+                throw new InvalidOperationException(
+                    $"No search paths defined for language '{engine.Setup.DisplayName}'");
             }
 
             // See if the file is already loaded, if so return the scope

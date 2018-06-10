@@ -257,7 +257,8 @@ namespace Microsoft.Scripting.Actions {
             while (dictEnum.MoveNext()) {
                 string name = dictEnum.Entry.Key as string;
                 if (name == null) {
-                    throw ScriptingRuntimeHelpers.SimpleTypeError(String.Format("expected string for dictionary argument got {0}", dictEnum.Entry.Key));
+                    throw ScriptingRuntimeHelpers.SimpleTypeError(
+                        $"expected string for dictionary argument got {dictEnum.Entry.Key}");
                 }
                 names[index] = name;
                 if (types != null) {

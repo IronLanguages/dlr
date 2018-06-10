@@ -175,7 +175,7 @@ namespace Microsoft.Scripting.Runtime {
 
             var aqtn = AssemblyQualifiedTypeName.ParseArgument(languageTypeName, paramName ?? "languageTypeName");
             if (_languageConfigurations.ContainsKey(aqtn)) {
-                throw new ArgumentException(string.Format("Duplicate language with type name '{0}'", aqtn), "languageTypeName");
+                throw new ArgumentException($"Duplicate language with type name '{aqtn}'", nameof(languageTypeName));
             }
 
             // Add global language options first, they can be rewritten by language specific ones:
@@ -248,8 +248,8 @@ namespace Microsoft.Scripting.Runtime {
                     LanguageConfiguration existingConfig;
                     Type type = language.GetType();
                     if (_loadedProviderTypes.TryGetValue(type, out existingConfig)) {
-                        throw new InvalidOperationException(String.Format("Language implemented by type '{0}' has already been loaded using name '{1}'",
-                            config.ProviderName, existingConfig.ProviderName));
+                        throw new InvalidOperationException(
+                            $"Language implemented by type '{config.ProviderName}' has already been loaded using name '{existingConfig.ProviderName}'");
                     }
 
                     _loadedProviderTypes.Add(type, config);

@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                             }
                         }
                         if (provider == null) {
-                            throw new InvalidOptionException(String.Format("Unknown language id '{0}'.", value));
+                            throw new InvalidOptionException($"Unknown language id '{value}'.");
                         }
 
                         _options.LanguageProvider = provider;
