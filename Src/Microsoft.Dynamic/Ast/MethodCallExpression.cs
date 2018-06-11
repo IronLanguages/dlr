@@ -49,7 +49,7 @@ namespace Microsoft.Scripting.Ast {
 
             ParameterInfo[] parameters = method.GetParameters();
 
-            ContractUtils.Requires(arguments.Length == parameters.Length, "arguments", "Incorrect number of arguments");
+            ContractUtils.Requires(arguments.Length == parameters.Length, nameof(arguments), "Incorrect number of arguments");
 
             if (instance != null) {
                 instance = Convert(instance, method.DeclaringType);
@@ -183,7 +183,7 @@ namespace Microsoft.Scripting.Ast {
                         argument = arguments[consumed++];
                     } else {
                         // Missing argument, try default value.
-                        ContractUtils.Requires(!parameter.IsMandatory(), "arguments", "Argument not provided for a mandatory parameter");
+                        ContractUtils.Requires(!parameter.IsMandatory(), nameof(arguments), "Argument not provided for a mandatory parameter");
                         argument = CreateDefaultValueExpression(parameter);
                     }
                 }
@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.Ast {
                 // Next parameter
                 current++;
             }
-            ContractUtils.Requires(consumed == arguments.Length, "arguments", "Incorrect number of arguments");
+            ContractUtils.Requires(consumed == arguments.Length, nameof(arguments), "Incorrect number of arguments");
             return Expression.Call(instance, method, clone ?? arguments);
         }
 

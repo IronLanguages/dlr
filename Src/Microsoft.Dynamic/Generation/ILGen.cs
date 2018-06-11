@@ -320,7 +320,7 @@ namespace Microsoft.Scripting.Generation {
         #region Instruction helpers
 
         public void EmitLoadArg(int index) {
-            ContractUtils.Requires(index >= 0, "index");
+            ContractUtils.Requires(index >= 0, nameof(index));
 
             switch (index) {
                 case 0:
@@ -346,7 +346,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitLoadArgAddress(int index) {
-            ContractUtils.Requires(index >= 0, "index");
+            ContractUtils.Requires(index >= 0, nameof(index));
 
             if (index <= Byte.MaxValue) {
                 Emit(OpCodes.Ldarga_S, (byte)index);
@@ -356,7 +356,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public void EmitStoreArg(int index) {
-            ContractUtils.Requires(index >= 0, "index");
+            ContractUtils.Requires(index >= 0, nameof(index));
 
             if (index <= Byte.MaxValue) {
                 Emit(OpCodes.Starg_S, (byte)index);
@@ -608,7 +608,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
             ConstructorInfo ci = type.GetConstructor(paramTypes);
-            ContractUtils.Requires(ci != null, "type", Strings.TypeDoesNotHaveConstructorForTheSignature);
+            ContractUtils.Requires(ci != null, nameof(type), Strings.TypeDoesNotHaveConstructorForTheSignature);
             EmitNew(ci);
         }
 

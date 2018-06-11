@@ -97,8 +97,8 @@ namespace Microsoft.Scripting {
         /// Line numbers starts with 1.
         /// </summary>
         public string[] GetCodeLines(int start, int count) {
-            ContractUtils.Requires(start > 0, "start");
-            ContractUtils.Requires(count > 0, "count");
+            ContractUtils.Requires(start > 0, nameof(start));
+            ContractUtils.Requires(count > 0, nameof(count));
 
             List<string> result = new List<string>(count);
 

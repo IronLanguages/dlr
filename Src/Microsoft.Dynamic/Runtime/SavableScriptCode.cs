@@ -62,8 +62,8 @@ namespace Microsoft.Scripting {
         /// The DLR determines the internal format of the ScriptCode and the DLR can feel free to rev this as appropriate.  
         /// </summary>
         public static void SaveToAssembly(string assemblyName, params SavableScriptCode[] codes) {
-            ContractUtils.RequiresNotNull(assemblyName, "assemblyName");
-            ContractUtils.RequiresNotNullItems(codes, "codes");
+            ContractUtils.RequiresNotNull(assemblyName, nameof(assemblyName));
+            ContractUtils.RequiresNotNullItems(codes, nameof(codes));
 
 #if FEATURE_FILESYSTEM
             // break the assemblyName into it's dir/name/extension

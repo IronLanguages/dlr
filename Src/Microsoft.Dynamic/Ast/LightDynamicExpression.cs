@@ -94,7 +94,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightDynamicExpression1(CallSiteBinder binder, Expression arg0) 
             : base(binder) {
-            ContractUtils.RequiresNotNull(arg0, "arg0");
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             _arg0 = arg0;
         }
 
@@ -357,7 +357,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal protected LightTypedDynamicExpression3(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2)
             : base(binder, arg0, arg1, arg2) {
-            ContractUtils.RequiresNotNull(returnType, "returnType");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
         }
 
@@ -475,7 +475,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal LightTypedDynamicExpression4(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(binder, arg0, arg1, arg2, arg3) {
-            ContractUtils.RequiresNotNull(returnType, "returnType");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
         }
 
@@ -513,8 +513,8 @@ namespace Microsoft.Scripting.Ast {
         internal protected LightTypedDynamicExpressionN(CallSiteBinder binder, Type returnType, IList<Expression> args) 
             : base(binder) {
                 Debug.Assert(args.Count > 0);
-            ContractUtils.RequiresNotNull(returnType, "returnType");
-            ContractUtils.RequiresNotEmpty(args, "args");
+            ContractUtils.RequiresNotNull(returnType, nameof(returnType));
+            ContractUtils.RequiresNotEmpty(args, nameof(args));
             
             _args = args;
             _returnType = returnType;
@@ -631,7 +631,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static LightDynamicExpression LightDynamic(CallSiteBinder binder, Type returnType, IList<Expression> arguments) {
-            ContractUtils.RequiresNotNull(arguments, "arguments");
+            ContractUtils.RequiresNotNull(arguments, nameof(arguments));
             return new LightTypedDynamicExpressionN(binder, returnType, arguments);
         }
 
@@ -640,7 +640,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static LightDynamicExpression LightDynamic(CallSiteBinder binder, Type returnType, ExpressionCollectionBuilder<Expression> arguments) {
-            ContractUtils.RequiresNotNull(arguments, "arguments");
+            ContractUtils.RequiresNotNull(arguments, nameof(arguments));
             switch (arguments.Count) {
                 case 1: return LightDynamic(binder, returnType, arguments.Expression0);
                 case 2: return LightDynamic(binder, returnType, arguments.Expression0, arguments.Expression1);

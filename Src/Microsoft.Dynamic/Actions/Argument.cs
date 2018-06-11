@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public Argument(ArgumentType kind, string name) {
-            ContractUtils.Requires((kind == ArgumentType.Named) ^ (name == null), "kind");
+            ContractUtils.Requires((kind == ArgumentType.Named) ^ (name == null), nameof(kind));
             _kind = kind;
             _name = name;
         }

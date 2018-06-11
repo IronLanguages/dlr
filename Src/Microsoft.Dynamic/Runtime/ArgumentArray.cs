@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Runtime {
         public int Count { get; }
 
         public object GetArgument(int index) {
-            ContractUtils.RequiresArrayIndex(_arguments, index, "index");
+            ContractUtils.RequiresArrayIndex(_arguments, index, nameof(index));
             return _arguments[_first + index];
         }
 

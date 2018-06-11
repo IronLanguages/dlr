@@ -640,7 +640,7 @@ namespace Microsoft.Scripting.Generation {
 #if FEATURE_PDBEMIT
             if (emitDebugSymbols) {
                 var module = method.Module as ModuleBuilder;
-                ContractUtils.Requires(module != null, "method", "MethodBuilder does not have a valid ModuleBuilder");
+                ContractUtils.Requires(module != null, nameof(method), "MethodBuilder does not have a valid ModuleBuilder");
                 lambda.CompileToMethod(method, DebugInfoGenerator.CreatePdbGenerator());
                 return;
             }

@@ -36,8 +36,8 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static DynamicMetaObject Restrict(this DynamicMetaObject self, Type type) {
-            ContractUtils.RequiresNotNull(self, "self");
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(self, nameof(self));
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (self is IRestrictedMetaObject rmo) {
                 return rmo.Restrict(type);

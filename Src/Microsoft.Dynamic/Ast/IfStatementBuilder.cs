@@ -26,25 +26,25 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public IfStatementBuilder ElseIf(Expression test, params Expression[] body) {
-            ContractUtils.RequiresNotNullItems(body, "body");
+            ContractUtils.RequiresNotNullItems(body, nameof(body));
             return ElseIf(test, Utils.BlockVoid(body));
         }
 
         public IfStatementBuilder ElseIf(Expression test, Expression body) {
-            ContractUtils.RequiresNotNull(test, "test");
-            ContractUtils.Requires(test.Type == typeof(bool), "test");
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(test, nameof(test));
+            ContractUtils.Requires(test.Type == typeof(bool), nameof(test));
+            ContractUtils.RequiresNotNull(body, nameof(body));
             _clauses.Add(Utils.IfCondition(test, body));
             return this;
         }
 
         public Expression Else(params Expression[] body) {
-            ContractUtils.RequiresNotNullItems(body, "body");
+            ContractUtils.RequiresNotNullItems(body, nameof(body));
             return Else(Utils.BlockVoid(body));
         }
 
         public Expression Else(Expression body) {
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
             return BuildConditions(_clauses, body);
         }
 
@@ -68,7 +68,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static implicit operator Expression(IfStatementBuilder builder) {
-            ContractUtils.RequiresNotNull(builder, "builder");
+            ContractUtils.RequiresNotNull(builder, nameof(builder));
             return builder.ToStatement();
         }
     }
@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public static Expression If(IfStatementTest[] tests, Expression @else) {
-            ContractUtils.RequiresNotNullItems(tests, "tests");
+            ContractUtils.RequiresNotNullItems(tests, nameof(tests));
             return IfStatementBuilder.BuildConditions(tests, @else);
         }
 

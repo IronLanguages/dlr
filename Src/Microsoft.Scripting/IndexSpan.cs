@@ -13,8 +13,8 @@ namespace Microsoft.Scripting {
         private readonly int _start, _length;
 
         public IndexSpan(int start, int length) {
-            ContractUtils.Requires(length >= 0, "length");
-            ContractUtils.Requires(start >= 0, "start");
+            ContractUtils.Requires(length >= 0, nameof(length));
+            ContractUtils.Requires(start >= 0, nameof(start));
 
             _start = start;
             _length = length;

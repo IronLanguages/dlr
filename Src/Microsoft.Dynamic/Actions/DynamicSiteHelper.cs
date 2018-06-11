@@ -16,12 +16,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+
 using Microsoft.Scripting.Utils;
-using System.Reflection.Emit;
 using Microsoft.Scripting.Generation;
-using System.Reflection;
 
 namespace Microsoft.Scripting.Actions {
     // TODO: replace this class with calls to Expression.GetDelegateType
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public static Type GetStandardDelegateType(Type[] types) {
-            ContractUtils.RequiresNotEmpty(types, "types");
+            ContractUtils.RequiresNotEmpty(types, nameof(types));
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
