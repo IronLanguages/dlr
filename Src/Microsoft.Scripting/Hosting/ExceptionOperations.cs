@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Hosting {
 
         public bool HandleException(ObjectHandle exception) {
             ContractUtils.RequiresNotNull(exception, nameof(exception));
-            ContractUtils.Requires(exception.Unwrap() is Exception _, nameof(exception), "ObjectHandle must be to Exception object");
+            ContractUtils.Requires(exception.Unwrap() is Exception, nameof(exception), "ObjectHandle must be to Exception object");
 
             return false;
         }
