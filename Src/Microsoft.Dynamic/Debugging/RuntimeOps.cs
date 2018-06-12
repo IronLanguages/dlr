@@ -64,8 +64,7 @@ namespace Microsoft.Scripting.Debugging {
 
         [Obsolete("do not call this method", true)]
         public static object GeneratorLoopProc(DebugThread thread) {
-            bool moveNext;
-            return thread.DebugContext.GeneratorLoopProc(thread.GetLeafFrame(), out moveNext);
+            return thread.DebugContext.GeneratorLoopProc(thread.GetLeafFrame(), out bool _);
         }
 
         [Obsolete("do not call this method", true)]

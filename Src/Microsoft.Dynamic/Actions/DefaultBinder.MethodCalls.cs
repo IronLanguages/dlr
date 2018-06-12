@@ -84,7 +84,6 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="name">The name of the method or null to use the name from targets.</param>
         /// <returns>A meta object which results from the call.</returns>
         public DynamicMetaObject CallMethod(DefaultOverloadResolver resolver, IList<MethodBase> targets, BindingRestrictions restrictions, string name) {
-            BindingTarget target;
             return CallMethod(
                 resolver,
                 targets,
@@ -92,7 +91,7 @@ namespace Microsoft.Scripting.Actions {
                 name,
                 NarrowingLevel.None,
                 NarrowingLevel.All,
-                out target
+                out BindingTarget _
             );
         }
 

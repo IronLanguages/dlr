@@ -70,8 +70,7 @@ namespace Microsoft.Scripting.Hosting {
             IO = new ScriptIO(Manager.SharedIO);
             _engines = new Dictionary<LanguageContext, ScriptEngine>();
 
-            bool freshEngineCreated;
-            _globals = new ScriptScope(GetEngineNoLockNoNotification(_invariantContext, out freshEngineCreated), Manager.Globals);
+            _globals = new ScriptScope(GetEngineNoLockNoNotification(_invariantContext, out bool _), Manager.Globals);
 
             // runtime needs to be all set at this point, host code is called
 

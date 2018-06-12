@@ -42,8 +42,7 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public static ContextId RegisterContext(object identifier) {
             lock(_contexts) {
-                ContextId res;
-                if (_contexts.TryGetValue(identifier, out res)) {
+                if (_contexts.TryGetValue(identifier, out ContextId _)) {
                     throw Error.LanguageRegistered();
                 }
 

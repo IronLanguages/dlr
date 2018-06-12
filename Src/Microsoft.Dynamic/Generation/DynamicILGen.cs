@@ -27,8 +27,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public T CreateDelegate<T>() {
-            MethodInfo mi;
-            return CreateDelegate<T>(out mi);
+            return CreateDelegate<T>(out MethodInfo _);
         }
 
         public abstract T CreateDelegate<T>(out MethodInfo mi);
