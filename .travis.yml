@@ -18,10 +18,10 @@ dist: trusty
 osx_image: xcode9.1
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell_6.0.2-1.ubuntu.14.04_amd64.deb; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg -i powershell_6.0.2-1.ubuntu.14.04_amd64.deb; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell-6.0.2-osx.10.12-x64.pkg; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo installer -pkg powershell-6.0.2-osx.10.12-x64.pkg -target /; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.deb https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell_6.0.2-1.ubuntu.14.04_amd64.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg -i powershell.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.pkg https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell-6.0.2-osx.10.12-x64.pkg; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo installer -pkg powershell.pkg -target /; fi
 
 dotnet: 2.1.4
 
