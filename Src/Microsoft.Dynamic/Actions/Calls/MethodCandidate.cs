@@ -212,8 +212,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (ArgBuilder ab in _argBuilders) {
                 // TODO: define a virtual method on ArgBuilder implementing this functionality:
 
-                SimpleArgBuilder sab = ab as SimpleArgBuilder;
-                if (sab != null) {
+                if (ab is SimpleArgBuilder sab) {
                     // we consume one or more incoming argument(s)
                     if (sab.IsParamsArray) {
                         // consume all the extra arguments
@@ -258,8 +257,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private int GetConsumedArguments() {
             int consuming = 0;
             foreach (ArgBuilder argb in _argBuilders) {
-                SimpleArgBuilder sab = argb as SimpleArgBuilder;
-                if (sab != null && !sab.IsParamsDict || argb is KeywordArgBuilder) {
+                if (argb is SimpleArgBuilder sab && !sab.IsParamsDict || argb is KeywordArgBuilder) {
                     consuming++;
                 }
             }

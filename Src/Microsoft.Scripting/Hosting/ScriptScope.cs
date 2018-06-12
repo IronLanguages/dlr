@@ -133,14 +133,13 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool TryGetVariableHandle(string name, out ObjectHandle handle) {
-            object value;
-            if (TryGetVariable(name, out value)) {
+            if (TryGetVariable(name, out object value)) {
                 handle = new ObjectHandle(value);
                 return true;
-            } else {
-                handle = null;
-                return false;
             }
+
+            handle = null;
+            return false;
         }
 
         /// <summary>

@@ -144,8 +144,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override bool Equals(object obj) {
-            ComboBinder other = obj as ComboBinder;
-            if (other != null) {
+            if (obj is ComboBinder other) {
                 if (_metaBinders.Length != other._metaBinders.Length) {
                     return false;
                 }

@@ -15,8 +15,7 @@ namespace Microsoft.Scripting.Metadata {
             }
 
             lock (_metadataCache) {
-                MetadataTables[] metadata;
-                if (!_metadataCache.TryGetValue(assembly, out metadata)) {
+                if (!_metadataCache.TryGetValue(assembly, out MetadataTables[] metadata)) {
                     var modules = assembly.GetModules(false);
                     metadata = new MetadataTables[modules.Length];
                     int i = 1;

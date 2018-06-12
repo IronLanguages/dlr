@@ -585,8 +585,7 @@ namespace Microsoft.Scripting.Hosting {
         /// is write-only.
         /// </summary>
         public bool TryGetMember([NotNull]ObjectHandle obj, string name, out ObjectHandle value) {
-            object val;
-            if (TryGetMember(GetLocalObject(obj), name, out val)) {
+            if (TryGetMember(GetLocalObject(obj), name, out object val)) {
                 value = new ObjectHandle(val);
                 return true;
             }
@@ -681,13 +680,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
         public bool TryExplicitConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            T outp;
-            bool res = _ops.TryExplicitConvertTo<T>(GetLocalObject(obj), out outp);
-            if (res) {
-                result = new ObjectHandle(obj);
-            } else {
-                result = null;
-            }
+            bool res = _ops.TryExplicitConvertTo<T>(GetLocalObject(obj), out T _);
+            result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 
@@ -697,13 +691,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
         public bool TryExplicitConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            object outp;
-            bool res = _ops.TryExplicitConvertTo(GetLocalObject(obj), type, out outp);
-            if (res) {
-                result = new ObjectHandle(obj);
-            } else {
-                result = null;
-            }
+            bool res = _ops.TryExplicitConvertTo(GetLocalObject(obj), type, out object _);
+            result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 
@@ -729,13 +718,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
         public bool TryImplicitConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            T outp;
-            bool res = _ops.TryImplicitConvertTo<T>(GetLocalObject(obj), out outp);
-            if (res) {
-                result = new ObjectHandle(obj);
-            } else {
-                result = null;
-            }
+            bool res = _ops.TryImplicitConvertTo<T>(GetLocalObject(obj), out T _);
+            result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 
@@ -745,13 +729,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
         public bool TryImplicitConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            object outp;
-            bool res = _ops.TryImplicitConvertTo(GetLocalObject(obj), type, out outp);
-            if (res) {
-                result = new ObjectHandle(obj);
-            } else {
-                result = null;
-            }
+            bool res = _ops.TryImplicitConvertTo(GetLocalObject(obj), type, out object _);
+            result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 

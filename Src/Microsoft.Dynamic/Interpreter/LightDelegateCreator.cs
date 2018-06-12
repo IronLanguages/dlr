@@ -105,8 +105,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private Type DelegateType {
             get {
-                LambdaExpression le = _lambda as LambdaExpression;
-                if (le != null) {
+                if (_lambda is LambdaExpression le) {
                     return le.Type;
                 }
 

@@ -97,15 +97,14 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public LanguageContext GetLanguageByName(string languageName) {
-            LanguageContext language;
-            if (!TryGetLanguage(languageName, out language)) {
+            if (!TryGetLanguage(languageName, out LanguageContext language)) {
                 throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
             return language;
         }
 
         public bool TryGetLanguageByFileExtension(string fileExtension, out LanguageContext language) {
-            ContractUtils.RequiresNotEmpty(fileExtension, "fileExtension");
+            ContractUtils.RequiresNotEmpty(fileExtension, nameof(fileExtension));
             return _configuration.TryLoadLanguage(this, DlrConfiguration.NormalizeExtension(fileExtension), true, out language);
         }
 

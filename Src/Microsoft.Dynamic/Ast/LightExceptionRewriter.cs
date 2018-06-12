@@ -44,8 +44,7 @@ namespace Microsoft.Scripting.Ast {
 #endif
 
         internal Expression Rewrite(Expression expr) {
-            var lambda = expr as LambdaExpression;
-            if (lambda != null) {
+            if (expr is LambdaExpression lambda) {
                 // just re-write the body, no need for an outer return label
                 return Expression.Lambda(
                     Rewrite(lambda.Body),

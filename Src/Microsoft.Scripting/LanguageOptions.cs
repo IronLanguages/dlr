@@ -111,14 +111,12 @@ namespace Microsoft.Scripting {
         /// Reaturns a read-only copy of the option's value.
         /// </summary>
         public static ReadOnlyCollection<string> GetStringCollectionOption(IDictionary<string, object> options, string name, params char[] separators) {
-            object value;
-            if (options == null || !options.TryGetValue(name, out value)) {
+            if (options == null || !options.TryGetValue(name, out object value)) {
                 return null;
             }
 
             // a collection:
-            var collection = value as ICollection<string>;
-            if (collection != null) {
+            if (value is ICollection<string> collection) {
                 foreach (var item in collection) {
                     if (item == null) {
                         throw new ArgumentException(
@@ -130,8 +128,7 @@ namespace Microsoft.Scripting {
             }
 
             // a string:
-            var strValue = value as string;
-            if (strValue != null && separators != null && separators.Length > 0) {
+            if (value is string strValue && separators != null && separators.Length > 0) {
                 return new ReadOnlyCollection<string>(StringUtils.Split(strValue, separators, Int32.MaxValue, StringSplitOptions.RemoveEmptyEntries));
             }
 

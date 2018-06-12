@@ -37,8 +37,7 @@ namespace Metadata {
         private void Populate() {
             foreach (TypeNesting nesting in _tables.TypeNestings) {
                 var enclosing = nesting.EnclosingType.Record.Token;
-                List<MetadataToken> nested;
-                if (!_mapping.TryGetValue(enclosing, out nested)) {
+                if (!_mapping.TryGetValue(enclosing, out List<MetadataToken> nested)) {
                     _mapping.Add(enclosing, nested = new List<MetadataToken>());
                 }
                 nested.Add(nesting.NestedType.Record.Token);
@@ -50,15 +49,13 @@ namespace Metadata {
         }
 
         public IEnumerable<TypeDef> GetNestedTypes(TypeDef typeDef) {
-            int count;
-            return GetNestedTypes(typeDef, out count);
+            return GetNestedTypes(typeDef, out int count);
         }
 
         public IEnumerable<TypeDef> GetNestedTypes(TypeDef typeDef, out int count) {
             ContractUtils.Requires(((MetadataRecord)typeDef).Tables.Equals(_tables));
 
-            List<MetadataToken> nestedList;
-            if (_mapping.TryGetValue(typeDef.Record.Token, out nestedList)) {
+            if (_mapping.TryGetValue(typeDef.Record.Token, out List<MetadataToken> nestedList)) {
                 count = nestedList.Count;
                 return from nested in nestedList select _tables.GetRecord(nested).TypeDef;
             }

@@ -62,8 +62,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override bool Equals(object obj) {
-            var other = obj as DispCallable;
-            return other != null && other._dispatch == _dispatch && other._dispId == _dispId;
+            return obj is DispCallable other && other._dispatch == _dispatch && other._dispId == _dispId;
         }
 
         public override int GetHashCode() {

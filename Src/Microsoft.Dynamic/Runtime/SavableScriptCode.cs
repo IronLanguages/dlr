@@ -86,8 +86,7 @@ namespace Microsoft.Scripting {
 
             Dictionary<Type, List<CodeInfo>> langCtxBuilders = new Dictionary<Type, List<CodeInfo>>();
             foreach (SavableScriptCode sc in codes) {
-                List<CodeInfo> builders;
-                if (!langCtxBuilders.TryGetValue(sc.LanguageContext.GetType(), out builders)) {
+                if (!langCtxBuilders.TryGetValue(sc.LanguageContext.GetType(), out List<CodeInfo> builders)) {
                     langCtxBuilders[sc.LanguageContext.GetType()] = builders = new List<CodeInfo>();
                 }
 

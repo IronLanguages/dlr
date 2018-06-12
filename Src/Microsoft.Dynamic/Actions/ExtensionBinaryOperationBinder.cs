@@ -39,8 +39,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override bool Equals(object obj) {
-            var ebob = obj as ExtensionBinaryOperationBinder;
-            return ebob != null && base.Equals(obj) && _operation == ebob._operation;
+            return obj is ExtensionBinaryOperationBinder ebob && base.Equals(obj) && _operation == ebob._operation;
         }
     }
 }

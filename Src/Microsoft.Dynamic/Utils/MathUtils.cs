@@ -704,8 +704,7 @@ namespace Microsoft.Scripting.Utils {
                 }
 
                 // if we're small enough to fit in an int, do so
-                int iLimit;
-                if (limit.AsInt32(out iLimit)) {
+                if (limit.AsInt32(out int iLimit)) {
                     return res + generator.Next(iLimit);
                 }
 
@@ -1018,9 +1017,7 @@ namespace Microsoft.Scripting.Utils {
                 return new uint[] { 0 };
             }
 
-            int hi;
-            byte[] bytes;
-            GetHighestByte(self, out hi, out bytes);
+            GetHighestByte(self, out int hi, out byte[] bytes);
 
             uint[] result = new uint[(hi + 1 + 3) / 4];
             int i = 0;
@@ -1047,16 +1044,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int GetWordCount(this BigInteger self) {
-            int index;
-            byte[] bytes;
-            GetHighestByte(self, out index, out bytes);
+            GetHighestByte(self, out int index, out byte[] _);
             return index / 4 + 1; // return (index + 1 + 3) / 4;
         }
 
         public static int GetByteCount(this BigInteger self) {
-            int index;
-            byte[] bytes;
-            GetHighestByte(self, out index, out bytes);
+            GetHighestByte(self, out int index, out byte[] _);
             return index + 1;
         }
 

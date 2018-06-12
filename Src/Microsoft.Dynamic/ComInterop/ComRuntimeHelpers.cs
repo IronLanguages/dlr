@@ -94,33 +94,22 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal static void GetInfoFromType(ComTypes.ITypeInfo typeInfo, out string name, out string documentation) {
-            int dwHelpContext;
-            string strHelpFile;
-
-            typeInfo.GetDocumentation(-1, out name, out documentation, out dwHelpContext, out strHelpFile);
+            typeInfo.GetDocumentation(-1, out name, out documentation, out int _, out string _);
         }
 
         internal static string GetNameOfMethod(ComTypes.ITypeInfo typeInfo, int memid) {
-            int cNames;
             string[] rgNames = new string[1];
-            typeInfo.GetNames(memid, rgNames, 1, out cNames);
+            typeInfo.GetNames(memid, rgNames, 1, out int _);
             return rgNames[0];
         }
 
         internal static string GetNameOfLib(ComTypes.ITypeLib typeLib) {
-            string name;
-            string strDocString;
-            int dwHelpContext;
-            string strHelpFile;
-
-            typeLib.GetDocumentation(-1, out name, out strDocString, out dwHelpContext, out strHelpFile);
+            typeLib.GetDocumentation(-1, out string name, out string _, out int _, out string _);
             return name;
         }
 
         internal static string GetNameOfType(ComTypes.ITypeInfo typeInfo) {
-            string name;
-            string documentation;
-            GetInfoFromType(typeInfo, out name, out documentation);
+            GetInfoFromType(typeInfo, out string name, out string _);
 
             return name;
         }
@@ -364,8 +353,7 @@ namespace Microsoft.Scripting.ComInterop {
             // GetNativeVariantForObject is very expensive for values that marshal as VT_DISPATCH
             // also is is extremely common scenario when object at hand is an RCW. 
             // Therefore we are going to test for IDispatch before defaulting to GetNativeVariantForObject.
-            IDispatch disp = obj as IDispatch;
-            if (disp != null) {
+            if (obj is IDispatch disp) {
                 variant.AsDispatch = obj;
                 return;
             }

@@ -235,20 +235,21 @@ namespace Microsoft.Scripting.ComInterop {
         internal bool TryGetMemberMethodExplicit(string name, out ComMethodDesc method) {
             EnsureScanDefinedMethods();
 
-            int dispId;
-            int hresult = GetIDsOfNames(_dispatchObject, name, out dispId);
+            int hresult = GetIDsOfNames(_dispatchObject, name, out int dispId);
 
             if (hresult == ComHresults.S_OK) {
                 ComMethodDesc cmd = new ComMethodDesc(name, dispId, ComTypes.INVOKEKIND.INVOKE_FUNC);
                 _comTypeDesc.AddFunc(name, cmd);
                 method = cmd;
                 return true;
-            } else if (hresult == ComHresults.DISP_E_UNKNOWNNAME) {
+            }
+
+            if (hresult == ComHresults.DISP_E_UNKNOWNNAME) {
                 method = null;
                 return false;
-            } else {
-                throw Error.CouldNotGetDispId(name, String.Format(CultureInfo.InvariantCulture, "0x{0:X})", hresult));
             }
+
+            throw Error.CouldNotGetDispId(name, String.Format(CultureInfo.InvariantCulture, "0x{0:X})", hresult));
         }
 
         internal bool TryGetPropertySetterExplicit(string name, out ComMethodDesc method, Type limitType, bool holdsNull) {
@@ -423,8 +424,7 @@ namespace Microsoft.Scripting.ComInterop {
                 IntPtr funcDescHandleToRelease = IntPtr.Zero;
 
                 try {
-                    ComTypes.FUNCDESC funcDesc;
-                    GetFuncDescForDescIndex(sourceTypeInfo, index, out funcDesc, out funcDescHandleToRelease);
+                    GetFuncDescForDescIndex(sourceTypeInfo, index, out ComTypes.FUNCDESC funcDesc, out funcDescHandleToRelease);
 
                     // we are not interested in hidden or restricted functions for now.
                     if ((funcDesc.wFuncFlags & (int)ComTypes.FUNCFLAGS.FUNCFLAG_FHIDDEN) != 0) {
@@ -458,8 +458,7 @@ namespace Microsoft.Scripting.ComInterop {
         private static ComTypes.ITypeInfo GetCoClassTypeInfo(object rcw, ComTypes.ITypeInfo typeInfo) {
             Debug.Assert(typeInfo != null);
 
-            IProvideClassInfo provideClassInfo = rcw as IProvideClassInfo;
-            if (provideClassInfo != null) {
+            if (rcw is IProvideClassInfo provideClassInfo) {
                 IntPtr typeInfoPtr = IntPtr.Zero;
                 try {
                     provideClassInfo.GetClassInfo(out typeInfoPtr);

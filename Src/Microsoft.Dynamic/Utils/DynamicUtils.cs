@@ -63,8 +63,7 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="parameterExpression">An expression to represent this <see cref="DynamicMetaObject"/> during the binding process.</param>
         /// <returns>The new instance of <see cref="DynamicMetaObject"/>.</returns>
         public static DynamicMetaObject ObjectToMetaObject(object argValue, Expression parameterExpression) {
-            IDynamicMetaObjectProvider ido = argValue as IDynamicMetaObjectProvider;
-            if (ido != null) {
+            if (argValue is IDynamicMetaObjectProvider ido) {
                 return ido.GetMetaObject(parameterExpression);
             } else {
                 return new DynamicMetaObject(parameterExpression, BindingRestrictions.Empty, argValue);

@@ -96,9 +96,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             ComTypes.ITypeInfo typeInfo = ComRuntimeHelpers.GetITypeInfoFromIDispatch(rcw as IDispatch, true);
 
-            ComTypes.ITypeLib typeLib;
-            int typeInfoIndex;
-            typeInfo.GetContainingTypeLib(out typeLib, out typeInfoIndex);
+            typeInfo.GetContainingTypeLib(out ComTypes.ITypeLib typeLib, out int typeInfoIndex);
 
             return new ComTypeLibInfo(GetFromTypeLib(typeLib));
         }
@@ -120,11 +118,9 @@ namespace Microsoft.Scripting.ComInterop {
 
             int countTypes = typeLib.GetTypeInfoCount();
             for (int i = 0; i < countTypes; i++) {
-                ComTypes.TYPEKIND typeKind;
-                typeLib.GetTypeInfoType(i, out typeKind);
+                typeLib.GetTypeInfoType(i, out ComTypes.TYPEKIND typeKind);
 
-                ComTypes.ITypeInfo typeInfo;
-                typeLib.GetTypeInfo(i, out typeInfo);
+                typeLib.GetTypeInfo(i, out ComTypes.ITypeInfo typeInfo);
                 if (typeKind == ComTypes.TYPEKIND.TKIND_COCLASS) {
                     ComTypeClassDesc classDesc = new ComTypeClassDesc(typeInfo, typeLibDesc);
                     typeLibDesc._classes.AddLast(classDesc);
@@ -135,11 +131,9 @@ namespace Microsoft.Scripting.ComInterop {
                 else if (typeKind == ComTypes.TYPEKIND.TKIND_ALIAS) {
                     ComTypes.TYPEATTR typeAttr = ComRuntimeHelpers.GetTypeAttrForTypeInfo(typeInfo);
                     if (typeAttr.tdescAlias.vt == (short)VarEnum.VT_USERDEFINED) {
-                        string aliasName, documentation;
-                        ComRuntimeHelpers.GetInfoFromType(typeInfo, out aliasName, out documentation);
+                        ComRuntimeHelpers.GetInfoFromType(typeInfo, out string aliasName, out string documentation);
 
-                        ComTypes.ITypeInfo referencedTypeInfo;
-                        typeInfo.GetRefTypeInfo(typeAttr.tdescAlias.lpValue.ToInt32(), out referencedTypeInfo);
+                        typeInfo.GetRefTypeInfo(typeAttr.tdescAlias.lpValue.ToInt32(), out ComTypes.ITypeInfo referencedTypeInfo);
 
                         ComTypes.TYPEATTR referencedTypeAttr = ComRuntimeHelpers.GetTypeAttrForTypeInfo(referencedTypeInfo);
                         ComTypes.TYPEKIND referencedTypeKind = referencedTypeAttr.typekind;

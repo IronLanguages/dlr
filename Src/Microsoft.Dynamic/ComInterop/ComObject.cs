@@ -89,8 +89,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private static ComObject CreateComObject(object rcw) {
-            IDispatch dispatchObject = rcw as IDispatch;
-            if (dispatchObject != null) {
+            if (rcw is IDispatch dispatchObject) {
                 // We can do method invocations on IDispatch objects
                 return new IDispatchComObject(dispatchObject);
             }

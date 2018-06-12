@@ -39,8 +39,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(self, "self");
             ContractUtils.RequiresNotNull(type, "type");
 
-            IRestrictedMetaObject rmo = self as IRestrictedMetaObject;
-            if (rmo != null) {
+            if (self is IRestrictedMetaObject rmo) {
                 return rmo.Restrict(type);
             }
 

@@ -117,17 +117,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         protected override Expression VisitConstant(ConstantExpression node) {
-            var site = node.Value as CallSite;
-            if (site != null) {
+            if (node.Value is CallSite site) {
                 return RewriteCallSite(site);
             }
 
-            var exprSerializable = node.Value as IExpressionSerializable;
-            if (exprSerializable != null) {
+            if (node.Value is IExpressionSerializable exprSerializable) {
                 EnsureConstantPool();
-                Expression res;
 
-                if (!_constantCache.TryGetValue(node.Value, out res)) {
+                if (!_constantCache.TryGetValue(node.Value, out Expression res)) {
                     Expression serialized = exprSerializable.CreateExpression();
                     _constants.Add(serialized);
 

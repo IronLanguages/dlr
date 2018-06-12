@@ -146,22 +146,17 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         private sealed class WrapperComparer : IEqualityComparer<object> {            
             bool IEqualityComparer<object>.Equals(Object x, Object y) {
-
-                Wrapper wx = x as Wrapper;
-                if (wx != null)
+                if (x is Wrapper wx)
                     x = wx.Target;
 
-                Wrapper wy = y as Wrapper;
-                if (wy != null)
+                if (y is Wrapper wy)
                     y = wy.Target;
 
                 return ReferenceEquals(x, y);
             }
 
             int IEqualityComparer<object>.GetHashCode(Object obj) {
-
-                Wrapper wobj = obj as Wrapper;
-                if (wobj != null)
+                if (obj is Wrapper wobj)
                     return wobj.GetHashCode();
 
                 return GetHashCodeWorker(obj);

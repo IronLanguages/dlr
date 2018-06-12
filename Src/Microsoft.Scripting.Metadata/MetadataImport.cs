@@ -747,16 +747,14 @@ namespace Microsoft.Scripting.Metadata {
         #region Blobs and User Strings
 
         internal byte[] GetBlob(uint blob) {
-            int size;
-            int dataOffset = GetBlobDataOffset(blob, out size);
+            int dataOffset = GetBlobDataOffset(blob, out int size);
             var result = new byte[size];
             _blobStream.Read(dataOffset, result);
             return result;
         }
 
         internal MemoryBlock GetBlobBlock(uint blob) {
-            int size;
-            int dataOffset = GetBlobDataOffset(blob, out size);
+            int dataOffset = GetBlobDataOffset(blob, out int size);
             return _blobStream.GetRange(dataOffset, size);
         }
 
@@ -766,8 +764,7 @@ namespace Microsoft.Scripting.Metadata {
             }
 
             int offset = (int)blob;
-            int bytesRead;
-            size = _blobStream.ReadCompressedInt32(offset, out bytesRead);
+            size = _blobStream.ReadCompressedInt32(offset, out int bytesRead);
             if (offset > _blobStream.Length - bytesRead - size) {
                 throw new BadImageFormatException();
             }
@@ -776,8 +773,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal object GetBlobValue(uint blob, ElementType type) {
-            int size;
-            int offset = GetBlobDataOffset(blob, out size);
+            int offset = GetBlobDataOffset(blob, out int size);
             if (size < GetMinTypeSize(type)) {
                 throw new BadImageFormatException();
             }
@@ -1072,7 +1068,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal int GetRowCount(int tableIndex) {
-            return (int)_tableRowCounts[tableIndex];
+            return _tableRowCounts[tableIndex];
         }
 
         internal MetadataName GetMetadataName(uint blob) {
@@ -1080,12 +1076,11 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal object GetDefaultValue(MetadataToken token) {
-            ElementType type;
             int constantRid = ConstantTable.GetConstantRowId(token);
             if (constantRid == 0) {
                 return Missing.Value;
             }
-            uint blob = ConstantTable.GetValue(constantRid, out type);
+            uint blob = ConstantTable.GetValue(constantRid, out ElementType type);
             return GetBlobValue(blob, type);
         }
 

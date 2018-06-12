@@ -480,14 +480,17 @@ namespace Microsoft.Scripting.Generation {
 
         public static bool TryApplyTypeConverter(object value, Type toType, out object result) {
 #if FEATURE_TYPECONVERTER
-            TypeConverter converter;
-            if (value != null && CompilerHelpers.TryGetTypeConverter(value.GetType(), toType, out converter)) {
+            if (value != null && TryGetTypeConverter(
+                    value.GetType(),
+                    toType,
+                    out TypeConverter converter)) {
                 result = converter.ConvertFrom(value);
                 return true;
-            } else {
-                result = value;
-                return false;
             }
+
+            result = value;
+            return false;
+
 #else
             result = value;
             return false;
@@ -748,8 +751,7 @@ namespace Microsoft.Scripting.Generation {
             protected override Expression VisitExtension(Expression node) {
                 // LightDynamicExpressions override Visit but we want to really reduce them
                 // because they reduce to DynamicExpressions.
-                LightDynamicExpression lightDyn = node as LightDynamicExpression;
-                if (lightDyn != null) {
+                if (node is LightDynamicExpression lightDyn) {
                     return Visit(lightDyn.Reduce());
                 }
 
@@ -761,8 +763,7 @@ namespace Microsoft.Scripting.Generation {
                     return node;
                 }
 
-                FieldBuilder field;
-                if (!_fields.TryGetValue(node.Value, out field)) {
+                if (!_fields.TryGetValue(node.Value, out FieldBuilder field)) {
                     field = _type.DefineField(
                         "$constant" + _fields.Count,
                         GetVisibleType(node.Value.GetType()),

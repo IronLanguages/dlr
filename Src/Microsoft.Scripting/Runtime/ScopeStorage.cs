@@ -42,8 +42,7 @@ namespace Microsoft.Scripting {
         /// If the named value is not present an InvalidOperationException is raised.
         /// </summary>
         public dynamic GetValue(string name, bool ignoreCase) {
-            object res;
-            if (GetScopeVariable(name, ignoreCase).TryGetValue(out res)) {
+            if (GetScopeVariable(name, ignoreCase).TryGetValue(out object res)) {
                 return res;
             }
             throw new KeyNotFoundException("no value");

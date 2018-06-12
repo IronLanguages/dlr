@@ -300,8 +300,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             // shift any arguments forward that need to be...
             int curArg = _overload.IsStatic ? 0 : 1;
             for (int i = 0; i < defaultArgBuilders.Count; i++) {
-                SimpleArgBuilder sab = defaultArgBuilders[i] as SimpleArgBuilder;
-                if (sab != null) {
+                if (defaultArgBuilders[i] is SimpleArgBuilder sab) {
                     defaultArgBuilders[i] = sab.MakeCopy(curArg++);
                 }
             }

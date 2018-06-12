@@ -1632,8 +1632,7 @@ namespace Microsoft.Scripting.Generation {
         internal LocalBuilder GetLocal(Type type) {
             Debug.Assert(type != null);
 
-            LocalBuilder local;
-            if (_freeLocals.TryDequeue(type, out local)) {
+            if (_freeLocals.TryDequeue(type, out LocalBuilder local)) {
                 Debug.Assert(type == local.LocalType);
                 return local;
             }

@@ -30,8 +30,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         protected override object GetValue() {
-            object val;
-            bool hasExtraValue = _idDict.TryGetExtraValue(_idDict.GetExtraKeys()[_curIndex], out val);
+            bool hasExtraValue = _idDict.TryGetExtraValue(_idDict.GetExtraKeys()[_curIndex], out object val);
             Debug.Assert(hasExtraValue && !(val is Uninitialized));
             return val;
         }
@@ -42,8 +41,8 @@ namespace Microsoft.Scripting.Runtime {
 
             while (_curIndex < (_idDict.GetExtraKeys().Length - 1)) {
                 _curIndex++;
-                object val;
-                if (_idDict.TryGetExtraValue(_idDict.GetExtraKeys()[_curIndex], out val) && val != Uninitialized.Instance) {
+                if (_idDict.TryGetExtraValue(_idDict.GetExtraKeys()[_curIndex], out object val) &&
+                    val != Uninitialized.Instance) {
                     return true;
                 }
             }

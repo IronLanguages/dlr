@@ -141,16 +141,14 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private LabelInfo EnsureLabelInfo(LabelTarget target) {
-            LabelInfo result;
-            if (!_labels.TryGetValue(target, out result)) {
+            if (!_labels.TryGetValue(target, out LabelInfo result)) {
                 _labels.Add(target, result = new LabelInfo(_labels.Count + 1, target.Type));
             }
             return result;
         }
 
         protected override Expression VisitExtension(Expression node) {
-            var ffc = node as FinallyFlowControlExpression;
-            if (ffc != null) {
+            if (node is FinallyFlowControlExpression ffc) {
                 // Unwrap nested finally flow expressions
                 // We can generate better code by walking all of them now
                 return Visit(ffc.Body);
@@ -330,8 +328,7 @@ namespace Microsoft.Scripting.Ast {
             // Grab all labels in the block and define them in the block's scope
             // Labels defined immediately in the block are valid for the whole block
             foreach (var e in node.Expressions) {
-                var label = e as LabelExpression;
-                if (label != null) {
+                if (e is LabelExpression label) {
                     VisitLabelTarget(label.Target);
 
                     // TODO: Support this.
@@ -359,13 +356,9 @@ namespace Microsoft.Scripting.Ast {
                     // );
                     // l.Compile()();
 
-                    
-                    BlockExpression defaultValue = label.DefaultValue as BlockExpression;
-                    if (defaultValue != null) {
+                    if (label.DefaultValue is BlockExpression defaultValue) {
                         VisitBlock(defaultValue);
                     }
-
-
                 }
             }
             return base.VisitBlock(node);

@@ -246,8 +246,8 @@ namespace Metadata {
             if (value == null) {
                 return "null";
             }
-            string str = value as string;
-            if (str != null) {
+
+            if (value is string str) {
                 return "\"" + str + "\"";
             }
 

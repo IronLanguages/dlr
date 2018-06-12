@@ -157,8 +157,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return true;
             }
 
-            HashSet<LabelScopeInfo> definitions = _definitions as HashSet<LabelScopeInfo>;
-            if (definitions != null) {
+            if (_definitions is HashSet<LabelScopeInfo> definitions) {
                 return definitions.Contains(scope);
             }
             return false;

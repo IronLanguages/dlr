@@ -164,8 +164,7 @@ namespace Microsoft.Scripting.ComInterop {
                 // is a ComEventCallContext object.
                 Delegate[] delegates = sinkEntry._handlers.GetInvocationList();
                 foreach (Delegate d in delegates) {
-                    SplatCallSite callContext = d.Target as SplatCallSite;
-                    if (callContext != null && callContext._callable.Equals(func)) {
+                    if (d.Target is SplatCallSite callContext && callContext._callable.Equals(func)) {
                         sinkEntry._handlers -= d as Func<object[], object>;
                         break;
                     }
@@ -296,8 +295,7 @@ namespace Microsoft.Scripting.ComInterop {
                 // if something has gone wrong, and the object is no longer attached to the CLR,
                 // the Unadvise is going to throw.  In this case, since we're going away anyway,
                 // we'll ignore the failure and quietly go on our merry way.
-                COMException exCOM = ex as COMException;
-                if (exCOM != null && exCOM.ErrorCode == ComHresults.CONNECT_E_NOCONNECTION) {
+                if (ex is COMException exCOM && exCOM.ErrorCode == ComHresults.CONNECT_E_NOCONNECTION) {
                     Debug.Assert(false, "IConnectionPoint::Unadvise returned CONNECT_E_NOCONNECTION.");
                     throw;
                 }

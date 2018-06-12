@@ -29,16 +29,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         internal void Enqueue(K key, V value) {
-            Queue<V> queue;
-            if (!_data.TryGetValue(key, out queue)) {
+            if (!_data.TryGetValue(key, out Queue<V> queue)) {
                 _data.Add(key, queue = new Queue<V>());
             }
             queue.Enqueue(value);
         }
 
         internal V Dequeue(K key) {
-            Queue<V> queue;
-            if (!_data.TryGetValue(key, out queue)) {
+            if (!_data.TryGetValue(key, out Queue<V> queue)) {
                 throw Error.QueueEmpty();
             }
             V result = queue.Dequeue();
@@ -49,8 +47,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         internal bool TryDequeue(K key, out V value) {
-            Queue<V> queue;
-            if (_data.TryGetValue(key, out queue) && queue.Count > 0) {
+            if (_data.TryGetValue(key, out Queue<V> queue) && queue.Count > 0) {
                 value = queue.Dequeue();
                 if (queue.Count == 0) {
                     _data.Remove(key);
@@ -62,16 +59,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         internal V Peek(K key) {
-            Queue<V> queue;
-            if (!_data.TryGetValue(key, out queue)) {
+            if (!_data.TryGetValue(key, out Queue<V> queue)) {
                 throw Error.QueueEmpty();
             }
             return queue.Peek();
         }
 
         internal int GetCount(K key) {
-            Queue<V> queue;
-            if (!_data.TryGetValue(key, out queue)) {
+            if (!_data.TryGetValue(key, out Queue<V> queue)) {
                 return 0;
             }
             return queue.Count;

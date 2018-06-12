@@ -48,16 +48,14 @@ namespace Microsoft.Scripting.Actions {
         /// updates the associated module to mark the package as imported.
         /// </summary>
         public NamespaceTracker TryGetPackage(string name) {
-            NamespaceTracker pm = TryGetPackageAny(name) as NamespaceTracker;
-            if (pm != null) {
+            if (TryGetPackageAny(name) is NamespaceTracker pm) {
                 return pm;
             }
             return null;
         }
 
         public MemberTracker TryGetPackageAny(string name) {
-            MemberTracker ret;
-            if (TryGetValue(name, out ret)) {
+            if (TryGetValue(name, out MemberTracker ret)) {
                 return ret;
             }
             return null;
@@ -65,8 +63,7 @@ namespace Microsoft.Scripting.Actions {
 
         public MemberTracker TryGetPackageLazy(string name) {
             lock (HierarchyLock) {
-                MemberTracker ret;
-                if (_dict.TryGetValue(name, out ret)) {
+                if (_dict.TryGetValue(name, out MemberTracker ret)) {
                     return ret;
                 }
                 return null;
@@ -110,8 +107,7 @@ namespace Microsoft.Scripting.Actions {
 
                 foreach (Type type in ReflectionUtils.GetAllTypesFromAssembly(interopAssembly, false)) {
                     if (type.IsImport && type.IsInterface) {
-                        Type existing;
-                        if (_comTypeCache.TryGetValue(type.GUID, out existing)) {
+                        if (_comTypeCache.TryGetValue(type.GUID, out Type existing)) {
                             if (!existing.IsDefined(typeof(CoClassAttribute), false)) {
                                 // prefer the type w/ CoClassAttribute on it.  Example:
                                 //    MS.Office.Interop.Excel.Worksheet 

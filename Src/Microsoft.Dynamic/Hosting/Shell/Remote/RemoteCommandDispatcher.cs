@@ -53,8 +53,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
                 return result;
             } catch (ThreadAbortException tae) {
-                KeyboardInterruptException pki = tae.ExceptionState as KeyboardInterruptException;
-                if (pki != null) {
+                if (tae.ExceptionState is KeyboardInterruptException pki) {
                     // Most exceptions get propagated back to the client. However, ThreadAbortException is handled
                     // differently by the remoting infrastructure, and gets wrapped in a RemotingException
                     // ("An error occurred while processing the request on the server"). So we filter it out

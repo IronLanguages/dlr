@@ -980,16 +980,14 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void DefineBlockLabels(Expression node) {
-            var block = node as BlockExpression;
-            if (block == null) {
+            if (!(node is BlockExpression block)) {
                 return;
             }
 
             for (int i = 0, n = block.Expressions.Count; i < n; i++) {
                 Expression e = block.Expressions[i];
 
-                var label = e as LabelExpression;
-                if (label != null) {
+                if (e is LabelExpression label) {
                     DefineLabel(label.Target);
                 }
             }
@@ -1031,8 +1029,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return node.Operand == null;
             }
 
-            BlockExpression block = expr as BlockExpression;
-            if (block != null) {
+            if (expr is BlockExpression block) {
                 return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
             }
             return false;
@@ -1318,8 +1315,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileExtensionExpression(Expression expr) {
-            var instructionProvider = expr as IInstructionProvider;
-            if (instructionProvider != null) {
+            if (expr is IInstructionProvider instructionProvider) {
                 instructionProvider.AddInstructions(this);
                 return;
             }
