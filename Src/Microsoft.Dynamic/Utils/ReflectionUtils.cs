@@ -84,7 +84,7 @@ namespace Microsoft.Scripting.Utils {
 
         private static bool MatchesFlags(MethodInfo member, BindingFlags flags) {
             return
-                ((member.IsPublic ? BindingFlags.Public : BindingFlags.NonPublic) & flags) != 0 && 
+                ((member.IsPublic ? BindingFlags.Public : BindingFlags.NonPublic) & flags) != 0 &&
                 ((member.IsStatic ? BindingFlags.Static : BindingFlags.Instance) & flags) != 0;
         }
 
@@ -246,7 +246,7 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             });
         }
-        
+
         #endregion
 
         #region Member Inheritance
@@ -267,7 +267,7 @@ namespace Microsoft.Scripting.Utils {
         //   name, and signature exists and use that slot if it is found, otherwise allocate a new slot. 
         // - After doing this for all new members, add these new member-kind/name/signatures to the list of members of this type 
         // - Finally, remove any inherited names that match the new members based on the hide by name or hide by name-and-signature rules.
-        
+
         // NOTE: Following GetXxx only implement overriding, not hiding specified by hide-by-name or hide-by-name-and-signature flags.
 
         public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
@@ -425,7 +425,7 @@ namespace Microsoft.Scripting.Utils {
                 }
             }
         }
-        
+
         private static bool IncludeField(FieldInfo member, Type reflectedType, bool flattenHierarchy) {
             if (member.DeclaringType == reflectedType) {
                 return true;
@@ -464,7 +464,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name = null) {
             if (name == null) {
                 return type.GetMethods(BindingFlags.DeclaredOnly | AllMembers);
-            } 
+            }
 
             return type.GetMember(name, MemberTypes.Method, BindingFlags.DeclaredOnly | AllMembers).OfType<MethodInfo>();
         }
@@ -508,7 +508,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string name = null) {
             if (name == null) {
                 return type.GetMembers(BindingFlags.DeclaredOnly | AllMembers);
-            } 
+            }
 
             return type.GetMember(name, BindingFlags.DeclaredOnly | AllMembers);
         }
@@ -586,7 +586,7 @@ namespace Microsoft.Scripting.Utils {
         public static bool IsVisible(this Type type) {
             return type.IsVisible;
         }
-        
+
         public static Type GetBaseType(this Type type) {
             return type.BaseType;
         }
@@ -606,7 +606,7 @@ namespace Microsoft.Scripting.Utils {
         public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
             return type.GenericParameterAttributes;
         }
-        
+
         public static Type[] EmptyTypes = new Type[0];
 
         public static object GetRawConstantValue(this FieldInfo field) {
@@ -651,7 +651,7 @@ namespace Microsoft.Scripting.Utils {
                 case TypeCode.UInt64:
                     return Convert.ToUInt64(value);
 
-                default: 
+                default:
                     throw new ArgumentException("Value must be a boxed enum.", nameof(value));
             }
         }
@@ -696,7 +696,7 @@ namespace Microsoft.Scripting.Utils {
                 result.Append(' ');
             }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0
+#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1
             MethodBuilder builder = method as MethodBuilder;
             if (builder != null) {
                 result.Append(builder.Signature);
@@ -745,7 +745,7 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(result, "result");
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(nameDispenser, "nameDispenser");
-            
+
             if (type.IsGenericType()) {
                 Type genType = type.GetGenericTypeDefinition();
                 string genericName = nameDispenser(genType).Replace('+', '.');
@@ -777,7 +777,7 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(result, "result");
             ContractUtils.RequiresNotNullItems(types, "types");
             ContractUtils.RequiresNotNull(nameDispenser, "nameDispenser");
-            
+
             if (types.Length > 0) {
                 result.Append("<");
 
@@ -905,7 +905,7 @@ namespace Microsoft.Scripting.Utils {
 #if FEATURE_LCG
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework")]
         internal static DynamicMethod RawCreateDynamicMethod(string name, Type returnType, Type[] parameterTypes) {
-            
+
             //
             // WARNING: we set restrictedSkipVisibility == true  (last parameter)
             //          setting this bit will allow accessing nonpublic members
@@ -922,7 +922,7 @@ namespace Microsoft.Scripting.Utils {
         public static MethodBase[] GetMethodInfos(MemberInfo[] members) {
             return ArrayUtils.ConvertAll<MemberInfo, MethodBase>(
                 members,
-                delegate(MemberInfo inp) { return (MethodBase)inp; });
+                delegate (MemberInfo inp) { return (MethodBase)inp; });
         }
 
         public static Type[] GetParameterTypes(ParameterInfo[] parameterInfos) {
@@ -1070,7 +1070,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             try {
-                return assembly.GetExportedTypes();
+                return GetTypes(assembly);
             } catch (NotSupportedException) {
                 // GetExportedTypes does not work with dynamic assemblies
             } catch (Exception) {
@@ -1079,6 +1079,23 @@ namespace Microsoft.Scripting.Utils {
             }
 
             return GetAllTypesFromAssembly(assembly).Where(type => type.IsPublic);
+
+            IEnumerable<TypeInfo> GetTypes(Assembly asm) {
+                var exportedTypes = asm.GetExportedTypes();
+#if NETCOREAPP2_1
+                var forwardedTypes = asm.GetForwardedTypes();
+#endif
+
+                foreach (var type in exportedTypes) {
+                    yield return type;
+                }
+
+#if NETCOREAPP2_1
+                foreach (var type in forwardedTypes) {
+                    yield return type;
+                }
+#endif
+            }
         }
 
         #endregion
@@ -1465,7 +1482,7 @@ namespace Microsoft.Scripting.Utils {
         public override int GetHashCode() {
             return _method.GetHashCode();
         }
-        
+
         /// <summary>
         /// Determines if a given type matches the type that the method extends. 
         /// The match might be non-trivial if the extended type is an open generic type with constraints.

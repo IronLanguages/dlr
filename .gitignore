@@ -25,9 +25,11 @@ BuildInfo.Generated.cs
 CurrentVersion.Generated.cs
 AssemblyVersion.Generated.cs
 
+# Testing files
 TestResult.xml
 Solutions/TestResults/
 Runtime/Samples/Hosting/Scenarios/bin/
+Tests/**/runsettings.xml
 
 # TODO - testing scripts should not create these files
 debug.log
