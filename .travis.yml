@@ -23,7 +23,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.pkg https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell-6.0.2-osx.10.12-x64.pkg; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo installer -pkg powershell.pkg -target /; fi
 
-dotnet: 2.1.4
+dotnet: 2.1.300
 
 script:
   - dotnet restore Dlr.sln --packages ./packages
