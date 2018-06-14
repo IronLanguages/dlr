@@ -54,7 +54,7 @@ namespace Microsoft.Scripting {
 
         #region Assembly Loading
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
         static PlatformAdaptationLayer() {
             // https://github.com/dotnet/coreclr/issues/11498
             // attempt to resolve dependencies in the requesting directory

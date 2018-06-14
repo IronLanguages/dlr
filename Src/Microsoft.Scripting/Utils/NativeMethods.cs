@@ -12,7 +12,7 @@
  *
  *
  * ***************************************************************************/
-#if FEATURE_NATIVE || NETCOREAPP2_0
+#if FEATURE_NATIVE || NETCOREAPP2_0 || NETCOREAPP2_1
 
 using System;
 using System.Runtime.InteropServices;

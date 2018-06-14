@@ -629,7 +629,7 @@ namespace Microsoft.Scripting.Generation {
             return (T)(object)LightCompile((LambdaExpression)lambda, compilationThreshold);
         }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0
+#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1
         /// <summary>
         /// Compiles the lambda into a method definition.
         /// </summary>

@@ -213,7 +213,7 @@ namespace Microsoft.Scripting.Generation {
             // SaveAssemblies mode prevents us from detecting the module as
             // transient. If that option is turned on, always replace delegates
             // that live in another AssemblyBuilder
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
             return true; // TODO:
 #else
             var module = delegateType.Module as ModuleBuilder;

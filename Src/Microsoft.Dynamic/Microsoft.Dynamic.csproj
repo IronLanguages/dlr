@@ -3,7 +3,7 @@
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
     <RootNamespace>Microsoft.Scripting</RootNamespace>
     <BaseAddress>859832320</BaseAddress>
     <CodeAnalysisRuleSet>$(AssemblyName).ruleset</CodeAnalysisRuleSet>
@@ -25,7 +25,7 @@
     <Reference Include="System.Xaml" Condition=" $(Features.Contains('FEATURE_WPF')) " />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' ">
     <DefineConstants>$(DefineConstants.Replace(';FEATURE_FILESYSTEM', ''))</DefineConstants>
   </PropertyGroup>
 
