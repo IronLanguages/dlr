@@ -1070,7 +1070,13 @@ namespace Microsoft.Scripting.Utils {
             }
 
             try {
-                return GetTypes(assembly);
+                var exportedTypes = assembly.GetExportedTypes();
+#if NETCOREAPP2_1
+                var forwardedTypes = assembly.GetForwardedTypes();
+                return Enumerable.Concat(exportedTypes, forwardedTypes);
+#else
+                return exportedTypes;
+#endif
             } catch (NotSupportedException) {
                 // GetExportedTypes does not work with dynamic assemblies
             } catch (Exception) {
@@ -1079,23 +1085,6 @@ namespace Microsoft.Scripting.Utils {
             }
 
             return GetAllTypesFromAssembly(assembly).Where(type => type.IsPublic);
-
-            IEnumerable<TypeInfo> GetTypes(Assembly asm) {
-                var exportedTypes = asm.GetExportedTypes();
-#if NETCOREAPP2_1
-                var forwardedTypes = asm.GetForwardedTypes();
-#endif
-
-                foreach (var type in exportedTypes) {
-                    yield return type;
-                }
-
-#if NETCOREAPP2_1
-                foreach (var type in forwardedTypes) {
-                    yield return type;
-                }
-#endif
-            }
         }
 
         #endregion
