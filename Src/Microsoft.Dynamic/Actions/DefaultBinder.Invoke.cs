@@ -77,10 +77,10 @@ namespace Microsoft.Scripting.Actions {
                 }
 
                 return res;
-            } else {
-                // we can't call this object
-                return errorSuggestion ?? MakeCannotCallRule(target, target.GetLimitType());
             }
+
+            // we can't call this object
+            return errorSuggestion ?? MakeCannotCallRule(target, target.GetLimitType());
         }
 
         #region Method Call Rule

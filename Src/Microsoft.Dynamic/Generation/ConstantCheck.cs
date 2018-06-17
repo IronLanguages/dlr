@@ -98,9 +98,9 @@ namespace Microsoft.Scripting.Generation {
         private static bool CheckConstant(ConstantExpression node, object value) {
             if (value == null) {
                 return node.Value == null;
-            } else {
-                return value.Equals(node.Value);
             }
+
+            return value.Equals(node.Value);
         }
 
         private static bool Check(TypeBinaryExpression node, object value) {

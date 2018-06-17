@@ -370,7 +370,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                     if (nextType == null) {
                         // no mapping available
                         return null;
-                    } else if (curType == null || curType.IsAssignableFrom(nextType)) {
+                    }
+
+                    if (curType == null || curType.IsAssignableFrom(nextType)) {
                         curType = nextType;
                     } else if (!nextType.IsAssignableFrom(curType)) {
                         // inconsistent constraint.

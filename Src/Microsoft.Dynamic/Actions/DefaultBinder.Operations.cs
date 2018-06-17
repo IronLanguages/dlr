@@ -260,7 +260,9 @@ namespace Microsoft.Scripting.Actions {
                         Ast.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
                     );
-                } else if (otherType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+                }
+
+                if (otherType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return new DynamicMetaObject(
                             Ast.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
                         restrictions
@@ -272,7 +274,9 @@ namespace Microsoft.Scripting.Actions {
                         Ast.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
                     );
-                } else if (args[0].GetLimitType().GetGenericTypeDefinition() == typeof(Nullable<>)) {
+                }
+
+                if (args[0].GetLimitType().GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return new DynamicMetaObject(
                         Ast.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
                         restrictions
@@ -468,16 +472,16 @@ namespace Microsoft.Scripting.Actions {
                             target.MakeExpression(),
                             restrictions.Merge(target.RestrictedArguments.GetAllRestrictions())
                         );
-                    } else {
-                        return new DynamicMetaObject(
-                            Ast.Block(
-                                new ParameterExpression[] { arg2 },
-                                target.MakeExpression(),
-                                arg2
-                            ),
-                            restrictions.Merge(target.RestrictedArguments.GetAllRestrictions())
-                        );
                     }
+
+                    return new DynamicMetaObject(
+                        Ast.Block(
+                            new ParameterExpression[] { arg2 },
+                            target.MakeExpression(),
+                            arg2
+                        ),
+                        restrictions.Merge(target.RestrictedArguments.GetAllRestrictions())
+                    );
                 }
 
                 return MakeError(
@@ -502,18 +506,18 @@ namespace Microsoft.Scripting.Actions {
                         ),
                         restrictions
                     );
-                } else {
-                    return new DynamicMetaObject(
-                        Ast.Assign(
-                            Ast.ArrayAccess(
-                                args[0].Expression,
-                                ConvertIfNeeded(factory, args[1].Expression, typeof(int))
-                            ),
-                            ConvertIfNeeded(factory, args[2].Expression, args[0].GetLimitType().GetElementType())
-                        ),
-                        restrictions.Merge(args[1].Restrictions)
-                    );
                 }
+
+                return new DynamicMetaObject(
+                    Ast.Assign(
+                        Ast.ArrayAccess(
+                            args[0].Expression,
+                            ConvertIfNeeded(factory, args[1].Expression, typeof(int))
+                        ),
+                        ConvertIfNeeded(factory, args[2].Expression, args[0].GetLimitType().GetElementType())
+                    ),
+                    restrictions.Merge(args[1].Restrictions)
+                );
             }
 
             return null;

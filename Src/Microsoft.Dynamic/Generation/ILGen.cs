@@ -1646,12 +1646,14 @@ namespace Microsoft.Scripting.Generation {
             Type type = typeof(T);
             if (type == typeof(int)) {
                 return ScriptingRuntimeHelpers.Int32ToObject((int)(object)value);
-            } else if (type == typeof(bool)) {
+            }
+
+            if (type == typeof(bool)) {
                 bool bValue = (bool)(object)value;
                 return bValue ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
-            } else {
-                return (object)value;
             }
+
+            return (object)value;
         }
     }
 }

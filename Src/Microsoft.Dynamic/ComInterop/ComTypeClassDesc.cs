@@ -58,8 +58,8 @@ namespace Microsoft.Scripting.ComInterop {
         internal bool Implements(string itfName, bool isSourceItf) {
             if (isSourceItf)
                 return _sourceItfs.Contains(itfName);
-            else
-                return _itfs.Contains(itfName);
+
+            return _itfs.Contains(itfName);
         }
 
         #region IDynamicMetaObjectProvider Members

@@ -92,9 +92,9 @@ namespace Microsoft.Scripting.Ast {
         public IEnumerator<TExpression>/*!*/ GetEnumerator() {
             if (_expressions != null) {
                 return _expressions.GetEnumerator();
-            } else {
-                return GetItemEnumerator();
             }
+
+            return GetItemEnumerator();
         }
 
         IEnumerator/*!*/ IEnumerable.GetEnumerator() {

@@ -215,9 +215,9 @@ namespace Microsoft.Scripting.Generation {
         public static IEnumerable<MemberInfo> FilterNonVisibleMembers(Type targetType, IEnumerable<MemberInfo> members) {
             if (targetType.IsVisible()) {
                 return members;
-            } else {
-                return FilterNonVisibleMembersIterator(targetType, members);
             }
+
+            return FilterNonVisibleMembersIterator(targetType, members);
         }
 
         public static IEnumerable<MemberInfo> FilterNonVisibleMembersIterator(Type targetType, IEnumerable<MemberInfo> members) {
@@ -267,7 +267,9 @@ namespace Microsoft.Scripting.Generation {
             if ((self == null) != (other == null)) {
                 // one null, the other isn't.
                 return false;
-            } else if (self == null) {
+            }
+
+            if (self == null) {
                 // both null
                 return true;
             }

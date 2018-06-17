@@ -51,14 +51,14 @@ namespace Microsoft.Scripting {
             if (size < MutableTuple.MaxSize) {
                 // fast path
                 return GetValue(index);
-            } else {
-                // slow path
-                object res = this;
-                foreach (int i in GetAccessPath(size, index)) {
-                    res = ((MutableTuple)res).GetValue(i);
-                }
-                return res;
             }
+
+            // slow path
+            object res = this;
+            foreach (int i in GetAccessPath(size, index)) {
+                res = ((MutableTuple)res).GetValue(i);
+            }
+            return res;
         }
 
         /// <summary>

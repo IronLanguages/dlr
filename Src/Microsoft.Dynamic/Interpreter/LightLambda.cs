@@ -142,7 +142,7 @@ namespace Microsoft.Scripting.Interpreter {
             return lambda.Compile();
         }
 
-        internal Delegate MakeDelegate(Type delegateType) {            
+        internal Delegate MakeDelegate(Type delegateType) {
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
             if (fastCtor != null) {
                 return fastCtor(this);

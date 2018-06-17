@@ -109,7 +109,9 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(body, nameof(body));
             if (_finally != null) {
                 throw Error.FinallyAlreadyDefined();
-            } else if (_fault != null) {
+            }
+
+            if (_fault != null) {
                 throw Error.CannotHaveFaultAndFinally();
             }
 
@@ -132,15 +134,13 @@ namespace Microsoft.Scripting.Ast {
 
             if (_finally != null) {
                 throw Error.CannotHaveFaultAndFinally();
-            } else if (_fault != null) {
+            }
+
+            if (_fault != null) {
                 throw Error.FaultAlreadyDefined();
             }
 
-            if (body.Length == 1) {
-                _fault = body[0];
-            } else {
-                _fault = Utils.BlockVoid(body);
-            }
+            _fault = body.Length == 1 ? body[0] : Utils.BlockVoid(body);
 
             return this;
         }

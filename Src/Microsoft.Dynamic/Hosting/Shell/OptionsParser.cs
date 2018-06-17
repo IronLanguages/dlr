@@ -108,8 +108,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected string PeekNextArg() {
             if (_current < _args.Length)
                 return _args[_current];
-            else
-                throw new InvalidOptionException(String.Format(CultureInfo.CurrentCulture, "Argument expected for the {0} option.", _current > 0 ? _args[_current - 1] : ""));
+
+            throw new InvalidOptionException(
+                String.Format(
+                    CultureInfo.CurrentCulture,
+                    "Argument expected for the {0} option.",
+                    _current > 0 ? _args[_current - 1] : string.Empty));
         }
 
         protected string PopNextArg() {

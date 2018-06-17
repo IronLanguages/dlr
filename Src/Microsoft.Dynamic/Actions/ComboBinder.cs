@@ -253,17 +253,15 @@ namespace Microsoft.Scripting.Actions {
 
         public override string ToString() {
             if (IsAction) {
-                return "Action" + ActionIndex.ToString();
-            } else if (IsParameter) {
-                return "Parameter" + ParameterIndex.ToString();
-            } else {
-                object value = Constant.Value;
-                if (value == null) {
-                    return "(null)";
-                }
-
-                return value.ToString();
+                return "Action" + ActionIndex;
             }
+
+            if (IsParameter) {
+                return "Parameter" + ParameterIndex;
+            }
+
+            object value = Constant.Value;
+            return value == null ? "(null)" : value.ToString();
         }
     }
 

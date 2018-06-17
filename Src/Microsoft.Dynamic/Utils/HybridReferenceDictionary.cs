@@ -33,7 +33,9 @@ namespace Microsoft.Scripting.Utils {
 
             if (_dict != null) {
                 return _dict.TryGetValue(key, out value);
-            } else if (_keysAndValues != null) {
+            }
+
+            if (_keysAndValues != null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         value = _keysAndValues[i].Value;
@@ -41,6 +43,7 @@ namespace Microsoft.Scripting.Utils {
                     }
                 }
             }
+
             value = default(TValue);
             return false;
         }
@@ -50,7 +53,9 @@ namespace Microsoft.Scripting.Utils {
 
             if (_dict != null) {
                 return _dict.Remove(key);
-            } else if (_keysAndValues != null) {
+            }
+
+            if (_keysAndValues != null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         _keysAndValues[i] = new KeyValuePair<TKey, TValue>();
@@ -68,7 +73,9 @@ namespace Microsoft.Scripting.Utils {
 
             if (_dict != null) {
                 return _dict.ContainsKey(key);
-            } else if (_keysAndValues != null) {
+            }
+
+            if (_keysAndValues != null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         return true;
@@ -131,7 +138,9 @@ namespace Microsoft.Scripting.Utils {
                             if (_keysAndValues[i].Key == key) {
                                 _keysAndValues[i] = new KeyValuePair<TKey, TValue>(key, value);
                                 return;
-                            } else if (_keysAndValues[i].Key == null) {
+                            }
+
+                            if (_keysAndValues[i].Key == null) {
                                 index = i;
                             }
                         }

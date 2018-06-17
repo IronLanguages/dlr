@@ -54,9 +54,9 @@ namespace Microsoft.Scripting.Utils {
         public static DynamicMetaObject ObjectToMetaObject(object argValue, Expression parameterExpression) {
             if (argValue is IDynamicMetaObjectProvider ido) {
                 return ido.GetMetaObject(parameterExpression);
-            } else {
-                return new DynamicMetaObject(parameterExpression, BindingRestrictions.Empty, argValue);
             }
+
+            return new DynamicMetaObject(parameterExpression, BindingRestrictions.Empty, argValue);
         }
 
         /// <summary>

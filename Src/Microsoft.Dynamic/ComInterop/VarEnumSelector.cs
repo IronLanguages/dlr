@@ -309,15 +309,25 @@ namespace Microsoft.Scripting.ComInterop {
 
             if (argumentType == typeof(UnknownWrapper)) {
                 return VarEnum.VT_UNKNOWN;
-            } else if (argumentType == typeof(DispatchWrapper)) {
+            }
+
+            if (argumentType == typeof(DispatchWrapper)) {
                 return VarEnum.VT_DISPATCH;
-            } else if (argumentType == typeof(VariantWrapper)) {
+            }
+
+            if (argumentType == typeof(VariantWrapper)) {
                 return VarEnum.VT_VARIANT;
-            } else if (argumentType == typeof(BStrWrapper)) {
+            }
+
+            if (argumentType == typeof(BStrWrapper)) {
                 return VarEnum.VT_BSTR;
-            } else if (argumentType == typeof(ErrorWrapper)) {
+            }
+
+            if (argumentType == typeof(ErrorWrapper)) {
                 return VarEnum.VT_ERROR;
-            } else if (argumentType == typeof(CurrencyWrapper)) {
+            }
+
+            if (argumentType == typeof(CurrencyWrapper)) {
                 return VarEnum.VT_CY;
             }
 

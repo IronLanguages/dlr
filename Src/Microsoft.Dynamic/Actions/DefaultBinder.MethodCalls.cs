@@ -190,9 +190,9 @@ namespace Microsoft.Scripting.Actions {
             if (list == null) {
                 if (splattee.Value == null) {
                     return BindingRestrictions.GetExpressionRestriction(Ast.Equal(splattee.Expression, AstUtils.Constant(null)));
-                } else {
-                   return BindingRestrictions.GetTypeRestriction(splattee.Expression, splattee.Value.GetType());
                 }
+
+                return BindingRestrictions.GetTypeRestriction(splattee.Expression, splattee.Value.GetType());
             }
 
             BindingRestrictions res = BindingRestrictions.GetExpressionRestriction(

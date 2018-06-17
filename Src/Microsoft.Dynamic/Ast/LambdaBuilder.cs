@@ -567,9 +567,9 @@ namespace Microsoft.Scripting.Runtime {
         public static T[] ShiftParamsArray<T>(T[] array, int count) {
             if (array != null && array.Length > count) {
                 return ArrayUtils.ShiftLeft(array, count);
-            } else {
-                return new T[0];
             }
+
+            return new T[0];
         }
     }
 }

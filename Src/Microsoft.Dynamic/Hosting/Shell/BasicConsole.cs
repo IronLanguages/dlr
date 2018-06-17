@@ -149,10 +149,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 if (_ctrlCEvent != null && _ctrlCEvent.WaitOne(100, false)) {
                     // received ctrl-C
                     return "";
-                } else {
-                    // received ctrl-Z
-                    return null;
                 }
+                    
+                // received ctrl-Z
+                return null;
             }
             return "".PadLeft(autoIndentSize) + res;
         }

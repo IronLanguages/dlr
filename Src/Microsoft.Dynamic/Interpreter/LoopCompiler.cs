@@ -231,7 +231,6 @@ namespace Microsoft.Scripting.Interpreter {
                 }
 
                 return node.Update(left, right);
-
             }
 
             return base.VisitBinary(node);
@@ -262,33 +261,35 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             if (_loopVariables.TryGetValue(node, out LoopVariable existing)) {
+
                 // existing outer variable that we are already tracking
                 box = existing.BoxStorage;
                 _loopVariables[node] = new LoopVariable(existing.Access | access, box);
             } else if (_outerVariables.TryGetValue(node, out LocalVariable loc) || 
                 (_closureVariables != null && _closureVariables.TryGetValue(node, out loc))) {
+
                 // not tracking this variable yet, but defined in outer scope and seen for the 1st time
                 box = loc.InClosureOrBoxed ? Expression.Parameter(typeof(StrongBox<object>), node.Name) : null;
                 _loopVariables[node] = new LoopVariable(access, box);
             } else {
+
                 // node is a variable defined in a nested lambda -> skip
                 return node;
             }
 
-            if (box != null) {
-                if ((access & ExpressionAccess.Write) != 0) {
-                    // compound assignments were reduced:
-                    Debug.Assert((access & ExpressionAccess.Read) == 0);
+            if (box == null)
+                return node;
 
-                    // box.Value = (object)rhs
-                    return LightCompiler.Unbox(box);
-                }
-                    
-                // (T)box.Value
-                return Expression.Convert(LightCompiler.Unbox(box), node.Type);
-            }
-            
-            return node;
+            if ((access & ExpressionAccess.Write) != 0) {
+                // compound assignments were reduced:
+                Debug.Assert((access & ExpressionAccess.Read) == 0);
+
+                // box.Value = (object)rhs
+                return LightCompiler.Unbox(box);
+            } 
+
+            // (T)box.Value
+            return Expression.Convert(LightCompiler.Unbox(box), node.Type);
         }
 
         private ParameterExpression AddTemp(ParameterExpression variable) {

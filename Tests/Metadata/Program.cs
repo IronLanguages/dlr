@@ -397,12 +397,14 @@ namespace Metadata {
         private static string ImplementationToString(MetadataRecord impl) {
             if (impl.IsFileDef) {
                 return "file(" + impl.FileDef.Name + ")";
-            } else if (impl.IsAssemblyRef) {
-                return "assembly(" + impl.AssemblyRef.Name + ")";
-            } else {
-                Debug.Assert(impl.IsNull);
-                return "<no-impl>";
             }
+
+            if (impl.IsAssemblyRef) {
+                return "assembly(" + impl.AssemblyRef.Name + ")";
+            }
+
+            Debug.Assert(impl.IsNull);
+            return "<no-impl>";
         }
 
         public static void DumpModule(MetadataTables tables) {

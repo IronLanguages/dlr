@@ -150,7 +150,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (unboundNames != null) {
                 failure = new CallFailure(method, unboundNames.ToArray(), true);
                 return false;
-            } else if (duppedNames != null) {
+            }
+
+            if (duppedNames != null) {
                 failure = new CallFailure(method, duppedNames.ToArray(), false);
                 return false;
             }

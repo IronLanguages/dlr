@@ -106,19 +106,24 @@ namespace Microsoft.Scripting.ComInterop {
                 if (_argBuilder is StringArgBuilder) {
                     Debug.Assert(TempVariable != null);
                     return Expression.Call(typeof(Marshal).GetMethod("FreeBSTR"), TempVariable);
-                } else if (_argBuilder is DispatchArgBuilder) {
+                }
+
+                if (_argBuilder is DispatchArgBuilder) {
                     Debug.Assert(TempVariable != null);
                     return Release(TempVariable);
-                } else if (_argBuilder is UnknownArgBuilder) {
+                }
+
+                if (_argBuilder is UnknownArgBuilder) {
                     Debug.Assert(TempVariable != null);
                     return Release(TempVariable);
-                } else if (_argBuilder is VariantArgBuilder) {
+                }
+
+                if (_argBuilder is VariantArgBuilder) {
                     Debug.Assert(TempVariable != null);
                     return Expression.Call(TempVariable, typeof(Variant).GetMethod("Clear"));
                 }
                 return null;
             }
-
 
             switch (_targetComType) {
                 case VarEnum.VT_EMPTY:

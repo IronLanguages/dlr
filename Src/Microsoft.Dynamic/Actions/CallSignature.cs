@@ -107,7 +107,9 @@ namespace Microsoft.Scripting.Actions {
         public bool Equals(CallSignature other) {
             if (_infos == null) {
                 return other._infos == null && other._argumentCount == _argumentCount;
-            } else if (other._infos == null) {
+            }
+
+            if (other._infos == null) {
                 return false;
             }
 
@@ -296,16 +298,16 @@ namespace Microsoft.Scripting.Actions {
                     typeof(CallSignature).GetConstructor(new Type[] { typeof(int) }),
                     AstUtils.Constant(ArgumentCount)
                 );
-            } else {
-                Expression[] args = new Expression[_infos.Length];
-                for (int i = 0; i < args.Length; i++) {
-                    args[i] = _infos[i].CreateExpression();
-                }
-                return Expression.New(
-                    typeof(CallSignature).GetConstructor(new Type[] { typeof(Argument[]) }), 
-                    Expression.NewArrayInit(typeof(Argument), args)
-                );
             }
+
+            Expression[] args = new Expression[_infos.Length];
+            for (int i = 0; i < args.Length; i++) {
+                args[i] = _infos[i].CreateExpression();
+            }
+            return Expression.New(
+                typeof(CallSignature).GetConstructor(new Type[] { typeof(Argument[]) }), 
+                Expression.NewArrayInit(typeof(Argument), args)
+            );
         }
 
         #endregion

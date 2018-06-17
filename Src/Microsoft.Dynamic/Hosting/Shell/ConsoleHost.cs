@@ -122,9 +122,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             if (options.TabCompletion) {
                 return CreateSuperConsole(commandLine, options.ColorfulConsole);
-            } else {
-                return new BasicConsole(options.ColorfulConsole);
             }
+
+            return new BasicConsole(options.ColorfulConsole);
         }
 
         // The advanced console functions are in a special non-inlined function so that 
@@ -404,9 +404,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             if (exitCodeOverride == null) {
                 return _commandLine.ExitCode;
-            } else {
-                return exitCodeOverride.Value;
             }
+
+            return exitCodeOverride.Value;
         }
 
         private void PrintUsage()

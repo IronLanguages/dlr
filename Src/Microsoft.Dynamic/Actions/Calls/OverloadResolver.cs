@@ -366,7 +366,9 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                 if (applicable.Count == 0) {
                     continue;
-                } else if (applicable.Count == 1) {
+                }
+
+                if (applicable.Count == 1) {
                     return MakeSuccessfulBindingTarget(applicable[0], potential, level, targetSet);
                 }
 
@@ -375,16 +377,18 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                 if (applicable.Count == 0) {
                     continue;
-                } else if (applicable.Count == 1) {
+                }
+
+                if (applicable.Count == 1) {
                     return MakeSuccessfulBindingTarget(applicable[0], potential, level, targetSet);
                 }
 
                 var bestCandidate = SelectBestCandidate(applicable, level);
                 if (bestCandidate != null) {
                     return MakeSuccessfulBindingTarget(bestCandidate, potential, level, targetSet);
-                } else {
-                    return MakeAmbiguousBindingTarget(applicable);
-                }
+                } 
+
+                return MakeAmbiguousBindingTarget(applicable);
             }
 
             if (failures == null) {
@@ -564,9 +568,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (parameter.Type == typeof(object)) {
                 // don't use Restrict as it'll box & unbox.
                 return new DynamicMetaObject(arg.Expression, BindingRestrictionsHelpers.GetRuntimeTypeRestriction(arg.Expression, arg.GetLimitType()));
-            } else {
-                return arg.Restrict(arg.GetLimitType());
             }
+
+            return arg.Restrict(arg.GetLimitType());
         }
 
         /// <summary>
@@ -660,11 +664,13 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (one.Overload.IsGenericMethod) {
                 if (!two.Overload.IsGenericMethod) {
                     return Candidate.Two;
-                } else {
-                    //!!! Need to support selecting least generic method here
-                    return Candidate.Equivalent;
                 }
-            } else if (two.Overload.IsGenericMethod) {
+
+                //!!! Need to support selecting least generic method here
+                return Candidate.Equivalent;
+            }
+
+            if (two.Overload.IsGenericMethod) {
                 return Candidate.One;
             }
 
@@ -705,8 +711,8 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private static int Compare(int x, int y) {
             if (x < y) return -1;
-            else if (x > y) return +1;
-            else return 0;
+            if (x > y) return +1;
+            return 0;
         }
 
         private static int FindMaxPriority(IList<ArgBuilder> abs, int ceiling) {
@@ -771,10 +777,12 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (CanConvertFrom(candidateTwo, candidateOne)) {
                 if (CanConvertFrom(candidateOne, candidateTwo)) {
                     return Candidate.Ambiguous;
-                } else {
-                    return Candidate.Two;
                 }
-            } else if (CanConvertFrom(candidateOne, candidateTwo)) {
+
+                return Candidate.Two;
+            }
+
+            if (CanConvertFrom(candidateOne, candidateTwo)) {
                 return Candidate.One;
             }
 
@@ -814,11 +822,13 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             if (levelOne < levelTwo) {
                 return Candidate.One;
-            } else if (levelOne > levelTwo) {
-                return Candidate.Two;
-            } else {
-                return Candidate.Ambiguous;
             }
+
+            if (levelOne > levelTwo) {
+                return Candidate.Two;
+            }
+            
+            return Candidate.Ambiguous;
         }
 
         private ApplicableCandidate SelectBestCandidate(List<ApplicableCandidate> candidates, NarrowingLevel level) {
@@ -1162,9 +1172,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                     AstUtils.Constant(_actualArguments.ToSplattedItemIndex(0)),
                     Ast.Constant(collapsedTypes)
                 );
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         #endregion

@@ -134,9 +134,9 @@ namespace Microsoft.Scripting.Runtime {
         public static object ReadOnlyAssignError(bool field, string fieldName) {
             if (field) {
                 throw Error.FieldReadonly(fieldName);
-            } else {
-                throw Error.PropertyReadonly(fieldName);
             }
+
+            throw Error.PropertyReadonly(fieldName);
         }
 
         /// <summary>

@@ -136,9 +136,9 @@ namespace Microsoft.Scripting.Runtime {
                 _position++;
                 CheckInvariants();
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 
         public bool Read(string str) {

@@ -64,9 +64,9 @@ namespace Microsoft.Scripting.Actions {
             if (toType == typeof(object)) {
                 if (knownType.IsValueType()) {
                     return MakeBoxingTarget(arg, restrictions);
-                } else {
-                    return new DynamicMetaObject(arg.Expression, restrictions);
                 }
+
+                return new DynamicMetaObject(arg.Expression, restrictions);
             }
             return null;
         }
@@ -157,9 +157,9 @@ namespace Microsoft.Scripting.Actions {
                         // we can use this method
                         if (type == checkType) {
                             return MakeConversionTarget(kind, method, type, isImplicit, restrictions, arg);
-                        } else {
-                            return MakeExtensibleConversionTarget(kind, method, type, isImplicit, restrictions, arg);
                         }
+
+                        return MakeExtensibleConversionTarget(kind, method, type, isImplicit, restrictions, arg);
                     }
                 }
             }
@@ -195,9 +195,9 @@ namespace Microsoft.Scripting.Actions {
                         // MakeSimpleConversionTarget handles the ConversionResultKind check
                         if (type == checkType) {
                             return MakeSimpleConversionTarget(toType, restrictions, arg);
-                        } else {
-                            return MakeSimpleExtensibleConversionTarget(toType, restrictions, arg);
                         }
+
+                        return MakeSimpleExtensibleConversionTarget(toType, restrictions, arg);
                     }
                 }
             }
@@ -212,13 +212,17 @@ namespace Microsoft.Scripting.Actions {
                 if (knownType == typeof(DynamicNull)) {
                     // null -> Nullable<T>
                     return MakeNullToNullableOfTTarget(toType, restrictions);
-                } else if (knownType == toType.GetGenericArguments()[0]) {
+                }
+
+                if (knownType == toType.GetGenericArguments()[0]) {
                     return MakeTToNullableOfTTarget(toType, knownType, restrictions, arg);
-                } else if (kind == ConversionResultKind.ExplicitCast || kind == ConversionResultKind.ExplicitTry) {
-                    if (knownType != typeof(object)) {
-                        // when doing an explicit cast we'll do things like int -> Nullable<float>
-                        return MakeConvertingToTToNullableOfTTarget(factory, toType, kind, restrictions, arg);
-                    }
+                }
+
+                if (kind != ConversionResultKind.ExplicitCast && kind != ConversionResultKind.ExplicitTry)
+                    return null;
+                if (knownType != typeof(object)) {
+                    // when doing an explicit cast we'll do things like int -> Nullable<float>
+                    return MakeConvertingToTToNullableOfTTarget(factory, toType, kind, restrictions, arg);
                 }
             }
 

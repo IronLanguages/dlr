@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Actions {
                 //
                 // Call interceptor recursively to continue intercepting on rules
                 //
-                return Interceptor.Intercept(binding);
+                return Intercept(binding);
             }
         }
 
@@ -64,9 +64,9 @@ namespace Microsoft.Scripting.Actions {
                 if (!(binder is InterceptorSiteBinder)) {
                     binder = new InterceptorSiteBinder(binder);
                     return DynamicExpression.MakeDynamic(node.DelegateType, binder, node.Arguments);
-                } else {
-                    return node;
                 }
+
+                return node;
             }
         }
     }

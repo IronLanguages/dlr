@@ -19,7 +19,8 @@ namespace Microsoft.Scripting.Utils {
         private void CheckEnumeratorState() {
             if (_enumeratorState == EnumeratorState.NotStarted)
                 throw Error.EnumerationNotStarted();
-            else if (_enumeratorState == EnumeratorState.Ended)
+
+            if (_enumeratorState == EnumeratorState.Ended)
                 throw Error.EnumerationFinished();
         }
 

@@ -262,12 +262,14 @@ namespace Microsoft.Scripting.ComInterop {
                     method = putref;
                 }
                 return true;
-            } else if (hresult == ComHresults.DISP_E_UNKNOWNNAME) {
+            }
+
+            if (hresult == ComHresults.DISP_E_UNKNOWNNAME) {
                 method = null;
                 return false;
-            } else {
-                throw Error.CouldNotGetDispId(name, String.Format(CultureInfo.InvariantCulture, "0x{0:X})", hresult));
             }
+
+            throw Error.CouldNotGetDispId(name, String.Format(CultureInfo.InvariantCulture, "0x{0:X})", hresult));
         }
 
         internal override IList<string> GetMemberNames(bool dataOnly) {
@@ -587,10 +589,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (ComBinderHelpers.PreferPut(limitType, holdsNull)) {
                 return _comTypeDesc.TryGetPut(name, out method) ||
                     _comTypeDesc.TryGetPutRef(name, out method);
-            } else {
-                return _comTypeDesc.TryGetPutRef(name, out method) ||
-                    _comTypeDesc.TryGetPut(name, out method);
             }
+
+            return _comTypeDesc.TryGetPutRef(name, out method) ||
+                _comTypeDesc.TryGetPut(name, out method);
         }
     }
 }
