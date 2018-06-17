@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -15,13 +14,11 @@ using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    
-    public partial class DefaultBinder : ActionBinder {        
+
+    public partial class DefaultBinder : ActionBinder {
         /// <summary>
         /// Builds a MetaObject for performing a member get.  Supports all built-in .NET members, the OperatorMethod 
         /// GetBoundMember, and StrongBox instances.
@@ -160,7 +157,7 @@ namespace Microsoft.Scripting.Actions {
 
             // if lookup failed try the strong-box type if available.
             if (self != null && members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(type)) {
-                self = new DynamicMetaObject(Ast.Field(AstUtils.Convert(self.Expression, type), type.GetInheritedFields("Value").First()), BindingRestrictions.Empty, ((IStrongBox)self.Value).Value);
+                self = new DynamicMetaObject(Expression.Field(AstUtils.Convert(self.Expression, type), type.GetInheritedFields("Value").First()), BindingRestrictions.Empty, ((IStrongBox)self.Value).Value);
                 type = type.GetGenericArguments()[0];
 
                 members = GetMember(MemberRequestKind.Set, type, memInfo.Name);
@@ -273,7 +270,7 @@ namespace Microsoft.Scripting.Actions {
                 } else if (setter.IsPublic && !setter.DeclaringType.IsValueType()) {
                     if (instance == null) {
                         memInfo.Body.FinishCondition(
-                            Ast.Block(
+                            Expression.Block(
                                 AstUtils.SimpleCallHelper(
                                     setter,
                                     ConvertExpression(
@@ -283,7 +280,7 @@ namespace Microsoft.Scripting.Actions {
                                         memInfo.ResolutionFactory
                                     )
                                 ),
-                                Ast.Constant(null)
+                                Expression.Constant(null)
                             )
                         );
                     } else {
@@ -298,7 +295,7 @@ namespace Microsoft.Scripting.Actions {
                     // TODO: Should be able to do better w/ value types.
                     memInfo.Body.FinishCondition(
                         MakeReturnValue(
-                            Ast.Call(
+                            Expression.Call(
                                 AstUtils.Constant(((ReflectedPropertyTracker)info).Property), // TODO: Private binding on extension properties
                                 typeof(PropertyInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object), typeof(object[]) }),
                                 instance == null ? AstUtils.Constant(null) : AstUtils.Convert(instance.Expression, typeof(object)),
@@ -311,7 +308,7 @@ namespace Microsoft.Scripting.Actions {
                                     ),
                                     typeof(object)
                                 ),
-                                Ast.NewArrayInit(typeof(object))
+                                Expression.NewArrayInit(typeof(object))
                             ),
                             target
                         )
@@ -335,8 +332,8 @@ namespace Microsoft.Scripting.Actions {
                 Type[] generic = field.DeclaringType.GetGenericArguments();
                 memInfo.Body.FinishCondition(
                     MakeReturnValue(
-                        Ast.Assign(
-                            Ast.Field(
+                        Expression.Assign(
+                            Expression.Field(
                                 AstUtils.Convert(instance.Expression, field.DeclaringType),
                                 field.DeclaringType.GetDeclaredField("Value")
                             ),
@@ -369,8 +366,8 @@ namespace Microsoft.Scripting.Actions {
             } else if (field.IsPublic && field.DeclaringType.IsVisible()) {
                 if (!field.IsStatic && instance == null) {
                     memInfo.Body.FinishError(
-                        Ast.Throw(
-                            Ast.New(
+                        Expression.Throw(
+                            Expression.New(
                                 typeof(ArgumentException).GetConstructor(new[] { typeof(string) }),
                                 AstUtils.Constant("assignment to instance field w/o instance")
                             ),
@@ -381,8 +378,8 @@ namespace Microsoft.Scripting.Actions {
                 } else {
                     memInfo.Body.FinishCondition(
                         MakeReturnValue(
-                            Ast.Assign(
-                                Ast.Field(
+                            Expression.Assign(
+                                Expression.Field(
                                     field.IsStatic ?
                                         null :
                                         AstUtils.Convert(instance.Expression, field.DeclaringType),
@@ -399,7 +396,7 @@ namespace Microsoft.Scripting.Actions {
 
                 memInfo.Body.FinishCondition(
                     MakeReturnValue(
-                        Ast.Call(
+                        Expression.Call(
                             AstUtils.Convert(AstUtils.Constant(field.Field), typeof(FieldInfo)),
                             typeof(FieldInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object) }),
                             field.IsStatic ?
@@ -415,7 +412,7 @@ namespace Microsoft.Scripting.Actions {
 
         private DynamicMetaObject MakeReturnValue(DynamicMetaObject expression, DynamicMetaObject target) {
             return new DynamicMetaObject(
-                Ast.Block(
+                Expression.Block(
                     expression.Expression,
                     Expression.Convert(target.Expression, typeof(object))
                 ),
@@ -424,7 +421,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private Expression MakeReturnValue(Expression expression, DynamicMetaObject target) {
-            return Ast.Block(
+            return Expression.Block(
                 expression,
                 Expression.Convert(target.Expression, typeof(object))
             );
@@ -435,7 +432,7 @@ namespace Microsoft.Scripting.Actions {
             if (self != null) {
                 MethodInfo setMem = GetMethod(type, name);
                 if (setMem != null) {
-                    ParameterExpression tmp = Ast.Variable(target.Expression.Type, "setValue");
+                    ParameterExpression tmp = Expression.Variable(target.Expression.Type, "setValue");
                     memInfo.Body.AddVariable(tmp);
 
                     var callMo = MakeCallExpression(
@@ -446,7 +443,7 @@ namespace Microsoft.Scripting.Actions {
                         target.Clone(tmp)
                     );
 
-                    var call = Ast.Block(Ast.Assign(tmp, target.Expression), callMo.Expression);
+                    var call = Expression.Block(Expression.Assign(tmp, target.Expression), callMo.Expression);
 
                     if (setMem.ReturnType == typeof(bool)) {
                         memInfo.Body.AddCondition(
@@ -454,7 +451,7 @@ namespace Microsoft.Scripting.Actions {
                             tmp
                         );
                     } else {
-                        memInfo.Body.FinishCondition(Ast.Block(call, AstUtils.Convert(tmp, typeof(object))));
+                        memInfo.Body.FinishCondition(Expression.Block(call, AstUtils.Convert(tmp, typeof(object))));
                     }
 
                     return setMem.ReturnType != typeof(bool);
@@ -465,7 +462,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private static Expression MakeGenericPropertyExpression(SetOrDeleteMemberInfo memInfo) {
-            return Ast.New(
+            return Expression.New(
                 typeof(MemberAccessException).GetConstructor(new[] { typeof(string) }),
                 AstUtils.Constant(memInfo.Name)
             );

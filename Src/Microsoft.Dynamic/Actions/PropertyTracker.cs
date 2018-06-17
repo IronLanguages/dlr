@@ -19,9 +19,7 @@ namespace Microsoft.Scripting.Actions {
     /// property (implemented with an ExtensionPropertyTracker).
     /// </summary>
     public abstract class PropertyTracker : MemberTracker {
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Property; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Property;
 
         public abstract MethodInfo GetGetMethod();
         public abstract MethodInfo GetSetMethod();

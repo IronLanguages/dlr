@@ -2,15 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
-using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
     /// <summary>
@@ -33,15 +30,11 @@ namespace Microsoft.Scripting.Actions {
                 Type = type;
             }
 
-            public override bool CanReduce {
-                get { return true; }
-            }
+            public override bool CanReduce => true;
 
             public sealed override Type Type { get; }
 
-            public sealed override ExpressionType NodeType {
-                get { return ExpressionType.Extension; }
-            }
+            public sealed override ExpressionType NodeType => ExpressionType.Extension;
 
             public Expression[] Inputs { get; }
 

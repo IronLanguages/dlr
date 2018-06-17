@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Dynamic;
+using System.Linq.Expressions;
+using System.Reflection;
+
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
@@ -17,8 +17,7 @@ using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    
+
     public partial class DefaultBinder : ActionBinder {
 
         #region Public APIs
@@ -189,18 +188,18 @@ namespace Microsoft.Scripting.Actions {
 
             if (list == null) {
                 if (splattee.Value == null) {
-                    return BindingRestrictions.GetExpressionRestriction(Ast.Equal(splattee.Expression, AstUtils.Constant(null)));
+                    return BindingRestrictions.GetExpressionRestriction(Expression.Equal(splattee.Expression, AstUtils.Constant(null)));
                 }
 
                 return BindingRestrictions.GetTypeRestriction(splattee.Expression, splattee.Value.GetType());
             }
 
             BindingRestrictions res = BindingRestrictions.GetExpressionRestriction(
-                Ast.AndAlso(
-                    Ast.TypeIs(splattee.Expression, typeof(IList<object>)),
-                    Ast.Equal(
-                        Ast.Property(
-                            Ast.Convert(splattee.Expression, typeof(IList<object>)),
+                Expression.AndAlso(
+                    Expression.TypeIs(splattee.Expression, typeof(IList<object>)),
+                    Expression.Equal(
+                        Expression.Property(
+                            Expression.Convert(splattee.Expression, typeof(IList<object>)),
                             typeof(ICollection<object>).GetDeclaredProperty("Count")
                         ),
                         AstUtils.Constant(list.Count)
@@ -212,7 +211,7 @@ namespace Microsoft.Scripting.Actions {
                 for (int i = 0; i < list.Count; i++) {
                     res = res.Merge(
                         BindingRestrictionsHelpers.GetRuntimeTypeRestriction(
-                            Ast.Call(
+                            Expression.Call(
                                 AstUtils.Convert(
                                     splattee.Expression,
                                     typeof(IList<object>)
@@ -256,11 +255,11 @@ namespace Microsoft.Scripting.Actions {
             }
 
             return BindingRestrictions.GetExpressionRestriction(
-                Ast.AndAlso(
-                    Ast.TypeIs(args[args.Count - 1].Expression, typeof(IDictionary)),
-                    Ast.Call(
+                Expression.AndAlso(
+                    Expression.TypeIs(args[args.Count - 1].Expression, typeof(IDictionary)),
+                    Expression.Call(
                         typeof(BinderOps).GetMethod("CheckDictionaryMembers"),
-                        Ast.Convert(args[args.Count - 1].Expression, typeof(IDictionary)),
+                        Expression.Convert(args[args.Count - 1].Expression, typeof(IDictionary)),
                         AstUtils.Constant(names),
                         testTypes ? AstUtils.Constant(types) : AstUtils.Constant(null, typeof(Type[]))
                     )

@@ -34,23 +34,13 @@ namespace Microsoft.Scripting.Actions {
             _eventInfo = eventInfo;
         }
 
-        public override Type DeclaringType {
-            get { return _eventInfo.DeclaringType; }
-        }
+        public override Type DeclaringType => _eventInfo.DeclaringType;
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Event; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Event;
 
-        public override string Name {
-            get { return _eventInfo.Name; }
-        }
+        public override string Name => _eventInfo.Name;
 
-        public EventInfo Event {
-            get {
-                return _eventInfo;
-            }
-        }
+        public EventInfo Event => _eventInfo;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public MethodInfo GetCallableAddMethod() {

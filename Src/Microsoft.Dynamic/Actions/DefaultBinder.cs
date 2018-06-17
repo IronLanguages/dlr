@@ -2,25 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Dynamic;
-using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
-using Microsoft.Scripting.Generation;
+using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Actions.Calls;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    
+
     /// <summary>
     /// Provides binding semantics for a language.  This include conversions as well as support
     /// for producing rules for actions.  These optimized rules are used for calling methods, 
@@ -57,7 +52,7 @@ namespace Microsoft.Scripting.Actions {
                     FieldTracker ft = (FieldTracker)member;
 
                     return ErrorInfo.FromValueNoError(
-                        Ast.Call(
+                        Expression.Call(
                             AstUtils.Convert(AstUtils.Constant(ft.Field), typeof(FieldInfo)),
                             typeof(FieldInfo).GetMethod("GetValue"),
                             AstUtils.Convert(instance.Expression, typeof(object))
@@ -126,8 +121,8 @@ namespace Microsoft.Scripting.Actions {
                 sb.Append(mi);
             }
 
-            return Ast.Throw(
-                Ast.New(
+            return Expression.Throw(
+                Expression.New(
                     typeof(AmbiguousMatchException).GetConstructor(new Type[] { typeof(string) }),
                     AstUtils.Constant(sb.ToString())
                 ),
@@ -206,4 +201,3 @@ namespace Microsoft.Scripting.Actions {
         }
     }
 }
-

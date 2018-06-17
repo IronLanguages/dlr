@@ -2,20 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    
+
     public class MethodTracker : MemberTracker {
         private readonly MethodInfo _method;
 
@@ -31,29 +28,15 @@ namespace Microsoft.Scripting.Actions {
             IsStatic = isStatic;
         }
 
-        public override Type DeclaringType {
-            get { return _method.DeclaringType; }
-        }
+        public override Type DeclaringType => _method.DeclaringType;
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Method; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Method;
 
-        public override string Name {
-            get { return _method.Name; }
-        }
+        public override string Name => _method.Name;
 
-        public MethodInfo Method {
-            get {
-                return _method;
-            }
-        }
+        public MethodInfo Method => _method;
 
-        public bool IsPublic {
-            get {
-                return _method.IsPublic;
-            }
-        }
+        public bool IsPublic => _method.IsPublic;
 
         public bool IsStatic { get; }
 
@@ -81,8 +64,8 @@ namespace Microsoft.Scripting.Actions {
             //methodInfo.Invoke(obj, object[] params)
             if (Method.IsStatic) {
                 return new DynamicMetaObject(
-                        Ast.Convert(
-                            Ast.Call(
+                        Expression.Convert(
+                            Expression.Call(
                                 AstUtils.Constant(Method),
                                 typeof(MethodInfo).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }),
                                 AstUtils.Constant(null),
@@ -98,8 +81,8 @@ namespace Microsoft.Scripting.Actions {
             if (arguments.Length == 0) throw Error.NoInstanceForCall();
 
             return new DynamicMetaObject(
-                Ast.Convert(
-                    Ast.Call(
+                Expression.Convert(
+                    Expression.Call(
                         AstUtils.Constant(Method),
                         typeof(MethodInfo).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }),
                         arguments[0].Expression,

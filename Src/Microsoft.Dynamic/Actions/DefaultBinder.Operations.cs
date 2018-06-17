@@ -2,23 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+
+using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Actions.Calls;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
 
     public partial class DefaultBinder : ActionBinder {
         [Obsolete("You should use the overload which takes ExpressionType instead")]
@@ -87,7 +86,7 @@ namespace Microsoft.Scripting.Actions {
             BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
 
             DocumentationAttribute attr = target.LimitType.GetCustomAttribute<DocumentationAttribute>();
-            string documentation = (attr != null) ? attr.Documentation : String.Empty;
+            string documentation = (attr != null) ? attr.Documentation : string.Empty;
 
             return new DynamicMetaObject(
                 AstUtils.Constant(documentation),
@@ -188,7 +187,7 @@ namespace Microsoft.Scripting.Actions {
 
         private static DynamicMetaObject MakeOperatorError(OperatorInfo info, DynamicMetaObject[] args) {
             return new DynamicMetaObject(
-                Ast.Throw(
+                Expression.Throw(
                     AstUtils.ComplexCallHelper(
                         typeof(BinderOps).GetMethod("BadArgumentsForOperation"),
                         ArrayUtils.Insert((Expression)AstUtils.Constant(info.Operator), DynamicUtils.GetExpressions(args))
@@ -214,12 +213,12 @@ namespace Microsoft.Scripting.Actions {
                 if (target.Success) {
                     Expression call = AstUtils.Convert(target.MakeExpression(), typeof(int));
                     switch (info.Operator) {
-                        case ExpressionType.GreaterThan: call = Ast.GreaterThan(call, AstUtils.Constant(0)); break;
-                        case ExpressionType.LessThan: call = Ast.LessThan(call, AstUtils.Constant(0)); break;
-                        case ExpressionType.GreaterThanOrEqual: call = Ast.GreaterThanOrEqual(call, AstUtils.Constant(0)); break;
-                        case ExpressionType.LessThanOrEqual: call = Ast.LessThanOrEqual(call, AstUtils.Constant(0)); break;
-                        case ExpressionType.Equal: call = Ast.Equal(call, AstUtils.Constant(0)); break;
-                        case ExpressionType.NotEqual: call = Ast.NotEqual(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.GreaterThan: call = Expression.GreaterThan(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.LessThan: call = Expression.LessThan(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.GreaterThanOrEqual: call = Expression.GreaterThanOrEqual(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.LessThanOrEqual: call = Expression.LessThanOrEqual(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.Equal: call = Expression.Equal(call, AstUtils.Constant(0)); break;
+                        case ExpressionType.NotEqual: call = Expression.NotEqual(call, AstUtils.Constant(0)); break;
                     }
 
                     return new DynamicMetaObject(
@@ -257,28 +256,28 @@ namespace Microsoft.Scripting.Actions {
             if (args[0].GetLimitType() == typeof(DynamicNull)) {
                 if (!otherType.IsValueType()) {
                     return new DynamicMetaObject(
-                        Ast.Equal(args[0].Expression, AstUtils.Constant(null)),
+                        Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
                     );
                 }
 
                 if (otherType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return new DynamicMetaObject(
-                            Ast.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
+                        Expression.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
                         restrictions
                     );
                 }
             } else if (otherType == typeof(DynamicNull)) {
                 if (!args[0].GetLimitType().IsValueType()) {
                     return new DynamicMetaObject(
-                        Ast.Equal(args[0].Expression, AstUtils.Constant(null)),
+                        Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
                     );
                 }
 
                 if (args[0].GetLimitType().GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return new DynamicMetaObject(
-                        Ast.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
+                        Expression.Property(args[0].Expression, otherType.GetDeclaredProperty("HasValue")),
                         restrictions
                     );
                 }
@@ -295,12 +294,12 @@ namespace Microsoft.Scripting.Actions {
                 // TODO: Nullable<PrimitveType> Support
                 Expression expr;
                 switch (info.Operator) {
-                    case ExpressionType.Equal: expr = Ast.Equal(arg0, arg1); break;
-                    case ExpressionType.NotEqual: expr = Ast.NotEqual(arg0, arg1); break;
-                    case ExpressionType.GreaterThan: expr = Ast.GreaterThan(arg0, arg1); break;
-                    case ExpressionType.LessThan: expr = Ast.LessThan(arg0, arg1); break;
-                    case ExpressionType.GreaterThanOrEqual: expr = Ast.GreaterThanOrEqual(arg0, arg1); break;
-                    case ExpressionType.LessThanOrEqual: expr = Ast.LessThanOrEqual(arg0, arg1); break;
+                    case ExpressionType.Equal: expr = Expression.Equal(arg0, arg1); break;
+                    case ExpressionType.NotEqual: expr = Expression.NotEqual(arg0, arg1); break;
+                    case ExpressionType.GreaterThan: expr = Expression.GreaterThan(arg0, arg1); break;
+                    case ExpressionType.LessThan: expr = Expression.LessThan(arg0, arg1); break;
+                    case ExpressionType.GreaterThanOrEqual: expr = Expression.GreaterThanOrEqual(arg0, arg1); break;
+                    case ExpressionType.LessThanOrEqual: expr = Expression.LessThanOrEqual(arg0, arg1); break;
                     default: throw new InvalidOperationException();
                 }
 
@@ -337,16 +336,16 @@ namespace Microsoft.Scripting.Actions {
                 DynamicMetaObject arg0 = args[1].Restrict(args[0].GetLimitType());
 
                 switch (info.Operator) {
-                    case ExpressionType.Add: expr = Ast.Add(self.Expression, arg0.Expression); break;
-                    case ExpressionType.Subtract: expr = Ast.Subtract(self.Expression, arg0.Expression); break;
-                    case ExpressionType.Divide: expr = Ast.Divide(self.Expression, arg0.Expression); break;
-                    case ExpressionType.Modulo: expr = Ast.Modulo(self.Expression, arg0.Expression); break;
-                    case ExpressionType.Multiply: expr = Ast.Multiply(self.Expression, arg0.Expression); break;
-                    case ExpressionType.LeftShift: expr = Ast.LeftShift(self.Expression, arg0.Expression); break;
-                    case ExpressionType.RightShift: expr = Ast.RightShift(self.Expression, arg0.Expression); break;
-                    case ExpressionType.And: expr = Ast.And(self.Expression, arg0.Expression); break;
-                    case ExpressionType.Or: expr = Ast.Or(self.Expression, arg0.Expression); break;
-                    case ExpressionType.ExclusiveOr: expr = Ast.ExclusiveOr(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Add: expr = Expression.Add(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Subtract: expr = Expression.Subtract(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Divide: expr = Expression.Divide(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Modulo: expr = Expression.Modulo(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Multiply: expr = Expression.Multiply(self.Expression, arg0.Expression); break;
+                    case ExpressionType.LeftShift: expr = Expression.LeftShift(self.Expression, arg0.Expression); break;
+                    case ExpressionType.RightShift: expr = Expression.RightShift(self.Expression, arg0.Expression); break;
+                    case ExpressionType.And: expr = Expression.And(self.Expression, arg0.Expression); break;
+                    case ExpressionType.Or: expr = Expression.Or(self.Expression, arg0.Expression); break;
+                    case ExpressionType.ExclusiveOr: expr = Expression.ExclusiveOr(self.Expression, arg0.Expression); break;
                     default: throw new InvalidOperationException();
                 }
 
@@ -394,7 +393,7 @@ namespace Microsoft.Scripting.Actions {
                     case ExpressionType.Negate:
                         if (args[0].GetLimitType().IsArithmetic()) {
                             return new DynamicMetaObject(
-                                Ast.Negate(args[0].Expression),
+                                Expression.Negate(args[0].Expression),
                                 restrictions
                             );
                         }
@@ -402,7 +401,7 @@ namespace Microsoft.Scripting.Actions {
                     case ExpressionType.Not:
                         if (args[0].GetLimitType().IsIntegerOrBool()) {
                             return new DynamicMetaObject(
-                                Ast.Not(args[0].Expression),
+                                Expression.Not(args[0].Expression),
                                 restrictions
                             );
                         }
@@ -454,10 +453,10 @@ namespace Microsoft.Scripting.Actions {
                     Debug.Assert(args.Length >= 2);
 
                     // need to save arg2 in a temp because it's also our result
-                    arg2 = Ast.Variable(args[2].Expression.Type, "arg2Temp");
+                    arg2 = Expression.Variable(args[2].Expression.Type, "arg2Temp");
 
                     args[2] = new DynamicMetaObject(
-                        Ast.Assign(arg2, args[2].Expression),
+                        Expression.Assign(arg2, args[2].Expression),
                         args[2].Restrictions
                     );
                 }
@@ -475,7 +474,7 @@ namespace Microsoft.Scripting.Actions {
                     }
 
                     return new DynamicMetaObject(
-                        Ast.Block(
+                        Expression.Block(
                             new ParameterExpression[] { arg2 },
                             target.MakeExpression(),
                             arg2
@@ -500,7 +499,7 @@ namespace Microsoft.Scripting.Actions {
 
                 if (oper == IndexType.Get) {
                     return new DynamicMetaObject(
-                        Ast.ArrayAccess(
+                        Expression.ArrayAccess(
                             args[0].Expression,
                             ConvertIfNeeded(factory, args[1].Expression, typeof(int))
                         ),
@@ -509,8 +508,8 @@ namespace Microsoft.Scripting.Actions {
                 }
 
                 return new DynamicMetaObject(
-                    Ast.Assign(
-                        Ast.ArrayAccess(
+                    Expression.Assign(
+                        Expression.ArrayAccess(
                             args[0].Expression,
                             ConvertIfNeeded(factory, args[1].Expression, typeof(int))
                         ),
@@ -579,7 +578,7 @@ namespace Microsoft.Scripting.Actions {
             BindingTarget target = resolver.ResolveOverload(targets[0].Name, targets, NarrowingLevel.None, NarrowingLevel.All);
             if (target.Success) {
                 return new DynamicMetaObject(
-                    Ast.Not(target.MakeExpression()),
+                    Expression.Not(target.MakeExpression()),
                     target.RestrictedArguments.GetAllRestrictions()
                 );
             }

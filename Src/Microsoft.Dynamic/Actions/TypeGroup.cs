@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.Scripting.Runtime;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
@@ -147,64 +147,38 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public IEnumerable<Type> Types {
-            get {
-                return _typesByArity.Values;
-            }
-        }
+        public IEnumerable<Type> Types => _typesByArity.Values;
 
-        public IDictionary<int, Type> TypesByArity {
-            get {
-                return new ReadOnlyDictionary<int, Type>(_typesByArity);
-            }
-        }
+        public IDictionary<int, Type> TypesByArity => new ReadOnlyDictionary<int, Type>(_typesByArity);
 
 
         #region MemberTracker overrides
 
-        public override TrackerTypes MemberType {
-            get {
-                return TrackerTypes.TypeGroup;
-            }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.TypeGroup;
 
         /// <summary>
         /// This returns the DeclaringType of all the types in the TypeGroup
         /// </summary>
-        public override Type DeclaringType {
-            get {
-                return SampleType.DeclaringType;
-            }
-        }
+        public override Type DeclaringType => SampleType.DeclaringType;
 
         /// <summary>
         /// This returns the base name of the TypeGroup (the name shared by all types minus arity)
         /// </summary>
-        public override string Name {
-            get {
-                return _name;
-            }
-        }
+        public override string Name => _name;
 
         /// <summary>
         /// This will return the result only for the non-generic type if one exists, and will throw 
         /// an exception if all types in the TypeGroup are generic
         /// </summary>
-        public override Type Type {
-            get { return GetNonGenericType(); }
-        }
+        public override Type Type => GetNonGenericType();
 
-        public override bool IsGenericType {
-            get { return _typesByArity.Count > 0; }
-        }
+        public override bool IsGenericType => _typesByArity.Count > 0;
 
         /// <summary>
         /// This will return the result only for the non-generic type if one exists, and will throw 
         /// an exception if all types in the TypeGroup are generic
         /// </summary>
-        public override bool IsPublic {
-            get { return GetNonGenericType().IsPublic(); }
-        }
+        public override bool IsPublic => GetNonGenericType().IsPublic();
 
         #endregion
     }

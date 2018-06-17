@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Scripting.Utils;
+using System.Linq.Expressions;
+using System.Text;
+
 using Microsoft.Scripting.Generation;
+using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
@@ -33,9 +33,7 @@ namespace Microsoft.Scripting.Actions {
         /// <summary>
         /// All arguments are unnamed and matched by position. 
         /// </summary>
-        public bool IsSimple {
-            get { return _infos == null; }
-        }
+        public bool IsSimple => _infos == null;
 
         public int ArgumentCount {
             get {
@@ -287,7 +285,7 @@ namespace Microsoft.Scripting.Actions {
             return result.ToArray();
         }
 
-        public Expression CreateExpression() {            
+        public Expression CreateExpression() {
             if (_infos == null) {
                 return Expression.New(
                     typeof(CallSignature).GetConstructor(new Type[] { typeof(int) }),

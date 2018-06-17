@@ -2,21 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Dynamic;
+using System.Linq.Expressions;
+using System.Reflection;
+
+using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Actions.Calls;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
 
     public partial class DefaultBinder : ActionBinder {
         // TODO: Rename Call to Invoke, obsolete Call
@@ -132,16 +131,15 @@ namespace Microsoft.Scripting.Actions {
         /// Binds to the methods in a method group.
         /// </summary>
         private static TargetInfo TryGetMethodGroupTargets(DynamicMetaObject target, DynamicMetaObject[] args, MethodGroup mthgrp) {
-            if (mthgrp != null) {
-                List<MethodBase> foundTargets = new List<MethodBase>();
+            if (mthgrp == null)
+                return null;
 
-                foreach (MethodTracker mt in mthgrp.Methods) {
-                    foundTargets.Add(mt.Method);
-                }
-
-                return new TargetInfo(null, ArrayUtils.Insert(target, args), BindingRestrictions.GetInstanceRestriction(target.Expression, mthgrp), foundTargets.ToArray());
+            List<MethodBase> foundTargets = new List<MethodBase>();
+            foreach (MethodTracker mt in mthgrp.Methods) {
+                foundTargets.Add(mt.Method);
             }
-            return null;
+
+            return new TargetInfo(null, ArrayUtils.Insert(target, args), BindingRestrictions.GetInstanceRestriction(target.Expression, mthgrp), foundTargets.ToArray());
         }
 
         /// <summary>
@@ -150,18 +148,18 @@ namespace Microsoft.Scripting.Actions {
         /// TODO: We should really only have either MemberGroup or MethodGroup, not both.
         /// </summary>
         private static TargetInfo TryGetMemberGroupTargets(DynamicMetaObject target, DynamicMetaObject[] args, MemberGroup mg) {
-            if (mg != null) {
-                List<MethodInfo> foundTargets = new List<MethodInfo>();
-                foreach (MemberTracker mt in mg) {
-                    if (mt.MemberType == TrackerTypes.Method) {
-                        foundTargets.Add(((MethodTracker)mt).Method);
-                    }
-                }
+            if (mg == null)
+                return null;
 
-                MethodBase[] targets = foundTargets.ToArray();
-                return new TargetInfo(null, ArrayUtils.Insert(target, args), targets);
+            List<MethodInfo> foundTargets = new List<MethodInfo>();
+            foreach (MemberTracker mt in mg) {
+                if (mt.MemberType == TrackerTypes.Method) {
+                    foundTargets.Add(((MethodTracker)mt).Method);
+                }
             }
-            return null;
+
+            MethodBase[] targets = foundTargets.ToArray();
+            return new TargetInfo(null, ArrayUtils.Insert(target, args), targets);
         }
 
         /// <summary>
@@ -178,8 +176,8 @@ namespace Microsoft.Scripting.Actions {
                 // type.
                 DynamicMetaObject instance = new DynamicMetaObject(
                     AstUtils.Convert(
-                        Ast.Property(
-                            Ast.Convert(self.Expression, typeof(BoundMemberTracker)),
+                        Expression.Property(
+                            Expression.Convert(self.Expression, typeof(BoundMemberTracker)),
                             typeof(BoundMemberTracker).GetDeclaredProperty("ObjectInstance")
                         ),
                         bmt.BoundTo.DeclaringType
@@ -189,9 +187,9 @@ namespace Microsoft.Scripting.Actions {
 
                 // we also add a restriction to make sure we're going to the same BoundMemberTracker
                 BindingRestrictions restrictions = BindingRestrictions.GetExpressionRestriction(
-                    Ast.Equal(
-                        Ast.Property(
-                            Ast.Convert(self.Expression, typeof(BoundMemberTracker)),
+                    Expression.Equal(
+                        Expression.Property(
+                            Expression.Convert(self.Expression, typeof(BoundMemberTracker)),
                             typeof(BoundMemberTracker).GetDeclaredProperty("BoundTo")
                         ),
                         AstUtils.Constant(bmt.BoundTo)
@@ -255,7 +253,7 @@ namespace Microsoft.Scripting.Actions {
         private DynamicMetaObject MakeCannotCallRule(DynamicMetaObject self, Type type) {
             return MakeError(
                 ErrorInfo.FromException(
-                    Ast.New(
+                    Expression.New(
                         typeof(ArgumentTypeException).GetConstructor(new Type[] { typeof(string) }),
                         AstUtils.Constant(GetTypeName(type) + " is not callable")
                     )
@@ -265,9 +263,7 @@ namespace Microsoft.Scripting.Actions {
             );
         }
 
-
         #endregion
-
 
         /// <summary>
         /// Encapsulates information about the target of the call.  This includes an implicit instance for the call,
@@ -293,6 +289,5 @@ namespace Microsoft.Scripting.Actions {
                 Restrictions = restrictions;
             }
         }
-
     }
 }

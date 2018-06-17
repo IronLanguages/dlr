@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq.Expressions;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
 
     /// <summary>
     /// Builds up a series of conditionals when the False clause isn't yet known.  We can
@@ -64,14 +63,14 @@ namespace Microsoft.Scripting.Actions {
                     }
                 }
 
-                body = Ast.Condition(
+                body = Expression.Condition(
                     _conditions[i],
                     AstUtils.Convert(_bodies[i], t),
                     AstUtils.Convert(body, t)
                 );
             }
 
-            _body = Ast.Block(
+            _body = Expression.Block(
                 _variables,
                 body
             );
@@ -95,9 +94,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public BindingRestrictions Restrictions {
-            get {
-                return _restrictions;
-            }
+            get => _restrictions;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 _restrictions = value;
@@ -133,5 +130,4 @@ namespace Microsoft.Scripting.Actions {
             _variables.Add(var);
         }
     }
-
 }

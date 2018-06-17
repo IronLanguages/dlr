@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Linq.Expressions;
 
-using System;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -18,8 +18,8 @@ namespace Microsoft.Scripting.Actions {
 
         public static readonly Argument Simple = new Argument(ArgumentType.Simple, null);
 
-        public ArgumentType Kind { get { return _kind; } }
-        public string Name { get { return _name; } }
+        public ArgumentType Kind => _kind;
+        public string Name => _name;
 
         public Argument(string name) {
             _kind = ArgumentType.Named;
@@ -51,11 +51,7 @@ namespace Microsoft.Scripting.Actions {
             return (_name != null) ? _name.GetHashCode() ^ (int)_kind : (int)_kind;
         }
 
-        public bool IsSimple {
-            get {
-                return Equals(Simple);
-            }
-        }
+        public bool IsSimple => Equals(Simple);
 
         public override string ToString() {
             return _name == null ? _kind.ToString() : _kind.ToString() + ":" + _name;
@@ -70,5 +66,3 @@ namespace Microsoft.Scripting.Actions {
         }
     }
 }
-
-
