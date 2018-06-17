@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -38,17 +39,13 @@ namespace Microsoft.Scripting.Interpreter {
         private List<int> _forwardBranchFixups;
 
         internal int LabelIndex {
-            get { return _labelIndex; }
-            set { _labelIndex = value; }
+            get => _labelIndex;
+            set => _labelIndex = value;
         }
 
-        internal bool HasRuntimeLabel {
-            get { return _labelIndex != UnknownIndex; } 
-        }
+        internal bool HasRuntimeLabel => _labelIndex != UnknownIndex;
 
-        internal int TargetIndex {
-            get { return _targetIndex; }
-        }
+        internal int TargetIndex => _targetIndex;
 
         internal RuntimeLabel ToRuntimeLabel() {
             Debug.Assert(_targetIndex != UnknownIndex && _stackDepth != UnknownDepth && _continuationStackDepth != UnknownDepth);
@@ -89,6 +86,4 @@ namespace Microsoft.Scripting.Interpreter {
             instructions.FixupBranch(branchIndex, _targetIndex - branchIndex);
         }
     }
-
-
 }

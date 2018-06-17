@@ -2,21 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-using Microsoft.Scripting.Ast;
-
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Reflection.Emit;
-
-using AstUtils = Microsoft.Scripting.Ast.Utils;
-using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Runtime;
+using System.Runtime.CompilerServices;
 using System.Security;
+
+using Microsoft.Scripting.Ast;
+using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting.Utils;
+using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     public sealed class ExceptionHandler {
@@ -26,7 +25,7 @@ namespace Microsoft.Scripting.Interpreter {
         public readonly int LabelIndex;
         public readonly int HandlerStartIndex;
 
-        public bool IsFault { get { return ExceptionType == null; } }
+        public bool IsFault => ExceptionType == null;
 
         internal ExceptionHandler(int start, int end, int labelIndex, int handlerStartIndex, Type exceptionType) {
             StartIndex = start;
@@ -37,10 +36,10 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public bool Matches(Type exceptionType, int index) {
-            if (index >= StartIndex && index < EndIndex) {
-                if (ExceptionType == null || ExceptionType.IsAssignableFrom(exceptionType)) {
-                    return true;
-                }
+            if (index < StartIndex || index >= EndIndex)
+                return false;
+            if (ExceptionType == null || ExceptionType.IsAssignableFrom(exceptionType)) {
+                return true;
             }
             return false;
         }
@@ -55,12 +54,14 @@ namespace Microsoft.Scripting.Interpreter {
             if (StartIndex > other.StartIndex) {
                 Debug.Assert(EndIndex <= other.EndIndex);
                 return true;
-            } else if (EndIndex < other.EndIndex) {
+            }
+
+            if (EndIndex < other.EndIndex) {
                 Debug.Assert(StartIndex == other.StartIndex);
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 
         internal bool IsInside(int index) {
@@ -68,11 +69,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToString() {
-            return String.Format("{0} [{1}-{2}] [{3}->]",
-                (IsFault ? "fault" : "catch(" + ExceptionType.Name + ")"),
-                StartIndex, EndIndex,
-                HandlerStartIndex
-            );
+            return $"{(IsFault ? "fault" : "catch(" + ExceptionType.Name + ")")} [{StartIndex}-{EndIndex}] [{HandlerStartIndex}->]";
         }
     }
 
@@ -90,8 +87,8 @@ namespace Microsoft.Scripting.Interpreter {
             //We allow comparison between int and DebugInfo here
             int IComparer<DebugInfo>.Compare(DebugInfo d1, DebugInfo d2) {
                 if (d1.Index > d2.Index) return 1;
-                else if (d1.Index == d2.Index) return 0;
-                else return -1;
+                if (d1.Index == d2.Index) return 0;
+                return -1;
             }
         }
         
@@ -180,13 +177,9 @@ namespace Microsoft.Scripting.Interpreter {
             _parent = parent;
         }
 
-        public InstructionList Instructions {
-            get { return _instructions; }
-        }
+        public InstructionList Instructions => _instructions;
 
-        public LocalVariables Locals {
-            get { return _locals; }
-        }
+        public LocalVariables Locals => _locals;
 
         internal static Expression Unbox(Expression strongBoxExpression) {
             return Expression.Field(strongBoxExpression, typeof(StrongBox<object>).GetDeclaredField("Value"));
@@ -239,7 +232,6 @@ namespace Microsoft.Scripting.Interpreter {
             return new Interpreter(lambdaName, _locals, GetBranchMapping(), _instructions.ToArray(), handlers, debugInfos, _compilationThreshold);
         }
 
-
         private void CompileConstantExpression(Expression expr) {
             var node = (ConstantExpression)expr;
             _instructions.EmitLoad(node.Value, node.Type);
@@ -250,17 +242,17 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileDefaultExpression(Type type) {
-            if (type != typeof(void)) {
-                if (type.IsValueType()) {
-                    object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
-                    if (value != null) {
-                        _instructions.EmitLoad(value);
-                    } else {
-                        _instructions.EmitDefaultValue(type);
-                    }
+            if (type == typeof(void))
+                return;
+            if (type.IsValueType()) {
+                object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
+                if (value != null) {
+                    _instructions.EmitLoad(value);
                 } else {
-                    _instructions.EmitLoad(null);
+                    _instructions.EmitDefaultValue(type);
                 }
+            } else {
+                _instructions.EmitLoad(null);
             }
         }
 
@@ -271,12 +263,14 @@ namespace Microsoft.Scripting.Interpreter {
                     _locals.Box(expr, _instructions);
                 }
                 return local;
-            } else if (_parent != null) {
+            }
+
+            if (_parent != null) {
                 _parent.EnsureAvailableForClosure(expr);
                 return _locals.AddClosureVariable(expr);
-            } else {
-                throw new InvalidOperationException("unbound variable: " + expr);
             }
+
+            throw new InvalidOperationException("unbound variable: " + expr);
         }
 
         private void EnsureVariable(ParameterExpression variable) {
@@ -286,8 +280,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private LocalVariable ResolveLocal(ParameterExpression variable) {
-            LocalVariable local;
-            if (!_locals.TryGetLocalOrClosure(variable, out local)) {
+            if (!_locals.TryGetLocalOrClosure(variable, out LocalVariable local)) {
                 local = EnsureAvailableForClosure(variable);
             }
             return local;
@@ -490,7 +483,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileVariableAssignment(BinaryExpression node, bool asVoid) {
-            this.Compile(node.Right);
+            Compile(node.Right);
 
             var target = (ParameterExpression)node.Left;
             CompileSetVariable(target, asVoid);
@@ -503,16 +496,13 @@ namespace Microsoft.Scripting.Interpreter {
                 case ExpressionType.Index:
                     CompileIndexAssignment(node, asVoid); 
                     break;
-
                 case ExpressionType.MemberAccess:
                     CompileMemberAssignment(node, asVoid); 
                     break;
-
                 case ExpressionType.Parameter:
                 case ExpressionType.Extension:
                     CompileVariableAssignment(node, asVoid); 
                     break;
-
                 default:
                     throw new InvalidOperationException("Invalid lvalue for assignment: " + node.Left.NodeType);
             }
@@ -879,8 +869,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private LabelInfo EnsureLabel(LabelTarget node) {
-            LabelInfo result;
-            if (!_treeLabels.TryGetValue(node, out result)) {
+            if (!_treeLabels.TryGetValue(node, out LabelInfo result)) {
                 _treeLabels[node] = result = new LabelInfo(node);
             }
             return result;
@@ -1236,7 +1225,7 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (node.Constructor != null) {
                 foreach (var arg in node.Arguments) {
-                    this.Compile(arg);
+                    Compile(arg);
                 }
                 _instructions.EmitNew(node.Constructor);
             } else {
@@ -1275,7 +1264,6 @@ namespace Microsoft.Scripting.Interpreter {
                 EmitCall(method);
                 return;
             }
-
 
             throw new System.NotImplementedException();
         }
@@ -1316,7 +1304,6 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-
         private void CompileDebugInfoExpression(Expression expr) {
             var node = (DebugInfoExpression)expr;
             int start = _instructions.Count;
@@ -1342,7 +1329,6 @@ namespace Microsoft.Scripting.Interpreter {
             _instructions.EmitNewRuntimeVariables(node.Variables.Count);
         }
 
-
         private void CompileLambdaExpression(Expression expr) {
             var node = (LambdaExpression)expr;
             var compiler = new LightCompiler(this);
@@ -1361,16 +1347,18 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (TypeUtils.IsNullableType(node.Left.Type)) {
                 throw new NotImplementedException();
-            } else if (node.Conversion != null) {
-                throw new NotImplementedException();
-            } else {
-                var leftNotNull = _instructions.MakeLabel();
-                Compile(node.Left);
-                _instructions.EmitCoalescingBranch(leftNotNull);
-                _instructions.EmitPop();
-                Compile(node.Right);
-                _instructions.MarkLabel(leftNotNull);
             }
+
+            if (node.Conversion != null) {
+                throw new NotImplementedException();
+            }
+
+            var leftNotNull = _instructions.MakeLabel();
+            Compile(node.Left);
+            _instructions.EmitCoalescingBranch(leftNotNull);
+            _instructions.EmitPop();
+            Compile(node.Right);
+            _instructions.MarkLabel(leftNotNull);
         }
 
         private void CompileInvocationExpression(Expression expr) {
@@ -1586,6 +1574,5 @@ namespace Microsoft.Scripting.Interpreter {
                 PopLabelBlock(_labelBlock.Kind);
             }
         }
-
     }
 }

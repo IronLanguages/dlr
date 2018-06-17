@@ -2,26 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     using AstUtils = Microsoft.Scripting.Ast.Utils;
     using LoopFunc = Func<object[], StrongBox<object>[], InterpretedFrame, int>;
-    using System.Collections.ObjectModel;
 
     internal sealed class LoopCompiler : ExpressionVisitor {
         private struct LoopVariable {
-            public ExpressionAccess Access;
+            public readonly ExpressionAccess Access;
 
             // a variable that holds on the strong box for closure variables:
-            public ParameterExpression BoxStorage;
+            public readonly ParameterExpression BoxStorage;
 
             public LoopVariable(ExpressionAccess access, ParameterExpression box) {
                 Access = access;
@@ -29,7 +28,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             public override string ToString() {
-                return Access.ToString() + " " + BoxStorage;
+                return Access + " " + BoxStorage;
             }
         }
 
@@ -71,8 +70,7 @@ namespace Microsoft.Scripting.Interpreter {
             var finallyClause = new ReadOnlyCollectionBuilder<Expression>();
 
             foreach (var variable in _loopVariables) {
-                LocalVariable local;
-                if (!_outerVariables.TryGetValue(variable.Key, out local)) {
+                if (!_outerVariables.TryGetValue(variable.Key, out LocalVariable local)) {
                     local = _closureVariables[variable.Key];
                 }
                 Expression elemRef = local.LoadFromArray(_frameDataVar, _frameClosureVar);
@@ -124,15 +122,13 @@ namespace Microsoft.Scripting.Interpreter {
         #region Gotos
 
         protected override Expression VisitGoto(GotoExpression node) {
-            BranchLabel label;
-
             var target = node.Target;
             var value = Visit(node.Value);
             
             // TODO: Is it possible for an inner reducible node of the loop to rely on nodes produced by reducing outer reducible nodes? 
 
             // Unknown label => must be within the loop:
-            if (!_labelMapping.TryGetValue(target, out label)) {
+            if (!_labelMapping.TryGetValue(target, out BranchLabel label)) {
                 return node.Update(target, value);
             }
 
@@ -159,7 +155,7 @@ namespace Microsoft.Scripting.Interpreter {
         // the first operation might actually always be "write". We could do better if we had CFG.
 
         protected override Expression VisitBlock(BlockExpression node) {
-            var variables = ((BlockExpression)node).Variables;
+            var variables = node.Variables;
             var prevLocals = EnterVariableScope(variables);
             
             var res = base.VisitBlock(node);
@@ -185,9 +181,9 @@ namespace Microsoft.Scripting.Interpreter {
                 var res = base.VisitCatchBlock(node);
                 ExitVariableScope(prevLocals);
                 return res;
-            } else {
-                return base.VisitCatchBlock(node);
             }
+
+            return base.VisitCatchBlock(node);
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node) {
@@ -232,13 +228,13 @@ namespace Microsoft.Scripting.Interpreter {
                         node.Update(left, Expression.Convert(right, left.Type)),
                         rightVar
                     );
-                } else {
-                    return node.Update(left, right);
                 }
 
-            } else {
-                return base.VisitBinary(node);
+                return node.Update(left, right);
+
             }
+
+            return base.VisitBinary(node);
         }
 
         protected override Expression VisitUnary(UnaryExpression node) {
@@ -259,17 +255,17 @@ namespace Microsoft.Scripting.Interpreter {
 
         private Expression VisitVariable(ParameterExpression node, ExpressionAccess access) {
             ParameterExpression box;
-            LoopVariable existing;
-            LocalVariable loc;
 
             if (_loopLocals.Contains(node)) {
                 // local to the loop - not propagated in or out
                 return node;
-            } else if (_loopVariables.TryGetValue(node, out existing)) {
+            }
+
+            if (_loopVariables.TryGetValue(node, out LoopVariable existing)) {
                 // existing outer variable that we are already tracking
                 box = existing.BoxStorage;
                 _loopVariables[node] = new LoopVariable(existing.Access | access, box);
-            } else if (_outerVariables.TryGetValue(node, out loc) || 
+            } else if (_outerVariables.TryGetValue(node, out LocalVariable loc) || 
                 (_closureVariables != null && _closureVariables.TryGetValue(node, out loc))) {
                 // not tracking this variable yet, but defined in outer scope and seen for the 1st time
                 box = loc.InClosureOrBoxed ? Expression.Parameter(typeof(StrongBox<object>), node.Name) : null;
@@ -286,10 +282,10 @@ namespace Microsoft.Scripting.Interpreter {
 
                     // box.Value = (object)rhs
                     return LightCompiler.Unbox(box);
-                } else {
-                    // (T)box.Value
-                    return Expression.Convert(LightCompiler.Unbox(box), node.Type);
                 }
+                    
+                // (T)box.Value
+                return Expression.Convert(LightCompiler.Unbox(box), node.Type);
             }
             
             return node;

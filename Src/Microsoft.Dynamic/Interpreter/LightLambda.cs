@@ -2,27 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Threading.Tasks;
-
-using System.Linq.Expressions;
-
 using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Security;
-using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
 
     public sealed class LightLambdaCompileEventArgs : EventArgs {
-        public Delegate Compiled { get; private set; }
+        public Delegate Compiled { get; }
 
         internal LightLambdaCompileEventArgs(Delegate compiled) {
             Compiled = compiled;
@@ -150,9 +146,9 @@ namespace Microsoft.Scripting.Interpreter {
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
             if (fastCtor != null) {
                 return fastCtor(this);
-            } else {
-                return CreateCustomDelegate(delegateType);
             }
+
+            return CreateCustomDelegate(delegateType);
         }
 
         private bool TryGetCompiled() {
@@ -217,7 +213,6 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        
         public object Run(params object[] arguments) {
             if (_compiled != null || TryGetCompiled()) {
                 try {

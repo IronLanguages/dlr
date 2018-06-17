@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Runtime.CompilerServices;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -13,19 +12,11 @@ namespace Microsoft.Scripting.Interpreter {
             _boxes = boxes;
         }
 
-        int IRuntimeVariables.Count {
-            get {
-                return _boxes.Length;
-            }
-        }
+        int IRuntimeVariables.Count => _boxes.Length;
 
         object IRuntimeVariables.this[int index] {
-            get {
-                return _boxes[index].Value;
-            }
-            set {
-                _boxes[index].Value = value;
-            }
+            get => _boxes[index].Value;
+            set => _boxes[index].Value = value;
         }
 
         internal static IRuntimeVariables Create(IStrongBox[] boxes) {

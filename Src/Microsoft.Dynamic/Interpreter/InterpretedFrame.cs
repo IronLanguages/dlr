@@ -2,14 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
+
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
 
@@ -59,9 +57,7 @@ namespace Microsoft.Scripting.Interpreter {
             return DebugInfo.GetMatchingDebugInfo(Interpreter._debugInfos, instructionIndex);
         }
 
-        public string Name {
-            get { return Interpreter._name; }
-        }
+        public string Name => Interpreter._name;
 
         #region Data Stack Operations
 
@@ -108,9 +104,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Stack Trace
 
-        public InterpretedFrame Parent {
-            get { return _parent; }
-        }
+        public InterpretedFrame Parent => _parent;
 
         public static bool IsInterpretedFrame(MethodBase method) {
             ContractUtils.RequiresNotNull(method, nameof(method));
@@ -242,13 +236,9 @@ namespace Microsoft.Scripting.Interpreter {
         private static MethodInfo _Goto;
         private static MethodInfo _VoidGoto;
 
-        internal static MethodInfo GotoMethod {
-            get { return _Goto ?? (_Goto = typeof(InterpretedFrame).GetMethod("Goto")); }
-        }
+        internal static MethodInfo GotoMethod => _Goto ?? (_Goto = typeof(InterpretedFrame).GetMethod("Goto"));
 
-        internal static MethodInfo VoidGotoMethod {
-            get { return _VoidGoto ?? (_VoidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
-        }
+        internal static MethodInfo VoidGotoMethod => _VoidGoto ?? (_VoidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto"));
 
         public int VoidGoto(int labelIndex) {
             return Goto(labelIndex, Interpreter.NoValue);
@@ -272,6 +262,5 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         #endregion
-
     }
 }
