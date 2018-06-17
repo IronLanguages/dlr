@@ -48,9 +48,7 @@ namespace Microsoft.Scripting.Interpreter {
             Labels = labels;
         }
 
-        internal int Length {
-            get { return Instructions.Length; }
-        }
+        internal int Length => Instructions.Length;
 
         #region Debug View
 
@@ -176,7 +174,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
         }
-                        
+
         #endregion
 
         #region Core Emit Ops
@@ -220,21 +218,13 @@ namespace Microsoft.Scripting.Interpreter {
 #endif
         }
 
-        public int Count {
-            get { return _instructions.Count; }
-        }
+        public int Count => _instructions.Count;
 
-        public int CurrentStackDepth {
-            get { return _currentStackDepth; }
-        }
+        public int CurrentStackDepth => _currentStackDepth;
 
-        public int CurrentContinuationsDepth {
-            get { return _currentContinuationsDepth; }
-        }
+        public int CurrentContinuationsDepth => _currentContinuationsDepth;
 
-        public int MaxStackDepth {
-            get { return _maxStackDepth; }
-        }
+        public int MaxStackDepth => _maxStackDepth;
 
         internal Instruction GetInstruction(int index) {
             return _instructions[index];
@@ -309,7 +299,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitLoad(bool value) {
-            if ((bool)value) {
+            if (value) {
                 Emit(_true ?? (_true = new LoadObjectInstruction(value)));
             } else {
                 Emit(_false ?? (_false = new LoadObjectInstruction(value)));
@@ -480,9 +470,9 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (index < _assignLocalBoxed.Length) {
                 return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
-            } else {
-                return new AssignLocalBoxedInstruction(index);
             }
+
+            return new AssignLocalBoxedInstruction(index);
         }
 
         public void EmitStoreLocalBoxed(int index) {
@@ -496,9 +486,9 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (index < _storeLocalBoxed.Length) {
                 return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
-            } else {
-                return new StoreLocalBoxedInstruction(index);
             }
+
+            return new StoreLocalBoxedInstruction(index);
         }
 
         public void EmitAssignLocalToClosure(int index) {
@@ -735,15 +725,14 @@ namespace Microsoft.Scripting.Interpreter {
 
         private Instruction GetLoadField(FieldInfo field) {
             lock (_loadFields) {
-                Instruction instruction;
-                if (!_loadFields.TryGetValue(field, out instruction)) {
-                    if (field.IsStatic) {
-                        instruction = new LoadStaticFieldInstruction(field);
-                    } else {
-                        instruction = new LoadFieldInstruction(field);
-                    }
-                    _loadFields.Add(field, instruction);
+                if (_loadFields.TryGetValue(field, out Instruction instruction))
+                    return instruction;
+                if (field.IsStatic) {
+                    instruction = new LoadStaticFieldInstruction(field);
+                } else {
+                    instruction = new LoadFieldInstruction(field);
                 }
+                _loadFields.Add(field, instruction);
                 return instruction;
             }
         }

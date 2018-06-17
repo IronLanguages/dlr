@@ -14,11 +14,7 @@
  * ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Scripting.Runtime;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -30,8 +26,8 @@ namespace Microsoft.Scripting.Interpreter {
             _to = to;
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override string ToString() {
             return InstructionName + "(" + _from + "->" + _to + ")";
@@ -39,7 +35,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public sealed class Unchecked : NumericConvertInstruction {
-            public override string InstructionName { get { return "UncheckedConvert"; } }
+            public override string InstructionName => "UncheckedConvert";
 
             public Unchecked(TypeCode from, TypeCode to)
                 : base(from, to) {
@@ -146,7 +142,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public sealed class Checked : NumericConvertInstruction {
-            public override string InstructionName { get { return "CheckedConvert"; } }
+            public override string InstructionName => "CheckedConvert";
 
             public Checked(TypeCode from, TypeCode to)
                 : base(from, to) {

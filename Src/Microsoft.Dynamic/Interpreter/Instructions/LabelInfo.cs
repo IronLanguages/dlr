@@ -13,14 +13,12 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
+using System.Linq.Expressions;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -132,9 +130,9 @@ namespace Microsoft.Scripting.Interpreter {
                 if (!j.CanJumpInto) {
                     if (j.Kind == LabelScopeKind.Expression) {
                         throw new InvalidOperationException("Control cannot enter an expression");
-                    } else {
-                        throw new InvalidOperationException("Control cannot enter try");
                     }
+
+                    throw new InvalidOperationException("Control cannot enter try");
                 }
             }
         }
@@ -163,15 +161,10 @@ namespace Microsoft.Scripting.Interpreter {
             return false;
         }
 
-        private bool HasDefinitions {
-            get {
-                return _definitions != null;
-            }
-        }
+        private bool HasDefinitions => _definitions != null;
 
         private LabelScopeInfo FirstDefinition() {
-            LabelScopeInfo scope = _definitions as LabelScopeInfo;
-            if (scope != null) {
+            if (_definitions is LabelScopeInfo scope) {
                 return scope;
             }
             return ((HashSet<LabelScopeInfo>)_definitions).First();
@@ -181,19 +174,14 @@ namespace Microsoft.Scripting.Interpreter {
             if (_definitions == null) {
                 _definitions = scope;
             } else {
-                HashSet<LabelScopeInfo> set = _definitions as HashSet<LabelScopeInfo>;
-                if(set == null) {
+                if(!(_definitions is HashSet<LabelScopeInfo> set)) {
                     _definitions = set = new HashSet<LabelScopeInfo>() { (LabelScopeInfo)_definitions };
                 }
                 set.Add(scope);
             }
         }
 
-        private bool HasMultipleDefinitions {
-            get {
-                return _definitions is HashSet<LabelScopeInfo>;
-            }
-        }
+        private bool HasMultipleDefinitions => _definitions is HashSet<LabelScopeInfo>;
 
         internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class {
             var cmp = EqualityComparer<T>.Default;
@@ -270,7 +258,6 @@ namespace Microsoft.Scripting.Interpreter {
                 return false;
             }
         }
-
 
         internal bool ContainsTarget(LabelTarget target) {
             if (Labels == null) {

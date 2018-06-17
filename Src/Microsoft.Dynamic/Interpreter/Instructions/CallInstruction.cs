@@ -12,11 +12,12 @@
  *
  *
  * ***************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Security;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -107,7 +108,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            return res;            
+            return res;
         }
 
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount) {
@@ -149,7 +150,7 @@ namespace Microsoft.Scripting.Interpreter {
             array.SetValue(value, index0, index1, index2);
         }
 
-        private static bool ShouldCache(MethodInfo info) {            
+        private static bool ShouldCache(MethodInfo info) {
             return !ReflectionUtils.IsDynamicMethod(info);
         }
                
@@ -203,12 +204,10 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Instruction
 
-        public sealed override int ProducedStack { get { return Info.ReturnType == typeof(void) ? 0 : 1; } }
-        public sealed override int ConsumedStack { get { return ArgumentCount; } }
+        public sealed override int ProducedStack => Info.ReturnType == typeof(void) ? 0 : 1;
+        public sealed override int ConsumedStack => ArgumentCount;
 
-        public sealed override string InstructionName {
-            get { return "Call"; }
-        }
+        public sealed override string InstructionName => "Call";
 
         public override string ToString() {
             return "Call(" + Info + ")";
@@ -221,8 +220,8 @@ namespace Microsoft.Scripting.Interpreter {
         private readonly MethodInfo _target;
         private readonly int _argumentCount;
 
-        public override MethodInfo Info { get { return _target; } }
-        public override int ArgumentCount { get { return _argumentCount; } }
+        public override MethodInfo Info => _target;
+        public override int ArgumentCount => _argumentCount;
 
         internal MethodInfoCallInstruction(MethodInfo target, int argumentCount) {
             _target = target;
@@ -290,5 +289,4 @@ namespace Microsoft.Scripting.Interpreter {
             return 1;
         }
     }
-    
 }

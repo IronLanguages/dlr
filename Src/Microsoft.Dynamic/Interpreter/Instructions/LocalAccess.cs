@@ -14,10 +14,11 @@
  * ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Runtime;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Interpreter {
     internal interface IBoxableInstruction {
@@ -45,8 +46,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ProducedStack { get { return 1; } }
-        
+        public override int ProducedStack => 1;
+
         public override int Run(InterpretedFrame frame) {
             frame.Data[frame.StackIndex++] = frame.Data[_index];
             //frame.Push(frame.Data[_index]);
@@ -63,7 +64,7 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var box = (StrongBox<object>)frame.Data[_index];
@@ -77,7 +78,7 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var box = frame.Closure[_index];
@@ -91,7 +92,7 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var box = frame.Closure[_index];
@@ -109,8 +110,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Data[_index] = frame.Peek();
@@ -127,7 +128,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+
         public override int Run(InterpretedFrame frame) {
             frame.Data[_index] = frame.Data[--frame.StackIndex];
             //frame.Data[_index] = frame.Pop();
@@ -144,8 +146,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var box = (StrongBox<object>)frame.Data[_index];
@@ -159,8 +161,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
             var box = (StrongBox<object>)frame.Data[_index];
@@ -174,8 +176,8 @@ namespace Microsoft.Scripting.Interpreter {
             : base(index) {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var box = frame.Closure[_index];
@@ -208,9 +210,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return (index == _index) ? InstructionList.InitImmutableRefBox(index) : null;
             }
 
-            public override string InstructionName {
-                get { return "InitRef"; }
-            }
+            public override string InstructionName => "InitRef";
         }
 
         internal sealed class ImmutableValue : InitializeLocalInstruction, IBoxableInstruction {
@@ -230,9 +230,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return (index == _index) ? new ImmutableBox(index, _defaultValue) : null;
             }
 
-            public override string InstructionName {
-                get { return "InitImmutableValue"; }
-            }
+            public override string InstructionName => "InitImmutableValue";
         }
 
         internal sealed class ImmutableBox : InitializeLocalInstruction {
@@ -249,9 +247,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return 1;
             }
 
-            public override string InstructionName {
-                get { return "InitImmutableBox"; }
-            }
+            public override string InstructionName => "InitImmutableBox";
         }
 
         internal sealed class ParameterBox : InitializeLocalInstruction {
@@ -283,9 +279,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return null;
             }
 
-            public override string InstructionName {
-                get { return "InitParameter"; }
-            }
+            public override string InstructionName => "InitParameter";
         }
 
         internal sealed class MutableValue : InitializeLocalInstruction, IBoxableInstruction {
@@ -311,9 +305,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return (index == _index) ? new MutableBox(index, _type) : null;
             }
 
-            public override string InstructionName {
-                get { return "InitMutableValue"; }
-            }
+            public override string InstructionName => "InitMutableValue";
         }
 
         internal sealed class MutableBox : InitializeLocalInstruction {
@@ -329,9 +321,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return 1;
             }
 
-            public override string InstructionName {
-                get { return "InitMutableBox"; }
-            }
+            public override string InstructionName => "InitMutableBox";
         }
     }
 
@@ -346,8 +336,8 @@ namespace Microsoft.Scripting.Interpreter {
             _count = count;
         }
 
-        public override int ProducedStack { get { return 1; } }
-        public override int ConsumedStack { get { return _count; } }
+        public override int ProducedStack => 1;
+        public override int ConsumedStack => _count;
 
         public override int Run(InterpretedFrame frame) {
             var ret = new IStrongBox[_count];

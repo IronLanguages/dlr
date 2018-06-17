@@ -13,10 +13,9 @@
  *
  * ***************************************************************************/
 
-using System.Collections.Generic;
 using System;
-using System.Diagnostics;
-using Microsoft.Scripting.Utils;
+using System.Collections.Generic;
+
 namespace Microsoft.Scripting.Interpreter {
     internal sealed class LoadObjectInstruction : Instruction {
         private readonly object _value;
@@ -25,7 +24,7 @@ namespace Microsoft.Scripting.Interpreter {
             _value = value;
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Data[frame.StackIndex++] = _value;
@@ -44,7 +43,7 @@ namespace Microsoft.Scripting.Interpreter {
             _index = index;
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Data[frame.StackIndex++] = frame.Interpreter._objects[_index];
@@ -65,7 +64,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private PopInstruction() { }
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Pop();
@@ -85,7 +84,7 @@ namespace Microsoft.Scripting.Interpreter {
             _n = n;
         }
 
-        public override int ConsumedStack { get { return _n; } }
+        public override int ConsumedStack => _n;
 
         public override int Run(InterpretedFrame frame) {
             frame.Pop(_n);
@@ -98,12 +97,12 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class DupInstruction : Instruction {
-        internal readonly static DupInstruction Instance = new DupInstruction();
+        internal static readonly DupInstruction Instance = new DupInstruction();
 
         private DupInstruction() { }
 
-        public override int ConsumedStack { get { return 0; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 0;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Data[frame.StackIndex++] = frame.Peek();

@@ -43,8 +43,8 @@ namespace Microsoft.Scripting.Interpreter {
             _isVoid = isVoid;
         }
 
-        public override int ProducedStack { get { return _isVoid ? 0 : 1; } }
-        public override int ConsumedStack { get { return _argumentCount; } }
+        public override int ProducedStack => _isVoid ? 0 : 1;
+        public override int ConsumedStack => _argumentCount;
 
         public override int Run(InterpretedFrame frame) {
             int first = frame.StackIndex - _argumentCount;
