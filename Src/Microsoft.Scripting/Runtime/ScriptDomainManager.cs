@@ -16,14 +16,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
 using System.Threading;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")] // TODO: fix
     public sealed class ScriptDomainManager {
         private readonly DynamicRuntimeHostingProvider _hostingProvider;
-        private readonly SharedIO _sharedIO;
         private List<Assembly> _loadedAssemblies = new List<Assembly>();
 
         // last id assigned to a language context:
@@ -42,17 +42,11 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public SharedIO SharedIO {
-            get { return _sharedIO; }
-        }
+        public SharedIO SharedIO { get; }
 
-        public DynamicRuntimeHostingProvider Host {
-            get { return _hostingProvider; }
-        }
+        public DynamicRuntimeHostingProvider Host => _hostingProvider;
 
-        public DlrConfiguration Configuration {
-            get { return _configuration; }
-        }
+        public DlrConfiguration Configuration => _configuration;
 
         public ScriptDomainManager(DynamicRuntimeHostingProvider hostingProvider, DlrConfiguration configuration) {
             ContractUtils.RequiresNotNull(hostingProvider, nameof(hostingProvider));
@@ -63,7 +57,7 @@ namespace Microsoft.Scripting.Runtime {
             _hostingProvider = hostingProvider;
             _configuration = configuration;
 
-            _sharedIO = new SharedIO();
+            SharedIO = new SharedIO();
 
             // create the initial default scope
             Globals = new Scope();
@@ -84,8 +78,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
             var aqtn = AssemblyQualifiedTypeName.ParseArgument(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
 
-            LanguageContext language;
-            if (!_configuration.TryLoadLanguage(this, aqtn, out language)) {
+            if (!_configuration.TryLoadLanguage(this, aqtn, out LanguageContext language)) {
                 throw Error.UnknownLanguageProviderType();
             }
             return language;
@@ -109,8 +102,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public LanguageContext GetLanguageByExtension(string fileExtension) {
-            LanguageContext language;
-            if (!TryGetLanguageByFileExtension(fileExtension, out language)) {
+            if (!TryGetLanguageByFileExtension(fileExtension, out LanguageContext language)) {
                 throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
             return language;

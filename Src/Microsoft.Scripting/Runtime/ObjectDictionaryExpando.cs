@@ -13,17 +13,11 @@
  *
  * ***************************************************************************/
 
-using MSAst = System.Linq.Expressions;
-
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 using System.Dynamic;
+using System.Linq.Expressions;
 
 namespace Microsoft.Scripting.Runtime {
-    using Ast = MSAst.Expression;
-
     /// <summary>
     /// Wraps a an IDictionary[object, object] and exposes it as an IDynamicMetaObjectProvider so that
     /// users can access string attributes using member accesses.
@@ -35,16 +29,10 @@ namespace Microsoft.Scripting.Runtime {
             _data = dictionary;
         }
 
-        public IDictionary<object, object> Dictionary {
-            get {
-                return _data;
-            }
-        }
-
+        public IDictionary<object, object> Dictionary => _data;
 
         private static object TryGetMember(object adapter, string name) {
-            object result;
-            if (((ObjectDictionaryExpando)adapter)._data.TryGetValue(name, out result)) {
+            if (((ObjectDictionaryExpando)adapter)._data.TryGetValue(name, out object result)) {
                 return result;
             }
             return StringDictionaryExpando._getFailed;
@@ -60,7 +48,7 @@ namespace Microsoft.Scripting.Runtime {
 
         #region IDynamicMetaObjectProvider Members
 
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(MSAst.Expression parameter) {
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) {
             return new DictionaryExpandoMetaObject(parameter, this, _data.Keys, TryGetMember, TrySetMember, TryDeleteMember);
         }
 

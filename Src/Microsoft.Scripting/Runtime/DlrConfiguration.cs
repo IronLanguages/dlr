@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -30,18 +31,12 @@ namespace Microsoft.Scripting.Runtime {
         private readonly IDictionary<string, object> _options;
         private LanguageContext _context;
         
-        public LanguageContext LanguageContext {
-            get { return _context; }
-        }
+        public LanguageContext LanguageContext => _context;
 
-        public AssemblyQualifiedTypeName ProviderName {
-            get { return _providerName; }
-        }
+        public AssemblyQualifiedTypeName ProviderName => _providerName;
 
-        public string DisplayName {
-            get { return _displayName; }
-        }
-        
+        public string DisplayName => _displayName;
+
         public LanguageConfiguration(AssemblyQualifiedTypeName providerName, string displayName, IDictionary<string, object> options) {
             _providerName = providerName;
             _displayName = displayName;
@@ -144,9 +139,7 @@ namespace Microsoft.Scripting.Runtime {
 
         internal IDictionary<string, object> Options { get; }
 
-        internal IDictionary<AssemblyQualifiedTypeName, LanguageConfiguration> Languages {
-            get { return _languageConfigurations; }
-        }
+        internal IDictionary<AssemblyQualifiedTypeName, LanguageConfiguration> Languages => _languageConfigurations;
 
         public void AddLanguage(string languageTypeName, string displayName, IList<string> names, IList<string> fileExtensions,
             IDictionary<string, object> options) {
@@ -224,10 +217,9 @@ namespace Microsoft.Scripting.Runtime {
         internal bool TryLoadLanguage(ScriptDomainManager manager, string str, bool isExtension, out LanguageContext language) {
             Assert.NotNull(manager, str);
 
-            var dict = (isExtension) ? _languageExtensions : _languageNames;
+            var dict = isExtension ? _languageExtensions : _languageNames;
 
-            LanguageConfiguration config;
-            if (dict.TryGetValue(str, out config)) {
+            if (dict.TryGetValue(str, out LanguageConfiguration config)) {
                 language = LoadLanguageContext(manager, config);
                 return true;
             }
@@ -237,17 +229,15 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private LanguageContext LoadLanguageContext(ScriptDomainManager manager, LanguageConfiguration config) {
-            bool alreadyLoaded;
-            var language = config.LoadLanguageContext(manager, out alreadyLoaded);
+            var language = config.LoadLanguageContext(manager, out bool alreadyLoaded);
 
             if (!alreadyLoaded) {
                 // Checks whether a single language is not registered under two different AQTNs.
                 // We can only do it now because there is no way how to ensure that two AQTNs don't refer to the same type w/o loading the type.
                 // The check takes place after config.LoadLanguageContext is called to avoid calling user code while holding a lock.
                 lock (_loadedProviderTypes) {
-                    LanguageConfiguration existingConfig;
                     Type type = language.GetType();
-                    if (_loadedProviderTypes.TryGetValue(type, out existingConfig)) {
+                    if (_loadedProviderTypes.TryGetValue(type, out LanguageConfiguration existingConfig)) {
                         throw new InvalidOperationException(
                             $"Language implemented by type '{config.ProviderName}' has already been loaded using name '{existingConfig.ProviderName}'");
                     }

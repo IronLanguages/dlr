@@ -13,12 +13,11 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -497,8 +496,7 @@ namespace Microsoft.Scripting.Runtime {
             SiteKey sk = new SiteKey(typeof(T), siteBinder);
 
             lock (_sites) {
-                SiteKey old;
-                if (!_sites.TryGetValue(sk, out old)) {
+                if (!_sites.TryGetValue(sk, out SiteKey old)) {
                     SitesCreated++;
                     if (SitesCreated < 0) {
                         // overflow, just reset back to zero...

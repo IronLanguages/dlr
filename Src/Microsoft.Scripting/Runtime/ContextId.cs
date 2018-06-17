@@ -13,8 +13,6 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 
@@ -57,21 +55,16 @@ namespace Microsoft.Scripting.Runtime {
         /// Looks up the context ID for the specified context identifier
         /// </summary>
         public static ContextId LookupContext(object identifier) {
-            ContextId res;
             lock (_contexts) {
-                if (_contexts.TryGetValue(identifier, out res)) {
+                if (_contexts.TryGetValue(identifier, out ContextId res)) {
                     return res;
                 }
             }
 
-            return ContextId.Empty;
+            return Empty;
         }
 
-        public int Id {
-            get {
-                return _id;
-            }
-        }
+        public int Id => _id;
 
         #region IEquatable<ContextId> Members
 

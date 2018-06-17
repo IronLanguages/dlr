@@ -13,12 +13,12 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
-using Microsoft.Scripting.Utils;
 using System.Dynamic;
+using System.Linq.Expressions;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -86,11 +86,7 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public dynamic Storage {
-            get {
-                return _storage;
-            }
-        }
+        public dynamic Storage => _storage;
 
         internal sealed class MetaScope : DynamicMetaObject {
             public MetaScope(Expression parameter, Scope scope)
@@ -123,30 +119,18 @@ namespace Microsoft.Scripting.Runtime {
                 return new DynamicMetaObject(result.Expression, BindingRestrictions.GetTypeRestriction(Expression, typeof(Scope)).Merge(result.Restrictions));
             }
 
-            private DynamicMetaObject StorageMetaObject {
-                get {
-                    return DynamicMetaObject.Create(Value._storage, StorageExpression);
-                }
-            }
+            private DynamicMetaObject StorageMetaObject => DynamicMetaObject.Create(Value._storage, StorageExpression);
 
-            private MemberExpression StorageExpression {
-                get {
-                    return Expression.Property(
-                        Expression.Convert(Expression, typeof(Scope)),
-                        typeof(Scope).GetProperty("Storage")
-                    );
-                }
-            }
+            private MemberExpression StorageExpression => Expression.Property(
+                Expression.Convert(Expression, typeof(Scope)),
+                typeof(Scope).GetProperty("Storage")
+            );
 
             public override IEnumerable<string> GetDynamicMemberNames() {
                 return StorageMetaObject.GetDynamicMemberNames();
             }
 
-            public new Scope Value {
-                get {
-                    return (Scope)base.Value;
-                }
-            }
+            public new Scope Value => (Scope)base.Value;
         }
 
         #region IDynamicMetaObjectProvider Members

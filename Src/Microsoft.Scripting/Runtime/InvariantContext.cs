@@ -13,10 +13,7 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
-using System.Dynamic;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -28,9 +25,7 @@ namespace Microsoft.Scripting.Runtime {
             : base(manager) {
         }
 
-        public override bool CanCreateSourceCode {
-            get { return false; }
-        }
+        public override bool CanCreateSourceCode => false;
 
         public override ScriptCode CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink) {
             // invariant language doesn't have a grammar:
@@ -38,9 +33,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public override T ScopeGetVariable<T>(Scope scope, string name) {
-            var storage = scope.Storage as ScopeStorage;
-            object res;
-            if (storage != null && storage.TryGetValue(name, false, out res)) {
+            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object res)) {
                 return Operations.ConvertTo<T>(res);
             }
 

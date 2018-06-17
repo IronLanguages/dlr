@@ -13,12 +13,10 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.IO;
 using System.Text;
-using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -38,17 +36,11 @@ namespace Microsoft.Scripting.Runtime {
                 _type = type;
             }
 
-            public override bool CanRead {
-                get { return _type == ConsoleStreamType.Input; }
-            }
+            public override bool CanRead => _type == ConsoleStreamType.Input;
 
-            public override bool CanSeek {
-                get { return false; }
-            }
+            public override bool CanSeek => false;
 
-            public override bool CanWrite {
-                get { return !CanRead; }
-            }
+            public override bool CanWrite => !CanRead;
 
             public override void Flush() {
                 _io.GetStream(_type).Flush();
@@ -62,19 +54,11 @@ namespace Microsoft.Scripting.Runtime {
                 _io.GetStream(_type).Write(buffer, offset, count);
             }
 
-            public override long Length {
-                get {
-                    throw new NotSupportedException();
-                }
-            }
+            public override long Length => throw new NotSupportedException();
 
             public override long Position {
-                get {
-                    throw new NotSupportedException();
-                }
-                set {
-                    throw new NotSupportedException();
-                }
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
             }
 
             public override long Seek(long offset, SeekOrigin origin) {

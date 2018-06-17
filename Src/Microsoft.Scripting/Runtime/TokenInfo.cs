@@ -25,18 +25,18 @@ namespace Microsoft.Scripting {
         private SourceSpan _span;
         
         public TokenCategory Category {
-            get { return _category; }
-            set { _category = value; }
+            get => _category;
+            set => _category = value;
         }
 
         public TokenTriggers Trigger {
-            get { return _trigger; }
-            set { _trigger = value; }
+            get => _trigger;
+            set => _trigger = value;
         }
 
         public SourceSpan SourceSpan {
-            get { return _span; }
-            set { _span = value; }
+            get => _span;
+            set => _span = value;
         }
 
         public TokenInfo(SourceSpan span, TokenCategory category, TokenTriggers trigger) {

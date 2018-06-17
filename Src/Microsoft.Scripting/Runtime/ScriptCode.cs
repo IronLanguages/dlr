@@ -31,13 +31,9 @@ namespace Microsoft.Scripting {
             _sourceUnit = sourceUnit;
         }
 
-        public LanguageContext LanguageContext {
-            get { return _sourceUnit.LanguageContext; }
-        }
+        public LanguageContext LanguageContext => _sourceUnit.LanguageContext;
 
-        public SourceUnit SourceUnit {
-            get { return _sourceUnit; }
-        }
+        public SourceUnit SourceUnit => _sourceUnit;
 
         public virtual Scope CreateScope() {
             return _sourceUnit.LanguageContext.CreateScope();

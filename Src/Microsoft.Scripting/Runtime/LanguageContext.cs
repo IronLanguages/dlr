@@ -13,13 +13,11 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-using DynamicExpression = System.Linq.Expressions.Expression;
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -55,9 +53,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Whether the language can parse code and create source units.
         /// </summary>
-        public virtual bool CanCreateSourceCode {
-            get { return true; }
-        }
+        public virtual bool CanCreateSourceCode => true;
 
         #region Scope
 
@@ -98,15 +94,15 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
             ScopeExtension extension = scope.GetExtension(ContextId);
 
+            if (extension != null)
+                return extension;
+
+            extension = CreateScopeExtension(scope);
             if (extension == null) {
-                extension = CreateScopeExtension(scope);
-                if (extension == null) {
-                    throw Error.MustReturnScopeExtension();
-                }
-                return scope.SetExtension(ContextId, extension);
+                throw Error.MustReturnScopeExtension();
             }
 
-            return extension;
+            return scope.SetExtension(ContextId, extension);
         }
 
         // TODO: remove
@@ -235,11 +231,7 @@ namespace Microsoft.Scripting.Runtime {
 
         #region ScriptEngine API
 
-        public virtual Version LanguageVersion {
-            get {
-                return new Version(0, 0);
-            }
-        }
+        public virtual Version LanguageVersion => new Version(0, 0);
 
         public virtual void SetSearchPaths(ICollection<string> paths) {
             throw new NotSupportedException();
@@ -261,17 +253,9 @@ namespace Microsoft.Scripting.Runtime {
             return null;
         }
 
-        public virtual Guid LanguageGuid {
-            get {
-                return Guid.Empty;
-            }
-        }
+        public virtual Guid LanguageGuid => Guid.Empty;
 
-        public virtual Guid VendorGuid {
-            get {
-                return Guid.Empty;
-            }
-        }
+        public virtual Guid VendorGuid => Guid.Empty;
 
         public virtual void Shutdown() {
         }
@@ -284,11 +268,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DynamicStackFrame[0];
         }
         
-        public virtual Microsoft.Scripting.LanguageOptions Options {
-            get {
-                return new Microsoft.Scripting.LanguageOptions();
-            }
-        }
+        public virtual LanguageOptions Options => new LanguageOptions();
 
         #region Source Units
 
