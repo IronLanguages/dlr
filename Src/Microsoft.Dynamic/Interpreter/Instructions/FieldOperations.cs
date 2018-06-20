@@ -13,12 +13,9 @@
  *
  * ***************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Scripting.Runtime;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -30,7 +27,7 @@ namespace Microsoft.Scripting.Interpreter {
             _field = field;
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Push(_field.GetValue(null));
@@ -46,8 +43,8 @@ namespace Microsoft.Scripting.Interpreter {
             _field = field;
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Push(_field.GetValue(frame.Pop()));
@@ -63,8 +60,8 @@ namespace Microsoft.Scripting.Interpreter {
             _field = field;
         }
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
             object value = frame.Pop();
@@ -82,8 +79,8 @@ namespace Microsoft.Scripting.Interpreter {
             _field = field;
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
             object value = frame.Pop();

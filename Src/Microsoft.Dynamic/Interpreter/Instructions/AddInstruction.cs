@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -22,8 +23,8 @@ namespace Microsoft.Scripting.Interpreter {
     internal abstract class AddInstruction : Instruction {
         private static Instruction _Int16, _Int32, _Int64, _UInt16, _UInt32, _UInt64, _Single, _Double;
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 1;
 
         private AddInstruction() {
         }
@@ -133,8 +134,8 @@ namespace Microsoft.Scripting.Interpreter {
     internal abstract class AddOvfInstruction : Instruction {
         private static Instruction _Int16, _Int32, _Int64, _UInt16, _UInt32, _UInt64, _Single, _Double;
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 1;
 
         private AddOvfInstruction() {
         }

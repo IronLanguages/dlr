@@ -13,16 +13,14 @@
  *
  * ***************************************************************************/
 
-using System.Threading.Tasks;
-
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Microsoft.Scripting.Ast;
+using System.Threading.Tasks;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -35,7 +33,7 @@ namespace Microsoft.Scripting.Interpreter {
         // the offset to jump to (relative to this instruction):
         protected int _offset = Unknown;
 
-        public int Offset { get { return _offset; } }
+        public int Offset => _offset;
         public abstract Instruction[] Cache { get; }
 
         public Instruction Fixup(int offset) {
@@ -62,16 +60,9 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class BranchFalseInstruction : OffsetInstruction {
         private static Instruction[] _cache;
 
-        public override Instruction[] Cache {
-            get {
-                if (_cache == null) {
-                    _cache = new Instruction[CacheSize];
-                }
-                return _cache;
-            }
-        }
+        public override Instruction[] Cache => _cache ?? (_cache = new Instruction[CacheSize]);
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             Debug.Assert(_offset != Unknown);
@@ -87,16 +78,9 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class BranchTrueInstruction : OffsetInstruction {
         private static Instruction[] _cache;
 
-        public override Instruction[] Cache {
-            get {
-                if (_cache == null) {
-                    _cache = new Instruction[CacheSize];
-                }
-                return _cache;
-            }
-        }
+        public override Instruction[] Cache => _cache ?? (_cache = new Instruction[CacheSize]);
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             Debug.Assert(_offset != Unknown);
@@ -112,17 +96,10 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class CoalescingBranchInstruction : OffsetInstruction {
         private static Instruction[] _cache;
 
-        public override Instruction[] Cache {
-            get {
-                if (_cache == null) {
-                    _cache = new Instruction[CacheSize];
-                }
-                return _cache;
-            }
-        }
+        public override Instruction[] Cache => _cache ?? (_cache = new Instruction[CacheSize]);
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             Debug.Assert(_offset != Unknown);
@@ -159,13 +136,9 @@ namespace Microsoft.Scripting.Interpreter {
             _hasValue = hasValue;
         }
 
-        public override int ConsumedStack {
-            get { return _hasValue ? 1 : 0; }
-        }
+        public override int ConsumedStack => _hasValue ? 1 : 0;
 
-        public override int ProducedStack {
-            get { return _hasResult ? 1 : 0; }
-        }
+        public override int ProducedStack => _hasResult ? 1 : 0;
 
         public override int Run(InterpretedFrame frame) {
             Debug.Assert(_offset != Unknown);
@@ -234,16 +207,12 @@ namespace Microsoft.Scripting.Interpreter {
         // is different from the current continuation depth. However, in case of forward gotos, we don't not know that is the 
         // case until the label is emitted. By then the consumed and produced stack information is useless.
         // The important thing here is that the stack balance is 0.
-        public override int ConsumedContinuations { get { return 0; } }
-        public override int ProducedContinuations { get { return 0; } }
+        public override int ConsumedContinuations => 0;
+        public override int ProducedContinuations => 0;
 
-        public override int ConsumedStack {
-            get { return _hasValue ? 1 : 0; }
-        }
+        public override int ConsumedStack => _hasValue ? 1 : 0;
 
-        public override int ProducedStack {
-            get { return _hasResult ? 1 : 0; }
-        }
+        public override int ProducedStack => _hasResult ? 1 : 0;
 
         private GotoInstruction(int targetIndex, bool hasResult, bool hasValue)
             : base(targetIndex) {
@@ -269,9 +238,9 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class EnterTryFinallyInstruction : IndexedBranchInstruction {
-        private readonly static EnterTryFinallyInstruction[] Cache = new EnterTryFinallyInstruction[CacheSize];
+        private static readonly EnterTryFinallyInstruction[] Cache = new EnterTryFinallyInstruction[CacheSize];
 
-        public override int ProducedContinuations { get { return 1; } }
+        public override int ProducedContinuations => 1;
 
         private EnterTryFinallyInstruction(int targetIndex)
             : base(targetIndex) {
@@ -297,8 +266,8 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class EnterFinallyInstruction : Instruction {
         internal static readonly Instruction Instance = new EnterFinallyInstruction();
 
-        public override int ProducedStack { get { return 2; } }
-        public override int ConsumedContinuations { get { return 1; } }
+        public override int ProducedStack => 2;
+        public override int ConsumedContinuations => 1;
 
         private EnterFinallyInstruction() {
         }
@@ -316,8 +285,8 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class LeaveFinallyInstruction : Instruction {
         internal static readonly Instruction Instance = new LeaveFinallyInstruction();
 
-        public override int ConsumedStack { get { return 2; } }
-        
+        public override int ConsumedStack => 2;
+
         private LeaveFinallyInstruction() {
         }
 
@@ -346,12 +315,12 @@ namespace Microsoft.Scripting.Interpreter {
         // However, while emitting instructions try block falls thru the catch block with a value on stack. 
         // We need to declare it consumed so that the stack state upon entry to the handler corresponds to the real 
         // stack depth after throw jumped to this catch block.
-        public override int ConsumedStack { get { return _hasValue ? 1 : 0; } }
+        public override int ConsumedStack => _hasValue ? 1 : 0;
 
         // A variable storing the current exception is pushed to the stack by exception handling.
         // Catch handlers: The value is immediately popped and stored into a local.
         // Fault handlers: The value is kept on stack during fault handler evaluation.
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             // nop (the exception value is pushed by the interpreter in HandleCatch)
@@ -368,13 +337,9 @@ namespace Microsoft.Scripting.Interpreter {
         private readonly bool _hasValue;
 
         // The catch block yields a value if the body is non-void. This value is left on the stack. 
-        public override int ConsumedStack {
-            get { return _hasValue ? 1 : 0; }
-        }
+        public override int ConsumedStack => _hasValue ? 1 : 0;
 
-        public override int ProducedStack {
-            get { return _hasValue ? 1 : 0; }
-        }
+        public override int ProducedStack => _hasValue ? 1 : 0;
 
         private LeaveExceptionHandlerInstruction(int labelIndex, bool hasValue)
             : base(labelIndex) {
@@ -409,14 +374,10 @@ namespace Microsoft.Scripting.Interpreter {
         // We compile the body of a fault block as void.
         // However, we keep the exception object that was pushed upon entering the fault block on the stack during execution of the block
         // and pop it at the end.
-        public override int ConsumedStack {
-            get { return 1; }
-        }
+        public override int ConsumedStack => 1;
 
         // While emitting instructions a non-void try-fault expression is expected to produce a value. 
-        public override int ProducedStack {
-            get { return _hasValue ? 1 : 0; }
-        }
+        public override int ProducedStack => _hasValue ? 1 : 0;
 
         private LeaveFaultInstruction(bool hasValue) {
             _hasValue = hasValue;
@@ -426,11 +387,9 @@ namespace Microsoft.Scripting.Interpreter {
             // TODO: ThreadAbortException ?
 
             object exception = frame.Pop();
-            ExceptionHandler handler;
-            return frame.Interpreter.GotoHandler(frame, exception, out handler);
+            return frame.Interpreter.GotoHandler(frame, exception, out _);
         }
     }
-
 
     internal sealed class ThrowInstruction : Instruction {
         internal static readonly ThrowInstruction Throw = new ThrowInstruction(true, false);
@@ -445,21 +404,14 @@ namespace Microsoft.Scripting.Interpreter {
             _rethrow = isRethrow;
         }
 
-        public override int ProducedStack {
-            get { return _hasResult ? 1 : 0; }
-        }
+        public override int ProducedStack => _hasResult ? 1 : 0;
 
-        public override int ConsumedStack {
-            get {
-                return 1; 
-            }
-        }
+        public override int ConsumedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var ex = (Exception)frame.Pop();
             if (_rethrow) {
-                ExceptionHandler handler;
-                return frame.Interpreter.GotoHandler(frame, ex, out handler);
+                return frame.Interpreter.GotoHandler(frame, ex, out _);
             }
             throw ex;
         }
@@ -477,8 +429,7 @@ namespace Microsoft.Scripting.Interpreter {
         public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
-            int target;
-            return _cases.TryGetValue((int)frame.Pop(), out target) ? target : 1;
+            return _cases.TryGetValue((int)frame.Pop(), out int target) ? target : 1;
         }
     }
 
@@ -526,9 +477,7 @@ namespace Microsoft.Scripting.Interpreter {
             return 1;
         }
 
-        private bool Compiled {
-            get { return _loop == null; }
-        }
+        private bool Compiled => _loop == null;
 
         private void Compile(object frameObj) {
             if (Compiled) {

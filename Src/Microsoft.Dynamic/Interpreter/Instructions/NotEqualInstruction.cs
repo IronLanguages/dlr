@@ -14,11 +14,7 @@
  * ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Scripting.Runtime;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -26,8 +22,8 @@ namespace Microsoft.Scripting.Interpreter {
         // Perf: EqualityComparer<T> but is 3/2 to 2 times slower.
         private static Instruction _Reference, _Boolean, _SByte, _Int16, _Char, _Int32, _Int64, _Byte, _UInt16, _UInt32, _UInt64, _Single, _Double;
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 1;
 
         private NotEqualInstruction() {
         }
@@ -159,4 +155,3 @@ namespace Microsoft.Scripting.Interpreter {
         }
     }
 }
-

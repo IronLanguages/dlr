@@ -15,11 +15,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     public interface IInstructionProvider {
@@ -27,24 +24,18 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     public abstract partial class Instruction {
-        public virtual int ConsumedStack { get { return 0; } }
-        public virtual int ProducedStack { get { return 0; } }
-        public virtual int ConsumedContinuations { get { return 0; } }
-        public virtual int ProducedContinuations { get { return 0; } }
+        public virtual int ConsumedStack => 0;
+        public virtual int ProducedStack => 0;
+        public virtual int ConsumedContinuations => 0;
+        public virtual int ProducedContinuations => 0;
 
-        public int StackBalance {
-            get { return ProducedStack - ConsumedStack; }
-        }
+        public int StackBalance => ProducedStack - ConsumedStack;
 
-        public int ContinuationsBalance {
-            get { return ProducedContinuations - ConsumedContinuations; }
-        }
+        public int ContinuationsBalance => ProducedContinuations - ConsumedContinuations;
 
         public abstract int Run(InterpretedFrame frame);
 
-        public virtual string InstructionName {
-            get { return GetType().Name.Replace("Instruction", ""); }
-        }
+        public virtual string InstructionName => GetType().Name.Replace("Instruction", string.Empty);
 
         public override string ToString() {
             return InstructionName + "()";
@@ -63,8 +54,9 @@ namespace Microsoft.Scripting.Interpreter {
         public static readonly Instruction Instance = new NotInstruction();
 
         private NotInstruction() { }
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
+
         public override int Run(InterpretedFrame frame) {
             frame.Push((bool)frame.Pop() ? ScriptingRuntimeHelpers.False : ScriptingRuntimeHelpers.True);
             return +1;

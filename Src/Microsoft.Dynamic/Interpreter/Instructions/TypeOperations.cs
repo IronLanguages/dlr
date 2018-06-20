@@ -14,12 +14,10 @@
  * ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     internal sealed class CreateDelegateInstruction : Instruction {
@@ -29,8 +27,8 @@ namespace Microsoft.Scripting.Interpreter {
             _creator = delegateCreator;
         }
 
-        public override int ConsumedStack { get { return _creator.Interpreter.ClosureSize; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => _creator.Interpreter.ClosureSize;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             StrongBox<object>[] closure;
@@ -59,8 +57,8 @@ namespace Microsoft.Scripting.Interpreter {
             _argCount = constructor.GetParameters().Length;
 
         }
-        public override int ConsumedStack { get { return _argCount; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => _argCount;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             object[] args = new object[_argCount];
@@ -87,8 +85,8 @@ namespace Microsoft.Scripting.Interpreter {
 
     internal sealed class DefaultValueInstruction<T> : Instruction {
 
-        public override int ConsumedStack { get { return 0; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 0;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             frame.Push(default(T));
@@ -102,8 +100,8 @@ namespace Microsoft.Scripting.Interpreter {
 
     internal sealed class TypeIsInstruction<T> : Instruction {
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             // unfortunately Type.IsInstanceOfType() is 35-times slower than "is T" so we use generic code:
@@ -118,8 +116,8 @@ namespace Microsoft.Scripting.Interpreter {
 
     internal sealed class TypeAsInstruction<T> : Instruction {
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 1;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             // can't use as w/o generic constraint
@@ -140,8 +138,8 @@ namespace Microsoft.Scripting.Interpreter {
     internal sealed class TypeEqualsInstruction : Instruction {
         public static readonly TypeEqualsInstruction Instance = new TypeEqualsInstruction();
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 1;
 
         private TypeEqualsInstruction() {
         }
@@ -153,8 +151,6 @@ namespace Microsoft.Scripting.Interpreter {
             return +1;
         }
 
-        public override string InstructionName {
-            get { return "TypeEquals()"; }
-        }
+        public override string InstructionName => "TypeEquals()";
     }
 }

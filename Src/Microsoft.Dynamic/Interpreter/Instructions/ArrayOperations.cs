@@ -58,8 +58,8 @@ namespace Microsoft.Scripting.Interpreter {
             _rank = rank;
         }
 
-        public override int ConsumedStack { get { return _rank; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => _rank;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             var lengths = new int[_rank];
@@ -75,8 +75,8 @@ namespace Microsoft.Scripting.Interpreter {
     public sealed class GetArrayItemInstruction<TElement> : Instruction {
         internal GetArrayItemInstruction() { }
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack => 2;
+        public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
             int index = (int)frame.Pop();
@@ -85,16 +85,14 @@ namespace Microsoft.Scripting.Interpreter {
             return +1;
         }
 
-        public override string InstructionName {
-            get { return "GetArrayItem"; }
-        }
+        public override string InstructionName => "GetArrayItem";
     }
 
     public sealed class SetArrayItemInstruction<TElement> : Instruction {
         internal SetArrayItemInstruction() { }
 
-        public override int ConsumedStack { get { return 3; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack => 3;
+        public override int ProducedStack => 0;
 
         public override int Run(InterpretedFrame frame) {
             TElement value = (TElement)frame.Pop();
@@ -104,8 +102,6 @@ namespace Microsoft.Scripting.Interpreter {
             return +1;
         }
 
-        public override string InstructionName {
-            get { return "SetArrayItem"; }
-        }
+        public override string InstructionName => "SetArrayItem";
     }
 }

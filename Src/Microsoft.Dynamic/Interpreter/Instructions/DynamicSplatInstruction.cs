@@ -13,14 +13,9 @@
  *
  * ***************************************************************************/
 
-
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Reflection;
 
-using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -36,8 +31,8 @@ namespace Microsoft.Scripting.Interpreter {
             _argumentCount = argumentCount;
         }
 
-        public override int ProducedStack { get { return 1; } }
-        public override int ConsumedStack { get { return _argumentCount; } }
+        public override int ProducedStack => 1;
+        public override int ConsumedStack => _argumentCount;
 
         public override int Run(InterpretedFrame frame) {
             int first = frame.StackIndex - _argumentCount;
