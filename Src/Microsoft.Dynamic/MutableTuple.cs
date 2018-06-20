@@ -394,7 +394,8 @@ namespace Microsoft.Scripting {
     public class MutableTuple<T0> : MutableTuple {
         public MutableTuple() { }
 
-        public MutableTuple(T0 item0) {
+        public MutableTuple(T0 item0)
+          : base() {
             Item000 = item0;
         }
 
@@ -413,11 +414,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 1;
-            }
-        }
+        public override int Capacity => 1;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1> : MutableTuple<T0> {
@@ -445,11 +442,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 2;
-            }
-        }
+        public override int Capacity => 2;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1, T2, T3> : MutableTuple<T0, T1> {
@@ -484,11 +477,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 4;
-            }
-        }
+        public override int Capacity => 4;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7> : MutableTuple<T0, T1, T2, T3> {
@@ -537,11 +526,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 8;
-            }
-        }
+        public override int Capacity => 8;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7> {
@@ -618,11 +603,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 16;
-            }
-        }
+        public override int Capacity => 16;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {
@@ -755,11 +736,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 32;
-            }
-        }
+        public override int Capacity => 32;
     }
     [GeneratedCode("DLR", "2.0")]
     public class MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63> : MutableTuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> {
@@ -1473,11 +1450,7 @@ namespace Microsoft.Scripting {
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
-        public override int Capacity {
-            get {
-                return 128;
-            }
-        }
+        public override int Capacity => 128;
     }
 
     // *** END GENERATED CODE ***

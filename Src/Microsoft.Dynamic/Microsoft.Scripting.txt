@@ -103,7 +103,7 @@ GlobalsMustBeUnique=Global/top-level local variable names must be unique.
 GenNonSerializableBinder=Generating code from non-serializable CallSiteBinder.
 
 ## ExceptionType=ArgumentException
-InvalidPath=pecified path is invalid.
+InvalidPath=Specified path is invalid.
 
 ## ExceptionType=ArgumentTypeException
 DictionaryNotHashable=Dictionaries are not hashable.
