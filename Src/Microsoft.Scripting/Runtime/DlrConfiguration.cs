@@ -26,20 +26,18 @@ namespace Microsoft.Scripting.Runtime {
     /// Singleton for each language.
     /// </summary>
     internal sealed class LanguageConfiguration {
-        private readonly AssemblyQualifiedTypeName _providerName;
-        private readonly string _displayName;
         private readonly IDictionary<string, object> _options;
         private LanguageContext _context;
-        
+
         public LanguageContext LanguageContext => _context;
 
-        public AssemblyQualifiedTypeName ProviderName => _providerName;
+        public AssemblyQualifiedTypeName ProviderName { get; }
 
-        public string DisplayName => _displayName;
+        public string DisplayName { get; }
 
         public LanguageConfiguration(AssemblyQualifiedTypeName providerName, string displayName, IDictionary<string, object> options) {
-            _providerName = providerName;
-            _displayName = displayName;
+            ProviderName = providerName;
+            DisplayName = displayName;
             _options = options;
         }
 
@@ -51,26 +49,26 @@ namespace Microsoft.Scripting.Runtime {
             if (_context == null) {
 
                 // Let assembly load errors bubble out
-                var assembly = domainManager.Platform.LoadAssembly(_providerName.AssemblyName.FullName);
+                var assembly = domainManager.Platform.LoadAssembly(ProviderName.AssemblyName.FullName);
 
-                Type type = assembly.GetType(_providerName.TypeName);
+                Type type = assembly.GetType(ProviderName.TypeName);
                 if (type == null) {
                     throw new InvalidOperationException(
                         String.Format(
                             "Failed to load language '{0}': assembly '{1}' does not contain type '{2}'",
-                            _displayName, 
+                            DisplayName, 
 #if FEATURE_FILESYSTEM
                             assembly.Location,
 #else
                             assembly.FullName,
 #endif
-                             _providerName.TypeName
+                             ProviderName.TypeName
                     ));
                 }
 
                 if (!type.IsSubclassOf(typeof(LanguageContext))) {
                     throw new InvalidOperationException(
-                        $"Failed to load language '{_displayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
+                        $"Failed to load language '{DisplayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
                 }
 
                 LanguageContext context;
@@ -78,7 +76,7 @@ namespace Microsoft.Scripting.Runtime {
                     context = (LanguageContext)Activator.CreateInstance(type, new object[] { domainManager, _options });
                 } catch (TargetInvocationException e) {
                     throw new TargetInvocationException(
-                        $"Failed to load language '{_displayName}': {e.InnerException.Message}", 
+                        $"Failed to load language '{DisplayName}': {e.InnerException.Message}", 
                         e.InnerException
                     );
                 } catch (Exception e) {

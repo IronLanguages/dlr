@@ -20,41 +20,29 @@ namespace Microsoft.Scripting {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO: fix
     [Serializable]
     public struct TokenInfo : IEquatable<TokenInfo> {
-        private TokenCategory _category;
-        private TokenTriggers _trigger;
-        private SourceSpan _span;
-        
-        public TokenCategory Category {
-            get => _category;
-            set => _category = value;
-        }
 
-        public TokenTriggers Trigger {
-            get => _trigger;
-            set => _trigger = value;
-        }
+        public TokenCategory Category { get; set; }
 
-        public SourceSpan SourceSpan {
-            get => _span;
-            set => _span = value;
-        }
+        public TokenTriggers Trigger { get; set; }
+
+        public SourceSpan SourceSpan { get; set; }
 
         public TokenInfo(SourceSpan span, TokenCategory category, TokenTriggers trigger) {
-            _category = category;
-            _trigger = trigger;
-            _span = span;
+            Category = category;
+            Trigger = trigger;
+            SourceSpan = span;
         }
 
         #region IEquatable<TokenInfo> Members
 
         public bool Equals(TokenInfo other) {
-            return _category == other._category && _trigger == other._trigger && _span == other._span;
+            return Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;
         }
 
         #endregion
 
         public override string ToString() {
-            return $"TokenInfo: {_span}, {_category}, {_trigger}";
+            return $"TokenInfo: {SourceSpan}, {Category}, {Trigger}";
         }
     }
 }
