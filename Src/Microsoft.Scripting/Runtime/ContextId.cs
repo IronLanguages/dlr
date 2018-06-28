@@ -43,10 +43,7 @@ namespace Microsoft.Scripting.Runtime {
                     throw Error.LanguageRegistered();
                 }
 
-                ContextId id = new ContextId();
-                id.Id = _maxId++;
-
-                return id;
+                return new ContextId(_maxId++);
             }
         }
 
@@ -63,7 +60,7 @@ namespace Microsoft.Scripting.Runtime {
             return Empty;
         }
 
-        public int Id { get; set; }
+        public int Id { get; }
 
         #region IEquatable<ContextId> Members
 
@@ -80,10 +77,10 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public override bool Equals(object obj) {
-            if (!(obj is ContextId)) return false;
+            if (obj is ContextId other)
+                return Equals(other);
 
-            ContextId other = (ContextId)obj;
-            return other.Id == Id;
+            return false;
         }
 
         #endregion
