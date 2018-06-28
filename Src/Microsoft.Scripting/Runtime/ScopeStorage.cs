@@ -13,12 +13,12 @@
 *
 * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Dynamic;
+using System.Linq.Expressions;
+using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
@@ -55,8 +55,7 @@ namespace Microsoft.Scripting {
         /// </summary>
         public bool TryGetValue(string name, bool ignoreCase, out dynamic value) {
             if (HasVariable(name)) {
-                object objValue;
-                if (GetScopeVariable(name, ignoreCase).TryGetValue(out objValue)) {
+                if (GetScopeVariable(name, ignoreCase).TryGetValue(out object objValue)) {
                     value = objValue;
                     return true;
                 }
@@ -123,9 +122,8 @@ namespace Microsoft.Scripting {
         /// a dictionary lookup on subsequent accesses.
         /// </summary>
         public ScopeVariableIgnoreCase GetScopeVariableIgnoreCase(string name) {
-            ScopeVariableIgnoreCase storageInfo;
             lock (_storage) {
-                if (!_storage.TryGetValue(name, out storageInfo)) {
+                if (!_storage.TryGetValue(name, out ScopeVariableIgnoreCase storageInfo)) {
                     _storage[name] = storageInfo = new ScopeVariableIgnoreCase(name);
                 }
                 return storageInfo;
@@ -135,12 +133,8 @@ namespace Microsoft.Scripting {
         /// Provides convenient case-sensitive value access.
         /// </summary>
         public dynamic this[string index] {
-            get {
-                return GetValue(index, false);
-            }
-            set {
-                SetValue(index, false, (object)value);
-            }
+            get => GetValue(index, false);
+            set => SetValue(index, false, (object)value);
         }
 
         /// <summary>
@@ -270,15 +264,10 @@ namespace Microsoft.Scripting {
                 return Value.GetMemberNames();
             }
 
-            public new ScopeStorage Value {
-                get {
-                    return (ScopeStorage)base.Value;
-                }
-            }
+            public new ScopeStorage Value => (ScopeStorage)base.Value;
         }
 
         #endregion
-
     }
 
     /// <summary>
@@ -337,11 +326,7 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// True if the scope has a value, false if it does not.
         /// </summary>
-        public bool HasValue {
-            get {
-                return _value != _novalue;
-            }
-        }
+        public bool HasValue => _value != _novalue;
 
         /// <summary>
         /// Atempts to get the value. If a value is assigned it returns true otherwise
@@ -374,15 +359,7 @@ namespace Microsoft.Scripting {
 
         #region IWeakReferencable Members
 
-        public WeakReference WeakReference {
-            get {
-                if (_weakref == null) {
-                    _weakref = new WeakReference(this);
-                }
-
-                return _weakref;
-            }
-        }
+        public WeakReference WeakReference => _weakref ?? (_weakref = new WeakReference(this));
 
         #endregion
     }
@@ -416,15 +393,18 @@ namespace Microsoft.Scripting {
                 if (_firstVariable.HasValue) {
                     return true;
                 }
-                if (_overflow != null) {
-                    lock (_overflow) {
-                        foreach (var entry in _overflow) {
-                            if (entry.Value.HasValue) {
-                                return true;
-                            }
+
+                if (_overflow == null)
+                    return false;
+
+                lock (_overflow) {
+                    foreach (var entry in _overflow) {
+                        if (entry.Value.HasValue) {
+                            return true;
                         }
                     }
                 }
+
                 return false;
             }
         }
@@ -434,8 +414,7 @@ namespace Microsoft.Scripting {
         /// it returns false.
         /// </summary>
         public bool TryGetValue(out dynamic value) {
-            object objValue;
-            if (_firstVariable.TryGetValue(out objValue)) {
+            if (_firstVariable.TryGetValue(out object objValue)) {
                 value = objValue;
                 return true;
             }
@@ -492,34 +471,33 @@ namespace Microsoft.Scripting {
                 list.Add(_firstCasing);
             }
 
-            if (_overflow != null) {
-                lock (_overflow) {
-                    foreach (var element in _overflow) {
-                        if (element.Value.HasValue) {
-                            list.Add(element.Key);
-                        }
+            if (_overflow == null)
+                return;
+
+            lock (_overflow) {
+                foreach (var element in _overflow) {
+                    if (element.Value.HasValue) {
+                        list.Add(element.Key);
                     }
                 }
             }
-
         }
 
         internal void AddItems(List<KeyValuePair<string, object>> list) {
-            object value;
-            if (_firstVariable.TryGetValue(out value)) {
+            if (_firstVariable.TryGetValue(out object value)) {
                 list.Add(new KeyValuePair<string, object>(_firstCasing, value));
             }
 
-            if (_overflow != null) {
-                lock (_overflow) {
-                    foreach (var element in _overflow) {
-                        if (element.Value.TryGetValue(out value)) {
-                            list.Add(new KeyValuePair<string, object>(element.Key, value));
-                        }
+            if (_overflow == null)
+                return;
+
+            lock (_overflow) {
+                foreach (var element in _overflow) {
+                    if (element.Value.TryGetValue(out value)) {
+                        list.Add(new KeyValuePair<string, object>(element.Key, value));
                     }
                 }
             }
-
         }
 
         private ScopeVariable GetStorageSlow(string name) {
@@ -528,8 +506,7 @@ namespace Microsoft.Scripting {
             }
 
             lock (_overflow) {
-                ScopeVariable res;
-                if (!_overflow.TryGetValue(name, out res)) {
+                if (!_overflow.TryGetValue(name, out ScopeVariable res)) {
                     _overflow[name] = res = new ScopeVariable();
                 }
                 return res;
@@ -540,15 +517,7 @@ namespace Microsoft.Scripting {
 
         #region IWeakReferencable Members
 
-        public WeakReference WeakReference {
-            get {
-                if (_weakref == null) {
-                    _weakref = new WeakReference(this);
-                }
-
-                return _weakref;
-            }
-        }
+        public WeakReference WeakReference => _weakref ?? (_weakref = new WeakReference(this));
 
         #endregion
     }

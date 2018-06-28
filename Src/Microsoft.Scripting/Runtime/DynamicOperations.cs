@@ -13,12 +13,11 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -232,8 +231,7 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public object ConvertTo(object obj, Type type) {
             if (type.IsInterface || type.IsClass) {
-                CallSite<Func<CallSite, object, object>> site;
-                site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, null));
+                CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, null));
                 return site.Target(site, obj);
             }
 
@@ -341,8 +339,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Convers the object obj to the type T including implicit conversions.
         /// </summary>
         public T ImplicitConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site;
-            site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), false));
+            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), false));
             return site.Target(site, obj);
         }
 
@@ -497,8 +494,7 @@ namespace Microsoft.Scripting.Runtime {
             SiteKey sk = new SiteKey(typeof(T), siteBinder);
 
             lock (_sites) {
-                SiteKey old;
-                if (!_sites.TryGetValue(sk, out old)) {
+                if (!_sites.TryGetValue(sk, out SiteKey old)) {
                     SitesCreated++;
                     if (SitesCreated < 0) {
                         // overflow, just reset back to zero...

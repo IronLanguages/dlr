@@ -31,5 +31,4 @@ namespace Microsoft.Scripting {
         Parameter = 128,
         MethodTip = 240,
     }
-
 }

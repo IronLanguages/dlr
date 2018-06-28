@@ -13,13 +13,13 @@
 *
 * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq.Expressions;
+
 using Microsoft.Scripting.Utils;
-using System.Collections;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -34,15 +34,10 @@ namespace Microsoft.Scripting.Runtime {
             _data = data;
         }
 
-        public IDictionary<string, object> Dictionary {
-            get {
-                return _data;
-            }
-        }
+        public IDictionary<string, object> Dictionary => _data;
 
         private static object TryGetMember(object adapter, string name) {
-            object result;
-            if (((StringDictionaryExpando)adapter)._data.TryGetValue(name, out result)) {
+            if (((StringDictionaryExpando)adapter)._data.TryGetValue(name, out object result)) {
                 return result;
             }
             return _getFailed;
@@ -83,14 +78,14 @@ namespace Microsoft.Scripting.Runtime {
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
             return DynamicTryGetMember(binder.Name,
                 binder.FallbackGetMember(this).Expression,
-                (tmp) => tmp
+                tmp => tmp
             );
         }
 
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args) {
             return DynamicTryGetMember(binder.Name,
                 binder.FallbackInvokeMember(this, args).Expression,
-                (tmp) => binder.FallbackInvoke(new DynamicMetaObject(tmp, BindingRestrictions.Empty), args, null).Expression
+                tmp => binder.FallbackInvoke(new DynamicMetaObject(tmp, BindingRestrictions.Empty), args, null).Expression
             );
         }
 

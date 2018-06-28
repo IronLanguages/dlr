@@ -23,24 +23,19 @@ namespace Microsoft.Scripting {
     /// scopes. Hosting API counterpart for this class is <c>CompiledCode</c>.
     /// </summary>
     public abstract class ScriptCode {
-        private readonly SourceUnit _sourceUnit;
 
         protected ScriptCode(SourceUnit sourceUnit) {
             ContractUtils.RequiresNotNull(sourceUnit, nameof(sourceUnit));
 
-            _sourceUnit = sourceUnit;
+            SourceUnit = sourceUnit;
         }
 
-        public LanguageContext LanguageContext {
-            get { return _sourceUnit.LanguageContext; }
-        }
+        public LanguageContext LanguageContext => SourceUnit.LanguageContext;
 
-        public SourceUnit SourceUnit {
-            get { return _sourceUnit; }
-        }
+        public SourceUnit SourceUnit { get; }
 
         public virtual Scope CreateScope() {
-            return _sourceUnit.LanguageContext.CreateScope();
+            return SourceUnit.LanguageContext.CreateScope();
         }
 
         public virtual object Run() {

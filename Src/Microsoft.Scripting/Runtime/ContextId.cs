@@ -13,8 +13,6 @@
  *
  * ***************************************************************************/
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 
@@ -27,14 +25,13 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [Serializable]
     public struct ContextId : IEquatable<ContextId> {
-        private int _id;
         private static Dictionary<object, ContextId> _contexts = new Dictionary<object,ContextId>();
         private static int _maxId = 1;
 
         public static readonly ContextId Empty = new ContextId();
 
         internal ContextId(int id) {
-            _id = id;
+            Id = id;
         }
 
         /// <summary>
@@ -46,10 +43,7 @@ namespace Microsoft.Scripting.Runtime {
                     throw Error.LanguageRegistered();
                 }
 
-                ContextId id = new ContextId();
-                id._id = _maxId++;
-
-                return id;
+                return new ContextId(_maxId++);
             }
         }
 
@@ -57,26 +51,21 @@ namespace Microsoft.Scripting.Runtime {
         /// Looks up the context ID for the specified context identifier
         /// </summary>
         public static ContextId LookupContext(object identifier) {
-            ContextId res;
             lock (_contexts) {
-                if (_contexts.TryGetValue(identifier, out res)) {
+                if (_contexts.TryGetValue(identifier, out ContextId res)) {
                     return res;
                 }
             }
 
-            return ContextId.Empty;
+            return Empty;
         }
 
-        public int Id {
-            get {
-                return _id;
-            }
-        }
+        public int Id { get; }
 
         #region IEquatable<ContextId> Members
 
         public bool Equals(ContextId other) {
-            return _id == other._id;
+            return Id == other.Id;
         }
 
         #endregion
@@ -84,14 +73,14 @@ namespace Microsoft.Scripting.Runtime {
         #region Object overrides
 
         public override int GetHashCode() {
-            return _id;
+            return Id;
         }
 
         public override bool Equals(object obj) {
-            if (!(obj is ContextId)) return false;
+            if (obj is ContextId other)
+                return Equals(other);
 
-            ContextId other = (ContextId)obj;
-            return other._id == _id;
+            return false;
         }
 
         #endregion

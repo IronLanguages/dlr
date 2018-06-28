@@ -16,25 +16,22 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
 using System.Threading;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")] // TODO: fix
     public sealed class ScriptDomainManager {
-        private readonly DynamicRuntimeHostingProvider _hostingProvider;
-        private readonly SharedIO _sharedIO;
         private List<Assembly> _loadedAssemblies = new List<Assembly>();
 
         // last id assigned to a language context:
         private int _lastContextId;
 
-        private readonly DlrConfiguration _configuration;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public PlatformAdaptationLayer Platform {
             get {
-                PlatformAdaptationLayer result = _hostingProvider.PlatformAdaptationLayer;
+                PlatformAdaptationLayer result = Host.PlatformAdaptationLayer;
                 if (result == null) {
                     throw new InvalidImplementationException();
                 }
@@ -42,17 +39,11 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public SharedIO SharedIO {
-            get { return _sharedIO; }
-        }
+        public SharedIO SharedIO { get; }
 
-        public DynamicRuntimeHostingProvider Host {
-            get { return _hostingProvider; }
-        }
+        public DynamicRuntimeHostingProvider Host { get; }
 
-        public DlrConfiguration Configuration {
-            get { return _configuration; }
-        }
+        public DlrConfiguration Configuration { get; }
 
         public ScriptDomainManager(DynamicRuntimeHostingProvider hostingProvider, DlrConfiguration configuration) {
             ContractUtils.RequiresNotNull(hostingProvider, nameof(hostingProvider));
@@ -60,10 +51,10 @@ namespace Microsoft.Scripting.Runtime {
 
             configuration.Freeze();
 
-            _hostingProvider = hostingProvider;
-            _configuration = configuration;
+            Host = hostingProvider;
+            Configuration = configuration;
 
-            _sharedIO = new SharedIO();
+            SharedIO = new SharedIO();
 
             // create the initial default scope
             Globals = new Scope();
@@ -84,8 +75,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
             var aqtn = AssemblyQualifiedTypeName.ParseArgument(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
 
-            LanguageContext language;
-            if (!_configuration.TryLoadLanguage(this, aqtn, out language)) {
+            if (!Configuration.TryLoadLanguage(this, aqtn, out LanguageContext language)) {
                 throw Error.UnknownLanguageProviderType();
             }
             return language;
@@ -93,7 +83,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public bool TryGetLanguage(string languageName, out LanguageContext language) {
             ContractUtils.RequiresNotNull(languageName, nameof(languageName));
-            return _configuration.TryLoadLanguage(this, languageName, false, out language);
+            return Configuration.TryLoadLanguage(this, languageName, false, out language);
         }
 
         public LanguageContext GetLanguageByName(string languageName) {
@@ -105,12 +95,11 @@ namespace Microsoft.Scripting.Runtime {
 
         public bool TryGetLanguageByFileExtension(string fileExtension, out LanguageContext language) {
             ContractUtils.RequiresNotEmpty(fileExtension, nameof(fileExtension));
-            return _configuration.TryLoadLanguage(this, DlrConfiguration.NormalizeExtension(fileExtension), true, out language);
+            return Configuration.TryLoadLanguage(this, DlrConfiguration.NormalizeExtension(fileExtension), true, out language);
         }
 
         public LanguageContext GetLanguageByExtension(string fileExtension) {
-            LanguageContext language;
-            if (!TryGetLanguageByFileExtension(fileExtension, out language)) {
+            if (!TryGetLanguageByFileExtension(fileExtension, out LanguageContext language)) {
                 throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
             return language;

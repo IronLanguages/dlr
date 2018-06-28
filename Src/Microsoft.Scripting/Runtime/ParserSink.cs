@@ -13,8 +13,6 @@
  *
  * ***************************************************************************/
 
-using System.Dynamic;
-
 namespace Microsoft.Scripting.Runtime {
 
     public class ParserSink {
