@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public static MetadataTables OpenFile(string path) {
             if (path == null) {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
             
             return new MetadataTables(CreateImport(path), path, null);

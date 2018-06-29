@@ -17,15 +17,11 @@ using System;
 using System.Globalization;
 
 namespace Microsoft.Scripting {
-
     /// <summary>
     /// Stores the location of a span of text in a source file.
     /// </summary>
     [Serializable]
-    public struct SourceSpan {
-        private readonly SourceLocation _start;
-        private readonly SourceLocation _end;
-
+    public readonly struct SourceSpan : IEquatable<SourceSpan> {
         /// <summary>
         /// Constructs a new span with a specific start and end location.
         /// </summary>
@@ -33,8 +29,8 @@ namespace Microsoft.Scripting {
         /// <param name="end">The end of the span.</param>
         public SourceSpan(SourceLocation start, SourceLocation end) {
             ValidateLocations(start, end);
-            _start = start;
-            _end = end;
+            Start = start;
+            End = end;
         }
 
         private static void ValidateLocations(SourceLocation start, SourceLocation end) {
@@ -52,23 +48,17 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// The start location of the span.
         /// </summary>
-        public SourceLocation Start {
-            get { return _start; }
-        }
+        public SourceLocation Start { get; }
 
         /// <summary>
         /// The end location of the span. Location of the first character behind the span.
         /// </summary>
-        public SourceLocation End {
-            get { return _end; }
-        }
+        public SourceLocation End { get; }
 
         /// <summary>
         /// Length of the span (number of characters inside the span).
         /// </summary>
-        public int Length {
-            get { return _end.Index - _start.Index; } 
-        }
+        public int Length => End.Index - Start.Index;
 
         /// <summary>
         /// A valid span that represents no location.
@@ -83,9 +73,7 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Whether the locations in the span are valid.
         /// </summary>
-        public bool IsValid {
-            get { return _start.IsValid && _end.IsValid; }
-        }
+        public bool IsValid => Start.IsValid && End.IsValid;
 
         /// <summary>
         /// Compares two specified Span values to see if they are equal.
@@ -94,7 +82,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are the same, False otherwise.</returns>
         public static bool operator ==(SourceSpan left, SourceSpan right) {
-            return left._start == right._start && left._end == right._end;
+            return left.Start == right.Start && left.End == right.End;
         }
 
         /// <summary>
@@ -104,28 +92,26 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are not the same, False otherwise.</returns>
         public static bool operator !=(SourceSpan left, SourceSpan right) {
-            return left._start != right._start || left._end != right._end;
+            return left.Start != right.Start || left.End != right.End;
         }
 
-        public override bool Equals(object obj) {
-            if (!(obj is SourceSpan)) return false;
+        public bool Equals(SourceSpan other) => Start == other.Start && End == other.End;
 
-            SourceSpan other = (SourceSpan)obj;
-            return _start == other._start && _end == other._end;
-        }
+        public override bool Equals(object obj) => obj is SourceSpan other && Equals(other);
 
         public override string ToString() {
-            return _start.ToString() + " - " + _end.ToString();
+            return Start.ToString() + " - " + End.ToString();
         }
 
         public override int GetHashCode() {
             // 7 bits for each column (0-128), 9 bits for each row (0-512), xor helps if
             // we have a bigger file.
-            return (_start.Column) ^ (_end.Column << 7) ^ (_start.Line << 14) ^ (_end.Line << 23);
+            return (Start.Column) ^ (End.Column << 7) ^ (Start.Line << 14) ^ (End.Line << 23);
         }
 
         internal string ToDebugString() {
-            return String.Format(CultureInfo.CurrentCulture, "{0}-{1}", _start.ToDebugString(), _end.ToDebugString());
+            return String.Format(CultureInfo.CurrentCulture, "{0}-{1}", Start.ToDebugString(), End.ToDebugString());
         }
+
     }
 }

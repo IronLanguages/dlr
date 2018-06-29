@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace Microsoft.Scripting.Utils {
     [Serializable]
-    internal struct AssemblyQualifiedTypeName : IEquatable<AssemblyQualifiedTypeName> {
+    internal readonly struct AssemblyQualifiedTypeName : IEquatable<AssemblyQualifiedTypeName> {
         public readonly string TypeName;
         public readonly AssemblyName AssemblyName;
 

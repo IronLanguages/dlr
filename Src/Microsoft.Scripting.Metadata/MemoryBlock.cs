@@ -100,10 +100,10 @@ namespace Microsoft.Scripting.Metadata {
 
         public void Read(int offset, byte[] result) {
             if (result == null) {
-                throw new ArgumentNullException("result");
+                throw new ArgumentNullException(nameof(result));
             }
             if (offset < 0 || offset > _length - result.Length) {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
 
             byte* pIter = _pointer + offset;

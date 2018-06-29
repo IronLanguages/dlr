@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Runtime {
     /// member and operator lookup.
     /// </summary>
     [Serializable]
-    public struct ContextId : IEquatable<ContextId> {
+    public readonly struct ContextId : IEquatable<ContextId> {
         private static Dictionary<object, ContextId> _contexts = new Dictionary<object,ContextId>();
         private static int _maxId = 1;
 
@@ -64,24 +64,15 @@ namespace Microsoft.Scripting.Runtime {
 
         #region IEquatable<ContextId> Members
 
-        public bool Equals(ContextId other) {
-            return Id == other.Id;
-        }
+        public bool Equals(ContextId other) => Id == other.Id;
 
         #endregion
 
         #region Object overrides
 
-        public override int GetHashCode() {
-            return Id;
-        }
+        public override int GetHashCode() => Id;
 
-        public override bool Equals(object obj) {
-            if (obj is ContextId other)
-                return Equals(other);
-
-            return false;
-        }
+        public override bool Equals(object obj) => obj is ContextId other && Equals(other);
 
         #endregion
 

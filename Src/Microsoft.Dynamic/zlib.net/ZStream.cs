@@ -630,7 +630,7 @@ namespace ComponentAce.Compression.Libs.ZLib
         /// Read a new buffer from the current input stream, update the adler32 and total number of bytes read.  All <see cref="deflate" /> input goes 
         /// through this function so some applications may wish to modify it to avoid allocating a large <see cref="next_in" /> buffer and copying from it.
         /// </summary>
-        /// <seealso cref="flush_pending"/>
+        /// <seealso cref="FlushPending"/>
 		public int ReadBuf(byte[] buf, int start, int size)
 		{
 			int len = _avail_in;

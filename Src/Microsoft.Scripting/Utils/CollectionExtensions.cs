@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Utils {
 
         internal static TSource Aggregate<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, TSource> func) {
             using (IEnumerator<TSource> e = source.GetEnumerator()) {
-                if (!e.MoveNext()) throw new ArgumentException("Collection is empty", "source");
+                if (!e.MoveNext()) throw new ArgumentException("Collection is empty", nameof(source));
                 TSource result = e.Current;
                 while (e.MoveNext()) result = func(result, e.Current);
                 return result;
@@ -101,6 +101,7 @@ namespace Microsoft.Scripting.Utils {
     internal static class EmptyReadOnlyCollection<T> {
         internal static ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
     }
+
     // TODO: Should we use this everywhere for empty arrays?
     // my thought is, probably more hassle than its worth
     internal static class EmptyArray<T> {

@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public static List<KeyValuePair<Module, int>> GetVisibleExtensionMethods(Assembly assembly) {
             if (assembly == null) {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
 
             MetadataTables manifest = GetAsseblyMetadata(assembly)[0];
