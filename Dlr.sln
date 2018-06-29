@@ -20,6 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata", "Tests\Metadata\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFEE2666-74E5-49B0-BEB7-1F01CECD7F98}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Build.proj = Build.proj
 		LICENSE = LICENSE
 		make.cmd = make.cmd

@@ -179,7 +179,7 @@ namespace Microsoft.Scripting {
             return new Meta(parameter, this);
         }
 
-        class Meta : DynamicMetaObject {
+        private class Meta : DynamicMetaObject {
             public Meta(Expression parameter, ScopeStorage storage)
                 : base(parameter, BindingRestrictions.Empty, storage) {
             }

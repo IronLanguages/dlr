@@ -100,8 +100,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         }
 
         internal DebugSourceFile Lookup(string sourceFile) {
-            DebugSourceFile debugSourceFile;
-            if (_sourceFiles.TryGetValue(sourceFile, out debugSourceFile)) {
+            if (_sourceFiles.TryGetValue(sourceFile, out DebugSourceFile debugSourceFile)) {
                 return debugSourceFile;
             }
 
