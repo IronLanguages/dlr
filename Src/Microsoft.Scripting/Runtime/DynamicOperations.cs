@@ -186,8 +186,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Returns true if the object has a member named name, false if the member does not exist.
         /// </summary>
         public bool ContainsMember(object obj, string name, bool ignoreCase) {
-            object dummy;
-            return TryGetMember(obj, name, ignoreCase, out dummy);
+            return TryGetMember(obj, name, ignoreCase, out _);
         }
 
         /// <summary>

@@ -20,8 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Microsoft.Scripting.Utils {
-
-    static class Assert {
+    internal static class Assert {
         [Conditional("DEBUG")]
         public static void NotNull(object var) {
             Debug.Assert(var != null);

@@ -150,7 +150,7 @@ namespace Microsoft.Scripting.ComInterop {
             return hresult;
         }
 
-        static int Invoke(IDispatch dispatch, int memberDispId, out object result) {
+        private static int Invoke(IDispatch dispatch, int memberDispId, out object result) {
             Guid emtpyRiid = Guid.Empty;
             ComTypes.DISPPARAMS dispParams = new ComTypes.DISPPARAMS();
             ComTypes.EXCEPINFO excepInfo = new ComTypes.EXCEPINFO();

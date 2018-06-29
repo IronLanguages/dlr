@@ -63,7 +63,7 @@ namespace Microsoft.Scripting {
 #endif
         }
 
-        private readonly static bool _trackPerformance = ReadDebugOption("TrackPerformance");
+        private static readonly bool _trackPerformance = ReadDebugOption("TrackPerformance");
 
         internal static bool TrackPerformance {
             get { return _trackPerformance; }

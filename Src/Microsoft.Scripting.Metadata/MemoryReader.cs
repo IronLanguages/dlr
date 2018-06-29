@@ -65,14 +65,14 @@ namespace Microsoft.Scripting.Metadata {
             }
         }
 
-        public Char ReadChar() {
+        public char ReadChar() {
             var result = _block.ReadChar(_position);
             _position += sizeof(char);
             return result;
         }
 
         [CLSCompliant(false)]
-        public SByte ReadSByte() {
+        public sbyte ReadSByte() {
             var result = _block.ReadSByte(_position);
             _position += sizeof(sbyte);
             return result;
@@ -123,15 +123,15 @@ namespace Microsoft.Scripting.Metadata {
             return result;
         }
 
-        public Single ReadSingle() {
+        public float ReadSingle() {
             var result = _block.ReadSingle(_position);
-            _position += sizeof(Single);
+            _position += sizeof(float);
             return result;
         }
 
-        public Double ReadDouble() {
+        public double ReadDouble() {
             var result = _block.ReadDouble(_position);
-            _position += sizeof(Double);
+            _position += sizeof(double);
             return result;
         }
 
