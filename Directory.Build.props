@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-  Settings imported by all *.csproj files. 
--->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
-    <DlrRootDir>$(MSBuildThisFileDirectory)..</DlrRootDir>
+    <DlrRootDir>$(MSBuildThisFileDirectory)</DlrRootDir>
     <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
 
     <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
@@ -18,7 +15,7 @@
 
   <!-- Signing -->
   <PropertyGroup>
-    <PublicKey>$(MSBuildThisFileDirectory)\Key.snk</PublicKey>
+    <PublicKey>$(DlrBuildDir)\Key.snk</PublicKey>
   </PropertyGroup>
 
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
@@ -60,10 +57,6 @@
   <PropertyGroup Condition="'$(Mono)' == 'true'">
     <CscToolExeSuffix Condition="'$(OS)' == 'Windows_NT'">.bat</CscToolExeSuffix>
     <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <CSharpTargets Condition="'$(CSharpTargets)' == ''">$(MSBuildBinPath)\Microsoft.CSharp.targets</CSharpTargets>
   </PropertyGroup>
 
   <!-- References -->

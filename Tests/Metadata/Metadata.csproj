@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
-
   <PropertyGroup>
     <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
     <OutputType>Exe</OutputType>
@@ -14,7 +12,7 @@
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
     <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.8.0" />
     <PackageReference Include="NUnitLite" Version="3.10.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
