@@ -682,13 +682,13 @@ namespace Microsoft.Scripting.Utils {
         public const char GenericArityDelimiter = '`';
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method) {
-            return FormatSignature(result, method, (t) => t.FullName);
+            return FormatSignature(result, method, t => t.FullName);
         }
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method, Func<Type, string> nameDispenser) {
-            ContractUtils.RequiresNotNull(result, "result");
-            ContractUtils.RequiresNotNull(method, "method");
-            ContractUtils.RequiresNotNull(nameDispenser, "nameDispenser");
+            ContractUtils.RequiresNotNull(result, nameof(result));
+            ContractUtils.RequiresNotNull(method, nameof(method));
+            ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
 
             MethodInfo methodInfo = method as MethodInfo;
             if (methodInfo != null) {
@@ -738,14 +738,13 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type) {
-            return FormatTypeName(result, type, (t) => t.FullName);
+            return FormatTypeName(result, type, t => t.FullName);
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type, Func<Type, string> nameDispenser) {
-            ContractUtils.RequiresNotNull(result, "result");
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(nameDispenser, "nameDispenser");
-
+            ContractUtils.RequiresNotNull(result, nameof(result));
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
             if (type.IsGenericType()) {
                 Type genType = type.GetGenericTypeDefinition();
                 string genericName = nameDispenser(genType).Replace('+', '.');
@@ -774,9 +773,9 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeArgs(StringBuilder result, Type[] types, Func<Type, string> nameDispenser) {
-            ContractUtils.RequiresNotNull(result, "result");
-            ContractUtils.RequiresNotNullItems(types, "types");
-            ContractUtils.RequiresNotNull(nameDispenser, "nameDispenser");
+            ContractUtils.RequiresNotNull(result, nameof(result));
+            ContractUtils.RequiresNotNullItems(types, nameof(types));
+            ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
 
             if (types.Length > 0) {
                 result.Append("<");
@@ -857,10 +856,10 @@ namespace Microsoft.Scripting.Utils {
 #endif
 
         public static void GetDelegateSignature(Type delegateType, out ParameterInfo[] parameterInfos, out ParameterInfo returnInfo) {
-            ContractUtils.RequiresNotNull(delegateType, "delegateType");
+            ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
 
             MethodInfo invokeMethod = delegateType.GetMethod("Invoke");
-            ContractUtils.Requires(invokeMethod != null, "delegateType", Strings.InvalidDelegate);
+            ContractUtils.Requires(invokeMethod != null, nameof(delegateType), Strings.InvalidDelegate);
 
             parameterInfos = invokeMethod.GetParameters();
             returnInfo = invokeMethod.ReturnParameter;
@@ -942,7 +941,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static bool SignatureEquals(MethodInfo method, params Type[] requiredSignature) {
-            ContractUtils.RequiresNotNull(method, "method");
+            ContractUtils.RequiresNotNull(method, nameof(method));
 
             Type[] actualTypes = GetParameterTypes(method.GetParameters());
             Debug.Assert(actualTypes.Length == requiredSignature.Length - 1);
@@ -1063,7 +1062,7 @@ namespace Microsoft.Scripting.Utils {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly assembly, bool includePrivateTypes) {
-            ContractUtils.RequiresNotNull(assembly, "assembly");
+            ContractUtils.RequiresNotNull(assembly, nameof(assembly));
 
             if (includePrivateTypes) {
                 return GetAllTypesFromAssembly(assembly);
@@ -1477,7 +1476,7 @@ namespace Microsoft.Scripting.Utils {
         /// The match might be non-trivial if the extended type is an open generic type with constraints.
         /// </summary>
         public bool IsExtensionOf(Type/*!*/ type) {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 #if FEATURE_TYPE_EQUIVALENCE
             if (type.IsEquivalentTo(ExtendedType)) {
                 return true;

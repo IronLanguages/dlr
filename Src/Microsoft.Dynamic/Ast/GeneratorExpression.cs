@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Ast {
         public static GeneratorExpression Generator(LabelTarget label, Expression body) {
             ContractUtils.RequiresNotNull(label, nameof(label));
             ContractUtils.RequiresNotNull(body, nameof(body));
-            ContractUtils.Requires(label.Type != typeof(void), "label", "label must have a non-void type");
+            ContractUtils.Requires(label.Type != typeof(void), nameof(label), "label must have a non-void type");
 
             return new GeneratorExpression("generator", typeof(IEnumerable<>).MakeGenericType(label.Type), label, body, true);
         }
@@ -112,8 +112,8 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(label, nameof(label));
-            ContractUtils.Requires(label.Type != typeof(void), "label", "label must have a non-void type");
-            ContractUtils.Requires(body.Type == typeof(void), "body", "generator body must have a void type");
+            ContractUtils.Requires(label.Type != typeof(void), nameof(label), "label must have a non-void type");
+            ContractUtils.Requires(body.Type == typeof(void), nameof(body), "generator body must have a void type");
 
             // Generator type must be one of: IEnumerable, IEnumerator,
             // IEnumerable<T>, or IEnumerator<T>, where T is label.Ttpe

@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Actions {
         }
         
         public CallSignature(int argumentCount) {
-            ContractUtils.Requires(argumentCount >= 0, "argumentCount");
+            ContractUtils.Requires(argumentCount >= 0, nameof(argumentCount));
             _argumentCount = argumentCount;
             _infos = null;
         }

@@ -161,7 +161,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 return _consoleOptions; 
             }
             set {
-                ContractUtils.RequiresNotNull(value, "value");
+                ContractUtils.RequiresNotNull(value, nameof(value));
                 _consoleOptions = value; 
             }
         }
@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected override void ParseArgument(string arg) {
-            ContractUtils.RequiresNotNull(arg, "arg");
+            ContractUtils.RequiresNotNull(arg, nameof(arg));
 
             // the following extension switches are in alphabetic order
             switch (arg) {

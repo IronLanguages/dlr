@@ -233,7 +233,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] RemoveAt<T>(T[] array, int indexToRemove) {
             ContractUtils.RequiresNotNull(array, nameof(array));
-            ContractUtils.Requires(indexToRemove >= 0 && indexToRemove < array.Length, "index");
+            ContractUtils.Requires(indexToRemove >= 0 && indexToRemove < array.Length, nameof(indexToRemove));
 
             T[] result = new T[array.Length - 1];
             if (indexToRemove > 0) {

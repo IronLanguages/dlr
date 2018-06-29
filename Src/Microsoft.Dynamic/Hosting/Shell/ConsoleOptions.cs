@@ -124,7 +124,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected ConsoleOptions(ConsoleOptions options) {
-            ContractUtils.RequiresNotNull(options, "options");
+            ContractUtils.RequiresNotNull(options, nameof(options));
 
             _command = options._command;
             _filename = options._filename;

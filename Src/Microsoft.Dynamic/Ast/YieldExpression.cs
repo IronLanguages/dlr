@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Ast {
         }
         public static YieldExpression MakeYield(LabelTarget target, Expression value, int yieldMarker) {
             ContractUtils.RequiresNotNull(target, nameof(target));
-            ContractUtils.Requires(target.Type != typeof(void), "target", "generator label must have a non-void type");
+            ContractUtils.Requires(target.Type != typeof(void), nameof(target), "generator label must have a non-void type");
             if (value != null) {
                 if (!TypeUtils.AreReferenceAssignable(target.Type, value.Type)) {
                     // C# autoquotes generator return values

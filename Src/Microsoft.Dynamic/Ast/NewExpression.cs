@@ -14,8 +14,8 @@
  * ***************************************************************************/
 
 using System.Linq.Expressions;
-
 using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
 
             ParameterInfo[] parameters = constructor.GetParameters();
-            ContractUtils.Requires(arguments.Length == parameters.Length, "arguments", "Incorrect number of arguments");
+            ContractUtils.Requires(arguments.Length == parameters.Length, nameof(arguments), "Incorrect number of arguments");
 
             return Expression.New(constructor, ArgumentConvertHelper(arguments, parameters));
         }

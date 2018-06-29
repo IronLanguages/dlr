@@ -62,16 +62,16 @@ namespace Microsoft.Scripting.Ast {
 
             Expression condition;
             if (isTrue != null) {
-                ContractUtils.Requires(isTrue.ReturnType == typeof(bool), "isTrue", "Predicate must return bool.");
+                ContractUtils.Requires(isTrue.ReturnType == typeof(bool), nameof(isTrue), "Predicate must return bool.");
                 ParameterInfo[] parameters = isTrue.GetParameters();
-                ContractUtils.Requires(parameters.Length == 1, "isTrue", "Predicate must take one parameter.");
-                ContractUtils.Requires(isTrue.IsStatic && isTrue.IsPublic, "isTrue", "Predicate must be public and static.");
+                ContractUtils.Requires(parameters.Length == 1, nameof(isTrue), "Predicate must take one parameter.");
+                ContractUtils.Requires(isTrue.IsStatic && isTrue.IsPublic, nameof(isTrue), "Predicate must be public and static.");
 
                 Type pt = parameters[0].ParameterType;
-                ContractUtils.Requires(TypeUtils.CanAssign(pt, left.Type), "left", "Incorrect left expression type");
+                ContractUtils.Requires(TypeUtils.CanAssign(pt, left.Type), nameof(left), "Incorrect left expression type");
                 condition = Expression.Call(isTrue, Expression.Assign(temp, left));
             } else {
-                ContractUtils.Requires(TypeUtils.CanCompareToNull(left.Type), "left", "Incorrect left expression type");
+                ContractUtils.Requires(TypeUtils.CanCompareToNull(left.Type), nameof(left), "Incorrect left expression type");
                 condition = Expression.Equal(Expression.Assign(temp, left), Constant(null, left.Type));
             }
 
