@@ -9,51 +9,28 @@ namespace Microsoft.Scripting {
     /// 
     /// It is closed on the left and open on the right: [Start .. End). 
     /// </summary>
-    public struct IndexSpan : IEquatable<IndexSpan> {
-        private readonly int _start, _length;
-
+    public readonly struct IndexSpan : IEquatable<IndexSpan> {
         public IndexSpan(int start, int length) {
             ContractUtils.Requires(length >= 0, nameof(length));
             ContractUtils.Requires(start >= 0, nameof(start));
 
-            _start = start;
-            _length = length;
+            Start = start;
+            Length = length;
         }
 
-        public int Start {
-            get {
-                return _start;
-            }
-        }
+        public int Start { get; }
 
-        public int End {
-            get {
-                return _start + _length;
-            }
-        }
+        public int End => Start + Length;
 
-        public int Length {
-            get {
-                return _length;
-            }
-        }
+        public int Length { get; }
 
-        public bool IsEmpty {
-            get {
-                return _length == 0;
-            }
-        }
+        public bool IsEmpty => Length == 0;
 
         public override int GetHashCode() {
             return Length.GetHashCode() ^ Start.GetHashCode();
         }
 
-        public override bool Equals(object obj) {
-            if (obj is IndexSpan span) {
-                return Equals(span);
-            }
-            return false;
-        }
+        public override bool Equals(object obj) => obj is IndexSpan span && Equals(span);
 
         public static bool operator ==(IndexSpan self, IndexSpan other) {
             return self.Equals(other);
@@ -65,9 +42,7 @@ namespace Microsoft.Scripting {
 
         #region IEquatable<IndexSpan> Members
 
-        public bool Equals(IndexSpan other) {
-            return _length == other._length && _start == other._start;
-        }
+        public bool Equals(IndexSpan other) => Length == other.Length && Start == other.Start;
 
         #endregion
     }

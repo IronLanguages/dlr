@@ -21,13 +21,7 @@ namespace Microsoft.Scripting {
     /// Represents a location in source code.
     /// </summary>
     [Serializable]
-    public struct SourceLocation {
-        // TODO: remove index
-        private readonly int _index;
-
-        private readonly int _line;
-        private readonly int _column;
-
+    public readonly struct SourceLocation : IEquatable<SourceLocation> {
         /// <summary>
         /// Creates a new source location.
         /// </summary>
@@ -37,9 +31,9 @@ namespace Microsoft.Scripting {
         public SourceLocation(int index, int line, int column) {
             ValidateLocation(index, line, column);
 
-            _index = index;
-            _line = line;
-            _column = column;
+            Index = index;
+            Line = line;
+            Column = column;
         }
 
         private static void ValidateLocation(int index, int line, int column) {
@@ -60,31 +54,25 @@ namespace Microsoft.Scripting {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
         private SourceLocation(int index, int line, int column, bool noChecks) {
-            _index = index;
-            _line = line;
-            _column = column;
+            Index = index;
+            Line = line;
+            Column = column;
         }
-        
+
         /// <summary>
         /// The index in the source stream the location represents (0-based).
         /// </summary>
-        public int Index {
-            get { return _index; }
-        }
+        public int Index { get; } // TODO: remove index
 
         /// <summary>
         /// The line in the source stream the location represents (1-based).
         /// </summary>
-        public int Line {
-            get { return _line; }
-        }
+        public int Line { get; }
 
         /// <summary>
         /// The column in the source stream the location represents (1-based).
         /// </summary>
-        public int Column {
-            get { return _column; }
-        }
+        public int Column { get; }
 
         /// <summary>
         /// Compares two specified location values to see if they are equal.
@@ -93,7 +81,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the locations are the same, False otherwise.</returns>
         public static bool operator ==(SourceLocation left, SourceLocation right) {
-            return left._index == right._index && left._line == right._line && left._column == right._column;
+            return left.Index == right.Index && left.Line == right.Line && left.Column == right.Column;
         }
 
         /// <summary>
@@ -103,7 +91,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the locations are not the same, False otherwise.</returns>
         public static bool operator !=(SourceLocation left, SourceLocation right) {
-            return left._index != right._index || left._line != right._line || left._column != right._column;
+            return left.Index != right.Index || left.Line != right.Line || left.Column != right.Column;
         }
 
         /// <summary>
@@ -113,7 +101,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the first location is before the other location, False otherwise.</returns>
         public static bool operator <(SourceLocation left, SourceLocation right) {
-            return left._index < right._index;
+            return left.Index < right.Index;
         }
 
         /// <summary>
@@ -123,7 +111,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the first location is after the other location, False otherwise.</returns>
         public static bool operator >(SourceLocation left, SourceLocation right) {
-            return left._index > right._index;
+            return left.Index > right.Index;
         }
 
         /// <summary>
@@ -133,7 +121,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the first location is before or the same as the other location, False otherwise.</returns>
         public static bool operator <=(SourceLocation left, SourceLocation right) {
-            return left._index <= right._index;
+            return left.Index <= right.Index;
         }
 
         /// <summary>
@@ -143,7 +131,7 @@ namespace Microsoft.Scripting {
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the first location is after or the same as the other location, False otherwise.</returns>
         public static bool operator >=(SourceLocation left, SourceLocation right) {
-            return left._index >= right._index;
+            return left.Index >= right.Index;
         }
 
         /// <summary>
@@ -178,25 +166,22 @@ namespace Microsoft.Scripting {
         /// Whether the location is a valid location.
         /// </summary>
         /// <returns>True if the location is valid, False otherwise.</returns>
-        public bool IsValid => _line != 0 && _column != 0;
+        public bool IsValid => Line != 0 && Column != 0;
 
-        public override bool Equals(object obj) {
-            if (!(obj is SourceLocation)) return false;
+        public bool Equals(SourceLocation other) => other.Index == Index && other.Line == Line && other.Column == Column;
 
-            SourceLocation other = (SourceLocation)obj;
-            return other._index == _index && other._line == _line && other._column == _column;
-        }
+        public override bool Equals(object obj) => obj is SourceLocation other && Equals(other);
 
         public override int GetHashCode() {
-            return (_line << 16) ^ _column;
+            return (Line << 16) ^ Column;
         }
 
         public override string ToString() {
-            return "(" + _line + "," + _column + ")";
+            return "(" + Line + "," + Column + ")";
         }
 
         internal string ToDebugString() {
-            return String.Format(CultureInfo.CurrentCulture, "({0},{1},{2})", _index, _line, _column);
+            return String.Format(CultureInfo.CurrentCulture, "({0},{1},{2})", Index, Line, Column);
         }
     }
 }
