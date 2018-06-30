@@ -26,8 +26,8 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     public sealed class BranchLabel {
-        internal const int UnknownIndex = Int32.MinValue;
-        internal const int UnknownDepth = Int32.MinValue;
+        internal const int UnknownIndex = int.MinValue;
+        internal const int UnknownDepth = int.MinValue;
 
         internal int _labelIndex = UnknownIndex;
         internal int _targetIndex = UnknownIndex;

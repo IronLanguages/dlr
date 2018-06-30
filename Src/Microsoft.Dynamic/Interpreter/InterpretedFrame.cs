@@ -19,7 +19,6 @@ namespace Microsoft.Scripting.Interpreter {
         public static readonly InterpretedFrameThreadLocal CurrentFrame = new InterpretedFrameThreadLocal();
 
         internal readonly Interpreter Interpreter;
-        internal InterpretedFrame _parent;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         private int[] _continuations;
@@ -104,7 +103,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Stack Trace
 
-        public InterpretedFrame Parent => _parent;
+        public InterpretedFrame Parent { get; private set; }
 
         public static bool IsInterpretedFrame(MethodBase method) {
             ContractUtils.RequiresNotNull(method, nameof(method));
@@ -174,13 +173,13 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal InterpretedFrameThreadLocal.StorageInfo Enter() {
             var currentFrame = InterpretedFrame.CurrentFrame.GetStorageInfo();
-            _parent = currentFrame.Value;
+            Parent = currentFrame.Value;
             currentFrame.Value = this;
             return currentFrame;
         }
 
         internal void Leave(InterpretedFrameThreadLocal.StorageInfo currentFrame) {
-            currentFrame.Value = _parent;
+            currentFrame.Value = Parent;
         }
 
         #endregion

@@ -19,7 +19,6 @@ namespace Microsoft.Scripting.Interpreter {
     /// </summary>
     internal sealed class LightDelegateCreator {
         // null if we are forced to compile
-        private readonly Interpreter _interpreter;
         private readonly Expression _lambda;
 
         // Adaptive compilation support:
@@ -29,19 +28,19 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda) {
             Assert.NotNull(lambda);
-            _interpreter = interpreter;
+            Interpreter = interpreter;
             _lambda = lambda;
         }
 
         internal LightDelegateCreator(Interpreter interpreter, LightLambdaExpression lambda) {
             Assert.NotNull(lambda);
-            _interpreter = interpreter;
+            Interpreter = interpreter;
             _lambda = lambda;
         }
 
-        internal Interpreter Interpreter => _interpreter;
+        internal Interpreter Interpreter { get; }
 
-        private bool HasClosure => _interpreter != null && _interpreter.ClosureSize > 0;
+        private bool HasClosure => Interpreter != null && Interpreter.ClosureSize > 0;
 
         internal bool HasCompiled => _compiled != null;
 
@@ -70,7 +69,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            if (_interpreter == null) {
+            if (Interpreter == null) {
                 // We can't interpret, so force a compile
                 Compile(null);
                 Delegate compiled = CreateCompiledDelegate(closure);
@@ -79,7 +78,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             // Otherwise, we'll create an interpreted LightLambda
-            return new LightLambda(this, closure, _interpreter._compilationThreshold).MakeDelegate(DelegateType);
+            return new LightLambda(this, closure, Interpreter._compilationThreshold).MakeDelegate(DelegateType);
         }
 
         private Type DelegateType {
@@ -129,13 +128,13 @@ namespace Microsoft.Scripting.Interpreter {
                 // Action<...> so it can be called from the LightLambda.Run
                 // methods.
                 LambdaExpression lambda = (_lambda as LambdaExpression) ?? (LambdaExpression)((LightLambdaExpression)_lambda).Reduce();
-                if (_interpreter != null) {
+                if (Interpreter != null) {
                     _compiledDelegateType = GetFuncOrAction(lambda);
                     lambda = Expression.Lambda(_compiledDelegateType, lambda.Body, lambda.Name, lambda.Parameters);
                 }
 
                 if (HasClosure) {
-                    _compiled = LightLambdaClosureVisitor.BindLambda(lambda, _interpreter.ClosureVariables);
+                    _compiled = LightLambdaClosureVisitor.BindLambda(lambda, Interpreter.ClosureVariables);
                 } else {
                     _compiled = lambda.Compile();
                 }
