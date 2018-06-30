@@ -119,12 +119,11 @@ namespace Metadata {
                     continue;
                 }
 
-                string prefix = type.Namespace ?? "";
+                string prefix = type.Namespace ?? string.Empty;
                 RNamespaceTreeNode ns = null;
 
                 while (true) {
-                    RNamespaceTreeNode existing;
-                    if (_names.TryGetValue(prefix, out existing)) {
+                    if (_names.TryGetValue(prefix, out RNamespaceTreeNode existing)) {
                         if (ns == null) {
                             existing.AddType(type);
                         } else {

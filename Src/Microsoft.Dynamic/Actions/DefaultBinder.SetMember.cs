@@ -166,8 +166,7 @@ namespace Microsoft.Scripting.Actions {
                 members = GetMember(MemberRequestKind.Set, type, memInfo.Name);
             }
 
-            Expression error;
-            TrackerTypes memberTypes = GetMemberType(members, out error);
+            TrackerTypes memberTypes = GetMemberType(members, out Expression error);
             if (error == null) {
                 switch (memberTypes) {
                     case TrackerTypes.Method:

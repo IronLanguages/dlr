@@ -49,8 +49,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private static Func<LightLambda, Delegate> GetRunDelegateCtor(Type delegateType) {
             lock (_runCache) {
-                Func<LightLambda, Delegate> fastCtor;
-                if (_runCache.TryGetValue(delegateType, out fastCtor)) {
+                if (_runCache.TryGetValue(delegateType, out Func<LightLambda, Delegate> fastCtor)) {
                     return fastCtor;
                 }
                 return MakeRunDelegateCtor(delegateType);

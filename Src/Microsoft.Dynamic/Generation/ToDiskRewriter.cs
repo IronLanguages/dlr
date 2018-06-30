@@ -155,8 +155,7 @@ namespace Microsoft.Scripting.Generation {
         // delegate, we need to replace it with a new delegate type that can be
         // saved to disk
         protected override Expression VisitDynamic(DynamicExpression node) {
-            Type delegateType;
-            if (RewriteDelegate(node.DelegateType, out delegateType)) {
+            if (RewriteDelegate(node.DelegateType, out Type delegateType)) {
                 node = DynamicExpression.MakeDynamic(delegateType, node.Binder, node.Arguments);
             }
 

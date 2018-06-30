@@ -133,15 +133,13 @@ namespace Microsoft.Scripting.Actions.Calls {
             _maxLevel = maxLevel;
             
             // step 1:
-            IList<DynamicMetaObject> namedArgs;
-            GetNamedArguments(out namedArgs, out _argNames);
+            GetNamedArguments(out IList<DynamicMetaObject> namedArgs, out _argNames);
             
             // uses arg names:
             BuildCandidateSets(methods);
 
             // uses target sets:
-            int preSplatLimit, postSplatLimit;
-            GetSplatLimits(out preSplatLimit, out postSplatLimit);
+            GetSplatLimits(out int preSplatLimit, out int postSplatLimit);
 
             // step 2:
             _actualArguments = CreateActualArguments(namedArgs, _argNames, preSplatLimit, postSplatLimit);
@@ -409,10 +407,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 // to have argument names (which we created because the MethodBinder gets 
                 // created w/ keyword arguments).
                 if (!candidate.HasParamsDictionary) {
-                    CallFailure callFailure;
-                    ArgumentBinding namesBinding;
-
-                    if (_actualArguments.TryBindNamedArguments(candidate, out namesBinding, out callFailure)) {
+                    if (_actualArguments.TryBindNamedArguments(candidate, out ArgumentBinding namesBinding, out CallFailure callFailure)) {
                         result.Add(new ApplicableCandidate(candidate, namesBinding));
                     } else {
                         AddFailure(ref failures, callFailure);
@@ -433,8 +428,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     continue;
                 }
 
-                CallFailure callFailure;
-                if (TryConvertArguments(candidate.Method, candidate.ArgumentBinding, level, out callFailure)) {
+                if (TryConvertArguments(candidate.Method, candidate.ArgumentBinding, level, out CallFailure callFailure)) {
                     result.Add(candidate);
                 } else {
                     AddFailure(ref failures, callFailure);
@@ -450,8 +444,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                     MethodCandidate newCandidate = TypeInferer.InferGenericMethod(candidate, _actualArguments);
                     if (newCandidate != null) {
-                        CallFailure callFailure;
-                        if (TryConvertArguments(newCandidate, candidate.ArgumentBinding, level, out callFailure)) {
+                        if (TryConvertArguments(newCandidate, candidate.ArgumentBinding, level, out CallFailure callFailure)) {
                             result.Add(new ApplicableCandidate(newCandidate, candidate.ArgumentBinding));
                         } else {
                             AddFailure(ref failures, callFailure);
@@ -474,8 +467,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             var result = new List<ApplicableCandidate>();
             foreach (ApplicableCandidate candidate in candidates) {
-                CallFailure callFailure;
-                if (TryConvertCollapsedArguments(candidate.Method, level, out callFailure)) {
+                if (TryConvertCollapsedArguments(candidate.Method, level, out CallFailure callFailure)) {
                     result.Add(candidate);
                 } else {
                     AddFailure(ref failures, callFailure);
@@ -554,10 +546,13 @@ namespace Microsoft.Scripting.Actions.Calls {
                     restrictedArgs[i] = arg;
                 }
 
-                BindingRestrictions additionalRestrictions;
-                if (selectedCandidate.Method.Restrictions != null && selectedCandidate.Method.Restrictions.TryGetValue(arg, out additionalRestrictions)) {
+                if (selectedCandidate.Method.Restrictions != null && selectedCandidate.Method.Restrictions.TryGetValue(
+                        arg,
+                        out BindingRestrictions additionalRestrictions)) {
                     hasAdditionalRestrictions = true;
-                    restrictedArgs[i] = new DynamicMetaObject(restrictedArgs[i].Expression, restrictedArgs[i].Restrictions.Merge(additionalRestrictions));
+                    restrictedArgs[i] = new DynamicMetaObject(
+                        restrictedArgs[i].Expression,
+                        restrictedArgs[i].Restrictions.Merge(additionalRestrictions));
                 }
             }
 

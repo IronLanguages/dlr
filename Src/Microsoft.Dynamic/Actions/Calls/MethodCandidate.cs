@@ -268,9 +268,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region MakeExpression
 
         internal Expression MakeExpression(RestrictedArguments restrictedArgs) {
-            bool[] usageMarkers;
-            Expression[] spilledArgs;
-            Expression[] callArgs = GetArgumentExpressions(restrictedArgs, out usageMarkers, out spilledArgs);
+            Expression[] callArgs = GetArgumentExpressions(restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs);
 
             Expression call;
             MethodBase mb = _overload.ReflectionInfo;

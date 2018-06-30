@@ -32,8 +32,7 @@ namespace Microsoft.Scripting.Utils {
         /// false if it's not present.
         /// </summary>
         public bool TryGetValue(TKey key, out TValue value) {
-            KeyInfo storedValue;
-            if (_dict.TryGetValue(key, out storedValue)) {
+            if (_dict.TryGetValue(key, out KeyInfo storedValue)) {
                 LinkedListNode<TKey> node = storedValue.List;
                 if (node.Previous != null) {
                     // move us to the head of the list...

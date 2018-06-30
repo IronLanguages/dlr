@@ -86,8 +86,7 @@ namespace Microsoft.Scripting {
 
         public static void AddHistograms<TKey>(IDictionary<TKey, int> result, IDictionary<TKey, int> addend) {
             foreach (var entry in addend) {
-                int value;
-                result[entry.Key] = entry.Value + (result.TryGetValue(entry.Key, out value) ? value : 0);
+                result[entry.Key] = entry.Value + (result.TryGetValue(entry.Key, out int value) ? value : 0);
             }
         }
 

@@ -1240,8 +1240,7 @@ namespace Microsoft.Scripting.Utils {
                 }
 
                 lock (_extensionMethodsCache) {
-                    Dictionary<string, List<ExtensionMethodInfo>> existing;
-                    if (_extensionMethodsCache.TryGetValue(assembly, out existing)) {
+                    if (_extensionMethodsCache.TryGetValue(assembly, out Dictionary<string, List<ExtensionMethodInfo>> existing)) {
                         return EnumerateExtensionMethods(existing);
                     }
                 }
@@ -1263,14 +1262,13 @@ namespace Microsoft.Scripting.Utils {
                     continue;
                 }
 
-                string ns = method.DeclaringType.Namespace ?? String.Empty;
-                List<ExtensionMethodInfo> extensions = null;
+                string ns = method.DeclaringType.Namespace ?? string.Empty;
 
                 if (result == null) {
                     result = new Dictionary<string, List<ExtensionMethodInfo>>();
                 }
 
-                if (!result.TryGetValue(ns, out extensions)) {
+                if (!result.TryGetValue(ns, out List<ExtensionMethodInfo> extensions)) {
                     result.Add(ns, extensions = new List<ExtensionMethodInfo>());
                 }
 

@@ -63,16 +63,13 @@ namespace Microsoft.Scripting.ComInterop {
 
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            ComMethodDesc method;
-            ComEventDesc @event;
-
             // 1. Try methods
-            if (_self.TryGetMemberMethod(binder.Name, out method)) {
+            if (_self.TryGetMemberMethod(binder.Name, out ComMethodDesc method)) {
                 return BindGetMember(method, canReturnCallables);
             }
 
             // 2. Try events
-            if (_self.TryGetMemberEvent(binder.Name, out @event)) {
+            if (_self.TryGetMemberEvent(binder.Name, out ComEventDesc @event)) {
                 return BindEvent(@event);
             }
 
@@ -170,9 +167,8 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private DynamicMetaObject TryPropertyPut(SetMemberBinder binder, DynamicMetaObject value) {
-            ComMethodDesc method;
             bool holdsNull = value.Value == null && value.HasValue;
-            if (_self.TryGetPropertySetter(binder.Name, out method, value.LimitType, holdsNull) ||
+            if (_self.TryGetPropertySetter(binder.Name, out ComMethodDesc method, value.LimitType, holdsNull) ||
                 _self.TryGetPropertySetterExplicit(binder.Name, out method, value.LimitType, holdsNull)) {
                 BindingRestrictions restrictions = IDispatchRestriction();
                 Expression dispatch =

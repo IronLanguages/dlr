@@ -150,8 +150,7 @@ namespace Microsoft.Scripting.ComInterop {
                 }
             }
 
-            ComTypeEnumDesc enumDesc;
-            if (_enums != null && _enums.TryGetValue(member, out enumDesc))
+            if (_enums != null && _enums.TryGetValue(member, out ComTypeEnumDesc enumDesc))
                 return enumDesc;
 
             return null;

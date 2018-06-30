@@ -31,11 +31,10 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private DynamicMetaObject BindGetOrInvoke(DynamicMetaObject[] args, CallInfo callInfo) {
-            ComMethodDesc method;
             var target = _callable.DispatchComObject;
             var name = _callable.MemberName;
 
-            if (target.TryGetMemberMethod(name, out method) ||
+            if (target.TryGetMemberMethod(name, out ComMethodDesc method) ||
                 target.TryGetMemberMethodExplicit(name, out method)) {
 
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref args);
@@ -45,12 +44,11 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value) {
-            ComMethodDesc method;
             var target = _callable.DispatchComObject;
             var name = _callable.MemberName;
 
             bool holdsNull = value.Value == null && value.HasValue;
-            if (target.TryGetPropertySetter(name, out method, value.LimitType, holdsNull) ||
+            if (target.TryGetPropertySetter(name, out ComMethodDesc method, value.LimitType, holdsNull) ||
                 target.TryGetPropertySetterExplicit(name, out method, value.LimitType, holdsNull)) {
 
                 bool[] isByRef = ComBinderHelpers.ProcessArgumentsForCom(ref indexes);

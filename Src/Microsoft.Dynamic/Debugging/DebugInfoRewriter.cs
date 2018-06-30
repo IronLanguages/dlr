@@ -89,8 +89,7 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 DebugSourceSpan[] locationArray = new DebugSourceSpan[_locationCookie];
                 for (int i = 0; i < locationArray.Length; i++) {
-                    DebugSourceSpan location;
-                    if (_markerLocationMap.TryGetValue(i, out location)) {
+                    if (_markerLocationMap.TryGetValue(i, out DebugSourceSpan location)) {
                         locationArray[i] = location;
                     }
                 }
@@ -331,8 +330,7 @@ namespace Microsoft.Scripting.Debugging {
                 return base.VisitParameter(node);
             }
 
-            MSAst.ParameterExpression replacement;
-            if (_replacedLocals.TryGetValue(node, out replacement)) {
+            if (_replacedLocals.TryGetValue(node, out ParameterExpression replacement)) {
                 return replacement;
             }
 
@@ -411,11 +409,10 @@ namespace Microsoft.Scripting.Debugging {
 
                     // Update the variable scope map
                     if (_currentLocals.Count > 0) {
-                        IList<VariableInfo> scopedVaribles;
-                        MSAst.BlockExpression curentBlock = _currentLocals.Peek();
-                        if (!_variableScopeMapCache.TryGetValue(curentBlock, out scopedVaribles)) {
+                        BlockExpression curentBlock = _currentLocals.Peek();
+                        if (!_variableScopeMapCache.TryGetValue(curentBlock, out IList<VariableInfo> scopedVaribles)) {
                             scopedVaribles = new List<VariableInfo>();
-                            MSAst.BlockExpression[] blocks = _currentLocals.ToArray();
+                            BlockExpression[] blocks = _currentLocals.ToArray();
                             for (int i = blocks.Length - 1; i >= 0; i--) {
                                 foreach (var variable in blocks[i].Variables) {
                                     scopedVaribles.Add(_localsToVarInfos[variable]);

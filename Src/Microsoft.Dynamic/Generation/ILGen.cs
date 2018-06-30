@@ -982,11 +982,10 @@ namespace Microsoft.Scripting.Generation {
         public bool EmitNumericCast(Type from, Type to, bool implicitOnly) {
             TypeCode fc = from.GetTypeCode();
             TypeCode tc = to.GetTypeCode();
-            int fromx, fromy, tox, toy;
+            if (!TypeUtils.GetNumericConversionOrder(fc, out int fromx, out int fromy) ||
+                !TypeUtils.GetNumericConversionOrder(tc, out int tox, out int toy)) {
 
-            if (!TypeUtils.GetNumericConversionOrder(fc, out fromx, out fromy) ||
-                !TypeUtils.GetNumericConversionOrder(tc, out tox, out toy)) {
-                // numeric <-> non-numeric
+                // numeric <-> non-numeric.
                 return false;
             }
 

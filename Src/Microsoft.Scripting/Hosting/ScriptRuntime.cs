@@ -66,8 +66,7 @@ namespace Microsoft.Scripting.Hosting {
 
             Host.SetRuntime(this);
 
-            object noDefaultRefs;
-            if (!setup.Options.TryGetValue("NoDefaultReferences", out noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
+            if (!setup.Options.TryGetValue("NoDefaultReferences", out object noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
                 LoadAssembly(typeof(string).Assembly);
                 LoadAssembly(typeof(Debug).Assembly);
             }

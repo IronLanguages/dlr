@@ -118,8 +118,7 @@ namespace Microsoft.Scripting.Metadata {
                 return m_parent.Tables.GetRowCount((int)m_type >> 24);
             }
 
-            int start, count;
-            m_parent.Import.GetEnumeratorRange(m_type, m_parent.Token, out start, out count);
+            m_parent.Import.GetEnumeratorRange(m_type, m_parent.Token, out int _, out int count);
             return count;
         }
 
@@ -357,8 +356,7 @@ namespace Microsoft.Scripting.Metadata {
         /// O(log(#generic parameters in module))
         /// </summary>
         public int GetGenericParameterCount() {
-            int count;
-            m_record.Import.GenericParamTable.FindGenericParametersForMethod(m_record.Rid, out count);
+            m_record.Import.GenericParamTable.FindGenericParametersForMethod(m_record.Rid, out int count);
             return count;
         }
 
@@ -612,9 +610,8 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public EventAccessors GetAccessors() {
-            int methodCount;
             var import = m_record.Import;
-            int semanticsRow = import.MethodSemanticsTable.FindSemanticMethodsForEvent(m_record.Rid, out methodCount);
+            int semanticsRow = import.MethodSemanticsTable.FindSemanticMethodsForEvent(m_record.Rid, out int methodCount);
 
             uint add = 0, remove = 0, fire = 0;
             for (ushort i = 0; i < methodCount; i++) {

@@ -543,9 +543,8 @@ namespace Microsoft.Scripting.Actions {
             Dictionary<MethodSignatureInfo, MethodInfo> dict = new Dictionary<MethodSignatureInfo, MethodInfo>();
             foreach (MethodInfo mb in methods) {
                 MethodSignatureInfo args = new MethodSignatureInfo(mb);
-                MethodInfo other;
 
-                if (dict.TryGetValue(args, out other)) {
+                if (dict.TryGetValue(args, out MethodInfo other)) {
                     if (other.DeclaringType.IsAssignableFrom(mb.DeclaringType)) {
                         // derived type replaces...
                         dict[args] = mb;

@@ -622,8 +622,7 @@ namespace Microsoft.Scripting.Hosting {
         /// what the langauge prefers.
         /// </summary>
         public bool TryConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            T resultObj;
-            if (TryConvertTo<T>(GetLocalObject(obj), out resultObj)) {
+            if (TryConvertTo<T>(GetLocalObject(obj), out T resultObj)) {
                 result = new ObjectHandle(resultObj);
                 return true;
             }
@@ -638,8 +637,7 @@ namespace Microsoft.Scripting.Hosting {
         /// what the langauge prefers.
         /// </summary>
         public bool TryConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            object resultObj;
-            if (TryConvertTo(GetLocalObject(obj), type, out resultObj)) {
+            if (TryConvertTo(GetLocalObject(obj), type, out object resultObj)) {
                 result = new ObjectHandle(resultObj);
                 return true;
             }

@@ -463,9 +463,8 @@ namespace Microsoft.Scripting.Ast {
             _params = newParams;
 
             for (int i = 0; i < _visibleVars.Count; i++) {
-                ParameterExpression p = _visibleVars[i].Key as ParameterExpression;
-                ParameterExpression v;
-                if (p != null && paramMapping.TryGetValue(p, out v)) {
+                ParameterExpression p = _visibleVars[i].Key;
+                if (p != null && paramMapping.TryGetValue(p, out ParameterExpression v)) {
                     _visibleVars[i] = new KeyValuePair<ParameterExpression, bool>(v, _visibleVars[i].Value);
                 }
             }

@@ -56,8 +56,7 @@ namespace Microsoft.Scripting.Debugging {
             }
 
             try {
-                bool moveNext;
-                _frame.DebugContext.GeneratorLoopProc(_frame, out moveNext);
+                _frame.DebugContext.GeneratorLoopProc(_frame, out bool moveNext);
                 return moveNext;
             } finally {
                 if (_frame.FunctionInfo.SequencePoints[0].SourceFile.DebugMode == DebugMode.FullyEnabled ||

@@ -46,8 +46,7 @@ namespace Microsoft.Scripting.Utils {
                 return allMembers.Where(overload => overload.DeclaringType == type);
             }
 
-            List<T> inheritedOverloads;
-            if (!membersByName.TryGetValue(name, out inheritedOverloads)) {
+            if (!membersByName.TryGetValue(name, out List<T> inheritedOverloads)) {
                 return Enumerable.Empty<T>();
             }
 

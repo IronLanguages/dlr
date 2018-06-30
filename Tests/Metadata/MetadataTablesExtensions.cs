@@ -52,8 +52,7 @@ namespace Metadata {
         private static readonly byte[] _ExtensionAttributeNamespaceUtf8 = Encoding.UTF8.GetBytes("System.Runtime.CompilerServices");
 
         public static bool IsExtensionAttribute(this CustomAttributeDef ca) {
-            MetadataName name, ns;
-            ca.GetName(out name, out ns);
+            ca.GetName(out MetadataName name, out MetadataName ns);
             return name.Equals(_ExtensionAttributeNameUtf8, 0, _ExtensionAttributeNameUtf8.Length)
                 && ns.Equals(_ExtensionAttributeNamespaceUtf8, 0, _ExtensionAttributeNamespaceUtf8.Length);
         }
@@ -102,8 +101,7 @@ namespace Metadata {
             }
 
             lock (TypeNestings) {
-                TypeNestings nestings;
-                if (TypeNestings.TryGetValue(tables, out nestings)) {
+                if (TypeNestings.TryGetValue(tables, out TypeNestings nestings)) {
                     nestings = new TypeNestings(tables);
                 }
                 return nestings;

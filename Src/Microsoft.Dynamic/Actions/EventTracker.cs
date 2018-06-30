@@ -176,8 +176,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             lock (_handlerLists) {
-                NormalHandlerList result;
-                if (_handlerLists.TryGetValue(instance, out result)) {
+                if (_handlerLists.TryGetValue(instance, out NormalHandlerList result)) {
                     return result;
                 }
 
