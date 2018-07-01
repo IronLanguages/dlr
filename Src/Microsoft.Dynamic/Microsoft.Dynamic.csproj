@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
-
   <PropertyGroup>
     <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
     <RootNamespace>Microsoft.Scripting</RootNamespace>
