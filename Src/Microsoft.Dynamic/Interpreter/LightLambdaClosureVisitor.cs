@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -181,8 +181,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            LocalVariable loc;
-            if (!_closureVars.TryGetValue(variable, out loc)) {
+            if (!_closureVars.TryGetValue(variable, out LocalVariable loc)) {
                 throw new InvalidOperationException("unbound variable: " + variable.Name);
             }
 
@@ -219,9 +218,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return new MergedRuntimeVariables(first, second, indexes);
             }
 
-            int IRuntimeVariables.Count {
-                get { return _indexes.Length; }
-            }
+            int IRuntimeVariables.Count => _indexes.Length;
 
             object IRuntimeVariables.this[int index] {
                 get {

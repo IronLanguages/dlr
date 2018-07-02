@@ -2,14 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
+
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
 
@@ -21,7 +19,6 @@ namespace Microsoft.Scripting.Interpreter {
         public static readonly InterpretedFrameThreadLocal CurrentFrame = new InterpretedFrameThreadLocal();
 
         internal readonly Interpreter Interpreter;
-        internal InterpretedFrame _parent;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         private int[] _continuations;
@@ -59,9 +56,7 @@ namespace Microsoft.Scripting.Interpreter {
             return DebugInfo.GetMatchingDebugInfo(Interpreter._debugInfos, instructionIndex);
         }
 
-        public string Name {
-            get { return Interpreter._name; }
-        }
+        public string Name => Interpreter._name;
 
         #region Data Stack Operations
 
@@ -108,9 +103,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Stack Trace
 
-        public InterpretedFrame Parent {
-            get { return _parent; }
-        }
+        public InterpretedFrame Parent { get; private set; }
 
         public static bool IsInterpretedFrame(MethodBase method) {
             ContractUtils.RequiresNotNull(method, nameof(method));
@@ -180,13 +173,13 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal InterpretedFrameThreadLocal.StorageInfo Enter() {
             var currentFrame = InterpretedFrame.CurrentFrame.GetStorageInfo();
-            _parent = currentFrame.Value;
+            Parent = currentFrame.Value;
             currentFrame.Value = this;
             return currentFrame;
         }
 
         internal void Leave(InterpretedFrameThreadLocal.StorageInfo currentFrame) {
-            currentFrame.Value = _parent;
+            currentFrame.Value = Parent;
         }
 
         #endregion
@@ -242,13 +235,9 @@ namespace Microsoft.Scripting.Interpreter {
         private static MethodInfo _Goto;
         private static MethodInfo _VoidGoto;
 
-        internal static MethodInfo GotoMethod {
-            get { return _Goto ?? (_Goto = typeof(InterpretedFrame).GetMethod("Goto")); }
-        }
+        internal static MethodInfo GotoMethod => _Goto ?? (_Goto = typeof(InterpretedFrame).GetMethod("Goto"));
 
-        internal static MethodInfo VoidGotoMethod {
-            get { return _VoidGoto ?? (_VoidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
-        }
+        internal static MethodInfo VoidGotoMethod => _VoidGoto ?? (_VoidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto"));
 
         public int VoidGoto(int labelIndex) {
             return Goto(labelIndex, Interpreter.NoValue);
@@ -272,6 +261,5 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         #endregion
-
     }
 }

@@ -2,17 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Interpreter {
     /// <summary>
@@ -133,7 +130,7 @@ namespace Microsoft.Scripting.Interpreter {
                     int index = frame.InstructionIndex;
 
                     while (index < instructions.Length) {
-                        var curInstr = instructions[index];                        
+                        var curInstr = instructions[index];
 
                         index += curInstr.Run(frame);
                         frame.InstructionIndex = index;
@@ -149,7 +146,7 @@ namespace Microsoft.Scripting.Interpreter {
                     }
 
                     return ExceptionHandlingResult.Return;
-                } catch (Exception nestedException) {                    
+                } catch (Exception nestedException) {
                     switch (HandleException(frame, nestedException)) {
                         case ExceptionHandlingResult.Rethrow: throw;
                         case ExceptionHandlingResult.Continue: continue;
@@ -220,9 +217,9 @@ namespace Microsoft.Scripting.Interpreter {
             handler = GetBestHandler(frame.InstructionIndex, exception.GetType());
             if (handler == null) {
                 return frame.Goto(ReturnAndRethrowLabelIndex, Interpreter.NoValue);
-            } else {
-                return frame.Goto(handler.LabelIndex, exception);
             }
+
+            return frame.Goto(handler.LabelIndex, exception);
         }
     }
 }

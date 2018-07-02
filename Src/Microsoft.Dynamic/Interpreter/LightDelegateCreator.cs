@@ -2,26 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-using Microsoft.Scripting.Ast;
-
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using System.Threading;
+
+using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
-    
+
     /// <summary>
     /// Manages creation of interpreted delegates. These delegates will get
     /// compiled if they are executed often enough.
     /// </summary>
     internal sealed class LightDelegateCreator {
         // null if we are forced to compile
-        private readonly Interpreter _interpreter;
         private readonly Expression _lambda;
 
         // Adaptive compilation support:
@@ -31,35 +28,27 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda) {
             Assert.NotNull(lambda);
-            _interpreter = interpreter;
+            Interpreter = interpreter;
             _lambda = lambda;
         }
 
         internal LightDelegateCreator(Interpreter interpreter, LightLambdaExpression lambda) {
             Assert.NotNull(lambda);
-            _interpreter = interpreter;
+            Interpreter = interpreter;
             _lambda = lambda;
         }
 
-        internal Interpreter Interpreter {
-            get { return _interpreter; }
-        }
+        internal Interpreter Interpreter { get; }
 
-        private bool HasClosure {
-            get { return _interpreter != null && _interpreter.ClosureSize > 0; }
-        }
+        private bool HasClosure => Interpreter != null && Interpreter.ClosureSize > 0;
 
-        internal bool HasCompiled {
-            get { return _compiled != null; }
-        }
+        internal bool HasCompiled => _compiled != null;
 
         /// <summary>
         /// true if the compiled delegate has the same type as the lambda;
         /// false if the type was changed for interpretation.
         /// </summary>
-        internal bool SameDelegateType {
-            get { return _compiledDelegateType == DelegateType; }
-        }
+        internal bool SameDelegateType => _compiledDelegateType == DelegateType;
 
         internal Delegate CreateDelegate() {
             return CreateDelegate(null);
@@ -80,7 +69,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            if (_interpreter == null) {
+            if (Interpreter == null) {
                 // We can't interpret, so force a compile
                 Compile(null);
                 Delegate compiled = CreateCompiledDelegate(closure);
@@ -89,7 +78,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             // Otherwise, we'll create an interpreted LightLambda
-            return new LightLambda(this, closure, _interpreter._compilationThreshold).MakeDelegate(DelegateType);
+            return new LightLambda(this, closure, Interpreter._compilationThreshold).MakeDelegate(DelegateType);
         }
 
         private Type DelegateType {
@@ -139,13 +128,13 @@ namespace Microsoft.Scripting.Interpreter {
                 // Action<...> so it can be called from the LightLambda.Run
                 // methods.
                 LambdaExpression lambda = (_lambda as LambdaExpression) ?? (LambdaExpression)((LightLambdaExpression)_lambda).Reduce();
-                if (_interpreter != null) {
+                if (Interpreter != null) {
                     _compiledDelegateType = GetFuncOrAction(lambda);
                     lambda = Expression.Lambda(_compiledDelegateType, lambda.Body, lambda.Name, lambda.Parameters);
                 }
 
                 if (HasClosure) {
-                    _compiled = LightLambdaClosureVisitor.BindLambda(lambda, _interpreter.ClosureVariables);
+                    _compiled = LightLambdaClosureVisitor.BindLambda(lambda, Interpreter.ClosureVariables);
                 } else {
                     _compiled = lambda.Compile();
                 }
@@ -159,20 +148,21 @@ namespace Microsoft.Scripting.Interpreter {
             if (isVoid && lambda.Parameters.Count == 2 &&
                 lambda.Parameters[0].IsByRef && lambda.Parameters[1].IsByRef) {
                 return typeof(ActionRef<,>).MakeGenericType(lambda.Parameters.Map(p => p.Type));
-            } else {
-                Type[] types = lambda.Parameters.Map(p => p.IsByRef ? p.Type.MakeByRefType() : p.Type);
-                if (isVoid) {
-                    if (Expression.TryGetActionType(types, out delegateType)) {
-                        return delegateType;
-                    }
-                } else {
-                    types = types.AddLast(lambda.ReturnType);
-                    if (Expression.TryGetFuncType(types, out delegateType)) {
-                        return delegateType;
-                    }
-                }
-                return lambda.Type;
             }
+
+            Type[] types = lambda.Parameters.Map(p => p.IsByRef ? p.Type.MakeByRefType() : p.Type);
+            if (isVoid) {
+                if (Expression.TryGetActionType(types, out delegateType)) {
+                    return delegateType;
+                }
+            } else {
+                types = types.AddLast(lambda.ReturnType);
+                if (Expression.TryGetFuncType(types, out delegateType)) {
+                    return delegateType;
+                }
+            }
+
+            return lambda.Type;
         }
     }
 }
