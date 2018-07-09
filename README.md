@@ -9,6 +9,11 @@ Dynamic Language Runtime
 
 The Dynamic Language Runtime enables language developers to more easily create dynamic languages for the .NET platform. In addition to being a pluggable back-end for dynamic language compilers, the DLR provides language interop for dynamic operations on objects. The DLR has common hosting APIs for using dynamic languages as libraries or for scripting in your .NET applications.
 
+Code of Conduct
+---------------
+This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
+For more information see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct). 
+
 Installation
 ------------
 The best way to install the DLR is through the NuGet DynamicLanguageRuntime package. For now you will need to enable prerelease packages, as there is no production NuGet release yet.
