@@ -41,9 +41,9 @@ namespace Microsoft.Scripting.Utils {
                 var allMembers = membersByName.Values.SelectMany(memberList => memberList);
                 if (inherited) {
                     return allMembers;
-                } else {
-                    return allMembers.Where(overload => overload.DeclaringType == type);
                 }
+
+                return allMembers.Where(overload => overload.DeclaringType == type);
             }
 
             List<T> inheritedOverloads;

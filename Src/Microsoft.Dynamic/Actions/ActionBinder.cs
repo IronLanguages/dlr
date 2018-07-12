@@ -107,9 +107,9 @@ namespace Microsoft.Scripting.Actions {
             if (toType == typeof(object)) {
                 if (exprType.IsValueType()) {
                     return AstUtils.Convert(expr, toType);
-                } else {
-                    return expr;
                 }
+
+                return expr;
             }
 
             if (toType.IsAssignableFrom(exprType)) {

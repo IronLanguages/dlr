@@ -418,7 +418,9 @@ namespace Microsoft.Scripting.Utils {
         private static bool IncludeField(FieldInfo member, Type reflectedType, bool flattenHierarchy) {
             if (member.DeclaringType == reflectedType) {
                 return true;
-            } else if (!member.IsPrivate && (!member.IsStatic || flattenHierarchy)) {
+            }
+
+            if (!member.IsPrivate && (!member.IsStatic || flattenHierarchy)) {
                 return true;
             }
 
@@ -1385,9 +1387,9 @@ namespace Microsoft.Scripting.Utils {
                 if (instantiation == null) {
                     if (ignoreUnboundParameters) {
                         continue;
-                    } else {
-                        return true;
                     }
+
+                    return true;
                 }
 
                 if (!instantiation.IsAssignableFrom(closedType)) {

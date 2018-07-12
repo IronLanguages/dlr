@@ -329,14 +329,14 @@ namespace Microsoft.Scripting.Debugging {
         protected override MSAst.Expression VisitParameter(MSAst.ParameterExpression node) {
             if (_replacedLocals == null) {
                 return base.VisitParameter(node);
-            } else {
-                MSAst.ParameterExpression replacement;
-                if (_replacedLocals.TryGetValue(node, out replacement)) {
-                    return replacement;
-                } else {
-                    return base.VisitParameter(node);
-                }
             }
+
+            MSAst.ParameterExpression replacement;
+            if (_replacedLocals.TryGetValue(node, out replacement)) {
+                return replacement;
+            }
+
+            return base.VisitParameter(node);
         }
 
         protected override MSAst.Expression VisitDebugInfo(MSAst.DebugInfoExpression node) {
@@ -345,7 +345,11 @@ namespace Microsoft.Scripting.Debugging {
 
                 // Verify that DebugInfoExpression has valid SymbolDocumentInfo
                 if (node.Document == null) {
-                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, ErrorStrings.DebugInfoWithoutSymbolDocumentInfo, _locationCookie));
+                    throw new InvalidOperationException(
+                        string.Format(
+                            CultureInfo.CurrentCulture,
+                            ErrorStrings.DebugInfoWithoutSymbolDocumentInfo,
+                            _locationCookie));
                 }
 
                 DebugSourceFile sourceFile = _debugContext.GetDebugSourceFile(
@@ -394,9 +398,7 @@ namespace Microsoft.Scripting.Debugging {
                             )
                         )
                     );
-                }
-                else
-                {
+                } else {
                     Debug.Assert(_generatorLabelTarget != null);
 
                     transformedExpression = Ast.Block(
@@ -411,14 +413,11 @@ namespace Microsoft.Scripting.Debugging {
                     if (_currentLocals.Count > 0) {
                         IList<VariableInfo> scopedVaribles;
                         MSAst.BlockExpression curentBlock = _currentLocals.Peek();
-                        if (!_variableScopeMapCache.TryGetValue(curentBlock, out scopedVaribles))
-                        {
+                        if (!_variableScopeMapCache.TryGetValue(curentBlock, out scopedVaribles)) {
                             scopedVaribles = new List<VariableInfo>();
                             MSAst.BlockExpression[] blocks = _currentLocals.ToArray();
-                            for (int i = blocks.Length - 1; i >= 0; i--)
-                            {
-                                foreach (var variable in blocks[i].Variables)
-                                {
+                            for (int i = blocks.Length - 1; i >= 0; i--) {
+                                foreach (var variable in blocks[i].Variables) {
                                     scopedVaribles.Add(_localsToVarInfos[variable]);
                                 }
                             }
@@ -442,9 +441,8 @@ namespace Microsoft.Scripting.Debugging {
 
                 return transformedExpression;
             }
-            else {
-                return Ast.Empty();
-            }
+
+            return Ast.Empty();
         }
     }
 }

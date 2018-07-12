@@ -254,21 +254,16 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public bool Remove(object key) {
-            if (key is string strKey) {
-                if (TrySetExtraValue(strKey, Uninitialized.Instance)) {
-                    return true;
-                }
-
-                lock (this) {
-                    if (_data != null) {
-                        return _data.Remove(strKey);
-                    }
-                    return false;
-                }
-            } else {
+            if (!(key is string strKey))
                 return RemoveObjectKey(key);
+
+            if (TrySetExtraValue(strKey, Uninitialized.Instance)) {
+                return true;
             }
 
+            lock (this) {
+                return _data != null && _data.Remove(strKey);
+            }
         }
 
         #endregion

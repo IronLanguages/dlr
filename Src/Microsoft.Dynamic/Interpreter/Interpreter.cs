@@ -216,7 +216,7 @@ namespace Microsoft.Scripting.Interpreter {
         internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler) {
             handler = GetBestHandler(frame.InstructionIndex, exception.GetType());
             if (handler == null) {
-                return frame.Goto(ReturnAndRethrowLabelIndex, Interpreter.NoValue);
+                return frame.Goto(ReturnAndRethrowLabelIndex, NoValue);
             }
 
             return frame.Goto(handler.LabelIndex, exception);

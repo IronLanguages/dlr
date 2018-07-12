@@ -127,19 +127,18 @@ namespace Microsoft.Scripting.Ast {
                         Constant(value.Real),
                         Constant(value.Imaginary())
                     );
-                } else {
-                    return Expression.Call(
-                        new Func<double, Complex>(MathUtils.MakeReal).GetMethodInfo(),
-                        Constant(value.Real)
-                    );
                 }
-            } else {
+
                 return Expression.Call(
-                    new Func<double, Complex>(MathUtils.MakeImaginary).GetMethodInfo(),
-                    Constant(value.Imaginary())
+                    new Func<double, Complex>(MathUtils.MakeReal).GetMethodInfo(),
+                    Constant(value.Real)
                 );
             }
-        }
 
+            return Expression.Call(
+                new Func<double, Complex>(MathUtils.MakeImaginary).GetMethodInfo(),
+                Constant(value.Imaginary())
+            );
+        }
     }
 }

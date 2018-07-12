@@ -625,9 +625,9 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(VariantType == VarEnum.VT_BSTR);
                 if (_typeUnion._unionTypes._bstr != IntPtr.Zero) {
                     return Marshal.PtrToStringBSTR(_typeUnion._unionTypes._bstr);
-                } else {
-                    return null;
-                }
+                } 
+
+                return null;
             }
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
@@ -650,9 +650,9 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(VariantType == VarEnum.VT_UNKNOWN);
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._unknown);
-                } else {
-                    return null;
                 }
+
+                return null;
             }
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
@@ -675,9 +675,9 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(VariantType == VarEnum.VT_DISPATCH);
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._dispatch);
-                } else {
-                    return null;
                 }
+
+                return null;
             }
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise

@@ -178,16 +178,18 @@ namespace Microsoft.Scripting.Utils {
 
                 double num = GetPowerOf10(precision);
                 return RoundAwayFromZero(value * num) / num;
-            } else if (precision >= -308) {
+            }
+
+            if (precision >= -308) {
                 // Note: this code path could be merged with the precision >= 0 path,
                 // (by extending the cache to negative powers of 10)
                 // but the results seem to be more precise if we do it this way
                 double num = GetPowerOf10(-precision);
                 return RoundAwayFromZero(value / num) * num;
-            } else {
-                // Preserve the sign of the input, including +/-0.0
-                return value < 0.0 || 1.0 / value < 0.0 ? -0.0 : 0.0;
             }
+
+            // Preserve the sign of the input, including +/-0.0
+            return value < 0.0 || 1.0 / value < 0.0 ? -0.0 : 0.0;
         }
 
         public static bool IsNegativeZero(double self) {
@@ -202,7 +204,9 @@ namespace Microsoft.Scripting.Utils {
 
             if (v0 >= 10.0) {
                 return 1.0;
-            } else if (v0 <= -10.0) {
+            }
+            
+            if (v0 <= -10.0) {
                 return -1.0;
             }
 
@@ -220,7 +224,9 @@ namespace Microsoft.Scripting.Utils {
         public static double ErfComplement(double v0) {
             if (v0 >= 30.0) {
                 return 0.0;
-            } else if (v0 <= -10.0) {
+            }
+
+            if (v0 <= -10.0) {
                 return 2.0;
             }
 

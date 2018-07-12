@@ -514,13 +514,18 @@ namespace Microsoft.Scripting.Hosting {
             if (typeof(TService) == typeof(TokenCategorizer)) {
                 TokenizerService service = _language.GetService<TokenizerService>(ArrayUtils.Insert((object)_language, args));
                 return (service != null) ? (TService)(object)new TokenCategorizer(service) : null;
-            } else if (typeof(TService) == typeof(ExceptionOperations)) {
+            }
+
+            if (typeof(TService) == typeof(ExceptionOperations)) {
                 ExceptionOperations service = _language.GetService<ExceptionOperations>();
                 return (service != null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(_language);
-            } else if (typeof(TService) == typeof(DocumentationOperations)) {
+            }
+
+            if (typeof(TService) == typeof(DocumentationOperations)) {
                 DocumentationProvider service = _language.GetService<DocumentationProvider>(args);
                 return (service != null) ? (TService)(object)new DocumentationOperations(service) : null;
             }
+
             return _language.GetService<TService>(args);
         }
 

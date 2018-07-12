@@ -92,9 +92,9 @@ namespace Microsoft.Scripting.Debugging {
 
             if (lambda.Body is GeneratorExpression) {
                 return TransformGenerator(lambda);
-            } else {
-                return TransformLambda(lambda);
             }
+
+            return TransformLambda(lambda);
         }
 
         private MSAst.LambdaExpression TransformLambda(MSAst.LambdaExpression lambda) {

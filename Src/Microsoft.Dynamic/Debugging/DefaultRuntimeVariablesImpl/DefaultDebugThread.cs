@@ -47,10 +47,10 @@ namespace Microsoft.Scripting.Debugging {
             if (_frames.Count > 0) {
                 frame = _frames[_frames.Count - 1].Frame;
                 return frame != null;
-            } else {
-                frame = null;
-                return false;
             }
+
+            frame = null;
+            return false;
         }
 
         internal override int FrameCount {
@@ -75,10 +75,10 @@ namespace Microsoft.Scripting.Debugging {
                 if (leafFrame != null) {
                     Debug.Assert(leafIndex == leafFrame.StackDepth);
                     return leafFrame.FunctionInfo;
-                } else {
-                    Debug.Assert(_frames[leafIndex].RuntimeVariables is IDebugRuntimeVariables);
-                    return ((IDebugRuntimeVariables)_frames[leafIndex].RuntimeVariables).FunctionInfo;
                 }
+
+                Debug.Assert(_frames[leafIndex].RuntimeVariables is IDebugRuntimeVariables);
+                return ((IDebugRuntimeVariables)_frames[leafIndex].RuntimeVariables).FunctionInfo;
             }
 
             stackDepth = Int32.MaxValue;

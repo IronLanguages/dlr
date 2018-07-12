@@ -57,10 +57,10 @@ namespace Microsoft.Scripting.ComInterop {
                     );
                 }
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>
@@ -90,10 +90,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (TryGetMetaObject(ref instance)) {
                 result = instance.BindSetMember(binder, value);
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>
@@ -112,10 +112,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (TryGetMetaObjectInvoke(ref instance)) {
                 result = instance.BindInvoke(binder, args);
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>
@@ -134,10 +134,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (TryGetMetaObject(ref instance)) {
                 result = instance.BindInvokeMember(binder, args);
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>
@@ -156,10 +156,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (TryGetMetaObjectInvoke(ref instance)) {
                 result = instance.BindGetIndex(binder, args);
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>
@@ -180,10 +180,10 @@ namespace Microsoft.Scripting.ComInterop {
             if (TryGetMetaObjectInvoke(ref instance)) {
                 result = instance.BindSetIndex(binder, args, value);
                 return true;
-            } else {
-                result = null;
-                return false;
             }
+
+            result = null;
+            return false;
         }
 
         /// <summary>

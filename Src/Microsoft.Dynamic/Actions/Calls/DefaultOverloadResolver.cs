@@ -102,7 +102,9 @@ namespace Microsoft.Scripting.Actions {
 
             if (one.Method.Overload.IsStatic && !two.Method.Overload.IsStatic) {
                 return _callType == CallTypes.ImplicitInstance ? Candidate.Two : Candidate.One;
-            } else if (!one.Method.Overload.IsStatic && two.Method.Overload.IsStatic) {
+            }
+
+            if (!one.Method.Overload.IsStatic && two.Method.Overload.IsStatic) {
                 return _callType == CallTypes.ImplicitInstance ? Candidate.One : Candidate.Two;
             }
 

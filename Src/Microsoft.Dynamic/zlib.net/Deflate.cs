@@ -667,7 +667,8 @@ namespace ComponentAce.Compression.Libs.ZLib
                 {
                     continue;
                 }
-                else if (count < min_count)
+
+                if (count < min_count)
                 {
                     bl_tree[curlen * 2] = (short)(bl_tree[curlen * 2] + count);
                 }
@@ -1621,8 +1622,8 @@ namespace ComponentAce.Compression.Libs.ZLib
             {
                 if (flush == (int)FlushStrategy.Z_FINISH)
                     return FinishStarted;
-                else
-                    return NeedMore;
+
+                return NeedMore;
             }
 
             return flush == (int)FlushStrategy.Z_FINISH ? FinishDone : BlockDone;

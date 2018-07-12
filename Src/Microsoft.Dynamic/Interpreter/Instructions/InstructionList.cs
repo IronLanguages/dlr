@@ -396,9 +396,9 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (index < _loadLocalBoxed.Length) {
                 return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
-            } else {
-                return new LoadLocalBoxedInstruction(index);
             }
+
+            return new LoadLocalBoxedInstruction(index);
         }
 
         public void EmitLoadLocalFromClosure(int index) {

@@ -141,16 +141,19 @@ namespace Microsoft.Scripting.Ast {
         protected override Expression VisitTry(TryExpression node) {
             if (node.Fault != null) {
                 throw new NotSupportedException();
-            } else if (node.Handlers != null && node.Handlers.Count > 0) {
-                return RewriteTryCatch(node);
-            } else {
-                // we don't yet support re-writing finally bodies for light exceptions
-                var body = Visit(node.Body);
-                if (body != node.Body) {
-                    return RewriteTryFinally(body, node.Finally);
-                }
-                return node;
             }
+
+            if (node.Handlers != null && node.Handlers.Count > 0) {
+                return RewriteTryCatch(node);
+            }
+
+            // we don't yet support re-writing finally bodies for light exceptions
+            var body = Visit(node.Body);
+            if (body != node.Body) {
+                return RewriteTryFinally(body, node.Finally);
+            }
+
+            return node;
         }
 
         private Expression RewriteTryFinally(Expression tryBody, Expression finallyBody) {

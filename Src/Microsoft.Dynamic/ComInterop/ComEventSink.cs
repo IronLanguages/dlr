@@ -97,7 +97,9 @@ namespace Microsoft.Scripting.ComInterop {
                     if (sink._sourceIid == sourceIid) {
                         comEventSink = sink;
                         break;
-                    } else if (sink._sourceIid == Guid.Empty) {
+                    }
+
+                    if (sink._sourceIid == Guid.Empty) {
                         // we found a ComEventSink object that 
                         // was previously disposed. Now we will reuse it.
                         sink.Initialize(rcw, sourceIid);

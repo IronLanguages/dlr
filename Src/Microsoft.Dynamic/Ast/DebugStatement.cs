@@ -67,18 +67,17 @@ namespace Microsoft.Scripting.Ast {
                     expression,
                     clearance
                 );
-            } else {
-                //save the expression to a variable
-                var p = Expression.Parameter(expression.Type, null);
-                return Expression.Block(
-                    new[] { p },
-                    sequencePoint,
-                    Expression.Assign(p, expression),
-                    clearance,
-                    p
-                );
             }
+            
+            //save the expression to a variable
+            var p = Expression.Parameter(expression.Type, null);
+            return Expression.Block(
+                new[] { p },
+                sequencePoint,
+                Expression.Assign(p, expression),
+                clearance,
+                p
+            );
         }
-
     }
 }

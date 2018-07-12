@@ -437,11 +437,13 @@ namespace ComponentAce.Compression.Libs.ZLib
         public int reset() {
             if (_dstate != null) {
                return _dstate.deflateReset(this);
-            } else if (_istate != null) {
-                return _istate.inflateReset(this);
-            } else {
-                return (int)ZLibResultCode.Z_STREAM_ERROR;
             }
+
+            if (_istate != null) {
+                return _istate.inflateReset(this);
+            }
+
+            return (int)ZLibResultCode.Z_STREAM_ERROR;
         }
 
         /// <summary>
