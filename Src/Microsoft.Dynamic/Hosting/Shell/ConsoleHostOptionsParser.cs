@@ -35,9 +35,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             int i = 0;
             while (i < args.Length) {
-                string name, value;
                 string current = args[i++];
-                ParseOption(current, out name, out value);
+                ParseOption(current, out string name, out string value);
 
                 switch (name) {
                     case "console":

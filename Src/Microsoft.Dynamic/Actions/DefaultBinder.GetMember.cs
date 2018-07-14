@@ -241,8 +241,7 @@ namespace Microsoft.Scripting.Actions {
                 MakeOperatorGetMemberBody(getMemInfo, propSelf, targetType, "GetCustomMember");
             }
 
-            Expression error;
-            TrackerTypes memberType = GetMemberType(members, out error);
+            TrackerTypes memberType = GetMemberType(members, out Expression error);
 
             if (error == null) {
                 MakeSuccessfulMemberAccess(getMemInfo, self, propSelf, targetType, members, memberType);

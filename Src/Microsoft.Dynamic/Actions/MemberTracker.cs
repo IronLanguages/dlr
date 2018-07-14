@@ -95,9 +95,8 @@ namespace Microsoft.Scripting.Actions {
             ContractUtils.RequiresNotNull(member, nameof(member));
 
             lock (_trackers) {
-                MemberTracker res;
                 MemberKey key = new MemberKey(member, extending);
-                if (_trackers.TryGetValue(key, out res)) {
+                if (_trackers.TryGetValue(key, out MemberTracker res)) {
                     return res;
                 }
 

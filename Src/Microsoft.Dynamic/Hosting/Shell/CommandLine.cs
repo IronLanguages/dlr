@@ -293,7 +293,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         /// <summary>
-        /// Parses a single interactive command or a set of statements and executes it.  
+        /// Parses a single interactive command or a set of statements and executes it.
         /// 
         /// Returns null if successful and execution should continue, or the appropiate exit code.
         /// 
@@ -302,8 +302,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// If the code does not contain a NewLine, it's an interactive command typed by the user at the prompt
         /// </summary>
         private int? RunOneInteraction() {
-            bool continueInteraction;
-            string s = ReadStatement(out continueInteraction);
+            string s = ReadStatement(out bool continueInteraction);
 
             if (continueInteraction == false) {
                 return _terminatingExitCode ?? 0;

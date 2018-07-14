@@ -57,8 +57,7 @@ namespace Microsoft.Scripting.Metadata {
         private static readonly byte[] _ExtensionAttributeNamespaceUtf8 = Encoding.UTF8.GetBytes("System.Runtime.CompilerServices");
 
         private static bool IsExtensionAttribute(CustomAttributeDef ca) {
-            MetadataName name, ns;
-            GetName(ca, out name, out ns);
+            GetName(ca, out MetadataName name, out MetadataName ns);
             return name.Equals(_ExtensionAttributeNameUtf8, 0, _ExtensionAttributeNameUtf8.Length)
                 && ns.Equals(_ExtensionAttributeNamespaceUtf8, 0, _ExtensionAttributeNamespaceUtf8.Length);
         }

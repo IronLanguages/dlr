@@ -645,8 +645,7 @@ namespace Microsoft.Scripting.Ast {
                 _labelTemps = new Dictionary<LabelTarget, LabelInfo>();
             }
 
-            LabelInfo temp;
-            if (!_labelTemps.TryGetValue(label, out temp)) {
+            if (!_labelTemps.TryGetValue(label, out LabelInfo temp)) {
                 _labelTemps[label] = temp = new LabelInfo(label);
             }
 

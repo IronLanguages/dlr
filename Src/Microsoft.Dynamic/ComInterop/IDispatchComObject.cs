@@ -466,9 +466,7 @@ namespace Microsoft.Scripting.ComInterop {
             // retrieving class information through IPCI has failed - 
             // we can try scanning the typelib to find the coclass
 
-            ComTypes.ITypeLib typeLib;
-            int typeInfoIndex;
-            typeInfo.GetContainingTypeLib(out typeLib, out typeInfoIndex);
+            typeInfo.GetContainingTypeLib(out ComTypes.ITypeLib typeLib, out int _);
             string typeName = ComRuntimeHelpers.GetNameOfType(typeInfo);
 
             ComTypeLibDesc typeLibDesc = ComTypeLibDesc.GetFromTypeLib(typeLib);
@@ -477,9 +475,8 @@ namespace Microsoft.Scripting.ComInterop {
                 return null;
             }
 
-            ComTypes.ITypeInfo typeInfoCoClass;
             Guid coclassGuid = coclassDesc.Guid;
-            typeLib.GetTypeInfoOfGuid(ref coclassGuid, out typeInfoCoClass);
+            typeLib.GetTypeInfoOfGuid(ref coclassGuid, out ComTypes.ITypeInfo typeInfoCoClass);
             return typeInfoCoClass;
         }
 
@@ -517,8 +514,7 @@ namespace Microsoft.Scripting.ComInterop {
                 IntPtr funcDescHandleToRelease = IntPtr.Zero;
 
                 try {
-                    ComTypes.FUNCDESC funcDesc;
-                    GetFuncDescForDescIndex(typeInfo, definedFuncIndex, out funcDesc, out funcDescHandleToRelease);
+                    GetFuncDescForDescIndex(typeInfo, definedFuncIndex, out ComTypes.FUNCDESC funcDesc, out funcDescHandleToRelease);
 
                     if ((funcDesc.wFuncFlags & (int)ComTypes.FUNCFLAGS.FUNCFLAG_FRESTRICTED) != 0) {
                         // This function is not meant for the script user to use.
@@ -526,7 +522,7 @@ namespace Microsoft.Scripting.ComInterop {
                     }
 
                     ComMethodDesc method = new ComMethodDesc(typeInfo, funcDesc);
-                    string name = method.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+                    string name = method.Name.ToUpper(CultureInfo.InvariantCulture);
 
                     if ((funcDesc.invkind & ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT) != 0) {
                         puts.Add(name, method);
@@ -568,8 +564,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             lock (_CacheComTypeDesc) {
-                ComTypeDesc cachedTypeDesc;
-                if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out cachedTypeDesc)) {
+                if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out ComTypeDesc cachedTypeDesc)) {
                     _comTypeDesc = cachedTypeDesc;
                 } else {
                     _comTypeDesc = typeDesc;

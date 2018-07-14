@@ -81,8 +81,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public TypeTracker GetTypeForArity(int arity) {
-            Type typeWithMatchingArity;
-            if (!_typesByArity.TryGetValue(arity, out typeWithMatchingArity)) {
+            if (!_typesByArity.TryGetValue(arity, out Type typeWithMatchingArity)) {
                 return null;
             }
             return TypeTracker.GetTypeTracker(typeWithMatchingArity);
@@ -128,8 +127,7 @@ namespace Microsoft.Scripting.Actions {
 
         /// <exception cref="TypeLoadException">No non-generic type is represented by this group.</exception>
         public Type GetNonGenericType() {
-            Type nonGenericType;
-            if (TryGetNonGenericType(out nonGenericType)) {
+            if (TryGetNonGenericType(out Type nonGenericType)) {
                 return nonGenericType;
             }
 

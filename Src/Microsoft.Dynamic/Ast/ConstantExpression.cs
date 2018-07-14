@@ -87,8 +87,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private static Expression BigIntegerConstant(BigInteger value) {
-            int ival;
-            if (value.AsInt32(out ival)) {
+            if (value.AsInt32(out int ival)) {
                 return Expression.Call(
                     new Func<int, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(ival)

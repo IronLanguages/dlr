@@ -25,8 +25,7 @@ namespace Microsoft.Scripting.Utils {
             try {
                 MonitorUtils.Enter(data, ref lockTaken);
 
-                PublishInfo<TValue> pubValue;
-                if (data.TryGetValue(key, out pubValue)) {
+                if (data.TryGetValue(key, out PublishInfo<TValue> pubValue)) {
                     if (pubValue.Value == null && pubValue.Exception == null) {
                         pubValue.PrepareForWait();
                         MonitorUtils.Exit(data, ref lockTaken);

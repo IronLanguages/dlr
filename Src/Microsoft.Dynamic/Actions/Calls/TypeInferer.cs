@@ -90,8 +90,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private static Type[] GetGenericArgumentsForInferedMethod(OverloadInfo target, Dictionary<Type, Type> constraints) {
             Type[] genArgs = ArrayUtils.MakeArray(target.GenericArguments);
             for (int i = 0; i < genArgs.Length; i++) {
-                Type newType;
-                if (!constraints.TryGetValue(genArgs[i], out newType)) {
+                if (!constraints.TryGetValue(genArgs[i], out Type newType)) {
                     // we didn't discover any types for this type argument
                     return null;
                 }
@@ -264,8 +263,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private static void AddDependency(Dictionary<Type, List<Type>> dependencies, Type genArg, Type t) {
-            List<Type> deps;
-            if (!dependencies.TryGetValue(genArg, out deps)) {
+            if (!dependencies.TryGetValue(genArg, out List<Type> deps)) {
                 dependencies[genArg] = deps = new List<Type>();
             }
 

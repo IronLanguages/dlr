@@ -78,11 +78,9 @@ namespace Microsoft.Scripting.Runtime {
         public Delegate CreateDelegate(Type delegateType, object dynamicObject) {
             Assert.NotNull(delegateType, dynamicObject);
 
-            object[] closure;            
+            object[] closure;
             lock (_closureMap) {
-                WeakReference weakClosure;
-
-                if (!_closureMap.TryGetValue(dynamicObject, out weakClosure) || (closure = (object[])weakClosure.Target) == null) {
+                if (!_closureMap.TryGetValue(dynamicObject, out WeakReference weakClosure) || (closure = (object[])weakClosure.Target) == null) {
 
                     closure = new[] { TargetPlaceHolder, CallSitePlaceHolder, ConvertSitePlaceHolder };
                     _closureMap[dynamicObject] = new WeakReference(closure);

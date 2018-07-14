@@ -36,9 +36,8 @@ namespace Microsoft.Scripting.ComInterop {
 
             InvokeKind = funcDesc.invkind;
 
-            int cNames;
             string[] rgNames = new string[1 + funcDesc.cParams];
-            typeInfo.GetNames(_memid, rgNames, rgNames.Length, out cNames);
+            typeInfo.GetNames(_memid, rgNames, rgNames.Length, out int cNames);
             if (IsPropertyPut && rgNames[rgNames.Length - 1] == null) {
                 rgNames[rgNames.Length - 1] = "value";
                 cNames++;

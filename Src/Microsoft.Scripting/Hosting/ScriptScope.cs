@@ -89,8 +89,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool TryGetVariable<T>(string name, out T value) {
-            object result;
-            if(_engine.LanguageContext.ScopeTryGetVariable(Scope, name, out result)) {
+            if(_engine.LanguageContext.ScopeTryGetVariable(Scope, name, out object result)) {
                 value = _engine.Operations.ConvertTo<T>(result);
                 return true;
             }

@@ -80,8 +80,7 @@ namespace Metadata {
         private static void DumpNestedTypes(TypeNestings nesting, int level, IEnumerable<TypeDef> enclosing) {
             string indent = new String('\t', level);
             foreach (var enc in enclosing) {
-                int count;
-                var nested = nesting.GetNestedTypes(enc, out count);
+                var nested = nesting.GetNestedTypes(enc, out int count);
                 if (count > 0) {
                     _output.WriteLine("{0}{1}: {2}", indent, enc.Name, count);
                     DumpNestedTypes(nesting, level + 1, nested);

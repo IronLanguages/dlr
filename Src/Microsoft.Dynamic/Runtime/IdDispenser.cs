@@ -41,14 +41,14 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Gets a unique ID for an object
         /// </summary>
-        public static long GetId(Object o) {
+        public static long GetId(object o) {
             if (o == null)
                 return 0;
 
             lock (_synchObject) {
+
                 // If the object exists then return it's existing ID.
-                object res;
-                if (_hashtable.TryGetValue(o, out res)) {
+                if (_hashtable.TryGetValue(o, out object res)) {
                     return ((Wrapper)res).Id;
                 }
 

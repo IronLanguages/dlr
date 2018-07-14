@@ -232,8 +232,7 @@ namespace Microsoft.Scripting.Actions {
         #region IAttributesCollection Members
 
         public bool TryGetValue(string name, out object value) {
-            MemberTracker tmp;
-            bool res = TryGetValue(name, out tmp);
+            bool res = TryGetValue(name, out MemberTracker tmp);
             value = tmp;
             return res;
         }

@@ -73,8 +73,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public TValue GetOrCreateValue(TKey key) {
-            TValue value;
-            if (!TryGetValue(key, out value)) {
+            if (!TryGetValue(key, out TValue value)) {
                 if (valueConstructor == null) {
                     throw new InvalidOperationException($"{typeof(TValue).Name} does not have a default constructor.");
                 }

@@ -166,16 +166,13 @@ namespace Microsoft.Scripting.Actions {
             //
             // Create new delegate type
             //
-
             type = MakeNewCustomDelegate(types);
 
             //
             // LOCK to insert new delegate into the cache. If we already have one (racing threads), use the one from the cache
             //
-
             lock (_DelegateTypes) {
-                Type conflict;
-                if (_DelegateTypes.TryGetValue(types, out conflict) && conflict != null) {
+                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict != null) {
                     type = conflict;
                 } else {
                     _DelegateTypes[types] = type;
