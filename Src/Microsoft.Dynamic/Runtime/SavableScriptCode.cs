@@ -42,16 +42,7 @@ namespace Microsoft.Scripting {
             }
         }
 
-        /// <summary>
-        /// This takes an assembly name including extension and saves the provided ScriptCode objects into the assembly.  
-        /// 
-        /// The provided script codes can constitute code from multiple languages.  The assemblyName can be either a fully qualified 
-        /// or a relative path.  The DLR will simply save the assembly to the desired location.  The assembly is created by the DLR and 
-        /// if a file already exists than an exception is raised.  
-        /// 
-        /// The DLR determines the internal format of the ScriptCode and the DLR can feel free to rev this as appropriate.  
-        /// </summary>
-        public static void SaveToAssembly(string assemblyName, params SavableScriptCode[] codes) {
+        public static void SaveToAssembly(string assemblyName, IDictionary<string, object> assemblyAttributes, params SavableScriptCode[] codes) {
             ContractUtils.RequiresNotNull(assemblyName, nameof(assemblyName));
             ContractUtils.RequiresNotNullItems(codes, nameof(codes));
 
@@ -69,7 +60,7 @@ namespace Microsoft.Scripting {
             string ext = Path.GetExtension(assemblyName);
 
             // build the assembly & type gen that all the script codes will live in...
-            AssemblyGen ag = new AssemblyGen(new AssemblyName(name), dir, ext, /*emitSymbols*/false);
+            AssemblyGen ag = new AssemblyGen(new AssemblyName(name), dir, ext, /*emitSymbols*/false, assemblyAttributes);
             TypeBuilder tb = ag.DefinePublicType("DLRCachedCode", typeof(object), true);
             TypeGen tg = new TypeGen(ag, tb);
             // then compile all of the code
@@ -151,6 +142,19 @@ namespace Microsoft.Scripting {
 
             tg.FinishType();
             ag.SaveAssembly();
+        }
+
+        /// <summary>
+        /// This takes an assembly name including extension and saves the provided ScriptCode objects into the assembly.  
+        /// 
+        /// The provided script codes can constitute code from multiple languages.  The assemblyName can be either a fully qualified 
+        /// or a relative path.  The DLR will simply save the assembly to the desired location.  The assembly is created by the DLR and 
+        /// if a file already exists than an exception is raised.  
+        /// 
+        /// The DLR determines the internal format of the ScriptCode and the DLR can feel free to rev this as appropriate.  
+        /// </summary>
+        public static void SaveToAssembly(string assemblyName, params SavableScriptCode[] codes) {
+            SaveToAssembly(assemblyName, null, codes);
         }
 
         /// <summary>

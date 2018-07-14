@@ -3,7 +3,7 @@
   <PropertyGroup>
     <MajorVersion>1</MajorVersion>
     <MinorVersion>2</MinorVersion>
-    <MicroVersion>1</MicroVersion>
+    <MicroVersion>2</MicroVersion>
     <ReleaseSerial>0</ReleaseSerial>
     <ReleaseLevel>final</ReleaseLevel>
     <AssemblyRevision>0</AssemblyRevision>

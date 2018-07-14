@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Linq;
 using Microsoft.Scripting.Utils;
+using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Generation {
     public sealed class AssemblyGen {
@@ -40,7 +41,7 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        public AssemblyGen(AssemblyName name, string outDir, string outFileExtension, bool isDebuggable) {
+        public AssemblyGen(AssemblyName name, string outDir, string outFileExtension, bool isDebuggable, IDictionary<string, object> attrs=null) {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
 #if FEATURE_FILESYSTEM
@@ -65,12 +66,40 @@ namespace Microsoft.Scripting.Generation {
             }
 
             // mark the assembly transparent so that it works in partial trust:
-            CustomAttributeBuilder[] attributes = new CustomAttributeBuilder[] { 
+            var attributes = new List<CustomAttributeBuilder> { 
                 new CustomAttributeBuilder(typeof(SecurityTransparentAttribute).GetConstructor(ReflectionUtils.EmptyTypes), new object[0]),
 #if FEATURE_SECURITY_RULES
                 new CustomAttributeBuilder(typeof(SecurityRulesAttribute).GetConstructor(new[] { typeof(SecurityRuleSet) }), new object[] { SecurityRuleSet.Level1 }),
 #endif
             };
+
+            if (attrs != null) {
+                foreach(var attr in attrs) {
+                    if (!(attr.Value is string a) || string.IsNullOrWhiteSpace(a)) {
+                        continue;
+                    }
+
+                    ConstructorInfo ctor = null; 
+                    switch(attr.Key) {
+                        case "assemblyFileVersion":
+                            ctor = typeof(AssemblyFileVersionAttribute).GetConstructor(new[] { typeof(string) });
+                            break;
+                        case "copyright":
+                            ctor = typeof(AssemblyCopyrightAttribute).GetConstructor(new[] { typeof(string) });
+                            break;
+                        case "productName":
+                            ctor = typeof(AssemblyProductAttribute).GetConstructor(new[] { typeof(string) });
+                            break;
+                        case "productVersion":
+                            ctor = typeof(AssemblyInformationalVersionAttribute).GetConstructor(new[] { typeof(string) });
+                            break;
+                    }
+
+                    if(ctor != null) {
+                        attributes.Add(new CustomAttributeBuilder(ctor, new object[] { a }));
+                    }
+                }                
+            }
 
             if (outDir != null) {
                 _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave, outDir, false, attributes);
