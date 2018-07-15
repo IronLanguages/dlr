@@ -625,8 +625,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(VariantType == VarEnum.VT_BSTR);
                 if (_typeUnion._unionTypes._bstr != IntPtr.Zero) {
                     return Marshal.PtrToStringBSTR(_typeUnion._unionTypes._bstr);
-                } 
-
+                }
                 return null;
             }
             set {
@@ -651,7 +650,6 @@ namespace Microsoft.Scripting.ComInterop {
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._unknown);
                 }
-
                 return null;
             }
             set {
@@ -676,7 +674,6 @@ namespace Microsoft.Scripting.ComInterop {
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._dispatch);
                 }
-
                 return null;
             }
             set {
