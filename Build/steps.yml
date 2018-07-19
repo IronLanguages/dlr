@@ -1,5 +1,5 @@
 parameters:
-  buildOs: 'Windows'
+  os: ''
   preBuildSteps: []
 
 steps:
@@ -23,14 +23,25 @@ steps:
      Write-Host ("##vso[task.setvariable variable=PackageVersion;isSecret=false;isOutput=true;]$PackageVersion")
     displayName: Grab Package Version
 
-  - ${{ parameters.preBuildSteps }}
+  # Install mono when running on Linux
+  - ${{ if eq(parameters.os, 'Linux') }}:
+    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+          displayName: Install Mono
+          inputs:
+            type: InlineScript
+            script: |
 
-  - powershell: . make.ps1
-    workingDirectory: $(Build.SourcesDirectory)
+              echo "Installing Mono"
+              sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+              sudo apt install apt-transport-https
+              echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+              sudo apt update
+              sudo apt-get -yq install mono-devel
+
+  - powershell: ./make.ps1
     displayName: Build
 
-  - powershell: . make.ps1 test-all
-    workingDirectory: $(Build.SourcesDirectory)
+  - powershell: ./make.ps1 test-all
     displayName: Test
 
   - task: PublishTestResults@2
@@ -41,8 +52,7 @@ steps:
       mergeTestResults: true
       testRunTitle: ${{ parameters.buildOs }}
 
-  - powershell: . make.ps1 package
-    workingDirectory: $(Build.SourcesDirectory)
+  - powershell: ./make.ps1 package
     displayName: Package
 
   - task: CopyFiles@2
@@ -58,7 +68,7 @@ steps:
   - task: CopyFiles@2
     displayName: Copy Build Logs
     inputs:
-      contents: '*.binlog'
+      Contents: '*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
 
