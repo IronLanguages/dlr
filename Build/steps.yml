@@ -26,17 +26,17 @@ steps:
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
     - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-          displayName: Install Mono
-          inputs:
-            type: InlineScript
-            script: |
+      displayName: Install Mono
+      inputs:
+        type: InlineScript
+        script: |
 
-              echo "Installing Mono"
-              sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-              sudo apt install apt-transport-https
-              echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-              sudo apt update
-              sudo apt-get -yq install mono-devel
+          echo "Installing Mono"
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          sudo apt install apt-transport-https
+          echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          sudo apt update
+          sudo apt-get -yq install mono-devel
 
   - powershell: ./make.ps1
     displayName: Build
