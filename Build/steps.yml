@@ -75,5 +75,5 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
-      ArtifactName: format('{0} Artifacts', parameters.os)
+      ArtifactName: ${{ format('{0} Artifacts', parameters.os) }}
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
