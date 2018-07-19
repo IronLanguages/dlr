@@ -40,18 +40,7 @@ steps:
 
   - powershell: ./make.ps1
     displayName: Build
-
-  - powershell: ./make.ps1 test-all
-    displayName: Test
-
-  - task: PublishTestResults@2
-    displayName: Publish Test Results
-    inputs:
-      testRunner: VSTest
-      testResultsFiles: '**/*.trx'
-      mergeTestResults: true
-      testRunTitle: ${{ parameters.os }}
-
+    
   - powershell: ./make.ps1 package
     displayName: Package
 
@@ -77,3 +66,16 @@ steps:
     inputs:
       ArtifactName: ${{ format('{0} Artifacts', parameters.os) }}
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
+
+  - powershell: ./make.ps1 test-all
+    displayName: Test
+    
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: '**/*.trx'
+      mergeTestResults: true
+      testRunTitle: ${{ parameters.os }}
+
+  
