@@ -1,0 +1,66 @@
+parameters:
+  buildOs: 'Windows'
+  preBuildSteps: []
+
+steps:
+  - powershell: |
+     # Write your powershell commands here.
+
+     $xml = [xml] (Get-Content CurrentVersion.props)
+     $major = $xml.Project.PropertyGroup.MajorVersion
+     $minor = $xml.Project.PropertyGroup.MinorVersion
+     $micro = $xml.Project.PropertyGroup.MicroVersion
+     $serial = $xml.Project.PropertyGroup.ReleaseSerial
+     $level = $xml.Project.PropertyGroup.ReleaseLevel
+
+     if($level -eq 'final') {
+         $PackageVersion = "$major.$minor.$micro"
+     } elseif($level -ne 'final' -or $serial -ne '0') {
+         $PackageVersion = "$major.$minor.$micro-$level$serial"
+     }
+
+     # store the package version to an environment variable
+     Write-Host ("##vso[task.setvariable variable=PackageVersion;isSecret=false;isOutput=true;]$PackageVersion")
+    displayName: Grab Package Version
+
+  - ${{ parameters.preBuildSteps }}
+
+  - powershell: . make.ps1
+    displayName: Build
+
+  - powershell: . make.ps1 'test-all'
+    displayName: Test
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: '**/*.trx'
+      mergeTestResults: true
+      testRunTitle: ${{ parameters.buildOs }}
+
+  - powershell: . make.ps1 package
+    displayName: Package
+
+  - task: CopyFiles@2
+    displayName: Copy Artifact Files
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
+      Contents: |
+       **/*.nupkg
+       **/*.zip
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
+
+  - task: CopyFiles@2
+    displayName: Copy Build Logs
+    inputs:
+      Contents: '*.binlog'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifacts
+    inputs:
+      ArtifactName: '${{ parameters.buildOs }} Artifacts'
+    condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
