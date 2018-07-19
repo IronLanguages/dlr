@@ -52,19 +52,20 @@ phases:
      **\*.nupkg
      **\*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: CopyFiles@2
     displayName: Copy Build Logs
     inputs:
       Contents: '*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
       ArtifactName: 'Windows Artifacts'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 
 - phase: Linux_Build
@@ -133,19 +134,20 @@ phases:
      **/*.nupkg
      **/*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: CopyFiles@2
     displayName: Copy Build Logs
     inputs:
       Contents: '*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
       ArtifactName: 'Linux Artifacts'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 
 - phase: macOS_Build
@@ -199,18 +201,19 @@ phases:
      **/*.nupkg
      **/*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: CopyFiles@2
     displayName: Copy Build Logs
     inputs:
       Contents: '*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
       ArtifactName: 'macOS Artifacts'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 
