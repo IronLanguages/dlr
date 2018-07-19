@@ -49,8 +49,8 @@ phases:
     inputs:
       SourceFolder: '$(Build.Repository.LocalPath)\Package\Release\Packages'
       Contents: |  
-     **\*.nupkg
-     **\*.zip
+       **\*.nupkg
+       **\*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
@@ -131,8 +131,8 @@ phases:
     inputs:
       SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
       Contents: |  
-     **/*.nupkg
-     **/*.zip
+       **/*.nupkg
+       **/*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
@@ -198,8 +198,8 @@ phases:
     inputs:
       SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
       Contents: |  
-     **/*.nupkg
-     **/*.zip
+       **/*.nupkg
+       **/*.zip
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
