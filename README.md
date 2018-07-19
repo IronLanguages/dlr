@@ -1,7 +1,6 @@
 Dynamic Language Runtime
 ========================
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/edlniiwf3wr8iskc?svg=true)](https://ci.appveyor.com/project/AlexEarl/dlr)
-[![Linux/OSX Build Status](https://travis-ci.org/IronLanguages/dlr.svg?branch=master)](https://travis-ci.org/IronLanguages/dlr)
+[![Build status](https://dotnetfoundation.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnetfoundation.visualstudio.com/IronLanguages/_build/latest?definitionId=40)
 [![NuGet](https://img.shields.io/nuget/v/DynamicLanguageRuntime.svg)](https://www.nuget.org/packages/DynamicLanguageRuntime/)
 [![Release](https://img.shields.io/github/release/IronLanguages/dlr.svg)](https://github.com/IronLanguages/dlr/releases/latest)
 [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.png)](https://gitter.im/IronLanguages/ironpython)
