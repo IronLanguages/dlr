@@ -50,7 +50,7 @@ steps:
       testRunner: VSTest
       testResultsFiles: '**/*.trx'
       mergeTestResults: true
-      testRunTitle: ${{ parameters.buildOs }}
+      testRunTitle: ${{ parameters.os }}
 
   - powershell: ./make.ps1 package
     displayName: Package
@@ -75,5 +75,5 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
-      ArtifactName: format('{0} Artifacts', parameters.buildOs)
+      ArtifactName: format('{0} Artifacts', parameters.os)
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
