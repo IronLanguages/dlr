@@ -26,9 +26,11 @@ steps:
   - ${{ parameters.preBuildSteps }}
 
   - powershell: . make.ps1
+    workingDirectory: $(Build.SourcesDirectory)
     displayName: Build
 
-  - powershell: . make.ps1 'test-all'
+  - powershell: . make.ps1 test-all
+    workingDirectory: $(Build.SourcesDirectory)
     displayName: Test
 
   - task: PublishTestResults@2
@@ -40,6 +42,7 @@ steps:
       testRunTitle: ${{ parameters.buildOs }}
 
   - powershell: . make.ps1 package
+    workingDirectory: $(Build.SourcesDirectory)
     displayName: Package
 
   - task: CopyFiles@2
@@ -55,12 +58,12 @@ steps:
   - task: CopyFiles@2
     displayName: Copy Build Logs
     inputs:
-      Contents: '*.binlog'
+      contents: '*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifacts
     inputs:
-      ArtifactName: '${{ parameters.buildOs }} Artifacts'
+      ArtifactName: format('{0} Artifacts', parameters.buildOs)
     condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))

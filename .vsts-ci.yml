@@ -8,6 +8,13 @@ phases:
     parameters:
       buildOs: 'Windows'
 
+- phase: macOS
+  queue: Hosted macOS Preview
+  steps:
+  - template: Build/steps.yml
+    parameters:
+      buildOs: 'macOS'
+
 - phase: Linux
   queue: Hosted Linux Preview
   steps:
@@ -19,7 +26,7 @@ phases:
         displayName: Install Mono
         inputs:
           type: InlineScript
-          script: |  
+          script: |
 
             echo "Installing Mono"
             sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -28,9 +35,3 @@ phases:
             sudo apt update
             sudo apt-get -yq install mono-devel
 
-- phase: macOS
-  queue: Hosted macOS Preview
-  steps:
-  - template: Build/steps.yml
-    parameters:
-      buildOs: 'macOS'
