@@ -5,6 +5,7 @@ Param(
     [String] $target = "release",
     [String] $configuration = "Release",
     [String[]] $frameworks=@('net45','netcoreapp2.0','netcoreapp2.1'),
+    [String] $platform = "x64",
     [switch] $runIgnored
 )
 
@@ -48,7 +49,7 @@ function Main([String] $target, [String] $configuration) {
     $global:Result = $LastExitCode
 }
 
-function GenerateRunSettings([String] $folder, [String] $framework, [String] $configuration, [bool] $runIgnored) {
+function GenerateRunSettings([String] $folder, [String] $framework, [String] $platform, [String] $configuration, [bool] $runIgnored) {
     [System.Xml.XmlDocument]$doc = New-Object System.Xml.XmlDocument
 
 #   <RunSettings>
@@ -61,6 +62,13 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $co
     $doc.AppendChild($dec) | Out-Null
 
     $runSettings = $doc.CreateElement("RunSettings")
+    
+    $runConfiguration = $doc.CreateElement("RunConfiguration")
+    $runSettings.AppendChild($runConfiguration) | Out-Null
+    $targetPlatform = $doc.CreateElement("TargetPlatform")
+    $targetPlatform.InnerText = $platform
+    $runConfiguration.AppendChild($targetPlatform) | Out-Null
+    
     $testRunParameters = $doc.CreateElement("TestRunParameters")
     $runSettings.AppendChild($testRunParameters) | Out-Null
 
@@ -88,7 +96,7 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $co
     return $fileName
 }
 
-function Test([String] $target, [String] $configuration, [String[]] $frameworks) {
+function Test([String] $target, [String] $configuration, [String[]] $frameworks, [String] $platform) {
     foreach ($framework in $frameworks) {
         $frameworkSettings = $_FRAMEWORKS[$framework]
         if ($frameworkSettings -eq $null) { $frameworkSettings = $_defaultFrameworkSettings }
@@ -98,7 +106,7 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             $filtername = $target
 
             # generate the runsettings file for the settings
-            $runSettings = GenerateRunSettings $frameworkSettings["tests"][$testdesc] $framework $configuration $runIgnored
+            $runSettings = GenerateRunSettings $frameworkSettings["tests"][$testdesc] $framework $platform $configuration $runIgnored
 
             if(!$frameworkSettings["filters"].ContainsKey($target)) {
                 Write-Warning "No tests available for '$target' trying to run single test '$framework.$target'"
@@ -158,7 +166,7 @@ switch -wildcard ($target) {
     "clean-debug"   { Main "Clean" "Debug" }
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
-    "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks; break }
+    "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks $platform; break }
     
     # release targets
     "restore"       { Main "RestoreReferences" "Release" }
@@ -166,7 +174,7 @@ switch -wildcard ($target) {
     "clean"         { Main "Clean" "Release" }
     "stage"         { Main "Stage" "Release" }
     "package"       { Main "Package" "Release" }
-    "test-*"        { Test $target.Substring(5) "Release" $frameworks; break }
+    "test-*"        { Test $target.Substring(5) "Release" $frameworks $platform; break }
 
     default { Write-Error "No target '$target'" ; Exit -1 }
 }
