@@ -1,12 +1,12 @@
 Dynamic Language Runtime
 ========================
-[![Build status](https://dotnetfoundation.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnetfoundation.visualstudio.com/IronLanguages/_build/latest?definitionId=40)
-[![NuGet](https://img.shields.io/nuget/v/DynamicLanguageRuntime.svg)](https://www.nuget.org/packages/DynamicLanguageRuntime/)
-[![Release](https://img.shields.io/github/release/IronLanguages/dlr.svg)](https://github.com/IronLanguages/dlr/releases/latest)
-[![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.png)](https://gitter.im/IronLanguages/ironpython)
-[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/dynamic-language-runtime.svg)](http://stackoverflow.com/questions/tagged/dynamic-language-runtime)
-
 The Dynamic Language Runtime enables language developers to more easily create dynamic languages for the .NET platform. In addition to being a pluggable back-end for dynamic language compilers, the DLR provides language interop for dynamic operations on objects. The DLR has common hosting APIs for using dynamic languages as libraries or for scripting in your .NET applications.
+
+| **What?** | **Where?** |
+| --------: | :------------: |
+| **Windows/Linux/macOS Builds** | [![Build status](https://dotnetfoundation.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnetfoundation.visualstudio.com/IronLanguages/_build/latest?definitionId=41) |
+| **Downloads** | [![NuGet](https://img.shields.io/nuget/v/DynamicLanguageRuntime.svg)](https://www.nuget.org/packages/DynamicLanguageRuntime/) [![Release](https://img.shields.io/github/release/IronLanguages/dlr.svg)](https://github.com/IronLanguages/dlr/releases/latest)|
+| **Help** | [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.svg)](https://gitter.im/IronLanguages/ironpython) [![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/dynamic-language-runtime.svg)](http://stackoverflow.com/questions/tagged/dynamic-language-runtime) |
 
 Code of Conduct
 ---------------
@@ -43,8 +43,3 @@ On Unix machines, make sure Mono is installed and in the PATH, and type:
 
 Since the main development is on Windows, Mono bugs may inadvertantly be introduced
 - please report them!
-
-Changes
--------
-###1.2.0-alpha0
-* First official NuGet release from the split repository.
