@@ -2,13 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>
@@ -41,18 +37,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Provides the Expression which provides the value to be passed to the argument.
         /// If <c>null</c> is returned the argument is skipped (not passed to the callee).
         /// </summary>
-        internal protected abstract Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed);
+        protected internal abstract Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed);
 
         /// <summary>
         /// Returns the type required for the argument or null if the ArgBuilder
         /// does not consume a type.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
-        public virtual Type Type {
-            get {
-                return null;
-            }
-        }
+        public virtual Type Type => null;
 
         /// <summary>
         /// Provides an Expression which will update the provided value after a call to the method.  May
@@ -74,9 +66,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// An assignable value that is passed to a byref parameter
         /// After the call it will contain the updated value
         /// </summary>
-        internal virtual Expression ByRefArgument {
-            get { return null;  }
-        }
+        internal virtual Expression ByRefArgument => null;
 
         public virtual ArgBuilder Clone(ParameterInfo newType) {
             return null;

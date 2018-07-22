@@ -25,9 +25,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Value of the argument or null if it is not available.
         /// </summary>
-        public object Arg {
-            get { return _arg; }
-        }
+        public object Arg => _arg;
 
         /// <summary>
         /// Argument actual type or its limit type if the value not known.

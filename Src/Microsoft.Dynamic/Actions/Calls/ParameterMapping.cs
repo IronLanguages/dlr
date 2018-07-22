@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.Scripting.Generation;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
@@ -33,23 +33,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         private bool _hasDefaults;
         private ParameterWrapper _paramsDict;
 
-        public OverloadInfo Overload { 
-            get { return _overload; }
-        }
+        public OverloadInfo Overload => _overload;
 
-        public int ArgIndex {
-            get { return _argIndex; }
-        } 
+        public int ArgIndex => _argIndex;
 
         [Obsolete("Use Overload.ReflectionInfo instead")]
-        public MethodBase Method { 
-            get { return _overload.ReflectionInfo; } 
-        }
+        public MethodBase Method => _overload.ReflectionInfo;
 
         [Obsolete("Use Overload.Parameters instead")]
-        public ParameterInfo[] ParameterInfos { 
-            get { return ArrayUtils.MakeArray(_overload.Parameters); } 
-        }
+        public ParameterInfo[] ParameterInfos => ArrayUtils.MakeArray(_overload.Parameters);
 
         internal ParameterMapping(OverloadResolver resolver, OverloadInfo method, IList<string> argNames) {
             Assert.NotNull(resolver, method);

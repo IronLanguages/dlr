@@ -21,19 +21,15 @@ namespace Microsoft.Scripting.Actions.Calls {
             _index = index;
         }
 
-        public virtual bool HasValue {
-            get { return _index != -1; }
-        }
+        public virtual bool HasValue => _index != -1;
 
         /// <summary>
         /// The number of actual arguments consumed by this builder.
         /// </summary>
-        public virtual int ConsumedArgumentCount {
-            get { return 1; }
-        }
+        public virtual int ConsumedArgumentCount => 1;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference")] // TODO
-        internal protected virtual Expression ToExpression(ref MethodInfo method, OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal virtual Expression ToExpression(ref MethodInfo method, OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             if (_index == -1) {
                 return AstUtils.Constant(null);
             }

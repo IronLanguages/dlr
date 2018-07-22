@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>
@@ -40,13 +38,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             _kwArgIndex = kwArgIndex;
         }
 
-        public override int Priority {
-            get { return _builder.Priority; }
-        }
+        public override int Priority => _builder.Priority;
 
-        public override int ConsumedArgumentCount {
-            get { return 1; }
-        }
+        public override int ConsumedArgumentCount => 1;
 
         /// <summary>
         /// The underlying builder should expect a single parameter as KeywordArgBuilder is responsible
@@ -54,10 +48,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         /// <param name="builder"></param>
         internal static bool BuilderExpectsSingleParameter(ArgBuilder builder) {
-            return (((SimpleArgBuilder)builder).Index == 0);
+            return ((SimpleArgBuilder)builder).Index == 0;
         }
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Debug.Assert(BuilderExpectsSingleParameter(_builder));
 
             int index = GetKeywordIndex(args.Length);
@@ -66,11 +60,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return _builder.ToExpression(resolver, MakeRestrictedArg(args, index), new bool[1]);
         }
 
-        public override Type Type {
-            get {
-                return _builder.Type;
-            }
-        }
+        public override Type Type => _builder.Type;
 
         internal override Expression ToReturnExpression(OverloadResolver resolver) {
             return _builder.ToReturnExpression(resolver);
@@ -89,9 +79,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return paramCount - _kwArgCount + _kwArgIndex;
         }
 
-        internal override Expression ByRefArgument {
-            get { return _builder.ByRefArgument; }
-        }
+        internal override Expression ByRefArgument => _builder.ByRefArgument;
 
         public override ArgBuilder Clone(ParameterInfo newType) {
             return new KeywordArgBuilder(_builder.Clone(newType), _kwArgCount, _kwArgIndex);

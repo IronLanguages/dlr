@@ -2,14 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Generation;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
@@ -62,23 +59,15 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new SimpleArgBuilder(ParameterInfo, _parameterType, newIndex, _isParams, _isParamsDict);
         }
 
-        public override int ConsumedArgumentCount {
-            get { return 1; }
-        }
+        public override int ConsumedArgumentCount => 1;
 
-        public override int Priority {
-            get { return 0; }
-        }
+        public override int Priority => 0;
 
-        public bool IsParamsArray {
-            get { return _isParams; }
-        }
+        public bool IsParamsArray => _isParams;
 
-        public bool IsParamsDict {
-            get { return _isParamsDict; }
-        }
+        public bool IsParamsDict => _isParamsDict;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Debug.Assert(hasBeenUsed.Length == args.Length);
             Debug.Assert(_index < args.Length);
             Debug.Assert(!hasBeenUsed[Index]);
@@ -87,17 +76,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             return resolver.Convert(args.GetObject(_index), args.GetType(_index), ParameterInfo, _parameterType);
         }
 
-        public int Index {
-            get {
-                return _index;
-            }
-        }
+        public int Index => _index;
 
-        public override Type Type {
-            get {
-                return _parameterType;
-            }
-        }
+        public override Type Type => _parameterType;
 
         public override ArgBuilder Clone(ParameterInfo newType) {
             return new SimpleArgBuilder(newType, newType.ParameterType, _index, _isParams, _isParamsDict);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
@@ -24,9 +25,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             HasUntypedRestrictions = hasUntypedRestrictions;
         }
 
-        public int Length {
-            get { return _objects.Length; }
-        }
+        public int Length => _objects.Length;
 
         public DynamicMetaObject GetObject(int i) {
             return _objects[i];

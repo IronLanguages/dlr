@@ -2,18 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;
-
     /// <summary>
     /// Builds the argument for an out argument when not passed a StrongBox.  The out parameter
     /// is returned as an additional return value.
@@ -30,15 +26,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             _isRef = info.ParameterType.IsByRef;
         }
 
-        public override int ConsumedArgumentCount {
-            get { return 0; }
-        }
+        public override int ConsumedArgumentCount => 0;
 
-        public override int Priority {
-            get { return 5; }
-        }
+        public override int Priority => 5;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             if (_isRef) {
                 if (_tmp == null) {
                     _tmp = resolver.GetTemporary(_parameterType, "outParam");
@@ -57,13 +49,12 @@ namespace Microsoft.Scripting.Actions.Calls {
             return GetDefaultValue();
         }
 
-        internal override Expression ByRefArgument {
-            get { return _isRef ? _tmp : null; }
-        }
+        internal override Expression ByRefArgument => _isRef ? _tmp : null;
 
         private Expression GetDefaultValue() {
             if (_parameterType.IsValueType()) {
-                // default(T)                
+
+                // default(T)
                 return AstUtils.Constant(Activator.CreateInstance(_parameterType));
             }
             return AstUtils.Constant(null);

@@ -23,9 +23,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _positionalArgCount = positionalArgCount;
         }
 
-        public int PositionalArgCount {
-            get { return _positionalArgCount; }
-        }
+        public int PositionalArgCount => _positionalArgCount;
 
         public int ArgumentToParameter(int argumentIndex) {
             int i = argumentIndex - _positionalArgCount;

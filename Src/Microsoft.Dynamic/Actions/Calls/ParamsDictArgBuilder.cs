@@ -2,20 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;
 
     /// <summary>
     /// Builds the parameter for a params dictionary argument - this collects all the extra name/value
@@ -35,20 +32,16 @@ namespace Microsoft.Scripting.Actions.Calls {
             _nameIndexes = nameIndexes;
         }
 
-        public override int ConsumedArgumentCount {
-            get { return AllArguments; }
-        }
+        public override int ConsumedArgumentCount => AllArguments;
 
-        public override int Priority {
-            get { return 3; }
-        }
+        public override int Priority => 3;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Type dictType = ParameterInfo.ParameterType;
 
-            return Ast.Call(
+            return Expression.Call(
                 GetCreationDelegate(dictType).GetMethodInfo(),
-                Ast.NewArrayInit(typeof(string), ConstantNames()),
+                Expression.NewArrayInit(typeof(string), ConstantNames()),
                 AstUtils.NewArrayHelper(typeof(object), GetParameters(args, hasBeenUsed))
             );
         }
@@ -57,11 +50,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new InvalidOperationException($"Unsupported param dictionary type: {dictType.FullName}");
         }
 
-        public override Type Type {
-            get {
-                return ParameterInfo.ParameterType;
-            }
-        }
+        public override Type Type => ParameterInfo.ParameterType;
 
         private List<Expression> GetParameters(RestrictedArguments args, bool[] hasBeenUsed) {
             List<Expression> res = new List<Expression>(_nameIndexes.Length);

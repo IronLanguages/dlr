@@ -2,22 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Generation;
-using Microsoft.Scripting.Interpreter;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;
 
     /// <summary>
     /// MethodCandidate represents the different possible ways of calling a method or a set of method overloads.
@@ -292,7 +290,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if (CompilerHelpers.IsVisible(mi)) {
                     call = AstUtils.SimpleCallHelper(instance, mi, callArgs);
                 } else {
-                    call = Ast.Call(
+                    call = Expression.Call(
                         typeof(BinderOps).GetMethod("InvokeMethod"),
                         AstUtils.Constant(mi),
                         instance != null ? AstUtils.Convert(instance, typeof(object)) : AstUtils.Constant(null),
@@ -304,7 +302,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if (CompilerHelpers.IsVisible(ci)) {
                     call = AstUtils.SimpleNewHelper(ci, callArgs);
                 } else {
-                    call = Ast.Call(
+                    call = Expression.Call(
                         typeof(BinderOps).GetMethod("InvokeConstructor"),
                         AstUtils.Constant(ci),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
@@ -331,29 +329,29 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             if (updates != null) {
                 if (ret.Type != typeof(void)) {
-                    ParameterExpression temp = Ast.Variable(ret.Type, "$ret");
-                    updates.Insert(0, Ast.Assign(temp, ret));
+                    ParameterExpression temp = Expression.Variable(ret.Type, "$ret");
+                    updates.Insert(0, Expression.Assign(temp, ret));
                     updates.Add(temp);
-                    ret = Ast.Block(new[] { temp }, updates.ToArray());
+                    ret = Expression.Block(new[] { temp }, updates.ToArray());
                 } else {
                     updates.Insert(0, ret);
-                    ret = Ast.Block(typeof(void), updates.ToArray());
+                    ret = Expression.Block(typeof(void), updates.ToArray());
                 }
             }
 
             if (_resolver.Temps != null) {
-                ret = Ast.Block(_resolver.Temps, ret);
+                ret = Expression.Block(_resolver.Temps, ret);
             }
 
             return ret;
         }
 
         private Expression[] GetArgumentExpressions(RestrictedArguments restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs) {
-            int minPriority = Int32.MaxValue;
-            int maxPriority = Int32.MinValue;
+            int minPriority = int.MaxValue;
+            int maxPriority = int.MinValue;
             foreach (ArgBuilder ab in _argBuilders) {
-                minPriority = System.Math.Min(minPriority, ab.Priority);
-                maxPriority = System.Math.Max(maxPriority, ab.Priority);
+                minPriority = Math.Min(minPriority, ab.Priority);
+                maxPriority = Math.Max(maxPriority, ab.Priority);
             }
 
             var args = new Expression[_argBuilders.Count];

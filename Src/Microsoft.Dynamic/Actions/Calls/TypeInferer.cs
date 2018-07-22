@@ -177,7 +177,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             // Then sort the arguments based upon those dependencies
             Array.Sort(genArgs, (x, y) => {
-                if (Object.ReferenceEquals(x, y)) {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
@@ -343,7 +343,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// for y and z.  Associated with y would be a GenericParameterInferer and associated with
         /// z would be a ConstructedParameterInferer.
         /// </summary>
-        class ArgumentInputs {
+        private class ArgumentInputs {
             private readonly List<Type>/*!*/ _parameterTypes = new List<Type>();
             private readonly List<DynamicMetaObject>/*!*/ _inputs = new List<DynamicMetaObject>();
             private readonly Type/*!*/ _genericParam;
@@ -558,11 +558,8 @@ namespace Microsoft.Scripting.Actions.Calls {
     }
 
     /// <summary>
-    /// Provides information about the result of a custom object which dynamically
-    /// infers back types.
-    /// 
-    /// Currently only used for invokable objects to feedback the types for a delegate
-    /// type.
+    /// Provides information about the result of a custom object which dynamically infers back types.
+    /// Currently only used for invokable objects to feedback the types for a delegate type.
     /// </summary>
     public class InferenceResult {
         public InferenceResult(Type type, BindingRestrictions restrictions) {
