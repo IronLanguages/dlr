@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -18,89 +18,131 @@ namespace Microsoft.Scripting.Interpreter {
         private AddInstruction() {
         }
 
-        internal sealed class AddInt32 : AddInstruction {
+        private sealed class AddInt16 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = ScriptingRuntimeHelpers.Int32ToObject(unchecked((Int32)l + (Int32)r));
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((short)((short)left + (short)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddInt16 : AddInstruction {
+        private sealed class AddInt32 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int16)unchecked((Int16)l + (Int16)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null
+                        ? null
+                        : ScriptingRuntimeHelpers.Int32ToObject(unchecked((int)left + (int)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddInt64 : AddInstruction {
+        private sealed class AddInt64 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int64)unchecked((Int64)l + (Int64)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((long)left + (long)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddUInt16 : AddInstruction {
+        private sealed class AddUInt16 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt16)unchecked((UInt16)l + (UInt16)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((ushort)((ushort)left + (ushort)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddUInt32 : AddInstruction {
+        private sealed class AddUInt32 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt32)unchecked((UInt32)l + (UInt32)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((uint)left + (uint)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddUInt64 : AddInstruction {
+        private sealed class AddUInt64 : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt64)unchecked((Int16)l + (Int16)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((ulong)left + (ulong)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddSingle : AddInstruction {
+        private sealed class AddSingle : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Single)((Single)l + (Single)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((float)left + (float)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddDouble : AddInstruction {
+        private sealed class AddDouble : AddInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Double)l + (Double)r;
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((double)left + (double)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
         public static Instruction Create(Type type) {
-            Debug.Assert(!type.IsEnum());
-            switch (type.GetTypeCode()) {
+            Debug.Assert(type.IsArithmetic());
+            switch (type.GetNonNullableType().GetTypeCode()) {
                 case TypeCode.Int16: return _Int16 ?? (_Int16 = new AddInt16());
                 case TypeCode.Int32: return _Int32 ?? (_Int32 = new AddInt32());
                 case TypeCode.Int64: return _Int64 ?? (_Int64 = new AddInt64());
@@ -109,7 +151,6 @@ namespace Microsoft.Scripting.Interpreter {
                 case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new AddUInt64());
                 case TypeCode.Single: return _Single ?? (_Single = new AddSingle());
                 case TypeCode.Double: return _Double ?? (_Double = new AddDouble());
-
                 default:
                     throw Assert.Unreachable;
             }
@@ -121,7 +162,7 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal abstract class AddOvfInstruction : Instruction {
-        private static Instruction _Int16, _Int32, _Int64, _UInt16, _UInt32, _UInt64, _Single, _Double;
+        private static Instruction _Int16, _Int32, _Int64, _UInt16, _UInt32, _UInt64;
 
         public override int ConsumedStack => 2;
         public override int ProducedStack => 1;
@@ -129,100 +170,109 @@ namespace Microsoft.Scripting.Interpreter {
         private AddOvfInstruction() {
         }
 
-        internal sealed class AddOvfInt32 : AddOvfInstruction {
+        private sealed class AddOvfInt16 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = ScriptingRuntimeHelpers.Int32ToObject(checked((Int32)l + (Int32)r));
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)checked((short)((short)left + (short)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddOvfInt16 : AddOvfInstruction {
+        private sealed class AddOvfInt32 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int16)checked((Int16)l + (Int16)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null
+                        ? null
+                        : ScriptingRuntimeHelpers.Int32ToObject(checked((int)left + (int)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddOvfInt64 : AddOvfInstruction {
+        private sealed class AddOvfInt64 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int64)checked((Int64)l + (Int64)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)checked((long)left + (long)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddOvfUInt16 : AddOvfInstruction {
+        private sealed class AddOvfUInt16 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt16)checked((UInt16)l + (UInt16)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)checked((ushort)((ushort)left + (ushort)right));
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddOvfUInt32 : AddOvfInstruction {
+        private sealed class AddOvfUInt32 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt32)checked((UInt32)l + (UInt32)r);
-                frame.StackIndex--;
-                return +1;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)checked((uint)left + (uint)right);
+                }
+
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
-        internal sealed class AddOvfUInt64 : AddOvfInstruction {
+        private sealed class AddOvfUInt64 : AddOvfInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt64)checked((Int16)l + (Int16)r);
-                frame.StackIndex--;
-                return +1;
-            }
-        }
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)checked((ulong)left + (ulong)right);
+                }
 
-        internal sealed class AddOvfSingle : AddOvfInstruction {
-            public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Single)((Single)l + (Single)r);
-                frame.StackIndex--;
-                return +1;
-            }
-        }
-
-        internal sealed class AddOvfDouble : AddOvfInstruction {
-            public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Double)l + (Double)r;
-                frame.StackIndex--;
-                return +1;
+                frame.StackIndex = index - 1;
+                return 1;
             }
         }
 
         public static Instruction Create(Type type) {
-            Debug.Assert(!type.IsEnum());
-            switch (type.GetTypeCode()) {
+            Debug.Assert(type.IsArithmetic());
+            switch (type.GetNonNullableType().GetTypeCode()) {
                 case TypeCode.Int16: return _Int16 ?? (_Int16 = new AddOvfInt16());
                 case TypeCode.Int32: return _Int32 ?? (_Int32 = new AddOvfInt32());
                 case TypeCode.Int64: return _Int64 ?? (_Int64 = new AddOvfInt64());
                 case TypeCode.UInt16: return _UInt16 ?? (_UInt16 = new AddOvfUInt16());
                 case TypeCode.UInt32: return _UInt32 ?? (_UInt32 = new AddOvfUInt32());
                 case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new AddOvfUInt64());
-                case TypeCode.Single: return _Single ?? (_Single = new AddOvfSingle());
-                case TypeCode.Double: return _Double ?? (_Double = new AddOvfDouble());
-
                 default:
-                    throw Assert.Unreachable;
+                    return AddInstruction.Create(type);
             }
         }
 
