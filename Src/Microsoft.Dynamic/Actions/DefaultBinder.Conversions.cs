@@ -186,7 +186,7 @@ namespace Microsoft.Scripting.Actions {
                 checkType = type.GetGenericArguments()[0];
             }
 
-            if (TypeUtils.IsNumeric(toType) && TypeUtils.IsNumeric(checkType)) {
+            if (toType.IsNumeric() && checkType.IsNumeric()) {
                 // check for an explicit conversion
                 if (TypeUtils.GetNumericConversionOrder(toType.GetTypeCode(), out int toX, out int toY) &&
                     TypeUtils.GetNumericConversionOrder(checkType.GetTypeCode(), out int fromX, out int fromY)) {

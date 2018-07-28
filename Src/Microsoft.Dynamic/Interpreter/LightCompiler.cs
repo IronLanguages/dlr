@@ -568,7 +568,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileComparison(ExpressionType nodeType, Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type && TypeUtils.IsNumeric(left.Type));
+            Debug.Assert(left.Type == right.Type && left.Type.IsNumeric());
 
             // TODO:
             // if (TypeUtils.IsNullableType(left.Type) && liftToNull) ...
