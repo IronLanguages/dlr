@@ -906,8 +906,8 @@ namespace Microsoft.Scripting.Generation {
 
             if (to.IsAssignableFrom(from)) {
                 // T -> Nullable<T>
-                if (TypeUtils.IsNullableType(to)) {
-                    Type nonNullableTo = TypeUtils.GetNonNullableType(to);
+                if (to.IsNullableType()) {
+                    Type nonNullableTo = to.GetNonNullableType();
                     if (TryEmitCast(from, nonNullableTo, true)) {
                         EmitNew(to.GetConstructor(new Type[] { nonNullableTo }));
                     } else {
@@ -1100,8 +1100,8 @@ namespace Microsoft.Scripting.Generation {
                 return;
             }
 
-            bool isTypeFromNullable = TypeUtils.IsNullableType(typeFrom);
-            bool isTypeToNullable = TypeUtils.IsNullableType(typeTo);
+            bool isTypeFromNullable = typeFrom.IsNullableType();
+            bool isTypeToNullable = typeTo.IsNullableType();
 
             Type nnExprType = TypeUtils.GetNonNullableType(typeFrom);
             Type nnType = TypeUtils.GetNonNullableType(typeTo);
@@ -1146,7 +1146,7 @@ namespace Microsoft.Scripting.Generation {
         //CONFORMING
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitNumericConversion(Type typeFrom, Type typeTo, bool isChecked) {
-            bool isFromUnsigned = TypeUtils.IsUnsignedInt(typeFrom);
+            bool isFromUnsigned = typeFrom.IsUnsignedInt();
             if (typeTo == typeof(Single)) {
                 if (isFromUnsigned)
                     Emit(OpCodes.Conv_R_Un);
@@ -1287,8 +1287,8 @@ namespace Microsoft.Scripting.Generation {
             Emit(OpCodes.Brfalse_S, labIfNull);
             Emit(OpCodes.Ldloca, locFrom);
             EmitGetValueOrDefault(typeFrom);
-            Type nnTypeFrom = TypeUtils.GetNonNullableType(typeFrom);
-            Type nnTypeTo = TypeUtils.GetNonNullableType(typeTo);
+            Type nnTypeFrom = typeFrom.GetNonNullableType();
+            Type nnTypeTo = typeTo.GetNonNullableType();
             EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked);
             // construct result type
             ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
@@ -1306,11 +1306,10 @@ namespace Microsoft.Scripting.Generation {
 
         //CONFORMING
         private void EmitNonNullableToNullableConversion(Type typeFrom, Type typeTo, bool isChecked) {
-            Debug.Assert(!TypeUtils.IsNullableType(typeFrom));
-            Debug.Assert(TypeUtils.IsNullableType(typeTo));
-            LocalBuilder locTo = null;
-            locTo = DeclareLocal(typeTo);
-            Type nnTypeTo = TypeUtils.GetNonNullableType(typeTo);
+            Debug.Assert(!typeFrom.IsNullableType());
+            Debug.Assert(typeTo.IsNullableType());
+            LocalBuilder locTo = DeclareLocal(typeTo);
+            Type nnTypeTo = typeTo.GetNonNullableType();
             EmitConvertToType(typeFrom, nnTypeTo, isChecked);
             ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
             Emit(OpCodes.Newobj, ci);

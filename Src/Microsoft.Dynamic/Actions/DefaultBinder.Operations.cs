@@ -287,8 +287,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private static DynamicMetaObject TryPrimitiveCompare(OperatorInfo info, DynamicMetaObject[] args) {
-            if (TypeUtils.GetNonNullableType(args[0].GetLimitType()) == TypeUtils.GetNonNullableType(args[1].GetLimitType()) &&
-                TypeUtils.IsNumeric(args[0].GetLimitType())) {
+            if (args[0].GetLimitType().GetNonNullableType() == args[1].GetLimitType().GetNonNullableType() &&
+                args[0].GetLimitType().IsNumeric()) {
                 Expression arg0 = args[0].Expression;
                 Expression arg1 = args[1].Expression;
 
@@ -329,8 +329,8 @@ namespace Microsoft.Scripting.Actions {
 
         private static DynamicMetaObject TryPrimitiveOperator(OperatorInfo info, DynamicMetaObject[] args) {
             if (args.Length == 2 &&
-                TypeUtils.GetNonNullableType(args[0].GetLimitType()) == TypeUtils.GetNonNullableType(args[1].GetLimitType()) &&
-                TypeUtils.IsArithmetic(args[0].GetLimitType())) {
+                args[0].GetLimitType().GetNonNullableType() == args[1].GetLimitType().GetNonNullableType() &&
+                args[0].GetLimitType().IsArithmetic()) {
                 // TODO: Nullable<PrimitveType> Support
                 Expression expr;
                 DynamicMetaObject self = args[0].Restrict(args[0].GetLimitType());
@@ -392,7 +392,7 @@ namespace Microsoft.Scripting.Actions {
                         }
                         break;
                     case ExpressionType.Negate:
-                        if (TypeUtils.IsArithmetic(args[0].GetLimitType())) {
+                        if (args[0].GetLimitType().IsArithmetic()) {
                             return new DynamicMetaObject(
                                 Ast.Negate(args[0].Expression),
                                 restrictions
@@ -400,7 +400,7 @@ namespace Microsoft.Scripting.Actions {
                         }
                         break;
                     case ExpressionType.Not:
-                        if (TypeUtils.IsIntegerOrBool(args[0].GetLimitType())) {
+                        if (args[0].GetLimitType().IsIntegerOrBool()) {
                             return new DynamicMetaObject(
                                 Ast.Not(args[0].Expression),
                                 restrictions
