@@ -10,17 +10,6 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     public sealed class ActualArguments {
-
-        // Index into _args array indicating the first post-splat argument or -1 of there are no splatted arguments.
-        // For call site f(a,b,*c,d) and preSplatLimit == 1 and postSplatLimit == 2
-        // args would be (a,b,c[0],c[n-2],c[n-1],d) with splat index 3, where n = c.Count.
-        private readonly int _splatIndex;
-        private readonly int _firstSplattedArg;
-        private readonly int _collapsedCount;
-
-        // The number of hidden arguments (used for error reporting).
-        private readonly int _hiddenCount;
-
         public ActualArguments(IList<DynamicMetaObject> args, IList<DynamicMetaObject> namedArgs, IList<string> argNames,
             int hiddenCount, int collapsedCount, int firstSplattedArg, int splatIndex) {
 
@@ -37,24 +26,31 @@ namespace Microsoft.Scripting.Actions.Calls {
             Arguments = args;
             NamedArguments = namedArgs;
             ArgNames = argNames;
-            _collapsedCount = collapsedCount;
-            _splatIndex = collapsedCount > 0 ? splatIndex : -1;
-            _firstSplattedArg = firstSplattedArg;
-            _hiddenCount = hiddenCount;
+            CollapsedCount = collapsedCount;
+            SplatIndex = collapsedCount > 0 ? splatIndex : -1;
+            FirstSplattedArg = firstSplattedArg;
+            HiddenCount = hiddenCount;
         }
 
-        public int CollapsedCount => _collapsedCount;
+        public int CollapsedCount { get; }
 
-        public int SplatIndex => _splatIndex;
+        /// <summary>
+        /// Gets the index into _args array indicating the first post-splat argument or -1 of there are no splatted arguments.
+        /// For call site f(a,b,*c,d) and preSplatLimit == 1 and postSplatLimit == 2
+        /// args would be (a,b,c[0],c[n-2],c[n-1],d) with splat index 3, where n = c.Count.
+        /// </summary>
+        public int SplatIndex { get; }
 
-        public int FirstSplattedArg => _firstSplattedArg;
+        public int FirstSplattedArg { get; }
 
         public IList<string> ArgNames { get; }
+
         public IList<DynamicMetaObject> NamedArguments { get; }
+
         public IList<DynamicMetaObject> Arguments { get; }
 
         internal int ToSplattedItemIndex(int collapsedArgIndex) {
-            return _splatIndex - _firstSplattedArg + collapsedArgIndex;
+            return SplatIndex - FirstSplattedArg + collapsedArgIndex;
         }
 
         /// <summary>
@@ -62,12 +58,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         public int Count => Arguments.Count + NamedArguments.Count;
 
-        public int HiddenCount => _hiddenCount;
+        /// <summary>
+        /// Gets the number of hidden arguments (used for error reporting).
+        /// </summary>
+        public int HiddenCount { get; }
 
         /// <summary>
         /// Gets the total number of visible arguments passed to the call site including collapsed ones.
         /// </summary>
-        public int VisibleCount => Count + _collapsedCount - _hiddenCount;
+        public int VisibleCount => Count + CollapsedCount - HiddenCount;
 
         public DynamicMetaObject this[int index] =>
             index < Arguments.Count ? Arguments[index] : NamedArguments[index - Arguments.Count];

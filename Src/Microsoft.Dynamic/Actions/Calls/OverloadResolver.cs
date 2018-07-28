@@ -58,7 +58,6 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// are not exposed and are an internal implementation detail of the MethodBinder.
     /// </summary>
     public abstract partial class OverloadResolver {
-        private readonly ActionBinder _binder;
 
         // built as target sets are built:
         private string _methodName;
@@ -75,11 +74,11 @@ namespace Microsoft.Scripting.Actions.Calls {
         protected OverloadResolver(ActionBinder binder) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            _binder = binder;
+            Binder = binder;
             _maxAccessedCollapsedArg = -1;
         }
 
-        public ActionBinder Binder => _binder;
+        public ActionBinder Binder { get; }
 
         internal List<ParameterExpression> Temps => _temps;
 
@@ -889,7 +888,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 return true;
             }
 
-            return _binder.CanConvertFrom(fromType, toType, toParameter.ProhibitNull, level);
+            return Binder.CanConvertFrom(fromType, toType, toParameter.ProhibitNull, level);
         }
 
         /// <summary>
@@ -903,14 +902,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Provides ordering for two parameter types if there is no conversion between the two parameter types.
         /// </summary>
         public virtual Candidate PreferConvert(Type t1, Type t2) {
-            return _binder.PreferConvert(t1, t2);
+            return Binder.PreferConvert(t1, t2);
         }
 
         // TODO: revisit
         public virtual Expression Convert(DynamicMetaObject metaObject, Type restrictedType, ParameterInfo info, Type toType) {
             Assert.NotNull(metaObject, toType);
 
-            return _binder.ConvertExpression(metaObject.Expression, toType, ConversionResultKind.ExplicitCast, null);
+            return Binder.ConvertExpression(metaObject.Expression, toType, ConversionResultKind.ExplicitCast, null);
         }
 
         // TODO: revisit
@@ -1015,7 +1014,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 sb.Append('(');
                 foreach (Type t in types) {
                     sb.Append(innerComma);
-                    sb.Append(_binder.GetTypeName(t));
+                    sb.Append(Binder.GetTypeName(t));
                     innerComma = ", ";
                 }
 
@@ -1041,7 +1040,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                                     Expression.Call(
                                         typeof(BinderOps).GetMethod("SimpleTypeError"),
                                         AstUtils.Constant(
-                                            $"expected {_binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(_binder)}")
+                                            $"expected {Binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(Binder)}")
                                     )
                                 );
                             }

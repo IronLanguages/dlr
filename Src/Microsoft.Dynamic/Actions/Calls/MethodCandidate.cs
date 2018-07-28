@@ -27,16 +27,9 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// Each MethodCandidate represents the parameter type for the candidate using ParameterWrapper.
     /// </summary>
     public sealed class MethodCandidate {
-        private readonly OverloadResolver _resolver;
-        private readonly OverloadInfo _overload;
-
         private readonly List<ParameterWrapper> _parameters;
         private readonly ParameterWrapper _paramsDict;
-        private readonly int _paramsArrayIndex;
-
-        private readonly IList<ArgBuilder> _argBuilders;
         private readonly InstanceBuilder _instanceBuilder;
-        private readonly ReturnBuilder _returnBuilder;
 
         internal MethodCandidate(OverloadResolver resolver, OverloadInfo method, List<ParameterWrapper> parameters, ParameterWrapper paramsDict,
             ReturnBuilder returnBuilder, InstanceBuilder instanceBuilder, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions> restrictions) {
@@ -45,46 +38,43 @@ namespace Microsoft.Scripting.Actions.Calls {
             Assert.NotNullItems(parameters);
             Assert.NotNullItems(argBuilders);
 
-            _resolver = resolver;
-            _overload = method;
+            Resolver = resolver;
+            Overload = method;
             _instanceBuilder = instanceBuilder;
-            _argBuilders = argBuilders;
-            _returnBuilder = returnBuilder;
+            ArgBuilders = argBuilders;
+            ReturnBuilder = returnBuilder;
             _parameters = parameters;
             _paramsDict = paramsDict;
             Restrictions = restrictions;
 
-            _paramsArrayIndex = ParameterWrapper.IndexOfParamsArray(parameters);
+            ParamsArrayIndex = ParameterWrapper.IndexOfParamsArray(parameters);
 
             parameters.TrimExcess();
         }
 
         internal MethodCandidate ReplaceMethod(OverloadInfo newMethod, List<ParameterWrapper> parameters, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions> restrictions) {
-            return new MethodCandidate(_resolver, newMethod, parameters, _paramsDict, _returnBuilder, _instanceBuilder, argBuilders, restrictions);
+            return new MethodCandidate(Resolver, newMethod, parameters, _paramsDict, ReturnBuilder, _instanceBuilder, argBuilders, restrictions);
         }
 
-        internal ReturnBuilder ReturnBuilder => _returnBuilder;
-
-        internal IList<ArgBuilder> ArgBuilders => _argBuilders;
-
-        public OverloadResolver Resolver => _resolver;
+        internal ReturnBuilder ReturnBuilder { get; }
+        internal IList<ArgBuilder> ArgBuilders { get; }
+        public OverloadResolver Resolver { get; }
 
         [Obsolete("Use Overload instead")]
-        public MethodBase Method => _overload.ReflectionInfo;
+        public MethodBase Method => Overload.ReflectionInfo;
 
-        public OverloadInfo Overload => _overload;
-
+        public OverloadInfo Overload { get; }
         internal Dictionary<DynamicMetaObject, BindingRestrictions> Restrictions { get; }
 
-        public Type ReturnType => _returnBuilder.ReturnType;
+        public Type ReturnType => ReturnBuilder.ReturnType;
 
-        public int ParamsArrayIndex => _paramsArrayIndex;
+        public int ParamsArrayIndex { get; }
 
-        public bool HasParamsArray => _paramsArrayIndex != -1;
+        public bool HasParamsArray => ParamsArrayIndex != -1;
 
         public bool HasParamsDictionary => _paramsDict != null;
 
-        public ActionBinder Binder => _resolver.Binder;
+        public ActionBinder Binder => Resolver.Binder;
 
         internal ParameterWrapper GetParameter(int argumentIndex, ArgumentBinding namesBinding) {
             return _parameters[namesBinding.ArgumentToParameter(argumentIndex)];
@@ -126,7 +116,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// fill in those spots w/ extra ParameterWrapper's.  
         /// </summary>
         internal MethodCandidate MakeParamsExtended(int count, IList<string> names) {
-            Debug.Assert(_overload.IsVariadic);
+            Debug.Assert(Overload.IsVariadic);
 
             List<ParameterWrapper> newParameters = new List<ParameterWrapper>(count);
             
@@ -166,7 +156,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             if (_paramsDict != null) {
-                var flags = (_overload.ProhibitsNullItems(_paramsDict.ParameterInfo.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
+                var flags = (Overload.ProhibitsNullItems(_paramsDict.ParameterInfo.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
                             (_paramsDict.IsHidden ? ParameterBindingFlags.IsHidden : 0);
 
                 foreach (string name in unusedNames) {
@@ -189,14 +179,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         private MethodCandidate MakeParamsExtended(string[] names, int[] nameIndices, List<ParameterWrapper> parameters) {
             Debug.Assert(Overload.IsVariadic);
 
-            List<ArgBuilder> newArgBuilders = new List<ArgBuilder>(_argBuilders.Count);
+            List<ArgBuilder> newArgBuilders = new List<ArgBuilder>(ArgBuilders.Count);
 
             // current argument that we consume, initially skip this if we have it.
-            int curArg = _overload.IsStatic ? 0 : 1;
+            int curArg = Overload.IsStatic ? 0 : 1;
             int kwIndex = -1;
             ArgBuilder paramsDictBuilder = null;
 
-            foreach (ArgBuilder ab in _argBuilders) {
+            foreach (ArgBuilder ab in ArgBuilders) {
                 // TODO: define a virtual method on ArgBuilder implementing this functionality:
 
                 if (ab is SimpleArgBuilder sab) {
@@ -206,7 +196,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         int paramsUsed = parameters.Count -
                             GetConsumedArguments() -
                             names.Length +
-                            (_overload.IsStatic ? 1 : 0);
+                            (Overload.IsStatic ? 1 : 0);
 
                         newArgBuilders.Add(new ParamsArgBuilder(
                             sab.ParameterInfo,
@@ -238,12 +228,12 @@ namespace Microsoft.Scripting.Actions.Calls {
                 newArgBuilders.Insert(kwIndex, new ParamsDictArgBuilder(paramsDictBuilder.ParameterInfo, curArg, names, nameIndices));
             }
 
-            return new MethodCandidate(_resolver, _overload, parameters, null, _returnBuilder, _instanceBuilder, newArgBuilders, null);
+            return new MethodCandidate(Resolver, Overload, parameters, null, ReturnBuilder, _instanceBuilder, newArgBuilders, null);
         }
 
         private int GetConsumedArguments() {
             int consuming = 0;
-            foreach (ArgBuilder argb in _argBuilders) {
+            foreach (ArgBuilder argb in ArgBuilders) {
                 if (argb is SimpleArgBuilder sab && !sab.IsParamsDict || argb is KeywordArgBuilder) {
                     consuming++;
                 }
@@ -252,9 +242,9 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public Type[] GetParameterTypes() {
-            List<Type> res = new List<Type>(_argBuilders.Count);
-            for (int i = 0; i < _argBuilders.Count; i++) {
-                Type t = _argBuilders[i].Type;
+            List<Type> res = new List<Type>(ArgBuilders.Count);
+            for (int i = 0; i < ArgBuilders.Count; i++) {
+                Type t = ArgBuilders[i].Type;
                 if (t != null) {
                     res.Add(t);
                 }
@@ -269,7 +259,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             Expression[] callArgs = GetArgumentExpressions(restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs);
 
             Expression call;
-            MethodBase mb = _overload.ReflectionInfo;
+            MethodBase mb = Overload.ReflectionInfo;
 
             // TODO: make MakeExpression virtual on OverloadInfo?
             if (mb == null) {
@@ -283,7 +273,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     instance = null;
                 } else {
                     Debug.Assert(mi != null);
-                    instance = _instanceBuilder.ToExpression(ref mi, _resolver, restrictedArgs, usageMarkers);
+                    instance = _instanceBuilder.ToExpression(ref mi, Resolver, restrictedArgs, usageMarkers);
                     Debug.Assert(instance != null, "Can't skip instance expression");
                 }
 
@@ -314,11 +304,11 @@ namespace Microsoft.Scripting.Actions.Calls {
                 call = Expression.Block(spilledArgs.AddLast(call));
             }
 
-            Expression ret = _returnBuilder.ToExpression(_resolver, _argBuilders, restrictedArgs, call);
+            Expression ret = ReturnBuilder.ToExpression(Resolver, ArgBuilders, restrictedArgs, call);
 
             List<Expression> updates = null;
-            for (int i = 0; i < _argBuilders.Count; i++) {
-                Expression next = _argBuilders[i].UpdateFromReturn(_resolver, restrictedArgs);
+            for (int i = 0; i < ArgBuilders.Count; i++) {
+                Expression next = ArgBuilders[i].UpdateFromReturn(Resolver, restrictedArgs);
                 if (next != null) {
                     if (updates == null) {
                         updates = new List<Expression>();
@@ -339,8 +329,8 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (_resolver.Temps != null) {
-                ret = Expression.Block(_resolver.Temps, ret);
+            if (Resolver.Temps != null) {
+                ret = Expression.Block(Resolver.Temps, ret);
             }
 
             return ret;
@@ -349,24 +339,24 @@ namespace Microsoft.Scripting.Actions.Calls {
         private Expression[] GetArgumentExpressions(RestrictedArguments restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs) {
             int minPriority = int.MaxValue;
             int maxPriority = int.MinValue;
-            foreach (ArgBuilder ab in _argBuilders) {
+            foreach (ArgBuilder ab in ArgBuilders) {
                 minPriority = Math.Min(minPriority, ab.Priority);
                 maxPriority = Math.Max(maxPriority, ab.Priority);
             }
 
-            var args = new Expression[_argBuilders.Count];
+            var args = new Expression[ArgBuilders.Count];
             Expression[] actualArgs = null;
             usageMarkers = new bool[restrictedArgs.Length];
             for (int priority = minPriority; priority <= maxPriority; priority++) {
-                for (int i = 0; i < _argBuilders.Count; i++) {
-                    if (_argBuilders[i].Priority == priority) {
-                        args[i] = _argBuilders[i].ToExpression(_resolver, restrictedArgs, usageMarkers);
+                for (int i = 0; i < ArgBuilders.Count; i++) {
+                    if (ArgBuilders[i].Priority == priority) {
+                        args[i] = ArgBuilders[i].ToExpression(Resolver, restrictedArgs, usageMarkers);
 
                         // see if this has a temp that needs to be passed as the actual argument
-                        Expression byref = _argBuilders[i].ByRefArgument;
+                        Expression byref = ArgBuilders[i].ByRefArgument;
                         if (byref != null) {
                             if (actualArgs == null) {
-                                actualArgs = new Expression[_argBuilders.Count];
+                                actualArgs = new Expression[ArgBuilders.Count];
                             }
                             actualArgs[i] = byref;
                         }
@@ -377,7 +367,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (actualArgs != null) {
                 for (int i = 0; i < args.Length; i++) {
                     if (args[i] != null && actualArgs[i] == null) {
-                        actualArgs[i] = _resolver.GetTemporary(args[i].Type, null);
+                        actualArgs[i] = Resolver.GetTemporary(args[i].Type, null);
                         args[i] = Expression.Assign(actualArgs[i], args[i]);
                     }
                 }

@@ -16,11 +16,7 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// methods for params arrays and param dictionary functions.
     /// </summary>
     public class SimpleArgBuilder : ArgBuilder {
-        // Index of actual argument expression.
-        private int _index;
-
         private readonly Type _parameterType;
-        private readonly bool _isParams, _isParamsDict;
 
         /// <summary>
         /// Parameter info is not available for this argument.
@@ -42,10 +38,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             ContractUtils.Requires(index >= 0);
             ContractUtils.RequiresNotNull(parameterType, nameof(parameterType));
 
-            _index = index;
+            Index = index;
             _parameterType = parameterType;
-            _isParams = isParams;
-            _isParamsDict = isParamsDict;
+            IsParamsArray = isParams;
+            IsParamsDict = isParamsDict;
         }
 
         internal SimpleArgBuilder MakeCopy(int newIndex) {
@@ -56,32 +52,35 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         protected virtual SimpleArgBuilder Copy(int newIndex) {
-            return new SimpleArgBuilder(ParameterInfo, _parameterType, newIndex, _isParams, _isParamsDict);
+            return new SimpleArgBuilder(ParameterInfo, _parameterType, newIndex, IsParamsArray, IsParamsDict);
         }
 
         public override int ConsumedArgumentCount => 1;
 
         public override int Priority => 0;
 
-        public bool IsParamsArray => _isParams;
+        public bool IsParamsArray { get; }
 
-        public bool IsParamsDict => _isParamsDict;
+        public bool IsParamsDict { get; }
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Debug.Assert(hasBeenUsed.Length == args.Length);
-            Debug.Assert(_index < args.Length);
+            Debug.Assert(Index < args.Length);
             Debug.Assert(!hasBeenUsed[Index]);
             
-            hasBeenUsed[_index] = true;
-            return resolver.Convert(args.GetObject(_index), args.GetType(_index), ParameterInfo, _parameterType);
+            hasBeenUsed[Index] = true;
+            return resolver.Convert(args.GetObject(Index), args.GetType(Index), ParameterInfo, _parameterType);
         }
 
-        public int Index => _index;
+        /// <summary>
+        /// Gets the index of actual argument expression.
+        /// </summary>
+        public int Index { get; }
 
         public override Type Type => _parameterType;
 
         public override ArgBuilder Clone(ParameterInfo newType) {
-            return new SimpleArgBuilder(newType, newType.ParameterType, _index, _isParams, _isParamsDict);
+            return new SimpleArgBuilder(newType, newType.ParameterType, Index, IsParamsArray, IsParamsDict);
         }
     }
 }

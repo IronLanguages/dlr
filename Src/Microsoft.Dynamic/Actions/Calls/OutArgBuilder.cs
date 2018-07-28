@@ -32,10 +32,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             if (_isRef) {
-                if (_tmp == null) {
-                    _tmp = resolver.GetTemporary(_parameterType, "outParam");
-                }
-                return _tmp;
+                return _tmp ?? (_tmp = resolver.GetTemporary(_parameterType, "outParam"));
             }
 
             return GetDefaultValue();
@@ -53,7 +50,6 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private Expression GetDefaultValue() {
             if (_parameterType.IsValueType()) {
-
                 // default(T)
                 return AstUtils.Constant(Activator.CreateInstance(_parameterType));
             }
