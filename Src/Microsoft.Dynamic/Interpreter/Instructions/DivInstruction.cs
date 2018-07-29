@@ -18,89 +18,130 @@ namespace Microsoft.Scripting.Interpreter {
         private DivInstruction() {
         }
 
-        internal sealed class DivInt32 : DivInstruction {
+        private sealed class DivInt16 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = ScriptingRuntimeHelpers.Int32ToObject((Int32)l / (Int32)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((short)((short)left / (short)right));
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivInt16 : DivInstruction {
+        private sealed class DivInt32 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int16)((Int16)l / (Int16)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] =
+                        right == null ? null : ScriptingRuntimeHelpers.Int32ToObject((int)left / (int)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivInt64 : DivInstruction {
+        private sealed class DivInt64 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Int64)((Int64)l / (Int64)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((long)left / (long)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivUInt16 : DivInstruction {
+        private sealed class DivUInt16 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt16)((UInt16)l / (UInt16)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)unchecked((ushort)((ushort)left / (ushort)right));
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivUInt32 : DivInstruction {
+        private sealed class DivUInt32 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt32)((UInt32)l / (UInt32)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((uint)left / (uint)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivUInt64 : DivInstruction {
+        private sealed class DivUInt64 : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (UInt64)((Int16)l / (Int16)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((ulong)left / (ulong)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivSingle : DivInstruction {
+        private sealed class DivSingle : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Single)((Single)l / (Single)r);
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((float)left / (float)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
-        internal sealed class DivDouble : DivInstruction {
+        private sealed class DivDouble : DivInstruction {
             public override int Run(InterpretedFrame frame) {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
-                frame.Data[frame.StackIndex - 2] = (Double)l / (Double)r;
-                frame.StackIndex--;
+                int index = frame.StackIndex;
+                object[] stack = frame.Data;
+                object left = stack[index - 2];
+                if (left != null) {
+                    object right = stack[index - 1];
+                    stack[index - 2] = right == null ? null : (object)((double)left / (double)right);
+                }
+
+                frame.StackIndex = index - 1;
                 return 1;
             }
         }
 
         public static Instruction Create(Type type) {
-            Debug.Assert(!type.IsEnum());
-            switch (type.GetTypeCode()) {
+            Debug.Assert(!type.IsEnum);
+            switch (type.GetNonNullableType().GetTypeCode()) {
                 case TypeCode.Int16: return _Int16 ?? (_Int16 = new DivInt16());
                 case TypeCode.Int32: return _Int32 ?? (_Int32 = new DivInt32());
                 case TypeCode.Int64: return _Int64 ?? (_Int64 = new DivInt64());
@@ -109,7 +150,6 @@ namespace Microsoft.Scripting.Interpreter {
                 case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new DivUInt64());
                 case TypeCode.Single: return _Single ?? (_Single = new DivSingle());
                 case TypeCode.Double: return _Double ?? (_Double = new DivDouble());
-
                 default:
                     throw Assert.Unreachable;
             }
