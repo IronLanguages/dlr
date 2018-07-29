@@ -586,7 +586,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileArithmetic(ExpressionType nodeType, Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type && TypeUtils.IsArithmetic(left.Type));
+            Debug.Assert(left.Type == right.Type && left.Type.IsArithmetic());
             Compile(left);
             Compile(right);
             switch (nodeType) {

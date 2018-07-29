@@ -1103,8 +1103,8 @@ namespace Microsoft.Scripting.Generation {
             bool isTypeFromNullable = typeFrom.IsNullableType();
             bool isTypeToNullable = typeTo.IsNullableType();
 
-            Type nnExprType = TypeUtils.GetNonNullableType(typeFrom);
-            Type nnType = TypeUtils.GetNonNullableType(typeTo);
+            Type nnExprType = typeFrom.GetNonNullableType();
+            Type nnType = typeTo.GetNonNullableType();
 
             if (typeFrom.IsInterface() || // interface cast
                typeTo.IsInterface() ||

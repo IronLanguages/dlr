@@ -341,7 +341,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             // COM cannot express valuetype nulls so we will convert to underlying type
             // it will throw if there is no value
-            if (TypeUtils.IsNullableType(argumentType)) {
+            if (argumentType.IsNullableType()) {
                 argumentType = TypeUtils.GetNonNullableType(argumentType);
                 return GetComType(ref argumentType);
             }
