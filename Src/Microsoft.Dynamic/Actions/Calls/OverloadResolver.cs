@@ -2,24 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
+
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;
-    
+
     /// <summary>
     /// Provides binding and overload resolution to .NET methods.
     /// 
@@ -60,7 +58,6 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// are not exposed and are an internal implementation detail of the MethodBinder.
     /// </summary>
     public abstract partial class OverloadResolver {
-        private readonly ActionBinder _binder;               
 
         // built as target sets are built:
         private string _methodName;
@@ -77,17 +74,13 @@ namespace Microsoft.Scripting.Actions.Calls {
         protected OverloadResolver(ActionBinder binder) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-            _binder = binder;
+            Binder = binder;
             _maxAccessedCollapsedArg = -1;
         }
 
-        public ActionBinder Binder {
-            get { return _binder; }
-        }
+        public ActionBinder Binder { get; }
 
-        internal List<ParameterExpression> Temps {
-            get { return _temps; }
-        }
+        internal List<ParameterExpression> Temps => _temps;
 
         internal ParameterExpression GetTemporary(Type type, string name) {
             Assert.NotNull(type);
@@ -641,7 +634,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return CompareEquivalentCandidates(one, two);
         }
 
-        internal protected virtual Candidate CompareEquivalentCandidates(ApplicableCandidate one, ApplicableCandidate two) {
+        protected internal virtual Candidate CompareEquivalentCandidates(ApplicableCandidate one, ApplicableCandidate two) {
             Candidate ret = CompareEquivalentParameters(one.Method, two.Method);
             if (ret.Chosen()) {
                 return ret;
@@ -675,7 +668,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 case -1: return Candidate.One;
             }
 
-            // prefer methods using earlier conversions rules to later ones            
+            // prefer methods using earlier conversions rules to later ones
             for (int i = Int32.MaxValue; i >= 0; ) {
                 int maxPriorityThis = FindMaxPriority(one.ArgBuilders, i);
                 int maxPriorityOther = FindMaxPriority(two.ArgBuilders, i);
@@ -715,7 +708,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (ArgBuilder ab in abs) {
                 if (ab.Priority > ceiling) continue;
 
-                max = System.Math.Max(max, ab.Priority);
+                max = Math.Max(max, ab.Priority);
             }
             return max;
         }
@@ -895,7 +888,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 return true;
             }
 
-            return _binder.CanConvertFrom(fromType, toType, toParameter.ProhibitNull, level);
+            return Binder.CanConvertFrom(fromType, toType, toParameter.ProhibitNull, level);
         }
 
         /// <summary>
@@ -909,14 +902,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Provides ordering for two parameter types if there is no conversion between the two parameter types.
         /// </summary>
         public virtual Candidate PreferConvert(Type t1, Type t2) {
-            return _binder.PreferConvert(t1, t2);
+            return Binder.PreferConvert(t1, t2);
         }
 
         // TODO: revisit
         public virtual Expression Convert(DynamicMetaObject metaObject, Type restrictedType, ParameterInfo info, Type toType) {
             Assert.NotNull(metaObject, toType);
 
-            return _binder.ConvertExpression(metaObject.Expression, toType, ConversionResultKind.ExplicitCast, null);
+            return Binder.ConvertExpression(metaObject.Expression, toType, ConversionResultKind.ExplicitCast, null);
         }
 
         // TODO: revisit
@@ -994,7 +987,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             return ErrorInfo.FromException(
-                Ast.Call(
+                Expression.Call(
                     typeof(BinderOps).GetMethod("TypeErrorForIncorrectArgumentCount", new Type[] {
                                 typeof(string), typeof(int), typeof(int) , typeof(int), typeof(int), typeof(bool), typeof(bool)
                             }),
@@ -1021,7 +1014,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 sb.Append('(');
                 foreach (Type t in types) {
                     sb.Append(innerComma);
-                    sb.Append(_binder.GetTypeName(t));
+                    sb.Append(Binder.GetTypeName(t));
                     innerComma = ", ";
                 }
 
@@ -1030,7 +1023,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             return ErrorInfo.FromException(
-                Ast.Call(
+                Expression.Call(
                     typeof(BinderOps).GetMethod("SimpleTypeError"),
                     AstUtils.Constant(sb.ToString(), typeof(string))
                 )
@@ -1044,10 +1037,10 @@ namespace Microsoft.Scripting.Actions.Calls {
                         foreach (ConversionResult cr in cf.ConversionResults) {
                             if (cr.Failed) {
                                 return ErrorInfo.FromException(
-                                    Ast.Call(
+                                    Expression.Call(
                                         typeof(BinderOps).GetMethod("SimpleTypeError"),
                                         AstUtils.Constant(
-                                            $"expected {_binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(_binder)}")
+                                            $"expected {Binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(Binder)}")
                                     )
                                 );
                             }
@@ -1055,25 +1048,29 @@ namespace Microsoft.Scripting.Actions.Calls {
                         break;
                     case CallFailureReason.DuplicateKeyword:
                         return ErrorInfo.FromException(
-                                Ast.Call(
-                                    typeof(BinderOps).GetMethod("TypeErrorForDuplicateKeywordArgument"),
-                                    AstUtils.Constant(target.Name, typeof(string)),
-                                    AstUtils.Constant(cf.KeywordArguments[0], typeof(string))    // TODO: Report all bad arguments?
+                            Expression.Call(
+                                typeof(BinderOps).GetMethod("TypeErrorForDuplicateKeywordArgument"),
+                                AstUtils.Constant(target.Name, typeof(string)),
+                                AstUtils.Constant(
+                                    cf.KeywordArguments[0],
+                                    typeof(string)) // TODO: Report all bad arguments?
                             )
                         );
                     case CallFailureReason.UnassignableKeyword:
                         return ErrorInfo.FromException(
-                                Ast.Call(
-                                    typeof(BinderOps).GetMethod("TypeErrorForExtraKeywordArgument"),
-                                    AstUtils.Constant(target.Name, typeof(string)),
-                                    AstUtils.Constant(cf.KeywordArguments[0], typeof(string))    // TODO: Report all bad arguments?
+                            Expression.Call(
+                                typeof(BinderOps).GetMethod("TypeErrorForExtraKeywordArgument"),
+                                AstUtils.Constant(target.Name, typeof(string)),
+                                AstUtils.Constant(
+                                    cf.KeywordArguments[0],
+                                    typeof(string)) // TODO: Report all bad arguments?
                             )
                         );
                     case CallFailureReason.TypeInference:
                         return ErrorInfo.FromException(
-                                Ast.Call(
-                                    typeof(BinderOps).GetMethod("TypeErrorForNonInferrableMethod"),
-                                    AstUtils.Constant(target.Name, typeof(string))
+                            Expression.Call(
+                                typeof(BinderOps).GetMethod("TypeErrorForNonInferrableMethod"),
+                                AstUtils.Constant(target.Name, typeof(string))
                             )
                         );
                     default: throw new InvalidOperationException();
@@ -1083,12 +1080,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private ErrorInfo MakeInvalidArgumentsError() {
-            return ErrorInfo.FromException(Ast.Call(typeof(BinderOps).GetMethod("SimpleTypeError"), AstUtils.Constant("Invalid arguments.")));
+            return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod("SimpleTypeError"), AstUtils.Constant("Invalid arguments.")));
         }
 
         private ErrorInfo MakeNoCallableMethodError() {
             return ErrorInfo.FromException(
-                Ast.New(typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) }), AstUtils.Constant("No callable method."))
+                Expression.New(typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) }), AstUtils.Constant("No callable method."))
             );
         }
 
@@ -1162,10 +1159,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (_maxAccessedCollapsedArg >= 0) {
                 Type[] collapsedTypes = GetAccessedCollapsedArgTypes();
 
-                return Ast.Call(null, typeof(CompilerHelpers).GetMethod("TypesEqual"),
+                return Expression.Call(null, typeof(CompilerHelpers).GetMethod("TypesEqual"),
                     GetSplattedExpression(),
                     AstUtils.Constant(_actualArguments.ToSplattedItemIndex(0)),
-                    Ast.Constant(collapsedTypes)
+                    Expression.Constant(collapsedTypes)
                 );
             }
 
@@ -1179,7 +1176,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public override string ToString() {
-            string res = "";
+            string res = string.Empty;
             foreach (CandidateSet set in _candidateSets.Values) {
                 res += set + Environment.NewLine;
             }

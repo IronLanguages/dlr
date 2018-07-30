@@ -2,18 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Reflection;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Linq.Expressions;
+using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;
 
     internal sealed class ParamsArgBuilder : ArgBuilder {
         private readonly int _start;
@@ -34,15 +32,11 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         // Consumes all expanded arguments. 
         // Collapsed arguments are fetched from resolver provided storage, not from actual argument expressions.
-        public override int ConsumedArgumentCount {
-            get { return _expandedCount; }
-        }
+        public override int ConsumedArgumentCount => _expandedCount;
 
-        public override int Priority {
-            get { return 4; }
-        }
+        public override int Priority => 4;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             var actualArgs = resolver.GetActualArguments();
             int splatIndex = actualArgs.SplatIndex;
             int collapsedCount = actualArgs.CollapsedCount;
@@ -51,7 +45,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             var result = new Expression[2 + _expandedCount + (collapsedCount > 0 ? 2 : 0)];
             var arrayVariable = resolver.GetTemporary(_elementType.MakeArrayType(), "a");
             int e = 0;
-            result[e++] = Ast.Assign(arrayVariable, Ast.NewArrayBounds(_elementType, Ast.Constant(_expandedCount + collapsedCount)));
+            result[e++] = Expression.Assign(arrayVariable, Expression.NewArrayBounds(_elementType, Expression.Constant(_expandedCount + collapsedCount)));
 
             int itemIndex = 0;
             int i = _start;
@@ -63,17 +57,17 @@ namespace Microsoft.Scripting.Actions.Calls {
                     // for (int t = 0; t <= {collapsedCount}; t++) {
                     //   a[{itemIndex} + t] = CONVERT<ElementType>(list.get_Item({splatIndex - firstSplatted} + t))
                     // }
-                    result[e++] = Ast.Assign(indexVariable, AstUtils.Constant(0));
+                    result[e++] = Expression.Assign(indexVariable, AstUtils.Constant(0));
                     result[e++] = AstUtils.Loop(
-                        Ast.LessThan(indexVariable, Ast.Constant(collapsedCount)),
+                        Expression.LessThan(indexVariable, Expression.Constant(collapsedCount)),
                         // TODO: not implemented in the old interpreter
                         // Ast.PostIncrementAssign(indexVariable),
-                        Ast.Assign(indexVariable, Ast.Add(indexVariable, AstUtils.Constant(1))),
-                        Ast.Assign(
-                            Ast.ArrayAccess(arrayVariable, Ast.Add(AstUtils.Constant(itemIndex), indexVariable)),
+                        Expression.Assign(indexVariable, Expression.Add(indexVariable, AstUtils.Constant(1))),
+                        Expression.Assign(
+                            Expression.ArrayAccess(arrayVariable, Expression.Add(AstUtils.Constant(itemIndex), indexVariable)),
                             resolver.Convert(
                                 new DynamicMetaObject(
-                                    resolver.GetSplattedItemExpression(Ast.Add(AstUtils.Constant(splatIndex - firstSplatted), indexVariable)), 
+                                    resolver.GetSplattedItemExpression(Expression.Add(AstUtils.Constant(splatIndex - firstSplatted), indexVariable)), 
                                     BindingRestrictions.Empty
                                 ),
                                 null,
@@ -94,8 +88,8 @@ namespace Microsoft.Scripting.Actions.Calls {
                 Debug.Assert(!hasBeenUsed[i]);
                 hasBeenUsed[i] = true;                
 
-                result[e++] = Ast.Assign(
-                    Ast.ArrayAccess(arrayVariable, AstUtils.Constant(itemIndex++)),
+                result[e++] = Expression.Assign(
+                    Expression.ArrayAccess(arrayVariable, AstUtils.Constant(itemIndex++)),
                     resolver.Convert(args.GetObject(i), args.GetType(i), ParameterInfo, _elementType)
                 );
 
@@ -105,14 +99,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             result[e++] = arrayVariable;
 
             Debug.Assert(e == result.Length);
-            return Ast.Block(result);
+            return Expression.Block(result);
         }
 
-        public override Type Type {
-            get {
-                return _elementType.MakeArrayType();
-            }
-        }
+        public override Type Type => _elementType.MakeArrayType();
 
         public override ArgBuilder Clone(ParameterInfo newType) {
             return new ParamsArgBuilder(newType, newType.ParameterType.GetElementType(), _start, _expandedCount);

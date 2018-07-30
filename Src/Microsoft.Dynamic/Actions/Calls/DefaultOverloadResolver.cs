@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
+
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
@@ -60,27 +60,17 @@ namespace Microsoft.Scripting.Actions {
             _callType = callType;
         }
 
-        public static OverloadResolverFactory Factory {
-            get {
-                return _factory;
-            }
-        }
+        public static OverloadResolverFactory Factory => _factory;
 
-        public CallSignature Signature {
-            get { return _signature; } 
-        }
+        public CallSignature Signature => _signature;
 
-        public IList<DynamicMetaObject> Arguments {
-            get { return _args; }
-        }
+        public IList<DynamicMetaObject> Arguments => _args;
 
-        public CallTypes CallType {
-            get { return _callType; }
-        }
+        public CallTypes CallType => _callType;
 
         protected internal override BitArray MapSpecialParameters(ParameterMapping mapping) {
             //  CallType        call-site   m static                  m instance         m operator/extension
-            //  implicit inst.  T.m(a,b)    Ast.Call(null, [a, b])    Ast.Call(a, [b])   Ast.Call(null, [a, b])   
+            //  implicit inst.  T.m(a,b)    Ast.Call(null, [a, b])    Ast.Call(a, [b])   Ast.Call(null, [a, b])
             //  none            a.m(b)      Ast.Call(null, [b])       Ast.Call(a, [b])   Ast.Call(null, [a, b])
 
             if (!mapping.Overload.IsStatic) {
@@ -94,7 +84,7 @@ namespace Microsoft.Scripting.Actions {
             return null;
         }
 
-        internal protected override Candidate CompareEquivalentCandidates(ApplicableCandidate one, ApplicableCandidate two) {
+        protected internal override Candidate CompareEquivalentCandidates(ApplicableCandidate one, ApplicableCandidate two) {
             var result = base.CompareEquivalentCandidates(one, two);
             if (result.Chosen()) {
                 return result;

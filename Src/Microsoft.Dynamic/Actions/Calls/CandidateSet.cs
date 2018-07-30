@@ -2,16 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Dynamic;
-using Microsoft.Scripting.Actions;
-using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Generation;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>
@@ -28,13 +20,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             _candidates = new List<MethodCandidate>();
         }
 
-        internal List<MethodCandidate> Candidates {
-            get { return _candidates; }
-        }
+        internal List<MethodCandidate> Candidates => _candidates;
 
-        internal int Arity {
-            get { return _arity; }
-        }
+        internal int Arity => _arity;
 
         internal bool IsParamsDictionaryOnly() {
             foreach (MethodCandidate candidate in _candidates) {

@@ -2,27 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
-using System.Collections;
 
 namespace Microsoft.Scripting.Actions.Calls {
     public sealed class ActualArguments {
-        private readonly IList<DynamicMetaObject> _args;     
-        private readonly IList<DynamicMetaObject> _namedArgs;
-        private readonly IList<string> _names;             
-        
-        // Index into _args array indicating the first post-splat argument or -1 of there are no splatted arguments.
-        // For call site f(a,b,*c,d) and preSplatLimit == 1 and postSplatLimit == 2
-        // args would be (a,b,c[0],c[n-2],c[n-1],d) with splat index 3, where n = c.Count.
-        private readonly int _splatIndex;
-        private readonly int _firstSplattedArg;
-        private readonly int _collapsedCount;
-
-        // The number of hidden arguments (used for error reporting).
-        private readonly int _hiddenCount;
-
         public ActualArguments(IList<DynamicMetaObject> args, IList<DynamicMetaObject> namedArgs, IList<string> argNames,
             int hiddenCount, int collapsedCount, int firstSplattedArg, int splatIndex) {
 
@@ -36,82 +23,68 @@ namespace Microsoft.Scripting.Actions.Calls {
             ContractUtils.Requires(collapsedCount >= 0);
             ContractUtils.Requires(hiddenCount >= 0);
 
-            _args = args;
-            _namedArgs = namedArgs;
-            _names = argNames;
-            _collapsedCount = collapsedCount;
-            _splatIndex = collapsedCount > 0 ? splatIndex : -1;
-            _firstSplattedArg = firstSplattedArg;
-            _hiddenCount = hiddenCount;
+            Arguments = args;
+            NamedArguments = namedArgs;
+            ArgNames = argNames;
+            CollapsedCount = collapsedCount;
+            SplatIndex = collapsedCount > 0 ? splatIndex : -1;
+            FirstSplattedArg = firstSplattedArg;
+            HiddenCount = hiddenCount;
         }
 
-        public int CollapsedCount {
-            get { return _collapsedCount; }
-        }
+        public int CollapsedCount { get; }
 
-        public int SplatIndex {
-            get { return _splatIndex; }
-        }
+        /// <summary>
+        /// Gets the index into _args array indicating the first post-splat argument or -1 of there are no splatted arguments.
+        /// For call site f(a,b,*c,d) and preSplatLimit == 1 and postSplatLimit == 2
+        /// args would be (a,b,c[0],c[n-2],c[n-1],d) with splat index 3, where n = c.Count.
+        /// </summary>
+        public int SplatIndex { get; }
 
-        public int FirstSplattedArg {
-            get { return _firstSplattedArg; }
-        }
+        public int FirstSplattedArg { get; }
 
-        public IList<string> ArgNames {
-            get { return _names; }
-        }
+        public IList<string> ArgNames { get; }
 
-        public IList<DynamicMetaObject> NamedArguments {
-            get { return _namedArgs; }
-        }
+        public IList<DynamicMetaObject> NamedArguments { get; }
 
-        public IList<DynamicMetaObject> Arguments {
-            get { return _args; }
-        }
+        public IList<DynamicMetaObject> Arguments { get; }
 
         internal int ToSplattedItemIndex(int collapsedArgIndex) {
-            return _splatIndex - _firstSplattedArg + collapsedArgIndex;
+            return SplatIndex - FirstSplattedArg + collapsedArgIndex;
         }
 
         /// <summary>
         /// The number of arguments not counting the collapsed ones.
         /// </summary>
-        public int Count {
-            get { return _args.Count + _namedArgs.Count; }
-        }
+        public int Count => Arguments.Count + NamedArguments.Count;
 
-        public int HiddenCount {
-            get { return _hiddenCount; }
-        }
+        /// <summary>
+        /// Gets the number of hidden arguments (used for error reporting).
+        /// </summary>
+        public int HiddenCount { get; }
 
         /// <summary>
         /// Gets the total number of visible arguments passed to the call site including collapsed ones.
         /// </summary>
-        public int VisibleCount {
-            get { return Count + _collapsedCount - _hiddenCount; }
-        }
+        public int VisibleCount => Count + CollapsedCount - HiddenCount;
 
-        public DynamicMetaObject this[int index] {
-            get {
-                return (index < _args.Count) ? _args[index] : _namedArgs[index - _args.Count];
-            }
-        }
+        public DynamicMetaObject this[int index] =>
+            index < Arguments.Count ? Arguments[index] : NamedArguments[index - Arguments.Count];
 
         /// <summary>
         /// Binds named arguments to the parameters. Returns a permutation of indices that captures the relationship between 
         /// named arguments and their corresponding parameters. Checks for duplicate and unbound named arguments.
-        /// 
         /// Ensures that for all i: namedArgs[i] binds to parameters[args.Length + bindingPermutation[i]] 
         /// </summary>
         internal bool TryBindNamedArguments(MethodCandidate method, out ArgumentBinding binding, out CallFailure failure) {
-            if (_namedArgs.Count == 0) {
-                binding = new ArgumentBinding(_args.Count);
+            if (NamedArguments.Count == 0) {
+                binding = new ArgumentBinding(Arguments.Count);
                 failure = null;
                 return true;
             }
 
-            var permutation = new int[_namedArgs.Count];
-            var boundParameters = new BitArray(_namedArgs.Count);
+            var permutation = new int[NamedArguments.Count];
+            var boundParameters = new BitArray(NamedArguments.Count);
 
             for (int i = 0; i < permutation.Length; i++) {
                 permutation[i] = -1;
@@ -120,10 +93,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             List<string> unboundNames = null;
             List<string> duppedNames = null;
 
-            int positionalArgCount = _args.Count;
+            int positionalArgCount = Arguments.Count;
 
-            for (int i = 0; i < _names.Count; i++) {
-                int paramIndex = method.IndexOfParameter(_names[i]);
+            for (int i = 0; i < ArgNames.Count; i++) {
+                int paramIndex = method.IndexOfParameter(ArgNames[i]);
                 if (paramIndex >= 0) {
                     int nameIndex = paramIndex - positionalArgCount;
 
@@ -132,7 +105,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         if (duppedNames == null) {
                             duppedNames = new List<string>();
                         }
-                        duppedNames.Add(_names[i]);
+                        duppedNames.Add(ArgNames[i]);
                     } else {
                         permutation[i] = nameIndex;
                         boundParameters[nameIndex] = true;
@@ -141,7 +114,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     if (unboundNames == null) {
                         unboundNames = new List<string>();
                     }
-                    unboundNames.Add(_names[i]);
+                    unboundNames.Add(ArgNames[i]);
                 }
             }
 

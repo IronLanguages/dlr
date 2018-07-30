@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
@@ -24,15 +21,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             Assert.NotNull(info);
         }
 
-        public override int Priority {
-            get { return 2; }
-        }
+        public override int Priority => 2;
 
-        public override int ConsumedArgumentCount {
-            get { return 0; }
-        }
+        public override int ConsumedArgumentCount => 0;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             object value = ParameterInfo.GetDefaultValue();
             if (value is Missing) {
                 value = CompilerHelpers.GetMissingValue(ParameterInfo.ParameterType);

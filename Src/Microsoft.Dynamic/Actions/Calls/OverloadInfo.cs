@@ -4,12 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using System.Collections.ObjectModel;
-using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Generation;
 using System.Diagnostics;
+using System.Reflection;
+
+using Microsoft.Scripting.Generation;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     /// <summary>
@@ -24,9 +24,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public abstract string Name { get; }
         public abstract IList<ParameterInfo> Parameters { get; }
 
-        public virtual int ParameterCount {
-            get { return Parameters.Count; }
-        }
+        public virtual int ParameterCount => Parameters.Count;
 
         /// <summary>
         /// Null for constructors.
@@ -66,62 +64,34 @@ namespace Microsoft.Scripting.Actions.Calls {
         public abstract IList<Type> GenericArguments { get; }
         public abstract OverloadInfo MakeGenericMethod(Type[] genericArguments);
 
-        public virtual CallingConventions CallingConvention {
-            get { return CallingConventions.Standard; }
-        }
+        public virtual CallingConventions CallingConvention => CallingConventions.Standard;
 
-        public virtual MethodBase ReflectionInfo {
-            get { return null; }
-        }
+        public virtual MethodBase ReflectionInfo => null;
 
         // TODO: remove
-        public virtual bool IsInstanceFactory { 
-            get { return IsConstructor; } 
-        }
+        public virtual bool IsInstanceFactory => IsConstructor;
 
-        public bool IsPrivate {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Private); }
-        }
+        public bool IsPrivate => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Private;
 
-        public bool IsPublic {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public); }
-        }
+        public bool IsPublic => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public;
 
-        public bool IsAssembly {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Assembly); }
-        }
+        public bool IsAssembly => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Assembly;
 
-        public bool IsFamily {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Family); }
-        }
+        public bool IsFamily => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Family;
 
-        public bool IsFamilyOrAssembly {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.FamORAssem); }
-        }
+        public bool IsFamilyOrAssembly => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.FamORAssem;
 
-        public bool IsFamilyAndAssembly {
-            get { return ((Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.FamANDAssem); }
-        }
+        public bool IsFamilyAndAssembly => (Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.FamANDAssem;
 
-        public bool IsProtected {
-            get { return IsFamily || IsFamilyOrAssembly; }
-        }
+        public bool IsProtected => IsFamily || IsFamilyOrAssembly;
 
-        public bool IsStatic {
-            get { return IsConstructor || (Attributes & MethodAttributes.Static) != 0; }
-        }
+        public bool IsStatic => IsConstructor || (Attributes & MethodAttributes.Static) != 0;
 
-        public bool IsVirtual {
-            get { return (Attributes & MethodAttributes.Virtual) != 0; }
-        }
+        public bool IsVirtual => (Attributes & MethodAttributes.Virtual) != 0;
 
-        public bool IsSpecialName {
-            get { return (Attributes & MethodAttributes.SpecialName) != 0; }
-        }
+        public bool IsSpecialName => (Attributes & MethodAttributes.SpecialName) != 0;
 
-        public bool IsFinal {
-            get { return (Attributes & MethodAttributes.Final) != 0; }
-        }
+        public bool IsFinal => (Attributes & MethodAttributes.Final) != 0;
     }
 
     /// <summary>
@@ -152,17 +122,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             _method = method;
         }
 
-        public override MethodBase ReflectionInfo {
-            get { return _method; }
-        }
+        public override MethodBase ReflectionInfo => _method;
 
-        public override string Name {
-            get { return _method.Name; }
-        }
+        public override string Name => _method.Name;
 
-        public override IList<ParameterInfo> Parameters {
-            get { return _parameters ?? (_parameters = new ReadOnlyCollection<ParameterInfo>(_method.GetParameters())); }
-        }
+        public override IList<ParameterInfo> Parameters => _parameters ?? (_parameters = new ReadOnlyCollection<ParameterInfo>(_method.GetParameters()));
 
         public override ParameterInfo ReturnParameter {
             get {
@@ -171,33 +135,19 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
         }
         
-        public override IList<Type> GenericArguments {
-            get { return _genericArguments ?? (_genericArguments = new ReadOnlyCollection<Type>(_method.GetGenericArguments())); }
-        }
+        public override IList<Type> GenericArguments => _genericArguments ?? (_genericArguments = new ReadOnlyCollection<Type>(_method.GetGenericArguments()));
 
-        public override Type DeclaringType {
-            get { return _method.DeclaringType; }
-        }
+        public override Type DeclaringType => _method.DeclaringType;
 
-        public override Type ReturnType {
-            get { return _method.GetReturnType(); }
-        }
+        public override Type ReturnType => _method.GetReturnType();
 
-        public override CallingConventions CallingConvention {
-            get { return _method.CallingConvention; }
-        }
+        public override CallingConventions CallingConvention => _method.CallingConvention;
 
-        public override MethodAttributes Attributes {
-            get { return _method.Attributes; }
-        }
+        public override MethodAttributes Attributes => _method.Attributes;
 
-        public override bool IsInstanceFactory {
-            get { return CompilerHelpers.IsConstructor(_method); }
-        }
+        public override bool IsInstanceFactory => CompilerHelpers.IsConstructor(_method);
 
-        public override bool IsConstructor {
-            get { return _method.IsConstructor; }
-        }
+        public override bool IsConstructor => _method.IsConstructor;
 
         public override bool IsExtension {
             get {
@@ -227,13 +177,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             return false;
         }
 
-        public override bool IsGenericMethod {
-            get { return _method.IsGenericMethod; }
-        }
+        public override bool IsGenericMethod => _method.IsGenericMethod;
 
-        public override bool IsGenericMethodDefinition {
-            get { return _method.IsGenericMethodDefinition; }
-        }
+        public override bool IsGenericMethodDefinition => _method.IsGenericMethodDefinition;
 
         public override bool ContainsGenericParameters {
             get { 

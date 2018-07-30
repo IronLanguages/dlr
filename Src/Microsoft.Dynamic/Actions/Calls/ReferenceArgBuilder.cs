@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 using RuntimeHelpers = Microsoft.Scripting.Runtime.ScriptingRuntimeHelpers;
@@ -36,11 +36,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new ReferenceArgBuilder(newType, elementType, typeof(StrongBox<>).MakeGenericType(elementType), Index);
         }
 
-        public override int Priority {
-            get { return 5; }
-        }
+        public override int Priority => 5;
 
-        internal protected override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             if (_tmp == null) {
                 _tmp = resolver.GetTemporary(_elementType, "outParam");
             }
@@ -79,8 +77,6 @@ namespace Microsoft.Scripting.Actions.Calls {
             );
         }
 
-        internal override Expression ByRefArgument {
-            get { return _tmp; }
-        }
+        internal override Expression ByRefArgument => _tmp;
     }
 }

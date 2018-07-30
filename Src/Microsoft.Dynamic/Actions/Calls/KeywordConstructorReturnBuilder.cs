@@ -2,18 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
-    using Ast = Expression;    
 
     /// <summary>
     /// Updates fields/properties of the returned value with unused keyword parameters.
@@ -40,7 +37,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             ParameterExpression tmp = resolver.GetTemporary(ret.Type, "val");
             sets.Add(
-                Ast.Assign(tmp, ret)
+                Expression.Assign(tmp, ret)
             );
 
             for (int i = 0; i < _indexesUsed.Length; i++) {
@@ -51,16 +48,16 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if ((fi = _membersSet[i] as FieldInfo) != null) {
                     if (!fi.IsLiteral && !fi.IsInitOnly) {
                         sets.Add(
-                            Ast.Assign(
-                                Ast.Field(tmp, fi),
+                            Expression.Assign(
+                                Expression.Field(tmp, fi),
                                 ConvertToHelper(resolver, value, fi.FieldType)
                             )
                         );
                     } else {
                         // call a helper which throws the error but "returns object"
                         sets.Add(
-                            Ast.Convert(
-                                Ast.Call(
+                            Expression.Convert(
+                                Expression.Call(
                                     typeof(ScriptingRuntimeHelpers).GetMethod("ReadOnlyAssignError"),
                                     AstUtils.Constant(true),
                                     AstUtils.Constant(fi.Name)
@@ -72,16 +69,16 @@ namespace Microsoft.Scripting.Actions.Calls {
                 } else if ((pi = _membersSet[i] as PropertyInfo) != null) {
                     if (pi.GetSetMethod(_privateBinding) != null) {
                             sets.Add(
-                                Ast.Assign(
-                                    Ast.Property(tmp, pi),
+                                Expression.Assign(
+                                    Expression.Property(tmp, pi),
                                     ConvertToHelper(resolver, value, pi.PropertyType)
                                 )
                             );
                         } else {
                             // call a helper which throws the error but "returns object"
                             sets.Add(
-                                Ast.Convert(
-                                    Ast.Call(
+                                Expression.Convert(
+                                    Expression.Call(
                                         typeof(ScriptingRuntimeHelpers).GetMethod("ReadOnlyAssignError"),
                                         AstUtils.Constant(false),
                                         AstUtils.Constant(pi.Name)
@@ -97,7 +94,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 tmp
             );
 
-            Expression newCall = Ast.Block(
+            Expression newCall = Expression.Block(
                 sets.ToArray()
             );
 

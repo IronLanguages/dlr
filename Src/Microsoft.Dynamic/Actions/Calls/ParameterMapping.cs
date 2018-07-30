@@ -9,52 +9,42 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.Scripting.Generation;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     public sealed class ParameterMapping {
         private readonly OverloadResolver _resolver;
-        private readonly OverloadInfo _overload;
         private readonly IList<string> _argNames;
 
         private readonly List<ParameterWrapper> _parameters;
         private readonly List<ArgBuilder> _arguments;
-
-        // the next argument to consume
-        private int _argIndex;
-        
         private List<int> _returnArgs;
         private InstanceBuilder _instanceBuilder;
         private ReturnBuilder _returnBuilder;
 
-        private List<ArgBuilder> _defaultArguments;
+        private readonly List<ArgBuilder> _defaultArguments;
         private bool _hasByRef;
         private bool _hasDefaults;
         private ParameterWrapper _paramsDict;
 
-        public OverloadInfo Overload { 
-            get { return _overload; }
-        }
+        public OverloadInfo Overload { get; }
 
-        public int ArgIndex {
-            get { return _argIndex; }
-        } 
+        /// <summary>
+        /// Gets the next argument to consume.
+        /// </summary>
+        public int ArgIndex { get; private set; }
 
         [Obsolete("Use Overload.ReflectionInfo instead")]
-        public MethodBase Method { 
-            get { return _overload.ReflectionInfo; } 
-        }
+        public MethodBase Method => Overload.ReflectionInfo;
 
         [Obsolete("Use Overload.Parameters instead")]
-        public ParameterInfo[] ParameterInfos { 
-            get { return ArrayUtils.MakeArray(_overload.Parameters); } 
-        }
+        public ParameterInfo[] ParameterInfos => ArrayUtils.MakeArray(Overload.Parameters);
 
         internal ParameterMapping(OverloadResolver resolver, OverloadInfo method, IList<string> argNames) {
             Assert.NotNull(resolver, method);
             _resolver = resolver;
-            _overload = method;
+            Overload = method;
             _argNames = argNames;
             _parameters = new List<ParameterWrapper>();
             _arguments = new List<ArgBuilder>(method.ParameterCount);
@@ -64,7 +54,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         internal void MapParameters(bool reduceByRef) {
             if (reduceByRef) {
                 _returnArgs = new List<int>();
-                if (_overload.ReturnType != typeof(void)) {
+                if (Overload.ReturnType != typeof(void)) {
                     _returnArgs.Add(-1);
                 }
             }
@@ -75,7 +65,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 _instanceBuilder = new InstanceBuilder(-1);
             }
 
-            foreach (var parameter in _overload.Parameters) {
+            foreach (var parameter in Overload.Parameters) {
                 if (!IsSpecialParameter(specialParameters, parameter.Position)) {
                     if (reduceByRef) {
                         MapParameterReduceByRef(parameter);
@@ -96,7 +86,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             ContractUtils.Requires(_instanceBuilder == null);
             ContractUtils.Requires(builder.HasValue);
             _instanceBuilder = builder;
-            _argIndex += builder.ConsumedArgumentCount;
+            ArgIndex += builder.ConsumedArgumentCount;
         }
 
         // TODO: We might want to add bitmap of all consumed arguments and allow to consume an arbitrary argument, not just the next one.
@@ -104,7 +94,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             ContractUtils.Requires(builder.ConsumedArgumentCount != ArgBuilder.AllArguments);
 
             _arguments.Add(builder);
-            _argIndex += builder.ConsumedArgumentCount;
+            ArgIndex += builder.ConsumedArgumentCount;
         }
 
         public void AddParameter(ParameterWrapper parameter) {
@@ -116,7 +106,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             int nameIndex = _argNames.IndexOf(pi.Name);
             if (nameIndex == -1) {
                 // positional argument, we simply consume the next argument
-                indexForArgBuilder = _argIndex++;
+                indexForArgBuilder = ArgIndex++;
             } else {
                 // keyword argument, we just tell the simple arg builder to consume arg 0.
                 // KeywordArgBuilder will then pass in the correct single argument based 
@@ -152,7 +142,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 Type refType = typeof(StrongBox<>).MakeGenericType(elementType);
                 _parameters.Add(new ParameterWrapper(pi, refType, pi.Name, ParameterBindingFlags.ProhibitNull));
                 ab = new ReferenceArgBuilder(pi, elementType, refType, indexForArgBuilder);
-            } else if (pi.Position == 0 && _overload.IsExtension) {
+            } else if (pi.Position == 0 && Overload.IsExtension) {
                 _parameters.Add(new ParameterWrapper(pi, pi.ParameterType, pi.Name, ParameterBindingFlags.IsHidden));
                 ab = new SimpleArgBuilder(pi, pi.ParameterType, indexForArgBuilder, false, false);
             } else {
@@ -184,7 +174,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (!pi.IsOutParameter()) {
                 nameIndex = _argNames.IndexOf(pi.Name);
                 if (nameIndex == -1) {
-                    indexForArgBuilder = _argIndex++;
+                    indexForArgBuilder = ArgIndex++;
                 }
             }
 
@@ -212,15 +202,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private ParameterWrapper CreateParameterWrapper(ParameterInfo info) {
-            bool isParamArray = _overload.IsParamArray(info.Position);
-            bool isParamDict = !isParamArray && _overload.IsParamDictionary(info.Position);
-            bool prohibitsNullItems = (isParamArray || isParamDict) && _overload.ProhibitsNullItems(info.Position);
+            bool isParamArray = Overload.IsParamArray(info.Position);
+            bool isParamDict = !isParamArray && Overload.IsParamDictionary(info.Position);
+            bool prohibitsNullItems = (isParamArray || isParamDict) && Overload.ProhibitsNullItems(info.Position);
 
             return new ParameterWrapper(
                 info,
                 info.ParameterType,
                 info.Name,
-                (_overload.ProhibitsNull(info.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
+                (Overload.ProhibitsNull(info.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
                 (prohibitsNullItems ? ParameterBindingFlags.ProhibitNullItems : 0) |
                 (isParamArray ? ParameterBindingFlags.IsParamArray : 0) |
                 (isParamDict ? ParameterBindingFlags.IsParamDictionary : 0)
@@ -239,7 +229,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         internal MethodCandidate CreateCandidate() {
-            return new MethodCandidate(_resolver, _overload, _parameters, _paramsDict, _returnBuilder, _instanceBuilder, _arguments, null);
+            return new MethodCandidate(_resolver, Overload, _parameters, _paramsDict, _returnBuilder, _instanceBuilder, _arguments, null);
         }
 
         internal MethodCandidate CreateByRefReducedCandidate() {
@@ -247,7 +237,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 return null;
             }
 
-            var reducedMapping = new ParameterMapping(_resolver, _overload, _argNames);
+            var reducedMapping = new ParameterMapping(_resolver, Overload, _argNames);
             reducedMapping.MapParameters(true);
             return reducedMapping.CreateCandidate();
         }
@@ -287,14 +277,14 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             // shift any arguments forward that need to be...
-            int curArg = _overload.IsStatic ? 0 : 1;
+            int curArg = Overload.IsStatic ? 0 : 1;
             for (int i = 0; i < defaultArgBuilders.Count; i++) {
                 if (defaultArgBuilders[i] is SimpleArgBuilder sab) {
                     defaultArgBuilders[i] = sab.MakeCopy(curArg++);
                 }
             }
 
-            return new MethodCandidate(_resolver, _overload, necessaryParams, _paramsDict, _returnBuilder, _instanceBuilder, defaultArgBuilders, null);
+            return new MethodCandidate(_resolver, Overload, necessaryParams, _paramsDict, _returnBuilder, _instanceBuilder, defaultArgBuilders, null);
         }
 
         #endregion
@@ -304,9 +294,9 @@ namespace Microsoft.Scripting.Actions.Calls {
         private ReturnBuilder MakeReturnBuilder(BitArray specialParameters) {
             ReturnBuilder returnBuilder = (_returnArgs != null) ?
                 new ByRefReturnBuilder(_returnArgs) :
-                new ReturnBuilder(_overload.ReturnType);
+                new ReturnBuilder(Overload.ReturnType);
             
-            if (_argNames.Count > 0 && _resolver.AllowMemberInitialization(_overload)) {
+            if (_argNames.Count > 0 && _resolver.AllowMemberInitialization(Overload)) {
                 List<string> unusedNames = GetUnusedArgNames(specialParameters);
                 List<MemberInfo> bindableMembers = GetBindableMembers(returnBuilder.ReturnType, unusedNames);
                 if (unusedNames.Count == bindableMembers.Count) {
@@ -363,7 +353,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             List<string> unusedNames = new List<string>();
             foreach (string name in _argNames) {
                 bool found = false;
-                foreach (ParameterInfo pi in _overload.Parameters) {
+                foreach (ParameterInfo pi in Overload.Parameters) {
                     if (!IsSpecialParameter(specialParameters, pi.Position) && pi.Name == name) {
                         found = true;
                         break;
