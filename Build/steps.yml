@@ -82,7 +82,7 @@ steps:
   - task: PublishTestResults@2
     displayName: Publish Test Results
     inputs:
-      testRunner: VSTest
+      testRunner: NUnit
       testResultsFiles: '**/*.trx'
       mergeTestResults: true
       testRunTitle: ${{ parameters.os }}
