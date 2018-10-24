@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 
   <PropertyGroup>
-    <BuildFlavour Condition=" '$(BuildFlavour)' == '' ">Debug</BuildFlavour>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
@@ -22,15 +22,15 @@
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
   
-    <StageDir>$(RootDir)\Package\$(BuildFlavour)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(BuildFlavour)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
+    <StageDir>$(RootDir)\Package\$(Configuration)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
+    <PackageDir>$(RootDir)\Package\$(Configuration)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
   </PropertyGroup>
 
   <PropertyGroup>  
     <BuildProperties>
       RootDir=$(RootDir);
       Solution=$(Solution);
-      BuildFlavour=$(BuildFlavour);
+      Configuration=$(Configuration);
       BinDir=$(BinDir);
       StageDir=$(StageDir);
       BuildSysDir=$(BuildSysDir);
@@ -46,28 +46,28 @@
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
-      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="Rebuild">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Rebuild" 
-      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="Clean">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Clean" 
-      Properties="$(BuildProperties);Configuration=$(BuildFlavour)" />
+      Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="StageBuild" DependsOnTargets="RestoreReferences">
     <MSBuild 
       Projects="$(Solution)" 
       Targets="Build"
-      Properties="$(BuildProperties);Configuration=$(BuildFlavour);Staging=true" />
+      Properties="$(BuildProperties);Configuration=$(Configuration);Staging=true" />
   </Target>
 
   <Target Name="Stage" DependsOnTargets="StageBuild">
@@ -77,8 +77,8 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
     <ItemGroup>
-      <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.dll" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.dll" />
-      <AssemblyFiles Include="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.xml" Exclude="$(BinDir)\$(BuildFlavour)\**\Microsoft.*.Test.xml" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*.dll" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.dll" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*.xml" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.xml" />
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
