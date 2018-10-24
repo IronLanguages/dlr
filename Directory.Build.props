@@ -45,13 +45,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
 
-  <!-- Normally BuildFlavour is set by the build system,
+  <!-- Normally Configuration is set by the build system,
        but they are not when building in Visual Studio (because Build.proj is not
        used). Fill then in here based on the selected configuration. -->
-  <PropertyGroup Condition=" '$(BuildFlavour)' == '' ">
-    <BuildFlavour>Debug</BuildFlavour>
-    <BuildFlavour Condition="'$(Configuration)' == 'FxCop'">Release</BuildFlavour>
-    <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
+  <PropertyGroup Condition=" '$(Configuration)' == '' ">
+    <Configuration>Debug</Configuration>
+    <Configuration Condition="'$(Configuration)' == 'FxCop'">Release</Configuration>
+    <Configuration Condition="'$(Configuration)' == 'Release'">Release</Configuration>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Mono)' == 'true'">
@@ -76,7 +76,7 @@
   </PropertyGroup>
 
   <!-- Release -->
-  <PropertyGroup Condition="'$(BuildFlavour)' == 'Release'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugSymbols>false</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -85,7 +85,7 @@
   </PropertyGroup>
 
   <!-- Debug -->
-  <PropertyGroup Condition="'$(BuildFlavour)' == 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
