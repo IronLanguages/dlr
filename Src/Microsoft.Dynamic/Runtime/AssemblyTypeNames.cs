@@ -11,7 +11,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
 
-    internal struct TypeName {
+    internal struct TypeName : IEquatable<TypeName> {
         internal TypeName(Type type) {
             Debug.Assert(!type.IsNested());
             Namespace = type.Namespace;
@@ -40,12 +40,16 @@ namespace Microsoft.Scripting.Runtime {
             return false;
         }
 
+        public bool Equals(TypeName other) {
+            return Namespace == other.Namespace && Name == other.Name;
+        }
+
         public static bool operator ==(TypeName a, TypeName b) {
-            return a.Namespace == b.Namespace && a.Name == b.Name;
+            return a.Equals(b);
         }
 
         public static bool operator !=(TypeName a, TypeName b) {
-            return !(a == b);
+            return !a.Equals(b);
         }
     }
 
