@@ -4,7 +4,7 @@
     <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
     <RootNamespace>Microsoft.Scripting</RootNamespace>
     <BaseAddress>859832320</BaseAddress>
-    <CodeAnalysisRuleSet>$(AssemblyName).ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\DLR.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
@@ -35,6 +35,13 @@
     <!-- if the file does not exist it's not picked up automatically -->
     <Compile Remove="Properties\CurrentVersion.Generated.cs" />
     <Compile Include="Properties\CurrentVersion.Generated.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(AfterTargetFiles)" />

@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Runtime {
         private readonly LanguageContext _languageContext;
 
         public DynamicDelegateCreator(LanguageContext languageContext) {
-            ContractUtils.RequiresNotNull(languageContext, "languageContext");
+            ContractUtils.RequiresNotNull(languageContext, nameof(languageContext));
 
             _languageContext = languageContext;
         }

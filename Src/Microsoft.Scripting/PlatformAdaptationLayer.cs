@@ -38,7 +38,7 @@ namespace Microsoft.Scripting {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly PlatformAdaptationLayer Default = new PlatformAdaptationLayer();
 
-        [Obsolete]
+        [Obsolete("This will be removed in the the future.")]
         public static readonly bool IsCompactFramework = false;
 
         #region Assembly Loading

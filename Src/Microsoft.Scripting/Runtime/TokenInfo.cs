@@ -22,7 +22,27 @@ namespace Microsoft.Scripting {
             SourceSpan = span;
         }
 
+        public static bool operator ==(TokenInfo first, TokenInfo second) => first.Equals(second);
+
+        public static bool operator !=(TokenInfo first, TokenInfo second) => !first.Equals(second);
+
         #region IEquatable<TokenInfo> Members
+
+        public override int GetHashCode() {
+            unchecked {
+                int hash = Category.GetHashCode();
+                hash = ((hash << 5) + hash) ^ Trigger.GetHashCode();
+                return ((hash << 5) + hash) ^ SourceSpan.GetHashCode();
+            }
+        }
+
+        public override bool Equals(object obj) {
+            if (!(obj is TokenInfo)) {
+                return false;
+            }
+
+            return Equals((TokenInfo)obj);
+        }
 
         public bool Equals(TokenInfo other) {
             return Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;

@@ -24,8 +24,8 @@ namespace Microsoft.Scripting.Runtime {
             Name = typeName;
         }
 
-        internal string Namespace { get; private set; }
-        internal string Name { get; private set; }
+        internal string Namespace { get; }
+        internal string Name { get; }
 
         public override int GetHashCode() {
             int hash = 13 << 20;
