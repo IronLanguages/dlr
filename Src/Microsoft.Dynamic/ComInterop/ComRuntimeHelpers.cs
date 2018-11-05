@@ -436,7 +436,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private static void EmitLoadArg(ILGenerator il, int index) {
-            ContractUtils.Requires(index >= 0, "index");
+            ContractUtils.Requires(index >= 0, nameof(index));
 
             switch (index) {
                 case 0:

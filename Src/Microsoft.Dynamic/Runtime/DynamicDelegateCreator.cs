@@ -8,6 +8,7 @@ using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Utils;
 
@@ -39,7 +40,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <returns>The converted delegate.</returns>
         /// <exception cref="T:Microsoft.Scripting.ArgumentTypeException">The object is either a subclass of Delegate but not the requested type or does not implement IDynamicMetaObjectProvider.</exception>
         public Delegate GetDelegate(object callableObject, Type delegateType) {
-            ContractUtils.RequiresNotNull(delegateType, "delegateType");
+            ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
 
             if (callableObject is Delegate result) {
                 if (!delegateType.IsAssignableFrom(result.GetType())) {
