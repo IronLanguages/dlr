@@ -4,9 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+
 using Microsoft.Scripting.Utils;
 
-namespace Microsoft.Scripting.Runtime {    
+namespace Microsoft.Scripting.Runtime {
     public static class IdDispenser {
         // The one and only comparer instance.
         private static readonly IEqualityComparer<object> _comparer = new WrapperComparer();
@@ -113,7 +114,7 @@ namespace Microsoft.Scripting.Runtime {
             private readonly WeakReference _weakReference;
             private readonly int _hashCode;
 
-            public Wrapper(Object obj, long uniqueId) {
+            public Wrapper(object obj, long uniqueId) {
                 // CF throws doesn't support long weak references (NotSuportedException is thrown)
                 _weakReference = new WeakReference(obj, true);
 
@@ -123,7 +124,7 @@ namespace Microsoft.Scripting.Runtime {
 
             public long Id { get; }
 
-            public Object Target => _weakReference.Target;
+            public object Target => _weakReference.Target;
 
             public override int GetHashCode() {
                 return _hashCode;
@@ -134,7 +135,7 @@ namespace Microsoft.Scripting.Runtime {
         /// WrapperComparer treats Wrapper as transparent envelope 
         /// </summary>
         private sealed class WrapperComparer : IEqualityComparer<object> {            
-            bool IEqualityComparer<object>.Equals(Object x, Object y) {
+            bool IEqualityComparer<object>.Equals(object x, object y) {
                 if (x is Wrapper wx)
                     x = wx.Target;
 
@@ -144,7 +145,7 @@ namespace Microsoft.Scripting.Runtime {
                 return ReferenceEquals(x, y);
             }
 
-            int IEqualityComparer<object>.GetHashCode(Object obj) {
+            int IEqualityComparer<object>.GetHashCode(object obj) {
                 if (obj is Wrapper wobj)
                     return wobj.GetHashCode();
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -83,7 +84,7 @@ namespace Microsoft.Scripting.Runtime {
             if (to == NullableUInt32Type) return ExplicitCastToNullableUInt32(o);
             if (to == NullableUInt64Type) return ExplicitCastToNullableUInt64(o);
 
-            if (to.IsAssignableFrom(o.GetType())) {
+            if (to.IsInstanceOfType(o)) {
                 return o;
             }
 

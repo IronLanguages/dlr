@@ -5,7 +5,7 @@
 #if FEATURE_CODEDOM
 
 using System.CodeDom;
-using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -17,12 +17,11 @@ namespace Microsoft.Scripting.Runtime {
         protected static readonly object SourceSpanKey = typeof(SourceSpan);
 
         // Stores the code as it is generated
-        private PositionTrackingWriter _writer;
-        protected PositionTrackingWriter Writer { get { return _writer; } }
+        protected PositionTrackingWriter Writer { get; private set; }
 
-        abstract protected void WriteExpressionStatement(CodeExpressionStatement s);
-        abstract protected void WriteFunctionDefinition(CodeMemberMethod func);
-        abstract protected string QuoteString(string val);
+        protected abstract void WriteExpressionStatement(CodeExpressionStatement s);
+        protected abstract void WriteFunctionDefinition(CodeMemberMethod func);
+        protected abstract string QuoteString(string val);
 
         public SourceUnit GenerateCode(CodeMemberMethod codeDom, LanguageContext context, string path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(codeDom, nameof(codeDom));
@@ -30,8 +29,8 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.Requires(path == null || path.Length > 0, nameof(path));
 
             // Convert the CodeDom to source code
-            _writer?.Close();
-            _writer = new PositionTrackingWriter();
+            Writer?.Close();
+            Writer = new PositionTrackingWriter();
 
             WriteFunctionDefinition(codeDom);
 
@@ -39,29 +38,29 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private SourceUnit CreateSourceUnit(LanguageContext context, string path, SourceCodeKind kind) {
-            string code = _writer.ToString();
+            string code = Writer.ToString();
             SourceUnit src = context.CreateSnippet(code, path, kind);
-            src.SetLineMapping(_writer.GetLineMap());
+            src.SetLineMapping(Writer.GetLineMap());
             return src;
         }
 
         protected virtual void WriteArgumentReferenceExpression(CodeArgumentReferenceExpression e) {
-            _writer.Write(e.ParameterName);
+            Writer.Write(e.ParameterName);
         }
 
         protected virtual void WriteSnippetExpression(CodeSnippetExpression e) {
-            _writer.Write(e.Value);
+            Writer.Write(e.Value);
         }
 
         protected virtual void WriteSnippetStatement(CodeSnippetStatement s) {
-            _writer.Write(s.Value);
-            _writer.Write('\n');
+            Writer.Write(s.Value);
+            Writer.Write('\n');
         }
 
         protected void WriteStatement(CodeStatement s) {
             // Save statement source location
             if (s.LinePragma != null) {
-                _writer.MapLocation(s.LinePragma);
+                Writer.MapLocation(s.LinePragma);
             }
 
             switch (s) {
@@ -95,27 +94,27 @@ namespace Microsoft.Scripting.Runtime {
             object val = e.Value;
 
             if (val is string strVal) {
-                _writer.Write(QuoteString(strVal));
+                Writer.Write(QuoteString(strVal));
             } else {
-                _writer.Write(val);
+                Writer.Write(val);
             }
         }
 
         protected void WriteCallExpression(CodeMethodInvokeExpression m) {
             if (m.Method.TargetObject != null) {
                 WriteExpression(m.Method.TargetObject);
-                _writer.Write(".");
+                Writer.Write(".");
             }
 
-            _writer.Write(m.Method.MethodName);
-            _writer.Write("(");
+            Writer.Write(m.Method.MethodName);
+            Writer.Write("(");
             for (int i = 0; i < m.Parameters.Count; ++i) {
                 if (i != 0) {
-                    _writer.Write(",");
+                    Writer.Write(",");
                 }
                 WriteExpression(m.Parameters[i]);
             }
-            _writer.Write(")");
+            Writer.Write(")");
         }
     }
 }

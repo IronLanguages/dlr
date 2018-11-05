@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -10,11 +11,11 @@ namespace Microsoft.Scripting.Runtime {
     /// An attribute that is applied to saved ScriptCode's to be used to re-create the ScriptCode
     /// from disk.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public sealed class DlrCachedCodeAttribute : Attribute {
     }
 
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class CachedOptimizedCodeAttribute : Attribute {
         // C# requires a constructor with CLS compliant types:
         public CachedOptimizedCodeAttribute() {

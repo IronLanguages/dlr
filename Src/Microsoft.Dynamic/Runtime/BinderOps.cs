@@ -2,27 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Diagnostics;
-using System.Dynamic;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Utils;
 
-
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// Helper methods that calls are generated to from the default DLR binders.
     /// </summary>
     public static class BinderOps {
-
 
         /// <summary>
         /// Helper function to combine an object array with a sequence of additional parameters that has been splatted for a function call.
@@ -214,7 +210,6 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(eventInfo, nameof(eventInfo));
             return eventInfo.EventHandlerType;
         }
-
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
         public static void SetEvent(EventTracker eventTracker, object value) {

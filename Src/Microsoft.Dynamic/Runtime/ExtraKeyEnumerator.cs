@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     class ExtraKeyEnumerator : CheckedDictionaryEnumerator {
-        private CustomStringDictionary _idDict;
+        private readonly CustomStringDictionary _idDict;
         private int _curIndex = -1;
 
         public ExtraKeyEnumerator(CustomStringDictionary idDict) {

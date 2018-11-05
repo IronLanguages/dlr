@@ -14,6 +14,6 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// A value has been removed from the module.
         /// </summary>
-        Delete,
+        Delete
     }
 }

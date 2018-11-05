@@ -7,7 +7,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Dynamic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -21,8 +21,6 @@ namespace Microsoft.Scripting.Runtime {
         // Whether to allow multiple forms of EOLN. 
         // If false only '\n' is treated as a line separator otherwise '\n', '\r\n' and '\r' are treated as separators.
         private bool _multiEolns;
-        private TextReader _reader;
-
         private char[] _buffer;
 
         // Set to true when the buffer is resized. The contents of the buffer is shifted to the beginning at that point,
@@ -45,17 +43,9 @@ namespace Microsoft.Scripting.Runtime {
         // index of the last+1 character of the current token (token start is _start):
         private int _tokenEnd;
 
-        public TextReader Reader {
-            get {
-                return _reader;
-            }
-        }
-        
-        public bool AtBeginning {
-            get {
-                return _position == 0 && !_bufferResized;
-            }
-        }
+        public TextReader Reader { get; private set; }
+
+        public bool AtBeginning => _position == 0 && !_bufferResized;
 
         public int TokenLength {
             get {
@@ -79,17 +69,9 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public SourceSpan TokenSpan {
-            get {
-                return new SourceSpan(TokenStart, TokenEnd);
-            }
-        }
+        public SourceSpan TokenSpan => new SourceSpan(TokenStart, TokenEnd);
 
-        public SourceLocation TokenStart {
-            get {
-                return _tokenStartLocation;
-            }
-        }
+        public SourceLocation TokenStart => _tokenStartLocation;
 
         public SourceLocation TokenEnd {
             get {
@@ -106,7 +88,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(reader, nameof(reader));
             ContractUtils.Requires(initialCapacity > 0, nameof(initialCapacity));
 
-            _reader = reader;
+            Reader = reader;
 
             if (_buffer == null || _buffer.Length < initialCapacity) {
                 _buffer = new char[initialCapacity];
@@ -201,7 +183,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             // make the buffer full:
-            int count = _reader.Read(_buffer, _end, _buffer.Length - _end);
+            int count = Reader.Read(_buffer, _end, _buffer.Length - _end);
             _end += count;
 
             ClearInvalidChars();
@@ -469,5 +451,5 @@ namespace Microsoft.Scripting.Runtime {
         private void DumpToken() {
             Debug.WriteLine("--> `{0}` {1}", GetTokenString().Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t"), TokenSpan);
         }
-    }    
+    }
 }

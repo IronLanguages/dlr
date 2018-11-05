@@ -11,7 +11,7 @@ namespace Microsoft.Scripting.Runtime {
     /// The name must be a well-formed name such as "Add" that matches the CLS
     /// naming conventions for adding overloads associated with op_* methods.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public sealed class OperatorSlotAttribute : Attribute {
         public OperatorSlotAttribute() { }
     }

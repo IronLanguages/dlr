@@ -8,7 +8,7 @@ namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// Represents an ops-extension method which is used to implement a property.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class PropertyMethodAttribute : Attribute {
         public PropertyMethodAttribute() { }
     }

@@ -26,5 +26,4 @@ namespace Microsoft.Scripting.Runtime {
             return extensible.Value;
         }
     }
-
 }
