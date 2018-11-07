@@ -4,22 +4,16 @@
 
 using System;
 using System.Runtime.Serialization;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public class AmbiguousFileNameException : Exception {
-        private readonly string _firstPath;
-        private readonly string _secondPath;
+        public string FirstPath { get; }
 
-        public string FirstPath {
-            get { return _firstPath; }
-        }
-
-        public string SecondPath {
-            get { return _secondPath; }
-        }
+        public string SecondPath { get; }
 
         public AmbiguousFileNameException(string firstPath, string secondPath)
             : this(firstPath, secondPath, null, null) {
@@ -35,8 +29,8 @@ namespace Microsoft.Scripting {
             ContractUtils.RequiresNotNull(firstPath, nameof(firstPath));
             ContractUtils.RequiresNotNull(secondPath, nameof(secondPath));
 
-            _firstPath = firstPath;
-            _secondPath = secondPath;
+            FirstPath = firstPath;
+            SecondPath = secondPath;
         }
 
 
@@ -46,8 +40,8 @@ namespace Microsoft.Scripting {
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            info.AddValue("firstPath", _firstPath);
-            info.AddValue("secondPath", _secondPath);
+            info.AddValue("firstPath", FirstPath);
+            info.AddValue("secondPath", SecondPath);
 
             base.GetObjectData(info, context);
         }

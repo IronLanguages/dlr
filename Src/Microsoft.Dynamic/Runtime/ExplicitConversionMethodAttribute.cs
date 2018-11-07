@@ -5,7 +5,7 @@
 using System;
 
 namespace Microsoft.Scripting.Runtime {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class ExplicitConversionMethodAttribute : Attribute {
     }
 }

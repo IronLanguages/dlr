@@ -20,5 +20,4 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         Constructor
     }
-
 }

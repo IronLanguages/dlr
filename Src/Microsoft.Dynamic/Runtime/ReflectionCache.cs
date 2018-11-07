@@ -5,8 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
+
 using Microsoft.Scripting.Actions;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -130,7 +131,7 @@ namespace Microsoft.Scripting.Runtime {
 
             public override int GetHashCode() {
                 int res = 6551;
-                foreach (MemberInfo mi in _members) {
+                foreach (MethodBase mi in _members) {
                     res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^ mi.MetadataToken;
                 }
                 res ^= _name.GetHashCode();

@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -154,8 +153,7 @@ namespace Microsoft.Scripting.Runtime {
                 }
 
                 foreach (var key in GetExtraKeys()) {
-                    object value;
-                    if (TryGetExtraValue(key, out value) && value != Uninitialized.Instance) {
+                    if (TryGetExtraValue(key, out object value) && value != Uninitialized.Instance) {
                         res.Add(value);
                     }
                 }
@@ -236,8 +234,7 @@ namespace Microsoft.Scripting.Runtime {
 
                 lock (this) {
                     foreach (var key in GetExtraKeys()) {
-                        object dummy;
-                        if (TryGetExtraValue(key, out dummy) && dummy != Uninitialized.Instance) count++;
+                        if (TryGetExtraValue(key, out object dummy) && dummy != Uninitialized.Instance) count++;
                     }
                 }
 
@@ -245,9 +242,7 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public bool IsReadOnly {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Remove(KeyValuePair<object, object> item) {
             throw new NotImplementedException();
@@ -288,7 +283,7 @@ namespace Microsoft.Scripting.Runtime {
 
         #region IEnumerable Members
 
-        public System.Collections.IEnumerator GetEnumerator() {
+        public IEnumerator GetEnumerator() {
             List<object> l = new List<object>(this.Keys);
             for (int i = 0; i < l.Count; i++) {
                 object baseVal = l[i];
@@ -353,7 +348,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public virtual bool ValueEquals(object other) {
-            if (Object.ReferenceEquals(this, other)) return true;
+            if (object.ReferenceEquals(this, other)) return true;
 
             IDictionary<object, object> oth = other as IDictionary<object, object>;
             IDictionary<object, object> ths = this as IDictionary<object, object>;
@@ -361,8 +356,7 @@ namespace Microsoft.Scripting.Runtime {
             if (oth?.Count != ths.Count) return false;
 
             foreach (KeyValuePair<object, object> o in ths) {
-                object res;
-                if (!oth.TryGetValue(o.Key, out res))
+                if (!oth.TryGetValue(o.Key, out object res))
                     return false;
                     if (res != null) {
                         if (!res.Equals(o.Value)) return false;
@@ -379,11 +373,7 @@ namespace Microsoft.Scripting.Runtime {
             throw Error.MethodOrOperatorNotImplemented();
         }
 
-        public bool IsSynchronized {
-            get {
-                return true;
-            }
-        }
+        public bool IsSynchronized => true;
 
         public object SyncRoot {
             get {

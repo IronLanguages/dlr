@@ -3,13 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
-using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
@@ -43,7 +39,7 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
 
             if (callableObject is Delegate result) {
-                if (!delegateType.IsAssignableFrom(result.GetType())) {
+                if (!delegateType.IsInstanceOfType(result)) {
                     throw ScriptingRuntimeHelpers.SimpleTypeError($"Cannot cast {result.GetType()} to {delegateType}.");
                 }
 

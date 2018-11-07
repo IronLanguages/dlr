@@ -8,7 +8,7 @@ namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// Indicates an extension method should be added as a static method, not a instance method.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class StaticExtensionMethodAttribute : Attribute {
     }
 }

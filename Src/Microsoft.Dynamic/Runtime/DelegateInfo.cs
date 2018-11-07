@@ -4,12 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Utils;
@@ -124,18 +123,16 @@ namespace Microsoft.Scripting.Runtime {
             Type siteType = callSite.GetType();
 
             Type convertSiteType = null;
-            CallSite convertSite = null;
 
             if (_returnType != typeof(void)) {
-                convertSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(typeof(object), _returnType), _convertBinder);
+                CallSite convertSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(typeof(object), _returnType), _convertBinder);
                 convertSiteType = convertSite.GetType();
             }
 
-            LocalBuilder convertSiteLocal = null;
             FieldInfo convertTarget = null;
             if (_returnType != typeof(void)) {
                 // load up the conversion logic on the stack
-                convertSiteLocal = cg.DeclareLocal(convertSiteType);
+                LocalBuilder convertSiteLocal = cg.DeclareLocal(convertSiteType);
                 EmitConstantGet(cg, ConvertSiteIndex, convertSiteType);
 
                 cg.Emit(OpCodes.Dup);
