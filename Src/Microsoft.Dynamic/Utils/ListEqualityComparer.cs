@@ -12,9 +12,7 @@ namespace Microsoft.Scripting.Utils {
         private ListEqualityComparer() { }
 
         // EqualityComparer<T> handles null and object identity for us
-        public override bool Equals(ICollection<T> x, ICollection<T> y) {
-            return x.ListEquals(y);
-        }
+        public override bool Equals(ICollection<T> x, ICollection<T> y) => x.ListEquals(y);
 
         public override int GetHashCode(ICollection<T> obj) {
             return obj.ListHashCode();

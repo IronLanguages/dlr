@@ -126,17 +126,12 @@ namespace Microsoft.Scripting.Actions {
 
         #region Overrides
 
-        public override bool Equals(object obj) {
-            return obj is CallSignature signature && Equals(signature);
-        }
+        public override bool Equals(object obj) =>
+            obj is CallSignature signature && Equals(signature);
 
-        public static bool operator ==(CallSignature left, CallSignature right) {
-            return left.Equals(right);
-        }
+        public static bool operator ==(CallSignature left, CallSignature right) => left.Equals(right);
 
-        public static bool operator !=(CallSignature left, CallSignature right) {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(CallSignature left, CallSignature right) => !left.Equals(right);
 
         public override string ToString() {
             if (_infos == null) {

@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public CachedOptimizedCodeAttribute(string[] names) {
-            ContractUtils.RequiresNotNull(names, "names");
+            ContractUtils.RequiresNotNull(names, nameof(names));
             Names = names;
         }
 

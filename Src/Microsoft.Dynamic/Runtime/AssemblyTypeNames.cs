@@ -24,8 +24,8 @@ namespace Microsoft.Scripting.Runtime {
             Name = typeName;
         }
 
-        internal string Namespace { get; private set; }
-        internal string Name { get; private set; }
+        internal string Namespace { get; }
+        internal string Name { get; }
 
         public override int GetHashCode() {
             int hash = 13 << 20;
@@ -41,17 +41,12 @@ namespace Microsoft.Scripting.Runtime {
             return false;
         }
 
-        public bool Equals(TypeName other) {
-            return Namespace == other.Namespace && Name == other.Name;
-        }
+        public bool Equals(TypeName other) =>
+            Namespace == other.Namespace && Name == other.Name;
 
-        public static bool operator ==(TypeName a, TypeName b) {
-            return a.Equals(b);
-        }
+        public static bool operator ==(TypeName a, TypeName b) => a.Equals(b);
 
-        public static bool operator !=(TypeName a, TypeName b) {
-            return !a.Equals(b);
-        }
+        public static bool operator !=(TypeName a, TypeName b) => !a.Equals(b);
     }
 
     internal static class AssemblyTypeNames {

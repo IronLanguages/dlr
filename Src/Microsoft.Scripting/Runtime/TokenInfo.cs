@@ -6,7 +6,6 @@ using System;
 
 namespace Microsoft.Scripting {
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO: fix
     [Serializable]
     public struct TokenInfo : IEquatable<TokenInfo> {
 
@@ -22,11 +21,25 @@ namespace Microsoft.Scripting {
             SourceSpan = span;
         }
 
+        public static bool operator ==(TokenInfo first, TokenInfo second) => first.Equals(second);
+
+        public static bool operator !=(TokenInfo first, TokenInfo second) => !first.Equals(second);
+
         #region IEquatable<TokenInfo> Members
 
-        public bool Equals(TokenInfo other) {
-            return Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;
+        public override int GetHashCode() {
+            unchecked {
+                int hash = Category.GetHashCode();
+                hash = ((hash << 5) + hash) ^ Trigger.GetHashCode();
+                return ((hash << 5) + hash) ^ SourceSpan.GetHashCode();
+            }
         }
+
+        public override bool Equals(object obj) =>
+            obj is TokenInfo info && Equals(info);
+
+        public bool Equals(TokenInfo other) =>
+            Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;
 
         #endregion
 

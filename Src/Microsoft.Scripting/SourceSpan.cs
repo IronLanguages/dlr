@@ -70,9 +70,7 @@ namespace Microsoft.Scripting {
         /// <param name="left">One span to compare.</param>
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are the same, False otherwise.</returns>
-        public static bool operator ==(SourceSpan left, SourceSpan right) {
-            return left.Start == right.Start && left.End == right.End;
-        }
+        public static bool operator ==(SourceSpan left, SourceSpan right) => left.Equals(right);
 
         /// <summary>
         /// Compares two specified Span values to see if they are not equal.
@@ -80,13 +78,13 @@ namespace Microsoft.Scripting {
         /// <param name="left">One span to compare.</param>
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are not the same, False otherwise.</returns>
-        public static bool operator !=(SourceSpan left, SourceSpan right) {
-            return left.Start != right.Start || left.End != right.End;
-        }
+        public static bool operator !=(SourceSpan left, SourceSpan right) => !left.Equals(right);
 
-        public bool Equals(SourceSpan other) => Start == other.Start && End == other.End;
+        public bool Equals(SourceSpan other) =>
+            Start == other.Start && End == other.End;
 
-        public override bool Equals(object obj) => obj is SourceSpan other && Equals(other);
+        public override bool Equals(object obj) =>
+            obj is SourceSpan other && Equals(other);
 
         public override string ToString() {
             return Start.ToString() + " - " + End.ToString();
@@ -101,6 +99,5 @@ namespace Microsoft.Scripting {
         internal string ToDebugString() {
             return String.Format(CultureInfo.CurrentCulture, "{0}-{1}", Start.ToDebugString(), End.ToDebugString());
         }
-
     }
 }

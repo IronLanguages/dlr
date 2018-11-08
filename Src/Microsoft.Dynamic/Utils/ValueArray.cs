@@ -27,9 +27,8 @@ namespace Microsoft.Scripting.Utils {
 
         #endregion
 
-        public override bool Equals(object obj) {
-            return Equals(obj as ValueArray<T>);
-        }
+        public override bool Equals(object obj) =>
+            Equals(obj as ValueArray<T>);
 
         public override int GetHashCode() {
             int val = 6551;

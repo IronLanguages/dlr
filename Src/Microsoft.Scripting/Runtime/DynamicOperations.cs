@@ -580,9 +580,7 @@ namespace Microsoft.Scripting.Runtime {
                 _siteType = siteType;
             }
 
-            public override bool Equals(object obj) {
-                return Equals(obj as SiteKey);
-            }
+            public override bool Equals(object obj) => Equals(obj as SiteKey);
 
             public override int GetHashCode() {
                 return SiteBinder.GetHashCode() ^ _siteType.GetHashCode();

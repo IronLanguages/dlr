@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
     }
 
-    public struct LocalDefinition {
+    public struct LocalDefinition : IEquatable<LocalDefinition> {
 
         internal LocalDefinition(int localIndex, ParameterExpression parameter) {
             Index = localIndex;
@@ -67,6 +67,9 @@ namespace Microsoft.Scripting.Interpreter {
             return false;
         }
 
+        public bool Equals(LocalDefinition other) =>
+            Index == other.Index && Parameter == other.Parameter;
+
         public override int GetHashCode() {
             if (Parameter == null) {
                 return 0;
@@ -74,13 +77,9 @@ namespace Microsoft.Scripting.Interpreter {
             return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
 
-        public static bool operator ==(LocalDefinition self, LocalDefinition other) {
-            return self.Index == other.Index && self.Parameter == other.Parameter;
-        }
+        public static bool operator ==(LocalDefinition self, LocalDefinition other) => self.Equals(other);
 
-        public static bool operator !=(LocalDefinition self, LocalDefinition other) {
-            return self.Index != other.Index || self.Parameter != other.Parameter;
-        }
+        public static bool operator !=(LocalDefinition self, LocalDefinition other) => !self.Equals(other);
     }
 
     public sealed class LocalVariables {

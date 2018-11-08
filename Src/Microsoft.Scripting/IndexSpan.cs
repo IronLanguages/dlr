@@ -30,15 +30,12 @@ namespace Microsoft.Scripting {
             return Length.GetHashCode() ^ Start.GetHashCode();
         }
 
-        public override bool Equals(object obj) => obj is IndexSpan span && Equals(span);
+        public override bool Equals(object obj) =>
+            obj is IndexSpan span && Equals(span);
 
-        public static bool operator ==(IndexSpan self, IndexSpan other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(IndexSpan self, IndexSpan other) => self.Equals(other);
 
-        public static bool operator !=(IndexSpan self, IndexSpan other) {
-            return !self.Equals(other);
-        }
+        public static bool operator !=(IndexSpan self, IndexSpan other) => !self.Equals(other);
 
         #region IEquatable<IndexSpan> Members
 

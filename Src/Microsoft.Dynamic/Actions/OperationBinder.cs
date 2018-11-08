@@ -35,9 +35,8 @@ namespace Microsoft.Scripting.Actions {
             return FallbackOperation(target, args);
         }
 
-        public override bool Equals(object obj) {
-            return obj is OperationBinder oa && oa.Operation == Operation;
-        }
+        public override bool Equals(object obj) =>
+            obj is OperationBinder oa && oa.Operation == Operation;
 
         public override int GetHashCode() {
             return 0x10000000 ^ Operation.GetHashCode();

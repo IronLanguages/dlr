@@ -10,9 +10,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public T Value { get; }
 
-        public override bool Equals(object obj) {
-            return Value.Equals(obj);
-        }
+        public override bool Equals(object obj) => Value.Equals(obj);
 
         public override int GetHashCode() {
             return Value.GetHashCode();

@@ -79,9 +79,8 @@ namespace System.Reflection {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
-            return obj is MetadataToken token && Equals(token);
-        }
+        public override bool Equals(object obj) =>
+            obj is MetadataToken token && Equals(token);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
@@ -89,13 +88,9 @@ namespace System.Reflection {
             return m_value == other.m_value;
         }
 
-        public static bool operator ==(MetadataToken self, MetadataToken other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataToken self, MetadataToken other) => self.Equals(other);
 
-        public static bool operator !=(MetadataToken self, MetadataToken other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataToken self, MetadataToken other) => !self.Equals(other);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
@@ -162,23 +157,17 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
-            return obj is MetadataRecord record && Equals(record);
-        }
+        public override bool Equals(object obj) =>
+            obj is MetadataRecord record && Equals(record);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public bool Equals(MetadataRecord other) {
-            return m_token.Equals(other.m_token) && ReferenceEquals(m_tables, other.m_tables);
-        }
+        public bool Equals(MetadataRecord other) =>
+            m_token.Equals(other.m_token) && ReferenceEquals(m_tables, other.m_tables);
 
-        public static bool operator ==(MetadataRecord self, MetadataRecord other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataRecord self, MetadataRecord other) => self.Equals(other);
 
-        public static bool operator !=(MetadataRecord self, MetadataRecord other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataRecord self, MetadataRecord other) => !self.Equals(other);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]

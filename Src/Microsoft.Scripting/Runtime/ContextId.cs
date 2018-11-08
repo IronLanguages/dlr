@@ -61,16 +61,13 @@ namespace Microsoft.Scripting.Runtime {
 
         public override int GetHashCode() => Id;
 
-        public override bool Equals(object obj) => obj is ContextId other && Equals(other);
+        public override bool Equals(object obj) =>
+            obj is ContextId other && Equals(other);
 
         #endregion
 
-        public static bool operator ==(ContextId self, ContextId other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(ContextId self, ContextId other) => self.Equals(other);
 
-        public static bool operator !=(ContextId self, ContextId other) {
-            return !self.Equals(other);
-        }
+        public static bool operator !=(ContextId self, ContextId other) => !self.Equals(other);
     }
 }

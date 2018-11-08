@@ -157,11 +157,11 @@ namespace Microsoft.Scripting.Actions {
             Assert.NotNull(assem);
 
             NamespaceTracker previousPackage = null;
-            string previousFullNamespace = String.Empty; // Note that String.Empty is not a valid namespace
+            string previousFullNamespace = string.Empty; // Note that String.Empty is not a valid namespace
 
             foreach (TypeName typeName in AssemblyTypeNames.GetTypeNames(assem, _topPackage.DomainManager.Configuration.PrivateBinding)) {
                 NamespaceTracker package;
-                Debug.Assert(typeName.Namespace != String.Empty);
+                Debug.Assert(!string.IsNullOrEmpty(typeName.Namespace));
                 if (typeName.Namespace == previousFullNamespace) {
                     // We have a cache hit. We dont need to call GetOrMakePackageHierarchy (which generates
                     // a fair amount of temporary substrings)
