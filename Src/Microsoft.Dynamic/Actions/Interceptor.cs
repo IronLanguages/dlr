@@ -40,9 +40,8 @@ namespace Microsoft.Scripting.Actions {
                 return _binder.GetHashCode();
             }
 
-            public override bool Equals(object obj) {
-                return obj != null && obj.Equals(_binder);
-            }
+            public override bool Equals(object obj) =>
+                obj != null && obj.Equals(_binder);
 
             public override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel) {
                 Expression binding = _binder.Bind(args, parameters, returnLabel);

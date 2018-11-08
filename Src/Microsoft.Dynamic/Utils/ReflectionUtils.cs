@@ -1440,9 +1440,8 @@ namespace Microsoft.Scripting.Utils {
             get { return _method; }
         }
 
-        public override bool Equals(object obj) {
-            return obj is ExtensionMethodInfo info && Equals(info);
-        }
+        public override bool Equals(object obj) =>
+            obj is ExtensionMethodInfo info && Equals(info);
 
         public bool Equals(ExtensionMethodInfo other) {
             return _method.Equals(other._method);

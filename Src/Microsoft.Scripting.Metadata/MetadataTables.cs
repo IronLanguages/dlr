@@ -79,9 +79,8 @@ namespace System.Reflection {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
-            return obj is MetadataToken token && Equals(token);
-        }
+        public override bool Equals(object obj) =>
+            obj is MetadataToken token && Equals(token);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
@@ -162,9 +161,8 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
-            return obj is MetadataRecord record && Equals(record);
-        }
+        public override bool Equals(object obj) =>
+            obj is MetadataRecord record && Equals(record);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]

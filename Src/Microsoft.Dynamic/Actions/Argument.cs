@@ -37,9 +37,8 @@ namespace Microsoft.Scripting.Actions {
             _name = name;
         }
 
-        public override bool Equals(object obj) {
-            return obj is Argument argument && Equals(argument);
-        }
+        public override bool Equals(object obj) =>
+            obj is Argument argument && Equals(argument);
 
         public bool Equals(Argument other) {
             return _kind == other._kind && _name == other._name;

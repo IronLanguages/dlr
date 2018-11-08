@@ -59,9 +59,8 @@ namespace Microsoft.Scripting.Utils {
             return TypeName == other.TypeName && AssemblyName.FullName == other.AssemblyName.FullName;
         }
 
-        public override bool Equals(object obj) {
-            return obj is AssemblyQualifiedTypeName name && Equals(name);
-        }
+        public override bool Equals(object obj) =>
+            obj is AssemblyQualifiedTypeName name && Equals(name);
 
         public override int GetHashCode() {
             return TypeName.GetHashCode() ^ AssemblyName.FullName.GetHashCode();

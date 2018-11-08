@@ -101,6 +101,5 @@ namespace Microsoft.Scripting {
         internal string ToDebugString() {
             return String.Format(CultureInfo.CurrentCulture, "{0}-{1}", Start.ToDebugString(), End.ToDebugString());
         }
-
     }
 }

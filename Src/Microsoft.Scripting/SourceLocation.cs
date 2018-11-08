@@ -157,9 +157,11 @@ namespace Microsoft.Scripting {
         /// <returns>True if the location is valid, False otherwise.</returns>
         public bool IsValid => Line != 0 && Column != 0;
 
-        public bool Equals(SourceLocation other) => other.Index == Index && other.Line == Line && other.Column == Column;
+        public bool Equals(SourceLocation other) =>
+            other.Index == Index && other.Line == Line && other.Column == Column;
 
-        public override bool Equals(object obj) => obj is SourceLocation other && Equals(other);
+        public override bool Equals(object obj) =>
+            obj is SourceLocation other && Equals(other);
 
         public override int GetHashCode() {
             return (Line << 16) ^ Column;

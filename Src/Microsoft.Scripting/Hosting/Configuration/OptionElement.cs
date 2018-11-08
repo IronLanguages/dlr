@@ -57,9 +57,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
                 _language = language;
             }
 
-            public override bool Equals(object obj) {
-                return Equals(obj as Key);
-            }
+            public override bool Equals(object obj) => Equals(obj as Key);
 
             public bool Equals(Key other) {
                 return other != null &&
