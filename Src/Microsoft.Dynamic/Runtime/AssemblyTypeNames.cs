@@ -41,9 +41,8 @@ namespace Microsoft.Scripting.Runtime {
             return false;
         }
 
-        public bool Equals(TypeName other) {
-            return Namespace == other.Namespace && Name == other.Name;
-        }
+        public bool Equals(TypeName other) =>
+            Namespace == other.Namespace && Name == other.Name;
 
         public static bool operator ==(TypeName a, TypeName b) => a.Equals(b);
 

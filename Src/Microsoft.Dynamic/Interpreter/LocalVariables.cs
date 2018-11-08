@@ -67,9 +67,8 @@ namespace Microsoft.Scripting.Interpreter {
             return false;
         }
 
-        public bool Equals(LocalDefinition other) {
-            return Index == other.Index && Parameter == other.Parameter;
-        }
+        public bool Equals(LocalDefinition other) =>
+            Index == other.Index && Parameter == other.Parameter;
 
         public override int GetHashCode() {
             if (Parameter == null) {

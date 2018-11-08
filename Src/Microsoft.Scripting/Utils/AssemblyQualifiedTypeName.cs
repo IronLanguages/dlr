@@ -55,9 +55,8 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public bool Equals(AssemblyQualifiedTypeName other) {
-            return TypeName == other.TypeName && AssemblyName.FullName == other.AssemblyName.FullName;
-        }
+        public bool Equals(AssemblyQualifiedTypeName other) =>
+            TypeName == other.TypeName && AssemblyName.FullName == other.AssemblyName.FullName;
 
         public override bool Equals(object obj) =>
             obj is AssemblyQualifiedTypeName name && Equals(name);

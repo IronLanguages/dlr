@@ -40,9 +40,8 @@ namespace Microsoft.Scripting.Actions {
         public override bool Equals(object obj) =>
             obj is Argument argument && Equals(argument);
 
-        public bool Equals(Argument other) {
-            return _kind == other._kind && _name == other._name;
-        }
+        public bool Equals(Argument other) =>
+            _kind == other._kind && _name == other._name;
 
         public static bool operator ==(Argument left, Argument right) => left.Equals(right);
 

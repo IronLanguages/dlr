@@ -162,9 +162,8 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public bool Equals(MetadataRecord other) {
-            return m_token.Equals(other.m_token) && ReferenceEquals(m_tables, other.m_tables);
-        }
+        public bool Equals(MetadataRecord other) =>
+            m_token.Equals(other.m_token) && ReferenceEquals(m_tables, other.m_tables);
 
         public static bool operator ==(MetadataRecord self, MetadataRecord other) => self.Equals(other);
 
