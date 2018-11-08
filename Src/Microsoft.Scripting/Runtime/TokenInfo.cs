@@ -6,7 +6,6 @@ using System;
 
 namespace Microsoft.Scripting {
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO: fix
     [Serializable]
     public struct TokenInfo : IEquatable<TokenInfo> {
 
