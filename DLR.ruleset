@@ -216,7 +216,6 @@
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1707" Action="None" />
-    <Rule Id="CA1815" Action="None" />
     <Rule Id="CA1819" Action="None" />
     <Rule Id="CA1725" Action="None" />
     <Rule Id="CA2219" Action="None" />
