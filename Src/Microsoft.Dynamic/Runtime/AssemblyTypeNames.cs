@@ -45,13 +45,9 @@ namespace Microsoft.Scripting.Runtime {
             return Namespace == other.Namespace && Name == other.Name;
         }
 
-        public static bool operator ==(TypeName a, TypeName b) {
-            return a.Equals(b);
-        }
+        public static bool operator ==(TypeName a, TypeName b) => a.Equals(b);
 
-        public static bool operator !=(TypeName a, TypeName b) {
-            return !a.Equals(b);
-        }
+        public static bool operator !=(TypeName a, TypeName b) => !a.Equals(b);
     }
 
     internal static class AssemblyTypeNames {

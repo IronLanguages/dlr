@@ -1447,13 +1447,9 @@ namespace Microsoft.Scripting.Utils {
             return _method.Equals(other._method);
         }
 
-        public static bool operator ==(ExtensionMethodInfo self, ExtensionMethodInfo other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(ExtensionMethodInfo self, ExtensionMethodInfo other) => self.Equals(other);
 
-        public static bool operator !=(ExtensionMethodInfo self, ExtensionMethodInfo other) {
-            return !self.Equals(other);
-        }
+        public static bool operator !=(ExtensionMethodInfo self, ExtensionMethodInfo other) => !self.Equals(other);
 
         public override int GetHashCode() {
             return _method.GetHashCode();

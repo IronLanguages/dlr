@@ -55,21 +55,13 @@ namespace Microsoft.Scripting.Metadata {
             return other.Equals(this);
         }
 
-        public static bool operator ==(MetadataName self, MetadataNamePart other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataName self, MetadataNamePart other) => self.Equals(other);
 
-        public static bool operator ==(MetadataName self, MetadataName other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataName self, MetadataName other) => self.Equals(other);
 
-        public static bool operator !=(MetadataName self, MetadataNamePart other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataName self, MetadataNamePart other) => !self.Equals(other);
 
-        public static bool operator !=(MetadataName self, MetadataName other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataName self, MetadataName other) => !self.Equals(other);
 
         // safe
         public bool Equals(byte[] bytes, int start, int count) {

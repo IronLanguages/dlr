@@ -78,13 +78,9 @@ namespace Microsoft.Scripting.Interpreter {
             return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
 
-        public static bool operator ==(LocalDefinition self, LocalDefinition other) {
-            return self.Index == other.Index && self.Parameter == other.Parameter;
-        }
+        public static bool operator ==(LocalDefinition self, LocalDefinition other) => self.Equals(other);
 
-        public static bool operator !=(LocalDefinition self, LocalDefinition other) {
-            return self.Index != other.Index || self.Parameter != other.Parameter;
-        }
+        public static bool operator !=(LocalDefinition self, LocalDefinition other) => !self.Equals(other);
     }
 
     public sealed class LocalVariables {

@@ -66,12 +66,8 @@ namespace Microsoft.Scripting.Runtime {
 
         #endregion
 
-        public static bool operator ==(ContextId self, ContextId other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(ContextId self, ContextId other) => self.Equals(other);
 
-        public static bool operator !=(ContextId self, ContextId other) {
-            return !self.Equals(other);
-        }
+        public static bool operator !=(ContextId self, ContextId other) => !self.Equals(other);
     }
 }

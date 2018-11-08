@@ -69,9 +69,7 @@ namespace Microsoft.Scripting {
         /// <param name="left">One location to compare.</param>
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the locations are the same, False otherwise.</returns>
-        public static bool operator ==(SourceLocation left, SourceLocation right) {
-            return left.Index == right.Index && left.Line == right.Line && left.Column == right.Column;
-        }
+        public static bool operator ==(SourceLocation left, SourceLocation right) => left.Equals(right);
 
         /// <summary>
         /// Compares two specified location values to see if they are not equal.
@@ -79,9 +77,7 @@ namespace Microsoft.Scripting {
         /// <param name="left">One location to compare.</param>
         /// <param name="right">The other location to compare.</param>
         /// <returns>True if the locations are not the same, False otherwise.</returns>
-        public static bool operator !=(SourceLocation left, SourceLocation right) {
-            return left.Index != right.Index || left.Line != right.Line || left.Column != right.Column;
-        }
+        public static bool operator !=(SourceLocation left, SourceLocation right) => !left.Equals(right);
 
         /// <summary>
         /// Compares two specified location values to see if one is before the other.

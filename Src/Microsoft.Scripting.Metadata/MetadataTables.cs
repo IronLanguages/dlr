@@ -88,13 +88,9 @@ namespace System.Reflection {
             return m_value == other.m_value;
         }
 
-        public static bool operator ==(MetadataToken self, MetadataToken other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataToken self, MetadataToken other) => self.Equals(other);
 
-        public static bool operator !=(MetadataToken self, MetadataToken other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataToken self, MetadataToken other) => !self.Equals(other);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
@@ -170,13 +166,9 @@ namespace Microsoft.Scripting.Metadata {
             return m_token.Equals(other.m_token) && ReferenceEquals(m_tables, other.m_tables);
         }
 
-        public static bool operator ==(MetadataRecord self, MetadataRecord other) {
-            return self.Equals(other);
-        }
+        public static bool operator ==(MetadataRecord self, MetadataRecord other) => self.Equals(other);
 
-        public static bool operator !=(MetadataRecord self, MetadataRecord other) {
-            return self.Equals(other);
-        }
+        public static bool operator !=(MetadataRecord self, MetadataRecord other) => !self.Equals(other);
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]

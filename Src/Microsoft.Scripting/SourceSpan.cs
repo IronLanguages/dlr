@@ -70,9 +70,7 @@ namespace Microsoft.Scripting {
         /// <param name="left">One span to compare.</param>
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are the same, False otherwise.</returns>
-        public static bool operator ==(SourceSpan left, SourceSpan right) {
-            return left.Start == right.Start && left.End == right.End;
-        }
+        public static bool operator ==(SourceSpan left, SourceSpan right) => left.Equals(right);
 
         /// <summary>
         /// Compares two specified Span values to see if they are not equal.
@@ -80,9 +78,7 @@ namespace Microsoft.Scripting {
         /// <param name="left">One span to compare.</param>
         /// <param name="right">The other span to compare.</param>
         /// <returns>True if the spans are not the same, False otherwise.</returns>
-        public static bool operator !=(SourceSpan left, SourceSpan right) {
-            return left.Start != right.Start || left.End != right.End;
-        }
+        public static bool operator !=(SourceSpan left, SourceSpan right) => !left.Equals(right);
 
         public bool Equals(SourceSpan other) => Start == other.Start && End == other.End;
 
