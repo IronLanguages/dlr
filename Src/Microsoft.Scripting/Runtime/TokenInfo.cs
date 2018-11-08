@@ -35,13 +35,8 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override bool Equals(object obj) {
-            if (!(obj is TokenInfo)) {
-                return false;
-            }
-
-            return Equals((TokenInfo)obj);
-        }
+        public override bool Equals(object obj) =>
+            obj is TokenInfo info && Equals(info);
 
         public bool Equals(TokenInfo other) {
             return Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;

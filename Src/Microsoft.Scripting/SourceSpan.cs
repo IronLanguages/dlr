@@ -80,9 +80,11 @@ namespace Microsoft.Scripting {
         /// <returns>True if the spans are not the same, False otherwise.</returns>
         public static bool operator !=(SourceSpan left, SourceSpan right) => !left.Equals(right);
 
-        public bool Equals(SourceSpan other) => Start == other.Start && End == other.End;
+        public bool Equals(SourceSpan other) =>
+            Start == other.Start && End == other.End;
 
-        public override bool Equals(object obj) => obj is SourceSpan other && Equals(other);
+        public override bool Equals(object obj) =>
+            obj is SourceSpan other && Equals(other);
 
         public override string ToString() {
             return Start.ToString() + " - " + End.ToString();
