@@ -10,8 +10,8 @@ using MarshalByRefObject = System.Object;
 
 using System;
 using System.Collections.Generic;
+
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
     /// <summary>

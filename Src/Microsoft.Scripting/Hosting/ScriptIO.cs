@@ -11,6 +11,7 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.IO;
 using System.Text;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -19,25 +20,23 @@ namespace Microsoft.Scripting.Hosting {
     /// Provides host-redirectable IO streams used by DLR languages for default IO.
     /// </summary>
     public sealed class ScriptIO : MarshalByRefObject {
-        private readonly SharedIO _io;
+        public Stream InputStream => SharedIO.InputStream;
+        public Stream OutputStream => SharedIO.OutputStream;
+        public Stream ErrorStream => SharedIO.ErrorStream;
 
-        public Stream InputStream { get { return _io.InputStream; } }
-        public Stream OutputStream { get { return _io.OutputStream; } }
-        public Stream ErrorStream { get { return _io.ErrorStream; } }
+        public TextReader InputReader => SharedIO.InputReader;
+        public TextWriter OutputWriter => SharedIO.OutputWriter;
+        public TextWriter ErrorWriter => SharedIO.ErrorWriter;
 
-        public TextReader InputReader { get { return _io.InputReader; } }
-        public TextWriter OutputWriter { get { return _io.OutputWriter; } }
-        public TextWriter ErrorWriter { get { return _io.ErrorWriter; } }
+        public Encoding InputEncoding => SharedIO.InputEncoding;
+        public Encoding OutputEncoding => SharedIO.OutputEncoding;
+        public Encoding ErrorEncoding => SharedIO.ErrorEncoding;
 
-        public Encoding InputEncoding { get { return _io.InputEncoding; } }
-        public Encoding OutputEncoding { get { return _io.OutputEncoding; } }
-        public Encoding ErrorEncoding { get { return _io.ErrorEncoding; } }
-
-        internal SharedIO SharedIO { get { return _io; } }
+        internal SharedIO SharedIO { get; }
 
         internal ScriptIO(SharedIO io) {
             Assert.NotNull(io);
-            _io = io;
+            SharedIO = io;
         }
 
         /// <summary>
@@ -48,7 +47,7 @@ namespace Microsoft.Scripting.Hosting {
         public void SetOutput(Stream stream, Encoding encoding) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
-            _io.SetOutput(stream, new StreamWriter(stream, encoding));
+            SharedIO.SetOutput(stream, new StreamWriter(stream, encoding));
         }
 
         /// <summary>
@@ -57,36 +56,36 @@ namespace Microsoft.Scripting.Hosting {
         public void SetOutput(Stream stream, TextWriter writer) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(writer, nameof(writer));
-            _io.SetOutput(stream, writer);
+            SharedIO.SetOutput(stream, writer);
         }
 
         public void SetErrorOutput(Stream stream, Encoding encoding) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
-            _io.SetErrorOutput(stream, new StreamWriter(stream, encoding));
+            SharedIO.SetErrorOutput(stream, new StreamWriter(stream, encoding));
         }
 
         public void SetErrorOutput(Stream stream, TextWriter writer) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(writer, nameof(writer));
-            _io.SetErrorOutput(stream, writer);
+            SharedIO.SetErrorOutput(stream, writer);
         }
 
         public void SetInput(Stream stream, Encoding encoding) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
-            _io.SetInput(stream, new StreamReader(stream, encoding), encoding);
+            SharedIO.SetInput(stream, new StreamReader(stream, encoding), encoding);
         }
 
         public void SetInput(Stream stream, TextReader reader, Encoding encoding) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(reader, nameof(reader));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
-            _io.SetInput(stream, reader, encoding);
+            SharedIO.SetInput(stream, reader, encoding);
         }
 
         public void RedirectToConsole() {
-            _io.RedirectToConsole();
+            SharedIO.RedirectToConsole();
         }
 
 #if FEATURE_REMOTING

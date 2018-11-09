@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
@@ -11,9 +12,6 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     [Serializable]
     public class ParameterDoc {
-        private readonly string _name, _typeName, _doc;
-        private readonly ParameterFlags _flags;
-
         public ParameterDoc(string name)
             : this(name, null, null, ParameterFlags.None) {
         }
@@ -33,47 +31,30 @@ namespace Microsoft.Scripting.Hosting {
         public ParameterDoc(string name, string typeName, string documentation, ParameterFlags paramFlags) {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
-            _name = name;
-            _flags = paramFlags;
-            _typeName = typeName;
-            _doc = documentation;
+            Name = name;
+            Flags = paramFlags;
+            TypeName = typeName;
+            Documentation = documentation;
         }
 
         /// <summary>
         /// The name of the parameter
         /// </summary>
-        public string Name {
-            get {
-                return _name;
-            }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The type name of the parameter or null if no type information is available.
         /// </summary>
-        public string TypeName {
-            get {
-                return _typeName;
-            }
-        }
+        public string TypeName { get; }
 
         /// <summary>
         /// Provides addition information about the parameter such as if it's a parameter array.
         /// </summary>
-        public ParameterFlags Flags {
-            get {
-                return _flags;
-            }
-        }
+        public ParameterFlags Flags { get; }
 
         /// <summary>
         /// Gets the documentation string for this parameter or null if no documentation is available.
         /// </summary>
-        public string Documentation {
-            get {
-                return _doc;
-            }
-        }
+        public string Documentation { get; }
     }
-
 }

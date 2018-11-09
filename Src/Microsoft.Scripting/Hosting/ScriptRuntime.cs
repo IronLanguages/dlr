@@ -14,8 +14,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -123,8 +122,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptEngine GetEngine(string languageName) {
             ContractUtils.RequiresNotNull(languageName, nameof(languageName));
 
-            ScriptEngine engine;
-            if (!TryGetEngine(languageName, out engine)) {
+            if (!TryGetEngine(languageName, out ScriptEngine engine)) {
                 throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
 
@@ -141,8 +139,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptEngine GetEngineByFileExtension(string fileExtension) {
             ContractUtils.RequiresNotNull(fileExtension, nameof(fileExtension));
 
-            ScriptEngine engine;
-            if (!TryGetEngineByFileExtension(fileExtension, out engine)) {
+            if (!TryGetEngineByFileExtension(fileExtension, out ScriptEngine engine)) {
                 throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
 
@@ -160,8 +157,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public bool TryGetEngineByFileExtension(string fileExtension, out ScriptEngine engine) {
-            LanguageContext language;
-            if (!Manager.TryGetLanguageByFileExtension(fileExtension, out language)) {
+            if (!Manager.TryGetLanguageByFileExtension(fileExtension, out LanguageContext language)) {
                 engine = null;
                 return false;
             }
@@ -333,11 +329,7 @@ namespace Microsoft.Scripting.Hosting {
             Manager.LoadAssembly(assembly);
         }
 
-        public ObjectOperations Operations {
-            get {
-                return InvariantEngine.Operations;
-            }
-        }
+        public ObjectOperations Operations => InvariantEngine.Operations;
 
         public ObjectOperations CreateOperations() {
             return InvariantEngine.CreateOperations();
@@ -354,13 +346,7 @@ namespace Microsoft.Scripting.Hosting {
             }
         }
 
-        internal ScriptEngine InvariantEngine {
-            get {
-                if (_invariantEngine == null) {
-                    _invariantEngine = GetEngine(_invariantContext);
-                }
-                return _invariantEngine;
-            }
-        }
+        internal ScriptEngine InvariantEngine =>
+            _invariantEngine ?? (_invariantEngine = GetEngine(_invariantContext));
     }
 }

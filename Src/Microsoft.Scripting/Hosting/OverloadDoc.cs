@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
@@ -12,64 +13,44 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     [Serializable]
     public class OverloadDoc {
-        private readonly string _name, _doc;
-        private readonly ICollection<ParameterDoc> _params;
-        private readonly ParameterDoc _returnParam;        
-
         public OverloadDoc(string name, string documentation, ICollection<ParameterDoc> parameters) {
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNullItems(parameters, nameof(parameters));
 
-            _name = name;
-            _params = parameters;
-            _doc = documentation;   
+            Name = name;
+            Parameters = parameters;
+            Documentation = documentation;
         }
 
         public OverloadDoc(string name, string documentation, ICollection<ParameterDoc> parameters, ParameterDoc returnParameter) {
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNullItems(parameters, nameof(parameters));
 
-            _name = name;
-            _params = parameters;
-            _doc = documentation;
-            _returnParam = returnParameter;
+            Name = name;
+            Parameters = parameters;
+            Documentation = documentation;
+            ReturnParameter = returnParameter;
         }
 
         /// <summary>
         /// The name of the invokable object.
         /// </summary>
-        public string Name {
-            get {
-                return _name;
-            }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The documentation for the overload or null if no documentation is available.
         /// </summary>
-        public string Documentation {
-            get {
-                return _doc;
-            }
-        }
+        public string Documentation { get; }
 
         /// <summary>
         /// The parameters for the invokable object.
         /// </summary>
-        public ICollection<ParameterDoc> Parameters {
-            get {
-                return _params;
-            }
-        }
+        public ICollection<ParameterDoc> Parameters { get; }
 
         /// <summary>
         /// Information about the return value.
         /// </summary>
-        public ParameterDoc ReturnParameter {
-            get {
-                return _returnParam;
-            }
-        }
+        public ParameterDoc ReturnParameter { get; }
     }
 
 }

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -13,8 +11,10 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Dynamic;
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -31,36 +31,27 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     [DebuggerTypeProxy(typeof(ScriptScope.DebugView))]
     public sealed class ScriptScope : MarshalByRefObject, IDynamicMetaObjectProvider {
-        private readonly Scope _scope;
-        private readonly ScriptEngine _engine;
-
         internal ScriptScope(ScriptEngine engine, Scope scope) {
             Assert.NotNull(engine, scope);
-            _scope = scope;
-            _engine = engine;
+            Scope = scope;
+            Engine = engine;
         }
 
-        internal Scope Scope {
-            get { return _scope; }
-        }
+        internal Scope Scope { get; }
 
         /// <summary>
         /// Gets an engine for the language associated with this scope.
         /// Returns invariant engine if the scope is language agnostic.
         /// </summary>
-        public ScriptEngine Engine {
-            get {
-                return _engine;
-            }
-        }
-        
+        public ScriptEngine Engine { get; }
+
         /// <summary>
         /// Gets a value stored in the scope under the given name.
         /// </summary>
         /// <exception cref="MissingMemberException">The specified name is not defined in the scope.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public dynamic GetVariable(string name) {
-            return _engine.LanguageContext.ScopeGetVariable(Scope, name);
+            return Engine.LanguageContext.ScopeGetVariable(Scope, name);
         }
 
         /// <summary>
@@ -71,7 +62,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <exception cref="MissingMemberException">The specified name is not defined in the scope.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public T GetVariable<T>(string name) {
-            return _engine.LanguageContext.ScopeGetVariable<T>(Scope, name);
+            return Engine.LanguageContext.ScopeGetVariable<T>(Scope, name);
         }
 
         /// <summary>
@@ -79,7 +70,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool TryGetVariable(string name, out dynamic value) {
-            return _engine.LanguageContext.ScopeTryGetVariable(Scope, name, out value);
+            return Engine.LanguageContext.ScopeTryGetVariable(Scope, name, out value);
         }
 
         /// <summary>
@@ -89,8 +80,8 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool TryGetVariable<T>(string name, out T value) {
-            if(_engine.LanguageContext.ScopeTryGetVariable(Scope, name, out object result)) {
-                value = _engine.Operations.ConvertTo<T>(result);
+            if(Engine.LanguageContext.ScopeTryGetVariable(Scope, name, out object result)) {
+                value = Engine.Operations.ConvertTo<T>(result);
                 return true;
             }
             value = default(T);
@@ -102,7 +93,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public void SetVariable(string name, object value) {
-            _engine.LanguageContext.ScopeSetVariable(Scope, name, value);
+            Engine.LanguageContext.ScopeSetVariable(Scope, name, value);
         }
 
 #if FEATURE_REMOTING
@@ -158,8 +149,8 @@ namespace Microsoft.Scripting.Hosting {
         /// <returns><c>true</c> if the value existed in the scope before it has been removed.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool RemoveVariable(string name) {
-            if (_engine.Operations.ContainsMember(_scope, name)) {
-                _engine.Operations.RemoveMember(_scope, name);
+            if (Engine.Operations.ContainsMember(Scope, name)) {
+                Engine.Operations.RemoveMember(Scope, name);
                 return true;
             }
 
@@ -172,7 +163,7 @@ namespace Microsoft.Scripting.Hosting {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<string> GetVariableNames() {
             // Remoting: we eagerly enumerate all variables to avoid cross domain calls for each item.
-            return _engine.Operations.GetMemberNames((object)_scope.Storage);
+            return Engine.Operations.GetMemberNames((object)Scope.Storage);
         }
 
         /// <summary>
@@ -184,7 +175,7 @@ namespace Microsoft.Scripting.Hosting {
             var result = new List<KeyValuePair<string, object>>();
             
             foreach (string name in GetVariableNames()) {
-                result.Add(new KeyValuePair<string, object>(name, (object)_engine.Operations.GetMember((object)_scope.Storage, name)));
+                result.Add(new KeyValuePair<string, object>(name, (object)Engine.Operations.GetMember((object)Scope.Storage, name)));
             }
 
             result.TrimExcess();
@@ -201,9 +192,7 @@ namespace Microsoft.Scripting.Hosting {
                 _scope = scope;
             }
 
-            public ScriptEngine Language {
-                get { return _scope._engine; }
-            }
+            public ScriptEngine Language => _scope.Engine;
 
             public System.Collections.Hashtable Variables {
                 get {
