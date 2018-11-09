@@ -20,7 +20,10 @@ namespace Microsoft.Scripting.Actions {
         private int _lastDiscovery = 0;
 
         internal readonly object HierarchyLock;
-        private static Dictionary<Guid, Type> _comTypeCache = new Dictionary<Guid, Type>();
+
+#if FEATURE_COM
+        private static readonly Dictionary<Guid, Type> _comTypeCache = new Dictionary<Guid, Type>();
+#endif
 
         public TopNamespaceTracker(ScriptDomainManager manager)
             : base(null) {

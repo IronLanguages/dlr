@@ -57,11 +57,6 @@ namespace ComponentAce.Compression.Libs.ZLib
         
         private const int DEF_WBITS = ZLibUtil.MAX_WBITS;
 
-        /// <summary>
-        /// Maximum memory level
-        /// </summary>
-        private const int MAX_MEM_LEVEL = 9;
-
         #endregion
 
         #region Fields
