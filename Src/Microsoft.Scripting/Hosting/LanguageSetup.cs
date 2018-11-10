@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
@@ -17,9 +17,6 @@ namespace Microsoft.Scripting.Hosting {
     public sealed class LanguageSetup {
         private string _typeName;
         private string _displayName;
-        private IList<string> _names;
-        private IList<string> _fileExtensions;
-        private IDictionary<string, object> _options;
         private bool _frozen;
         private bool? _interpretedMode, _exceptionDetail, _perfStats, _noAdaptiveCompilation;
 
@@ -51,16 +48,16 @@ namespace Microsoft.Scripting.Hosting {
 
             _typeName = typeName;
             _displayName = displayName;
-            _names = new List<string>(names);
-            _fileExtensions = new List<string>(fileExtensions);
-            _options = new Dictionary<string, object>();
+            Names = new List<string>(names);
+            FileExtensions = new List<string>(fileExtensions);
+            Options = new Dictionary<string, object>();
         }
 
         /// <summary>
         /// Gets an option as a strongly typed value.
         /// </summary>
         public T GetOption<T>(string name, T defaultValue) {
-            if (_options != null && _options.TryGetValue(name, out object value)) {
+            if (Options != null && Options.TryGetValue(name, out object value)) {
                 if (value is T variable) {
                     return variable;
                 }
@@ -73,7 +70,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The assembly qualified type name of the language provider
         /// </summary>
         public string TypeName {
-            get { return _typeName; }
+            get => _typeName;
             set {
                 ContractUtils.RequiresNotEmpty(value, nameof(value));
                 CheckFrozen();
@@ -86,7 +83,7 @@ namespace Microsoft.Scripting.Hosting {
         /// name in the Names list.
         /// </summary>
         public string DisplayName {
-            get { return _displayName; }
+            get => _displayName;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 CheckFrozen();
@@ -97,23 +94,17 @@ namespace Microsoft.Scripting.Hosting {
         /// <remarks>
         /// Case-insensitive language names.
         /// </remarks>
-        public IList<string> Names {
-            get { return _names; }
-        }
+        public IList<string> Names { get; private set; }
 
         /// <remarks>
         /// Case-insensitive file extension, optionally starts with a dot.
         /// </remarks>
-        public IList<string> FileExtensions {
-            get { return _fileExtensions; }
-        }
+        public IList<string> FileExtensions { get; private set; }
 
         /// <remarks>
         /// Option names are case-sensitive.
         /// </remarks>
-        public IDictionary<string, object> Options {
-            get { return _options; }
-        }
+        public IDictionary<string, object> Options { get; private set; }
 
         [Obsolete("This option is ignored")]
         public bool InterpretedMode {
@@ -166,9 +157,9 @@ namespace Microsoft.Scripting.Hosting {
         internal void Freeze() {
             _frozen = true;
 
-            _names = new ReadOnlyCollection<string>(ArrayUtils.MakeArray(_names));
-            _fileExtensions = new ReadOnlyCollection<string>(ArrayUtils.MakeArray(_fileExtensions));
-            _options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(_options));
+            Names = new ReadOnlyCollection<string>(ArrayUtils.MakeArray(Names));
+            FileExtensions = new ReadOnlyCollection<string>(ArrayUtils.MakeArray(FileExtensions));
+            Options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(Options));
         }
 
         private void CheckFrozen() {

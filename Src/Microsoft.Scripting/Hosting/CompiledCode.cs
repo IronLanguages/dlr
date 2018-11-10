@@ -9,8 +9,8 @@ using MarshalByRefObject = System.Object;
 #endif
 
 using System;
-using System.Dynamic;
 using System.Threading;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
@@ -19,27 +19,22 @@ namespace Microsoft.Scripting.Hosting {
     /// Hosting API counterpart for <see cref="ScriptCode"/>.
     /// </summary>
     public sealed class CompiledCode : MarshalByRefObject {
-        private readonly ScriptEngine _engine;
-        private readonly ScriptCode _code;
-
         private ScriptScope _defaultScope;
 
-        internal ScriptCode ScriptCode { get { return _code; } }
+        internal ScriptCode ScriptCode { get; }
 
         internal CompiledCode(ScriptEngine engine, ScriptCode code) {
             Assert.NotNull(engine);
             Assert.NotNull(code);
 
-            _engine = engine;
-            _code = code;
+            Engine = engine;
+            ScriptCode = code;
         }
 
         /// <summary>
         /// Engine that compiled this code.
         /// </summary>
-        public ScriptEngine Engine {
-            get { return _engine; }
-        }
+        public ScriptEngine Engine { get; }
 
         /// <summary>
         /// Default scope for this code.
@@ -47,7 +42,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptScope DefaultScope {
             get {
                 if (_defaultScope == null) {
-                    Interlocked.CompareExchange(ref _defaultScope, new ScriptScope(_engine, _code.CreateScope()), null);
+                    Interlocked.CompareExchange(ref _defaultScope, new ScriptScope(Engine, ScriptCode.CreateScope()), null);
                 }
                 return _defaultScope; 
             }
@@ -57,7 +52,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Executes code in a default scope.
         /// </summary>
         public dynamic Execute() {
-            return _code.Run(DefaultScope.Scope);
+            return ScriptCode.Run(DefaultScope.Scope);
         }
 
         /// <summary>
@@ -65,21 +60,21 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public dynamic Execute(ScriptScope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
-            return _code.Run(scope.Scope);
+            return ScriptCode.Run(scope.Scope);
         }
 
         /// <summary>
         /// Executes code in in a default scope and converts to a given type.
         /// </summary>
         public T Execute<T>() {
-            return _engine.Operations.ConvertTo<T>((object)Execute());
+            return Engine.Operations.ConvertTo<T>((object)Execute());
         }
 
         /// <summary>
         /// Execute code within a given scope and converts result to a given type.
         /// </summary>
         public T Execute<T>(ScriptScope scope) {
-            return _engine.Operations.ConvertTo<T>((object)Execute(scope));
+            return Engine.Operations.ConvertTo<T>((object)Execute(scope));
         }
 
 

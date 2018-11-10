@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Text;
 using System.Threading;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -26,8 +27,6 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     [DebuggerDisplay("{Setup.DisplayName}")]
     public sealed class ScriptEngine : MarshalByRefObject {
-        private readonly LanguageContext _language;
-        private readonly ScriptRuntime _runtime;
         private LanguageSetup _config;
         private ObjectOperations _operations;
 
@@ -35,8 +34,8 @@ namespace Microsoft.Scripting.Hosting {
             Debug.Assert(runtime != null);
             Debug.Assert(context != null);
 
-            _runtime = runtime;
-            _language = context;
+            Runtime = runtime;
+            LanguageContext = context;
         }
 
         #region Object Operations
@@ -72,7 +71,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Returns a new ObjectOperations object.  See the Operations property for why you might want to call this.
         /// </summary>
         public ObjectOperations CreateOperations() {
-            return new ObjectOperations(new DynamicOperations(_language), this);
+            return new ObjectOperations(new DynamicOperations(LanguageContext), this);
         }
 
         /// <summary>
@@ -83,7 +82,7 @@ namespace Microsoft.Scripting.Hosting {
         public ObjectOperations CreateOperations(ScriptScope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
 
-            return new ObjectOperations(_language.Operations, this);
+            return new ObjectOperations(LanguageContext.Operations, this);
         }
 
         #endregion
@@ -223,7 +222,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Creates a new ScriptScope using the default storage container
         /// </summary>
         public ScriptScope CreateScope() {
-            return new ScriptScope(this, _language.CreateScope());
+            return new ScriptScope(this, LanguageContext.CreateScope());
         }
 
         /// <summary>
@@ -234,7 +233,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptScope CreateScope(IDictionary<string, object> dictionary)
         {
             ContractUtils.RequiresNotNull(dictionary, nameof(dictionary));
-            return new ScriptScope(this, _language.CreateScope(dictionary));
+            return new ScriptScope(this, LanguageContext.CreateScope(dictionary));
         }
 
         /// <summary>
@@ -245,7 +244,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptScope CreateScope(IDynamicMetaObjectProvider storage) {
             ContractUtils.RequiresNotNull(storage, nameof(storage));
 
-            return new ScriptScope(this, _language.CreateScope(storage));
+            return new ScriptScope(this, LanguageContext.CreateScope(storage));
         }
 
         /// <summary>
@@ -263,7 +262,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ScriptScope GetScope(string path) {
             ContractUtils.RequiresNotNull(path, nameof(path));
-            Scope scope = _language.GetScope(path);
+            Scope scope = LanguageContext.GetScope(path);
             return (scope != null) ? new ScriptScope(this, scope) : null;
         }
 
@@ -359,9 +358,9 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotNull(path, nameof(path));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
-            if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
+            if (!LanguageContext.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
-            return new ScriptSource(this, _language.CreateFileUnit(path, encoding, kind));
+            return new ScriptSource(this, LanguageContext.CreateFileUnit(path, encoding, kind));
         }
 
 #if FEATURE_CODEDOM
@@ -435,9 +434,9 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ScriptSource CreateScriptSource(CodeObject content, string path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(content, nameof(content));
-            if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
+            if (!LanguageContext.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
-            return new ScriptSource(this, _language.GenerateSourceCode(content, path, kind));
+            return new ScriptSource(this, LanguageContext.GenerateSourceCode(content, path, kind));
         }
 #endif
 
@@ -476,7 +475,7 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
 
-            return CreateScriptSource(new LanguageBoundTextContentProvider(_language, content, encoding, path), path, kind);
+            return CreateScriptSource(new LanguageBoundTextContentProvider(LanguageContext, content, encoding, path), path, kind);
         }
 
         /// <summary>
@@ -487,9 +486,9 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptSource CreateScriptSource(TextContentProvider contentProvider, string path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
-            if (!_language.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
+            if (!LanguageContext.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
-            return new ScriptSource(this, _language.CreateSourceUnit(contentProvider, path, kind));
+            return new ScriptSource(this, LanguageContext.CreateSourceUnit(contentProvider, path, kind));
         }
 
         #endregion
@@ -512,21 +511,21 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public TService GetService<TService>(params object[] args) where TService : class {
             if (typeof(TService) == typeof(TokenCategorizer)) {
-                TokenizerService service = _language.GetService<TokenizerService>(ArrayUtils.Insert((object)_language, args));
+                TokenizerService service = LanguageContext.GetService<TokenizerService>(ArrayUtils.Insert((object)LanguageContext, args));
                 return (service != null) ? (TService)(object)new TokenCategorizer(service) : null;
             }
 
             if (typeof(TService) == typeof(ExceptionOperations)) {
-                ExceptionOperations service = _language.GetService<ExceptionOperations>();
-                return (service != null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(_language);
+                ExceptionOperations service = LanguageContext.GetService<ExceptionOperations>();
+                return (service != null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(LanguageContext);
             }
 
             if (typeof(TService) == typeof(DocumentationOperations)) {
-                DocumentationProvider service = _language.GetService<DocumentationProvider>(args);
+                DocumentationProvider service = LanguageContext.GetService<DocumentationProvider>(args);
                 return (service != null) ? (TService)(object)new DocumentationOperations(service) : null;
             }
 
-            return _language.GetService<TService>(args);
+            return LanguageContext.GetService<TService>(args);
         }
 
         #endregion
@@ -544,13 +543,13 @@ namespace Microsoft.Scripting.Hosting {
             get {
                 if (_config == null) {
                     // The user shouldn't be able to get a hold of the invariant engine
-                    Debug.Assert(!(_language is InvariantContext));
+                    Debug.Assert(!(LanguageContext is InvariantContext));
 
                     // Find the matching language configuration
-                    LanguageConfiguration config = _runtime.Manager.Configuration.GetLanguageConfig(_language);
+                    LanguageConfiguration config = Runtime.Manager.Configuration.GetLanguageConfig(LanguageContext);
                     Debug.Assert(config != null);
 
-                    foreach (var language in _runtime.Setup.LanguageSetups) {
+                    foreach (var language in Runtime.Setup.LanguageSetups) {
                         if (config.ProviderName == new AssemblyQualifiedTypeName(language.TypeName)) {
                             return _config = language;
                         }
@@ -563,30 +562,22 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// This property returns the ScriptRuntime for the context in which this engine executes.
         /// </summary>
-        public ScriptRuntime Runtime {
-            get {
-                return _runtime;
-            }
-        }
+        public ScriptRuntime Runtime { get; }
 
         /// <summary>
         /// This property returns the engine's version as a string.  The format is language-dependent.
         /// </summary>
-        public Version LanguageVersion {
-            get {
-                return _language.LanguageVersion;
-            }
-        }
+        public Version LanguageVersion => LanguageContext.LanguageVersion;
 
         #endregion
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public CompilerOptions GetCompilerOptions() {
-            return _language.GetCompilerOptions();
+            return LanguageContext.GetCompilerOptions();
         }
 
         public CompilerOptions GetCompilerOptions(ScriptScope scope) {
-            return _language.GetCompilerOptions(scope.Scope);
+            return LanguageContext.GetCompilerOptions(scope.Scope);
         }
 
         /// <summary>
@@ -598,7 +589,7 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotNull(paths, nameof(paths));
             ContractUtils.RequiresNotNullItems(paths, nameof(paths));
 
-            _language.SetSearchPaths(paths);
+            LanguageContext.SetSearchPaths(paths);
         }
 
         /// <summary>
@@ -607,19 +598,15 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public ICollection<string> GetSearchPaths() {
-            return _language.GetSearchPaths();
+            return LanguageContext.GetSearchPaths();
         }
 
         #region Internal API Surface
 
-        internal LanguageContext LanguageContext {
-            get {
-                return _language;
-            }
-        }
+        internal LanguageContext LanguageContext { get; }
 
         internal TRet Call<T, TRet>(Func<LanguageContext, T, TRet> f, T arg) {
-            return f(_language, arg);
+            return f(LanguageContext, arg);
         }
 
         #endregion

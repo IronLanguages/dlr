@@ -11,10 +11,9 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.IO;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Text;
+
 using Microsoft.Scripting.Utils;
-using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Hosting {
     /// <summary>
@@ -23,12 +22,7 @@ namespace Microsoft.Scripting.Hosting {
     [DebuggerDisplay("{Path ?? \"<anonymous>\"}")]
     public sealed class ScriptSource : MarshalByRefObject
     {
-        private readonly ScriptEngine _engine;
-        private readonly SourceUnit _unit;
-
-        internal SourceUnit SourceUnit {
-            get { return _unit; }
-        }
+        internal SourceUnit SourceUnit { get; }
 
         /// <summary>
         /// Identification of the source unit. Assigned by the host. 
@@ -36,22 +30,16 @@ namespace Microsoft.Scripting.Hosting {
         /// <c>null</c> for anonymous script source.
         /// Cannot be an empty string.
         /// </summary>
-        public string Path {
-            get { return _unit.Path; }
-        }
+        public string Path => SourceUnit.Path;
 
-        public SourceCodeKind Kind {
-            get { return _unit.Kind; }
-        }
+        public SourceCodeKind Kind => SourceUnit.Kind;
 
-        public ScriptEngine Engine {
-            get { return _engine; }
-        }
+        public ScriptEngine Engine { get; }
 
         internal ScriptSource(ScriptEngine engine, SourceUnit sourceUnit) {
             Assert.NotNull(engine, sourceUnit);
-            _unit = sourceUnit;
-            _engine = engine;
+            SourceUnit = sourceUnit;
+            Engine = engine;
         }
 
         #region Compilation and Execution
@@ -98,9 +86,9 @@ namespace Microsoft.Scripting.Hosting {
 
         private CompiledCode CompileInternal(CompilerOptions compilerOptions, ErrorListener errorListener) {
             ErrorSink errorSink = new ErrorListenerProxySink(this, errorListener);
-            ScriptCode code = compilerOptions != null ? _unit.Compile(compilerOptions, errorSink) : _unit.Compile(errorSink);
+            ScriptCode code = compilerOptions != null ? SourceUnit.Compile(compilerOptions, errorSink) : SourceUnit.Compile(errorSink);
 
-            return (code != null) ? new CompiledCode(_engine, code) : null;
+            return (code != null) ? new CompiledCode(Engine, code) : null;
         }
 
         /// <summary>
@@ -116,7 +104,7 @@ namespace Microsoft.Scripting.Hosting {
         public dynamic Execute(ScriptScope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
 
-            return _unit.Execute(scope.Scope);
+            return SourceUnit.Execute(scope.Scope);
         }
 
         /// <summary>
@@ -125,7 +113,7 @@ namespace Microsoft.Scripting.Hosting {
         public dynamic Execute() {
             // The host doesn't need the scope so do not create it here. 
             // The language can treat the code as not bound to a DLR scope and change global lookup semantics accordingly.
-            return _unit.Execute();
+            return SourceUnit.Execute();
         }
 
         /// <summary>
@@ -133,7 +121,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The conversion is language specific.
         /// </summary>
         public T Execute<T>(ScriptScope scope) {
-            return _engine.Operations.ConvertTo<T>((object)Execute(scope));
+            return Engine.Operations.ConvertTo<T>((object)Execute(scope));
         }
 
         /// <summary>
@@ -141,7 +129,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The conversion is language specific.
         /// </summary>
         public T Execute<T>() {
-            return _engine.Operations.ConvertTo<T>((object)Execute());
+            return Engine.Operations.ConvertTo<T>((object)Execute());
         }
 
 #if FEATURE_REMOTING
@@ -218,23 +206,23 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="SyntaxErrorException">Code cannot be compiled.</exception>
         public int ExecuteProgram() {
-            return _unit.LanguageContext.ExecuteProgram(_unit);
+            return SourceUnit.LanguageContext.ExecuteProgram(SourceUnit);
         }
 
         #endregion
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public ScriptCodeParseResult GetCodeProperties() {
-            return _unit.GetCodeProperties();
+            return SourceUnit.GetCodeProperties();
         }
 
         public ScriptCodeParseResult GetCodeProperties(CompilerOptions options) {
-            return _unit.GetCodeProperties(options);
+            return SourceUnit.GetCodeProperties(options);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public SourceCodeReader GetReader() {
-            return _unit.GetReader();
+            return SourceUnit.GetReader();
         }
 
         /// <summary>
@@ -251,7 +239,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </remarks>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         public Encoding DetectEncoding() {
-            using (var reader = _unit.GetReader()) {
+            using (var reader = SourceUnit.GetReader()) {
                 return reader.Encoding;
             }
         }
@@ -267,7 +255,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </remarks>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         public string[] GetCodeLines(int start, int count) {
-            return _unit.GetCodeLines(start, count);
+            return SourceUnit.GetCodeLines(start, count);
         }
 
         /// <summary>
@@ -282,7 +270,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public string GetCodeLine(int line) {
-            return _unit.GetCodeLine(line);
+            return SourceUnit.GetCodeLine(line);
         }
 
         /// <summary>
@@ -297,29 +285,29 @@ namespace Microsoft.Scripting.Hosting {
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public string GetCode() {
-            return _unit.GetCode();
+            return SourceUnit.GetCode();
         }
 
         // TODO: can this be removed? no one uses it
         #region line number mapping
 
         public int MapLine(int line) {
-            return _unit.MapLine(line);
+            return SourceUnit.MapLine(line);
         }
 
         public SourceSpan MapLine(SourceSpan span) {
-            return new SourceSpan(_unit.MakeLocation(span.Start), _unit.MakeLocation(span.End));
+            return new SourceSpan(SourceUnit.MakeLocation(span.Start), SourceUnit.MakeLocation(span.End));
         }
 
         public SourceLocation MapLine(SourceLocation location) {
-            return _unit.MakeLocation(location);
+            return SourceUnit.MakeLocation(location);
         }
 
         // TODO: remove this? we don't support file mapping
         // (but it's still in the hosting spec)
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "line")]
         public string MapLinetoFile(int line) {
-            return _unit.Path;
+            return SourceUnit.Path;
         }
 
         #endregion

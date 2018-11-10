@@ -9,11 +9,7 @@ using MarshalByRefObject = System.Object;
 #endif
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Dynamic;
-using System.Text;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting {
@@ -54,11 +50,7 @@ namespace Microsoft.Scripting.Hosting {
             }
         }
 
-        public virtual PlatformAdaptationLayer PlatformAdaptationLayer {
-            get {
-                return PlatformAdaptationLayer.Default;
-            }
-        }
+        public virtual PlatformAdaptationLayer PlatformAdaptationLayer => PlatformAdaptationLayer.Default;
 
         #region Notifications
 
@@ -74,7 +66,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Invoked after a new language is loaded into the Runtime.
         /// The host can override this method to perform additional initialization of language engines.
         /// </summary>
-        internal protected virtual void EngineCreated(ScriptEngine engine) {
+        protected internal virtual void EngineCreated(ScriptEngine engine) {
             // nop
         }
 
@@ -87,5 +79,4 @@ namespace Microsoft.Scripting.Hosting {
         }
 #endif
     }
-
 }

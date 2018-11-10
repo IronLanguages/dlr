@@ -7,7 +7,7 @@ namespace Microsoft.Scripting.Hosting {
     /// Bridges ErrorListener and ErrorSink. It provides the reverse functionality as ErrorSinkProxyListener
     /// </summary>
     public sealed class ErrorSinkProxyListener : ErrorListener {
-        private ErrorSink _errorSink;
+        private readonly ErrorSink _errorSink;
 
         public ErrorSinkProxyListener(ErrorSink errorSink) {
             _errorSink = errorSink;

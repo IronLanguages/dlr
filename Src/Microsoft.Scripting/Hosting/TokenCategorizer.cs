@@ -10,7 +10,7 @@ using MarshalByRefObject = System.Object;
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -30,16 +30,12 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// The current internal state of the scanner.
         /// </summary>
-        public object CurrentState {
-            get { return _tokenizer.CurrentState; }
-        }
+        public object CurrentState => _tokenizer.CurrentState;
 
         /// <summary>
         /// The current startLocation of the scanner.
         /// </summary>
-        public SourceLocation CurrentPosition {
-            get { return _tokenizer.CurrentPosition; }
-        }
+        public SourceLocation CurrentPosition => _tokenizer.CurrentPosition;
 
         /// <summary>
         /// Move the tokenizer past the next token and return its category.
@@ -49,14 +45,12 @@ namespace Microsoft.Scripting.Hosting {
             return _tokenizer.ReadToken();
         }
 
-        public bool IsRestartable {
-            get { return _tokenizer.IsRestartable; }
-        }
+        public bool IsRestartable => _tokenizer.IsRestartable;
 
         // TODO: Should be ErrorListener
         public ErrorSink ErrorSink {
-            get { return _tokenizer.ErrorSink; }
-            set { _tokenizer.ErrorSink = value; }
+            get => _tokenizer.ErrorSink;
+            set => _tokenizer.ErrorSink = value;
         }
 
         /// <summary>

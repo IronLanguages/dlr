@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-using System.Reflection;
-using System.IO;
-using System.Collections.ObjectModel;
 
 namespace Microsoft.Scripting.Hosting {
     /// <summary>
@@ -20,23 +21,17 @@ namespace Microsoft.Scripting.Hosting {
         private Type _hostType;
         private IList<object> _hostArguments;
 
-        // languages available in the runtime: 
-        private IList<LanguageSetup> _languageSetups;
-
         // DLR options:
         private bool _debugMode;
         private bool _privateBinding;
 
-        // common language options:
-        private IDictionary<string, object> _options;
-        
         // true if the ScriptRuntimeSetup is no longer mutable because it's been
         // used to start a ScriptRuntime
         private bool _frozen;
 
         public ScriptRuntimeSetup() {
-            _languageSetups = new List<LanguageSetup>();
-            _options = new Dictionary<string, object>();
+            LanguageSetups = new List<LanguageSetup>();
+            Options = new Dictionary<string, object>();
             _hostType = typeof(ScriptHost);
             _hostArguments = ArrayUtils.EmptyObjects;
         }
@@ -45,9 +40,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The list of language setup information for languages to load into
         /// the runtime
         /// </summary>
-        public IList<LanguageSetup> LanguageSetups {
-            get { return _languageSetups; }
-        }
+        public IList<LanguageSetup> LanguageSetups { get; private set; }
 
         /// <summary>
         /// Indicates that the script runtime is in debug mode.
@@ -59,7 +52,7 @@ namespace Microsoft.Scripting.Hosting {
         /// 4) Languages may disable optimizations based on this value.
         /// </summary>
         public bool DebugMode {
-            get { return _debugMode; }
+            get => _debugMode;
             set {
                 CheckFrozen();
                 _debugMode = value; 
@@ -70,7 +63,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Ignore CLR visibility checks
         /// </summary>
         public bool PrivateBinding {
-            get { return _privateBinding; }
+            get => _privateBinding;
             set {
                 CheckFrozen();
                 _privateBinding = value; 
@@ -82,7 +75,7 @@ namespace Microsoft.Scripting.Hosting {
         /// host to override certain methods to control behavior of the runtime
         /// </summary>
         public Type HostType {
-            get { return _hostType; }
+            get => _hostType;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 ContractUtils.Requires(typeof(ScriptHost).IsAssignableFrom(value), nameof(value), "Must be ScriptHost or a derived type of ScriptHost");
@@ -94,18 +87,14 @@ namespace Microsoft.Scripting.Hosting {
         /// <remarks>
         /// Option names are case-sensitive.
         /// </remarks>
-        public IDictionary<string, object> Options {
-            get { return _options; }
-        }
+        public IDictionary<string, object> Options { get; private set; }
 
         /// <summary>
         /// Arguments passed to the host type when it is constructed
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<object> HostArguments {
-            get {
-                return _hostArguments;
-            }
+            get => _hostArguments;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 CheckFrozen();
@@ -114,12 +103,12 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         internal DlrConfiguration ToConfiguration() {
-            ContractUtils.Requires(_languageSetups.Count > 0, "ScriptRuntimeSetup must have at least one LanguageSetup");
+            ContractUtils.Requires(LanguageSetups.Count > 0, "ScriptRuntimeSetup must have at least one LanguageSetup");
 
             // prepare
-            ReadOnlyCollection<LanguageSetup> setups = new ReadOnlyCollection<LanguageSetup>(ArrayUtils.MakeArray(_languageSetups));
+            ReadOnlyCollection<LanguageSetup> setups = new ReadOnlyCollection<LanguageSetup>(ArrayUtils.MakeArray(LanguageSetups));
             var hostArguments = new ReadOnlyCollection<object>(ArrayUtils.MakeArray(_hostArguments));
-            var options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(_options));            
+            var options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(Options));            
             var config = new DlrConfiguration(_debugMode, _privateBinding, options);
 
             // validate
@@ -134,8 +123,8 @@ namespace Microsoft.Scripting.Hosting {
             }
 
             // commit
-            _languageSetups = setups;
-            _options = options;
+            LanguageSetups = setups;
+            Options = options;
             _hostArguments = hostArguments;
 
             Freeze(setups);
@@ -192,6 +181,6 @@ namespace Microsoft.Scripting.Hosting {
                 return ReadConfiguration(stream);
             }
         }
-#endif        
+#endif
     }
 }

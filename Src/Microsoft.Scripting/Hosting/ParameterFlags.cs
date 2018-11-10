@@ -14,5 +14,4 @@ namespace Microsoft.Scripting.Hosting {
         ParamsArray = 0x01,
         ParamsDict = 0x02,
     }
-
 }

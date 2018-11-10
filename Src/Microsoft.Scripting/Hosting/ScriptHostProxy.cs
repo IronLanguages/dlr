@@ -17,8 +17,6 @@ namespace Microsoft.Scripting.Hosting {
             _host = host;
         }
 
-        public override PlatformAdaptationLayer PlatformAdaptationLayer {
-            get { return _host.PlatformAdaptationLayer; }
-        }
+        public override PlatformAdaptationLayer PlatformAdaptationLayer => _host.PlatformAdaptationLayer;
     }
 }
