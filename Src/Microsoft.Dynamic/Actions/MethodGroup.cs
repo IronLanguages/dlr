@@ -30,17 +30,11 @@ namespace Microsoft.Scripting.Actions {
             _methods = methods;
         }
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.MethodGroup; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.MethodGroup;
 
-        public override Type DeclaringType {
-            get { return _methods[0].DeclaringType; }
-        }
+        public override Type DeclaringType => _methods[0].DeclaringType;
 
-        public override string Name {
-            get { return _methods[0].Name; }
-        }
+        public override string Name => _methods[0].Name;
 
         public bool ContainsInstance {
             get {
@@ -60,11 +54,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public IList<MethodTracker> Methods {
-            get {
-                return _methods;
-            }
-        }
+        public IList<MethodTracker> Methods => _methods;
 
         public MethodBase[] GetMethodBases() {
             MethodBase[] methods = new MethodBase[Methods.Count];

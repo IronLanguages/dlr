@@ -4,8 +4,8 @@
 
 using System;
 using System.Reflection;
+
 using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     public class ReflectedPropertyTracker : PropertyTracker {

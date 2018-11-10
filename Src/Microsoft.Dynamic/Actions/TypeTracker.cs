@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -14,18 +15,14 @@ namespace Microsoft.Scripting.Actions {
         internal TypeTracker() {
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
-        public abstract Type Type {
-            get;
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Microsoft.Naming",
+            "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+        public abstract Type Type { get; }
 
-        public abstract bool IsGenericType {
-            get;
-        }
+        public abstract bool IsGenericType { get; }
 
-        public abstract bool IsPublic {
-            get;
-        }
+        public abstract bool IsPublic { get; }
 
         #region IMembersList Members
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Dynamic;
+
 using Microsoft.Scripting.Actions.Calls;
 
 namespace Microsoft.Scripting.Actions {
@@ -18,17 +19,11 @@ namespace Microsoft.Scripting.Actions {
             ObjectInstance = instance;
         }
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Bound; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Bound;
 
-        public override Type DeclaringType {
-            get { return BoundTo.DeclaringType; }
-        }
+        public override Type DeclaringType => BoundTo.DeclaringType;
 
-        public override string Name {
-            get { return BoundTo.Name; }
-        }
+        public override string Name => BoundTo.Name;
 
         public DynamicMetaObject Instance { get; }
 

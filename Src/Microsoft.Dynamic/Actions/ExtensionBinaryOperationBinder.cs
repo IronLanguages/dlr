@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Dynamic;
 using System.Linq.Expressions;
 
-using System.Dynamic;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
@@ -17,11 +17,7 @@ namespace Microsoft.Scripting.Actions {
             _operation = operation;
         }
 
-        public string ExtensionOperation {
-            get {
-                return _operation;
-            }
-        }
+        public string ExtensionOperation => _operation;
 
         public override int GetHashCode() {
             return base.GetHashCode() ^ _operation.GetHashCode();

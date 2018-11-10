@@ -2,22 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
+using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    using AstUtils = Microsoft.Scripting.Ast.Utils;
-    
+
     public partial class DefaultBinder : ActionBinder {
         public DynamicMetaObject ConvertTo(Type toType, ConversionResultKind kind, DynamicMetaObject arg) {
             return ConvertTo(toType, kind, arg, new DefaultOverloadResolverFactory(this));
@@ -321,14 +319,14 @@ namespace Microsoft.Scripting.Actions {
         private static Expression WrapForThrowingTry(ConversionResultKind kind, bool isImplicit, Expression ret, Type retType) {
             if (!isImplicit && kind == ConversionResultKind.ExplicitTry) {
                 Expression convFailed = GetTryConvertReturnValue(retType);
-                ParameterExpression tmp = Ast.Variable(convFailed.Type == typeof(object) ? typeof(object) : ret.Type, "tmp");
-                ret = Ast.Block(
+                ParameterExpression tmp = Expression.Variable(convFailed.Type == typeof(object) ? typeof(object) : ret.Type, "tmp");
+                ret = Expression.Block(
                         new ParameterExpression[] { tmp },
                         AstUtils.Try(
-                            Ast.Assign(tmp, AstUtils.Convert(ret, tmp.Type))
+                            Expression.Assign(tmp, AstUtils.Convert(ret, tmp.Type))
                         ).Catch(
                             typeof(Exception),
-                            Ast.Assign(tmp, convFailed)
+                            Expression.Assign(tmp, convFailed)
                         ),
                         tmp
                      );
@@ -381,7 +379,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject MakeExtensibleTarget(Type extensibleType, BindingRestrictions restrictions, DynamicMetaObject arg) {
             return new DynamicMetaObject(
-                Ast.Property(Ast.Convert(arg.Expression, extensibleType), extensibleType.GetInheritedProperties("Value").First()),
+                Expression.Property(Expression.Convert(arg.Expression, extensibleType), extensibleType.GetInheritedProperties("Value").First()),
                 restrictions
             );
         }
@@ -391,7 +389,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject MakeNullToNullableOfTTarget(Type toType, BindingRestrictions restrictions) {
             return new DynamicMetaObject(
-                Ast.Call(typeof(ScriptingRuntimeHelpers).GetMethod("CreateInstance").MakeGenericMethod(toType)),
+                Expression.Call(typeof(ScriptingRuntimeHelpers).GetMethod("CreateInstance").MakeGenericMethod(toType)),
                 restrictions
             );
         }
@@ -402,7 +400,7 @@ namespace Microsoft.Scripting.Actions {
         private static DynamicMetaObject MakeTToNullableOfTTarget(Type toType, Type knownType, BindingRestrictions restrictions, DynamicMetaObject arg) {
             // T -> Nullable<T>
             return new DynamicMetaObject(
-                Ast.New(
+                Expression.New(
                     toType.GetConstructor(new Type[] { knownType }),
                     AstUtils.Convert(arg.Expression, knownType)
                 ),
@@ -422,7 +420,7 @@ namespace Microsoft.Scripting.Actions {
                 Expression conversion = ConvertExpression(arg.Expression, valueType, kind, resolverFactory);
 
                 return new DynamicMetaObject(
-                    Ast.New(
+                    Expression.New(
                         toType.GetConstructor(new Type[] { valueType }),
                         conversion
                     ),
@@ -432,18 +430,18 @@ namespace Microsoft.Scripting.Actions {
                 Expression conversion = ConvertExpression(arg.Expression, valueType, kind, resolverFactory);
 
                 // if the conversion to T succeeds then produce the nullable<T>, otherwise return default(retType)
-                ParameterExpression tmp = Ast.Variable(typeof(object), "tmp");
+                ParameterExpression tmp = Expression.Variable(typeof(object), "tmp");
                 return new DynamicMetaObject(
-                    Ast.Block(
+                    Expression.Block(
                         new ParameterExpression[] { tmp },
-                        Ast.Condition(
-                            Ast.NotEqual(
-                                Ast.Assign(tmp, conversion),
+                        Expression.Condition(
+                            Expression.NotEqual(
+                                Expression.Assign(tmp, conversion),
                                 AstUtils.Constant(null)
                             ),
-                            Ast.New(
+                            Expression.New(
                                 toType.GetConstructor(new Type[] { valueType }),
-                                Ast.Convert(
+                                Expression.Convert(
                                     tmp,
                                     valueType
                                 )
@@ -476,7 +474,7 @@ namespace Microsoft.Scripting.Actions {
         /// expression being converted.
         /// </summary>
         private static Expression GetExtensibleValue(Type extType, DynamicMetaObject arg) {
-            return Ast.Property(
+            return Expression.Property(
                 AstUtils.Convert(
                     arg.Expression,
                     extType

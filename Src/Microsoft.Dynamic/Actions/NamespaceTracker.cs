@@ -2,17 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Microsoft.Scripting.Utils;
 using System.Threading;
+
 using Microsoft.Scripting.Runtime;
-using AstUtils = Microsoft.Scripting.Ast.Utils;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
 
@@ -135,8 +133,7 @@ namespace Microsoft.Scripting.Actions {
         private void LoadAllTypes() {
             foreach (TypeNames typeNameList in _typeNames.Values) {
                 foreach (string typeName in typeNameList.GetNormalizedTypeNames()) {
-                    object value;
-                    if (!TryGetValue(typeName, out value)) {
+                    if (!TryGetValue(typeName, out object _)) {
                         Debug.Assert(false, "We should never get here as TryGetMember should raise a TypeLoadException");
                         throw new TypeLoadException(typeName);
                     }
@@ -146,11 +143,7 @@ namespace Microsoft.Scripting.Actions {
 
         #endregion
 
-        public override string Name {
-            get {
-                return _fullName;
-            }
-        }
+        public override string Name => _fullName;
 
         protected void DiscoverAllTypes(Assembly assem) {
             // lock is held when this is called
@@ -284,17 +277,14 @@ namespace Microsoft.Scripting.Actions {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public object this[string name] {
             get {
-                object res;
-                if (TryGetValue(name, out res)) {
+                if (TryGetValue(name, out object res)) {
                     return res;
                 }
                 throw new KeyNotFoundException();
             }
         }
 
-        public int Count {
-            get { return _dict.Count; }
-        }
+        public int Count => _dict.Count;
 
         public ICollection<string> Keys {
             get {
@@ -446,11 +436,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        public int Id {
-            get {
-                return _id;
-            }
-        }
+        public int Id => _id;
 
         #region IMembersList Members
 
@@ -468,13 +454,9 @@ namespace Microsoft.Scripting.Actions {
 
         #endregion
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Namespace; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Namespace;
 
-        public override Type DeclaringType {
-            get { return null; }
-        }
+        public override Type DeclaringType => null;
 
         private void UpdateId() {
             _id = Interlocked.Increment(ref _masterId);

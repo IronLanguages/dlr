@@ -9,8 +9,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Generation;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     // TODO: replace this class with calls to Expression.GetDelegateType

@@ -2,23 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Dynamic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Linq;
 
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-    
+
     public partial class DefaultBinder : ActionBinder {
         /// <summary>
         /// Builds a MetaObject for performing a member get.  Supports all built-in .NET members, the OperatorMethod 
@@ -178,8 +175,7 @@ namespace Microsoft.Scripting.Actions {
                 );
 
                 TypeGroup tg = target.Value as TypeGroup;
-                Type nonGen;
-                if (tg == null || tg.TryGetNonGenericType(out nonGen)) {
+                if (tg == null || tg.TryGetNonGenericType(out Type _)) {
                     members = GetMember(MemberRequestKind.Get, ((TypeTracker)target.Value).Type, getMemInfo.Name);
                     if (members.Count > 0) {
                         // we have a member that's on the type associated w/ the tracker, return that...
@@ -211,7 +207,7 @@ namespace Microsoft.Scripting.Actions {
             if (members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(targetType) && propSelf != null) {
                 // properties/fields need the direct value, methods hold onto the strong box.
                 propSelf = new DynamicMetaObject(
-                    Ast.Field(AstUtils.Convert(propSelf.Expression, targetType), targetType.GetInheritedFields("Value").First()),
+                    Expression.Field(AstUtils.Convert(propSelf.Expression, targetType), targetType.GetInheritedFields("Value").First()),
                     propSelf.Restrictions,
                     ((IStrongBox)propSelf.Value).Value
                 );
@@ -339,12 +335,12 @@ namespace Microsoft.Scripting.Actions {
         private void MakeOperatorGetMemberBody(GetMemberInfo getMemInfo, DynamicMetaObject instance, Type instanceType, string name) {
             MethodInfo getMem = GetMethod(instanceType, name);
             if (getMem != null) {
-                ParameterExpression tmp = Ast.Variable(typeof(object), "getVal");
+                ParameterExpression tmp = Expression.Variable(typeof(object), "getVal");
                 getMemInfo.Body.AddVariable(tmp);
 
                 getMemInfo.Body.AddCondition(
-                    Ast.NotEqual(
-                        Ast.Assign(
+                    Expression.NotEqual(
+                        Expression.Assign(
                             tmp,
                             MakeCallExpression(
                                 getMemInfo.ResolutionFactory,
@@ -361,7 +357,7 @@ namespace Microsoft.Scripting.Actions {
                                 )
                             ).Expression
                         ),
-                        Ast.Field(null, typeof(OperationFailed).GetDeclaredField("Value"))
+                        Expression.Field(null, typeof(OperationFailed).GetDeclaredField("Value"))
                     ),
                     tmp
                 );
@@ -381,9 +377,8 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private static MemberExpression MakeOperationFailed() {
-            return Ast.Field(null, typeof(OperationFailed).GetDeclaredField("Value"));
+            return Expression.Field(null, typeof(OperationFailed).GetDeclaredField("Value"));
         }
-
 
         /// <summary>
         /// Helper class for flowing information about the GetMember request.

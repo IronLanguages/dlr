@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
@@ -74,11 +74,7 @@ namespace Microsoft.Scripting.Actions {
             );
         }
 
-        public override Type ReturnType {
-            get {
-                return _metaBinders[_metaBinders.Length - 1].Binder.ReturnType;
-            }
-        }
+        public override Type ReturnType => _metaBinders[_metaBinders.Length - 1].Binder.ReturnType;
 
         private sealed class ReplaceUpdateVisitor : ExpressionVisitor {
             internal DynamicMetaObjectBinder Binder;
@@ -188,41 +184,17 @@ namespace Microsoft.Scripting.Actions {
             return new ParameterMappingInfo(-1, -1, e);
         }
 
-        public int ParameterIndex {
-            get {
-                return _parameterIndex;
-            }
-        }
+        public int ParameterIndex => _parameterIndex;
 
-        public int ActionIndex {
-            get {
-                return _actionIndex;
-            }
-        }
+        public int ActionIndex => _actionIndex;
 
-        public ConstantExpression Constant {
-            get {
-                return _fixedInput;
-            }
-        }
+        public ConstantExpression Constant => _fixedInput;
 
-        public bool IsParameter {
-            get {
-                return _parameterIndex != -1;
-            }
-        }
+        public bool IsParameter => _parameterIndex != -1;
 
-        public bool IsAction {
-            get {
-                return _actionIndex != -1;
-            }
-        }
+        public bool IsAction => _actionIndex != -1;
 
-        public bool IsConstant {
-            get {
-                return _fixedInput != null;
-            }
-        }
+        public bool IsConstant => _fixedInput != null;
 
         public override bool Equals(object obj) {
             ParameterMappingInfo pmi = obj as ParameterMappingInfo;

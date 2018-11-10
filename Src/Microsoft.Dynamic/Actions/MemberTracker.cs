@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using TypeInfo = System.Type;
-
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -104,7 +102,7 @@ namespace Microsoft.Scripting.Actions {
                 EventInfo evnt;
                 FieldInfo field;
                 MethodInfo method;
-                TypeInfo type;
+                Type type;
                 PropertyInfo property;
 
                 if ((method = member as MethodInfo) != null) {
@@ -121,7 +119,7 @@ namespace Microsoft.Scripting.Actions {
                     res = new ReflectedPropertyTracker(property);
                 } else if ((evnt = member as EventInfo) != null) {
                     res = new EventTracker(evnt);
-                } else if ((type = member as TypeInfo) != null) {
+                } else if ((type = member as Type) != null) {
                     res = new NestedTypeTracker(type);
                 } else {
                     throw Error.UnknownMemberType(member);

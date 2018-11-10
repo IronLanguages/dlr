@@ -2,18 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
-using TypeInfo = System.Type;
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
@@ -37,14 +32,7 @@ namespace Microsoft.Scripting.Actions {
         /// can inherit and override this value to customize whether or not private binding
         /// is available.
         /// </summary>
-        public virtual bool PrivateBinding {
-            get {
-                if (_manager != null) {
-                    return _manager.Configuration.PrivateBinding;
-                }
-                return false; 
-            }
-        }
+        public virtual bool PrivateBinding => _manager != null && _manager.Configuration.PrivateBinding;
 
         protected ActionBinder() {
         }
@@ -55,11 +43,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         [Obsolete("ScriptDomainManager is no longer required by ActionBinder and will no longer be available on the base class.")]
-        public ScriptDomainManager Manager {
-            get {
-                return _manager;
-            }
-        }
+        public ScriptDomainManager Manager => _manager;
 
         /// <summary>
         /// Converts an object at runtime into the specified type.
@@ -135,11 +119,11 @@ namespace Microsoft.Scripting.Actions {
 
             // check for generic types w/ arity...
             string genName = name + ReflectionUtils.GenericArityDelimiter;
-            List<TypeInfo> genTypes = null;
-            foreach (TypeInfo t in type.GetDeclaredNestedTypes()) {
+            List<Type> genTypes = null;
+            foreach (Type t in type.GetDeclaredNestedTypes()) {
                 if (t.IsPublic && t.Name.StartsWith(genName)) {
                     if (genTypes == null) {
-                        genTypes = new List<TypeInfo>();
+                        genTypes = new List<Type>();
                     }
 
                     genTypes.Add(t);
@@ -148,7 +132,7 @@ namespace Microsoft.Scripting.Actions {
 
             if (genTypes != null) {
                 List<MemberTracker> mt = new List<MemberTracker>(members);
-                foreach (TypeInfo t in genTypes) {
+                foreach (Type t in genTypes) {
                     mt.Add(MemberTracker.FromMemberInfo(t));
                 }
                 return MemberGroup.CreateInternal(mt.ToArray());
@@ -440,4 +424,3 @@ namespace Microsoft.Scripting.Actions {
         }
     }
 }
-

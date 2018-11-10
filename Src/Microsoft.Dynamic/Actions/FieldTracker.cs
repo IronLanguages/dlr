@@ -10,12 +10,9 @@ using System.Reflection;
 
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Utils;
-
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.Actions {
-    using Ast = Expression;
-
     public class FieldTracker : MemberTracker {
         private readonly FieldInfo _field;
 
@@ -24,53 +21,23 @@ namespace Microsoft.Scripting.Actions {
             _field = field;
         }
 
-        public override Type DeclaringType {
-            get { return _field.DeclaringType; }
-        }
+        public override Type DeclaringType => _field.DeclaringType;
 
-        public override TrackerTypes MemberType {
-            get { return TrackerTypes.Field; }
-        }
+        public override TrackerTypes MemberType => TrackerTypes.Field;
 
-        public override string Name {
-            get { return _field.Name; }
-        }
+        public override string Name => _field.Name;
 
-        public bool IsPublic {
-            get {
-                return _field.IsPublic;
-            }
-        }
+        public bool IsPublic => _field.IsPublic;
 
-        public bool IsInitOnly {
-            get {
-                return _field.IsInitOnly;
-            }
-        }
+        public bool IsInitOnly => _field.IsInitOnly;
 
-        public bool IsLiteral {
-            get {
-                return _field.IsLiteral;
-            }
-        }
+        public bool IsLiteral => _field.IsLiteral;
 
-        public Type FieldType {
-            get {
-                return _field.FieldType;
-            }
-        }
+        public Type FieldType => _field.FieldType;
 
-        public bool IsStatic {
-            get {
-                return _field.IsStatic;
-            }
-        }
+        public bool IsStatic => _field.IsStatic;
 
-        public FieldInfo Field {
-            get {
-                return _field;
-            }
-        }
+        public FieldInfo Field => _field;
 
         public override string ToString() {
             return _field.ToString();
@@ -97,13 +64,13 @@ namespace Microsoft.Scripting.Actions {
 
             if (IsPublic && DeclaringType.IsPublic()) {
                 return new DynamicMetaObject(
-                    Ast.Convert(Ast.Field(null, Field), typeof(object)),
+                    Expression.Convert(Expression.Field(null, Field), typeof(object)),
                     BindingRestrictions.Empty
                 );
             }
 
             return new DynamicMetaObject(
-                Ast.Call(
+                Expression.Call(
                     AstUtils.Convert(AstUtils.Constant(Field), typeof(FieldInfo)),
                     typeof(FieldInfo).GetMethod("GetValue"),
                     AstUtils.Constant(null)
@@ -128,7 +95,7 @@ namespace Microsoft.Scripting.Actions {
             if (IsPublic && DeclaringType.IsVisible()) {
                 return new DynamicMetaObject(
                     AstUtils.Convert(
-                        Ast.Field(
+                        Expression.Field(
                             AstUtils.Convert(instance.Expression, Field.DeclaringType),
                             Field
                         ),

@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
@@ -55,17 +56,9 @@ namespace Microsoft.Scripting.Actions {
             return new MemberGroup(members, true);
         }
 
-        public int Count {
-            get {
-                return _members.Length;
-            }
-        }
+        public int Count => _members.Length;
 
-        public MemberTracker this[int index] {
-            get {
-                return _members[index];
-            }
-        }
+        public MemberTracker this[int index] => _members[index];
 
         #region IEnumerable<MemberTracker> Members
 

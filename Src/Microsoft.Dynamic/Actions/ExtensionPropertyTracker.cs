@@ -4,6 +4,7 @@
 
 using System;
 using System.Reflection;
+
 using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Actions {
@@ -22,9 +23,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override Type DeclaringType { get; }
 
-        public override bool IsStatic {
-            get { return IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true)); }
-        }
+        public override bool IsStatic => IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true));
 
         public override MethodInfo GetGetMethod() {
             if (_getter != null && _getter.IsPrivate) return null;
@@ -57,16 +56,14 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override MethodInfo GetDeleteMethod(bool privateMembers) {
-            if (privateMembers) return _deleter;
-
-            return GetDeleteMethod();
+            return privateMembers ? _deleter : GetDeleteMethod();
         }
 
         public override ParameterInfo[] GetIndexParameters() {
             return new ParameterInfo[0];
         }
 
-        private static bool IsStaticProperty(MethodInfo method) {            
+        private static bool IsStaticProperty(MethodInfo method) {
             return method.IsDefined(typeof(StaticExtensionMethodAttribute), false);
         }
 

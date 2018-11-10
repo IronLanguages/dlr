@@ -11,8 +11,6 @@ namespace Microsoft.Scripting.Actions {
         protected CustomTracker() {
         }
 
-        public sealed override TrackerTypes MemberType {
-            get { return TrackerTypes.Custom; }
-        }
+        public sealed override TrackerTypes MemberType => TrackerTypes.Custom;
     }
 }
