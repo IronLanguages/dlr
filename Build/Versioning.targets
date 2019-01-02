@@ -29,7 +29,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <BuildInfoTemplate Include="$(DlrBuildDir)\Templates\BuildInfo.Template.cs" />
     <CurrentVersionTemplate Include="$(DlrBuildDir)\Templates\CurrentVersion.Template.cs" />
     <Tokens Include="CurrentDate">
       <ReplacementValue>$([System.DateTime]::Now.ToString('yyyy-MM-dd hh:mm:ss'))</ReplacementValue>
@@ -72,16 +71,5 @@
       </Tokens>
     </ItemGroup>
     <TemplateFile Template="@(CurrentVersionTemplate)" OutputFilename="$(MSBuildProjectDirectory)\Properties\CurrentVersion.Generated.cs" Tokens="@(Tokens)"/>
-  </Target>
-
-  <Target Name="GenerateBuildInfo"
-          Inputs="$(CurrentVersionFile);@(BuildInfoTemplate);$(MSBuildThisFileFullPath)"
-          Outputs="Properties\BuildInfo.Generated.cs">
-    <ItemGroup>
-      <Tokens Include="Configuration">
-        <ReplacementValue>$(Configuration)</ReplacementValue>
-      </Tokens>
-    </ItemGroup>
-    <TemplateFile Template="@(BuildInfoTemplate)" OutputFilename="$(MSBuildProjectDirectory)\Properties\BuildInfo.Generated.cs" Tokens="@(Tokens)"/>
   </Target>
 </Project>

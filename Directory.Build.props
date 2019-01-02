@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <BeforeTargetFiles>$(DlrBuildDir)\Versioning.targets</BeforeTargetFiles>                                                                                                                                                                 
-    <BeforeTargets>GenerateBuildInfo</BeforeTargets>
+    <BeforeTargets></BeforeTargets>
     <AfterTargetFiles>$(DlrBuildDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
