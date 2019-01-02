@@ -24,7 +24,7 @@
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="%(LoadOrderCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(LoadOrderCSFile.Filename).dll" />
   </Target>
 
-  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="GetFrameworkPath">
+  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="GetFrameworkPath" Condition="'$(MSBuildRuntimeType)' != 'Core'">
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
     <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="Src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />

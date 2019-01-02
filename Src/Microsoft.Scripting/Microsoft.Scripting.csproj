@@ -20,15 +20,7 @@
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
   </ItemGroup>
 
-  <Import Project="$(BeforeTargetFiles)" />
-
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
-
-  <ItemGroup>
-    <!-- if the file does not exist it's not picked up automatically -->
-    <Compile Remove="Properties\CurrentVersion.Generated.cs" />
-    <Compile Include="Properties\CurrentVersion.Generated.cs" />
-  </ItemGroup>
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets)" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2">
