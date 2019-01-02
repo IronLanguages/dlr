@@ -42,7 +42,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BeforeTargets></BeforeTargets>
     <AfterTargetFiles>$(DlrBuildDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
