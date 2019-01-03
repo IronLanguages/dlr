@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
+  <Import Project="$(MSBuildThisFileDirectory)\CurrentVersion.props" />
+
   <PropertyGroup>
     <DlrRootDir>$(MSBuildThisFileDirectory)</DlrRootDir>
     <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
@@ -10,7 +12,19 @@
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
 
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'alpha'">000$(ReleaseSerial)</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'beta'">00$(ReleaseSerial)0</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'candidate'">0$(ReleaseSerial)00</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'final'">1000</AssemblyFileRevision>
+
+    <Product>Dynamic Language Runtime</Product>
+    <Company>DLR Open Source Team</Company>
+    <Copyright>© DLR Contributors</Copyright>
+    <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(MicroVersion).$(AssemblyRevision)</AssemblyVersion>
+    <FileVersion>$(MajorVersion).$(MinorVersion).$(MicroVersion).$(AssemblyFileRevision)</FileVersion>
+    <InformationalVersion>$(MSBuildProjectName) $(MajorVersion).$(MinorVersion).$(MicroVersion) $(ReleaseLevel) $(ReleaseSerial)</InformationalVersion>
+
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
   </PropertyGroup>
 
   <!-- Signing -->
@@ -28,8 +42,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BeforeTargetFiles>$(DlrBuildDir)\Versioning.targets</BeforeTargetFiles>                                                                                                                                                                 
-    <BeforeTargets>GenerateBuildInfo</BeforeTargets>
     <AfterTargetFiles>$(DlrBuildDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>

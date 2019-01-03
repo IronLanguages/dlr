@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" Condition=" $(Features.Contains('FEATURE_METADATA_READER')) " />
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
   </ItemGroup>
@@ -26,16 +22,6 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' ">
     <DefineConstants>$(DefineConstants.Replace(';FEATURE_FILESYSTEM', ''))</DefineConstants>
   </PropertyGroup>
-
-  <Import Project="$(BeforeTargetFiles)" />
-
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
-
-  <ItemGroup>
-    <!-- if the file does not exist it's not picked up automatically -->
-    <Compile Remove="Properties\CurrentVersion.Generated.cs" />
-    <Compile Include="Properties\CurrentVersion.Generated.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2">

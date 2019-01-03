@@ -20,11 +20,6 @@ packages/*
 *.wixproj.user
 *.pidb
 
-# Generated files
-BuildInfo.Generated.cs
-CurrentVersion.Generated.cs
-AssemblyVersion.Generated.cs
-
 # Testing files
 TestResult.xml
 Solutions/TestResults/
