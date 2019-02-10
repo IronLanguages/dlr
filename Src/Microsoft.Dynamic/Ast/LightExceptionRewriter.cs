@@ -507,7 +507,7 @@ namespace Microsoft.Scripting.Ast {
             }
 
             public override int Run(InterpretedFrame frame) {
-                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(LightExceptions.IsLightException(frame.Pop())));
+                frame.Push(LightExceptions.IsLightException(frame.Pop()));
                 return +1;
             }
         }

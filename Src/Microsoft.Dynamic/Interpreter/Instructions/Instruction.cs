@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Interpreter {
         public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame) {
-            frame.Push((bool)frame.Pop() ? ScriptingRuntimeHelpers.False : ScriptingRuntimeHelpers.True);
+            frame.Push(!(bool)frame.Pop());
             return +1;
         }
     }
