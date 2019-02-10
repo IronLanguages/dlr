@@ -290,9 +290,9 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitLoad(bool value) {
             if (value) {
-                Emit(_true ?? (_true = new LoadObjectInstruction(value)));
+                Emit(_true ?? (_true = new LoadObjectInstruction(ScriptingRuntimeHelpers.True)));
             } else {
-                Emit(_false ?? (_false = new LoadObjectInstruction(value)));
+                Emit(_false ?? (_false = new LoadObjectInstruction(ScriptingRuntimeHelpers.False)));
             }
         }
 

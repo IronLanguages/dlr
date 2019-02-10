@@ -94,7 +94,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public override int Run(InterpretedFrame frame) {
             // unfortunately Type.IsInstanceOfType() is 35-times slower than "is T" so we use generic code:
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() is T));
+            frame.Push(frame.Pop() is T);
             return +1;
         }
 
@@ -136,7 +136,7 @@ namespace Microsoft.Scripting.Interpreter {
         public override int Run(InterpretedFrame frame) {
             object type = frame.Pop();
             object obj = frame.Pop();
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && (object)obj.GetType() == type));
+            frame.Push((object)obj?.GetType() == type);
             return +1;
         }
 
