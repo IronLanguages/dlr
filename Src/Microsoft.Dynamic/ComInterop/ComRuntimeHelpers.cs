@@ -113,8 +113,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// registered. This will be considered as acceptable or as an error condition depending on throwIfMissingExpectedTypeInfo</param>
         /// <returns></returns>
         internal static ComTypes.ITypeInfo GetITypeInfoFromIDispatch(IDispatch dispatch, bool throwIfMissingExpectedTypeInfo) {
-            uint typeCount;
-            int hresult = dispatch.TryGetTypeInfoCount(out typeCount);
+            int hresult = dispatch.TryGetTypeInfoCount(out uint typeCount);
             Marshal.ThrowExceptionForHR(hresult);
             Debug.Assert(typeCount <= 1);
             if (typeCount == 0) {

@@ -95,8 +95,7 @@ namespace Microsoft.Dynamic.Test {
 #endif
 
             foreach (string name in names) {
-                int count;
-                expected.TryGetValue(name, out count);
+                expected.TryGetValue(name, out int count);
                 expected[name] = count + 1;
             }
 
@@ -105,8 +104,7 @@ namespace Microsoft.Dynamic.Test {
 
             Dictionary<string, int> actual = new Dictionary<string, int>();
             foreach (MethodInfo method in methods) {
-                int count;
-                if (!actual.TryGetValue(method.Name, out count)) {
+                if (!actual.TryGetValue(method.Name, out int count)) {
                     count = 0;
                 }
                 actual[method.Name] = count + 1;

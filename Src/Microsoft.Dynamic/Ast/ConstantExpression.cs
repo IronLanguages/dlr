@@ -94,8 +94,7 @@ namespace Microsoft.Scripting.Ast {
                 );
             }
 
-            long lval;
-            if (value.AsInt64(out lval)) {
+            if (value.AsInt64(out long lval)) {
                 return Expression.Call(
                     new Func<long, BigInteger>(CompilerHelpers.CreateBigInteger).GetMethodInfo(),
                     Constant(lval)
