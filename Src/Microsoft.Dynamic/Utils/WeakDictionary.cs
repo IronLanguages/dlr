@@ -266,20 +266,17 @@ namespace Microsoft.Scripting.Utils {
     // WeakComparer treats WeakObject as transparent envelope
     sealed class WeakComparer<T> : IEqualityComparer<T> {
         bool IEqualityComparer<T>.Equals(T x, T y) {
-            WeakObject wx = x as WeakObject;
-            if (wx != null)
+            if (x is WeakObject wx)
                 x = (T)wx.Target;
 
-            WeakObject wy = y as WeakObject;
-            if (wy != null)
+            if (y is WeakObject wy)
                 y = (T)wy.Target;
 
             return Object.Equals(x, y);
         }
 
         int IEqualityComparer<T>.GetHashCode(T obj) {
-            WeakObject wobj = obj as WeakObject;
-            if (wobj != null)
+            if (obj is WeakObject wobj)
                 return wobj.GetHashCode();
 
             return (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);

@@ -105,9 +105,8 @@ namespace Microsoft.Scripting.Ast {
         }
 
         protected override Expression VisitExtension(Expression node) {
-            // check if the extension is light exception aware.
-            ILightExceptionAwareExpression lightAware = node as ILightExceptionAwareExpression;
-            if (lightAware != null) {
+            // Check if the extension is light exception aware.
+            if (node is ILightExceptionAwareExpression lightAware) {
                 var newNode = lightAware.ReduceForLightExceptions();
                 if (newNode != node) {
                     return CheckExpression(Visit(newNode), node.Type);
