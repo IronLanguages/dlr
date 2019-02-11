@@ -230,15 +230,13 @@ namespace Microsoft.Scripting.Actions.Calls {
         private CandidateSet GetCandidateSet() {
             Debug.Assert(_candidateSets != null && _actualArguments != null);
 
-            CandidateSet result;
-
-            // use precomputed set if arguments are fully expanded and we have one:
-            if (_actualArguments.CollapsedCount == 0 && _candidateSets.TryGetValue(_actualArguments.Count, out result)) {
+            // Use precomputed set if arguments are fully expanded and we have one:
+            if (_actualArguments.CollapsedCount == 0 && _candidateSets.TryGetValue(_actualArguments.Count, out CandidateSet result)) {
                 return result;
             }
 
             if (_paramsCandidates != null) {
-                // build a new target set specific to the number of arguments we have:
+                // Build a new target set specific to the number of arguments we have:
                 result = BuildExpandedTargetSet(_actualArguments.Count);
                 if (result.Candidates.Count > 0) {
                     return result;

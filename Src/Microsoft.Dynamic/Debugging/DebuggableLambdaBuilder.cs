@@ -219,10 +219,8 @@ namespace Microsoft.Scripting.Debugging {
                     continue;
                 }
 
-                string alias;
-
                 // See if there's an alias for the local
-                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out alias)) {
+                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
                     alias = pendingLocal.Name;
                 }
 
@@ -281,10 +279,8 @@ namespace Microsoft.Scripting.Debugging {
                 MSAst.ParameterExpression pendingLocal = _pendingLocals[i];
                 MSAst.ParameterExpression verifiedLocal = pendingLocal;
 
-                string alias;
-
                 // See if there's an alias for the local
-                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out alias)) {
+                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
                     alias = pendingLocal.Name;
                 }
 

@@ -351,8 +351,7 @@ namespace Microsoft.Scripting.ComInterop {
                 return VarEnum.VT_UNKNOWN;
             }
 
-            VarEnum primitiveVarEnum;
-            if (TryGetPrimitiveComType(argumentType, out primitiveVarEnum)) {
+            if (TryGetPrimitiveComType(argumentType, out VarEnum primitiveVarEnum)) {
                 return primitiveVarEnum;
             }
 
@@ -400,21 +399,20 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
 
-        // This helper is called when we are looking for a ByVal marhsalling
+        // This helper is called when we are looking for a ByVal marshalling
         // In a ByVal case we can take into account conversions or IConvertible if all other 
         // attempts to find marshalling type failed 
         private static ArgBuilder GetByValArgBuilder(Type elementType, ref VarEnum elementVarEnum) {
-            // if VT indicates that marshalling type is unknown
+            // If VT indicates that marshalling type is unknown.
             if (elementVarEnum == VT_DEFAULT) {
-                //trying to find a conversion.
-                VarEnum convertibleTo;
-                if (TryGetPrimitiveComTypeViaConversion(elementType, out convertibleTo)) {
+                // Trying to find a conversion.
+                if (TryGetPrimitiveComTypeViaConversion(elementType, out VarEnum convertibleTo)) {
                     elementVarEnum = convertibleTo;
                     Type marshalType = GetManagedMarshalType(elementVarEnum);
                     return new ConversionArgBuilder(elementType, GetSimpleArgBuilder(marshalType, elementVarEnum));
                 }
 
-                //checking for IConvertible.
+                // Checking for IConvertible.
                 if (typeof(IConvertible).IsAssignableFrom(elementType)) {
                     return new ConvertibleArgBuilder();
                 }

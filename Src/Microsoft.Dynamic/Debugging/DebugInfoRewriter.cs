@@ -106,8 +106,7 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 IList<VariableInfo>[] scopeArray = new IList<VariableInfo>[_locationCookie];
                 for (int i = 0; i < scopeArray.Length; i++) {
-                    IList<VariableInfo> scope;
-                    if (_variableScopeMap.TryGetValue(i, out scope)) {
+                    if (_variableScopeMap.TryGetValue(i, out IList<VariableInfo> scope)) {
                         scopeArray[i] = scope;
                     }
                 }

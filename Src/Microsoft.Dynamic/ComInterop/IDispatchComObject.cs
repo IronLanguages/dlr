@@ -244,8 +244,7 @@ namespace Microsoft.Scripting.ComInterop {
         internal bool TryGetPropertySetterExplicit(string name, out ComMethodDesc method, Type limitType, bool holdsNull) {
             EnsureScanDefinedMethods();
 
-            int dispId;
-            int hresult = GetIDsOfNames(_dispatchObject, name, out dispId);
+            int hresult = GetIDsOfNames(_dispatchObject, name, out int dispId);
 
             if (hresult == ComHresults.S_OK) {
                 // we do not know whether we have put or putref here
@@ -293,8 +292,7 @@ namespace Microsoft.Scripting.ComInterop {
                     continue;
                 }
 
-                ComMethodDesc method;
-                if (ComTypeDesc.TryGetFunc(name, out method) && method.IsDataMember) {
+                if (ComTypeDesc.TryGetFunc(name, out ComMethodDesc method) && method.IsDataMember) {
                     try {
                         object value = comType.InvokeMember(
                             method.Name,
@@ -378,14 +376,11 @@ namespace Microsoft.Scripting.ComInterop {
 
                 ComTypes.TYPEATTR classTypeAttr = ComRuntimeHelpers.GetTypeAttrForTypeInfo(classTypeInfo);
                 for (int i = 0; i < classTypeAttr.cImplTypes; i++) {
-                    int hRefType;
-                    classTypeInfo.GetRefTypeOfImplType(i, out hRefType);
+                    classTypeInfo.GetRefTypeOfImplType(i, out int hRefType);
 
-                    ComTypes.ITypeInfo interfaceTypeInfo;
-                    classTypeInfo.GetRefTypeInfo(hRefType, out interfaceTypeInfo);
+                    classTypeInfo.GetRefTypeInfo(hRefType, out ComTypes.ITypeInfo interfaceTypeInfo);
 
-                    ComTypes.IMPLTYPEFLAGS flags;
-                    classTypeInfo.GetImplTypeFlags(i, out flags);
+                    classTypeInfo.GetImplTypeFlags(i, out ComTypes.IMPLTYPEFLAGS flags);
                     if ((flags & ComTypes.IMPLTYPEFLAGS.IMPLTYPEFLAG_FSOURCE) != 0) {
                         ScanSourceInterface(interfaceTypeInfo, ref events);
                     }
@@ -397,8 +392,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             lock (_CacheComTypeDesc) {
-                ComTypeDesc cachedTypeDesc;
-                if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out cachedTypeDesc)) {
+                if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out ComTypeDesc cachedTypeDesc)) {
                     _comTypeDesc = cachedTypeDesc;
                 } else {
                     _comTypeDesc = typeDesc;

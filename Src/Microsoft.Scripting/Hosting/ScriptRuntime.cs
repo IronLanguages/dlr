@@ -190,10 +190,9 @@ namespace Microsoft.Scripting.Hosting {
         /// The method doesn't lock nor send notifications to the host.
         /// </summary>
         private ScriptEngine GetEngineNoLockNoNotification(LanguageContext language, out bool freshEngineCreated) {
-            Debug.Assert(_engines != null, "Invalid ScriptRuntime initialiation order");
+            Debug.Assert(_engines != null, "Invalid ScriptRuntime initialization order");
 
-            ScriptEngine engine;
-            if (freshEngineCreated = !_engines.TryGetValue(language, out engine)) {
+            if (freshEngineCreated = !_engines.TryGetValue(language, out ScriptEngine engine)) {
                 engine = new ScriptEngine(this, language);
                 _engines.Add(language, engine);
             }

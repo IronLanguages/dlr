@@ -65,8 +65,7 @@ namespace Microsoft.Scripting.Utils {
             var result = new Dictionary<string, List<T>>();
             
             foreach (T member in _reflector(type)) {
-                List<T> overloads;
-                if (!result.TryGetValue(member.Name, out overloads)) {
+                if (!result.TryGetValue(member.Name, out List<T> overloads)) {
                     result.Add(member.Name, overloads = new List<T>());
                 }
 
