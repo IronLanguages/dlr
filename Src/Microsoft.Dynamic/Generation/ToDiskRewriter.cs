@@ -127,8 +127,7 @@ namespace Microsoft.Scripting.Generation {
                 return res;
             }
 
-            var strings = node.Value as string[];
-            if (strings != null) {
+            if (node.Value is string[] strings) {
                 if (strings.Length == 0) {
                     return Expression.Field(null, typeof(ArrayUtils).GetDeclaredField("EmptyStrings"));
                 }
