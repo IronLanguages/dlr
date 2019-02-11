@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
 
             public void Add(string line, bool setCurrentAsLast) {
-                if (line != null && line.Length > 0) {
+                if (!string.IsNullOrEmpty(line)) {
                     int oldCount = _list.Count;
                     _list.Add(line);
                     if (setCurrentAsLast || _current == oldCount) {
@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
 
             public void Add(string line) {
-                if (line != null && line.Length > 0) {
+                if (!string.IsNullOrEmpty(line)) {
                     _list.Add(line);
                 }
             }
