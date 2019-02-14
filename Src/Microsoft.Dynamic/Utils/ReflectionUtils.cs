@@ -1143,7 +1143,8 @@ namespace Microsoft.Scripting.Utils {
             CopyGenericMethodAttributes(from, to);
 
             for (int i = 0; i < paramInfos.Length; i++) {
-                to.DefineParameter(i + 1, paramInfos[i].Attributes, paramInfos[i].Name);
+                var parameterBuilder = to.DefineParameter(i + 1, paramInfos[i].Attributes, paramInfos[i].Name);
+                if (paramInfos[i].HasDefaultValue) parameterBuilder.SetConstant(paramInfos[i].RawDefaultValue);
             }
         }
 
