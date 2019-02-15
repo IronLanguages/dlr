@@ -1144,7 +1144,9 @@ namespace Microsoft.Scripting.Utils {
 
             for (int i = 0; i < paramInfos.Length; i++) {
                 var parameterBuilder = to.DefineParameter(i + 1, paramInfos[i].Attributes, paramInfos[i].Name);
-                if (paramInfos[i].HasDefaultValue) parameterBuilder.SetConstant(paramInfos[i].RawDefaultValue);
+                try { // ParameterBuilder.SetConstant is buggy and may fail on Mono
+                    if (paramInfos[i].HasDefaultValue) parameterBuilder.SetConstant(paramInfos[i].RawDefaultValue);
+                } catch { }
             }
         }
 
