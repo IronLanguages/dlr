@@ -259,7 +259,7 @@ namespace ComponentAce.Compression.Libs.ZLib
 		{
 		    int internalFlush = (int)flush;
 
-		    if (z == null || z.istate == null || z.next_in == null)
+		    if (z?.istate == null || z.next_in == null)
                 return (int)ZLibResultCode.Z_STREAM_ERROR;
 		    int res_temp = internalFlush == (int)FlushStrategy.Z_FINISH
 		        ? (int)ZLibResultCode.Z_BUF_ERROR
