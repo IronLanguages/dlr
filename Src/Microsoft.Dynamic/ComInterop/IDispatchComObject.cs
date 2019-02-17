@@ -475,7 +475,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private void EnsureScanDefinedMethods() {
-            if (_comTypeDesc != null && _comTypeDesc.Funcs != null) {
+            if (_comTypeDesc?.Funcs != null) {
                 return;
             }
 
