@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.Generation {
 
         public Type FinishType() {
             _initGen?.Emit(OpCodes.Ret);
-            Type ret = TypeBuilder.CreateType();
+            Type ret = TypeBuilder.CreateTypeInfo();
             return ret;
         }
 

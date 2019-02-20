@@ -197,7 +197,7 @@ namespace Microsoft.Scripting.Generation {
                 MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, 
                 CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
             tb.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, returnType, argTypes).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-            return tb.CreateType();
+            return tb.CreateTypeInfo();
 
         }
 

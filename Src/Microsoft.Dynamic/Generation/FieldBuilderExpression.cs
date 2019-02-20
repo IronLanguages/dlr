@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Generation {
     public class FieldBuilderExpression : Expression {
         private readonly FieldBuilder _builder;
 
-#if NETCOREAPP2_0 || NETCOREAPP2_1
+#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD2_0
         private readonly StrongBox<Type> _finishedType;
 
         // Get something which can be updated w/ the final type.
@@ -60,7 +60,7 @@ namespace Microsoft.Scripting.Generation {
 
         private FieldInfo GetFieldInfo() {
             // turn the field builder back into a FieldInfo
-#if NETCOREAPP2_0 || NETCOREAPP2_1
+#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD2_0
             return _finishedType.Value.GetDeclaredField(_builder.Name);
 #else
             return _builder.DeclaringType.Module.ResolveField(

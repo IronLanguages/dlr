@@ -687,7 +687,7 @@ namespace Microsoft.Scripting.Utils {
                 result.Append(' ');
             }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1
+#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1 && !NETSTANDARD2_0
             MethodBuilder builder = method as MethodBuilder;
             if (builder != null) {
                 result.Append(builder.Signature);
