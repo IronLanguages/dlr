@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Debugging {
             TypeBuilder builder = DefineDelegateType("Delegate_" + Guid.NewGuid().ToString());
             builder.DefineConstructor(CtorAttributes, CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(ImplAttributes);
             builder.DefineMethod("Invoke", InvokeAttributes, returnType, parameters).SetImplementationFlags(ImplAttributes);
-            return builder.CreateType();
+            return builder.CreateTypeInfo();
         }
 
         private static TypeBuilder DefineDelegateType(string name) {

@@ -61,7 +61,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private MethodInfo CreateMethod() {
-            Type t = _tb.CreateType();
+            Type t = _tb.CreateTypeInfo();
             return t.GetMethod(_mb.Name);
         }
 
