@@ -27,8 +27,8 @@
       <group targetFramework="netstandard">
         <dependency id="System.CodeDom" version="4.5.0" />
         <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" />
-        <dependency id="System.Reflection.Emit" Version="4.6.0-preview.19073.11" />
-        <dependency id="System.Reflection.Emit.Lightweight" Version="4.6.0-preview.19073.11" />
+        <dependency id="System.Reflection.Emit" version="4.6.0-preview.19073.11" />
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.6.0-preview.19073.11" />
       </group>
     </dependencies>
   </metadata>
