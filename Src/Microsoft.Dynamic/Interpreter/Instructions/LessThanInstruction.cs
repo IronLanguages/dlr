@@ -5,12 +5,11 @@
 using System;
 using System.Diagnostics;
 
+using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     internal abstract class LessThanInstruction : Instruction {
-        public static readonly object BoxedFalse = false;
-        public static readonly object BoxedTrue = true;
         private readonly object _nullValue;
         private static Instruction _SByte, _Int16, _Char, _Int32, _Int64, _Byte, _UInt16, _UInt32, _UInt64, _Single, _Double;
         private static Instruction _liftedToNullSByte, _liftedToNullInt16, _liftedToNullChar, _liftedToNullInt32, _liftedToNullInt64, _liftedToNullByte, _liftedToNullUInt16, _liftedToNullUInt32, _liftedToNullUInt64, _liftedToNullSingle, _liftedToNullDouble;
@@ -229,17 +228,17 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             switch (type.GetNonNullableType().GetTypeCode()) {
-                case TypeCode.SByte: return _SByte ?? (_SByte = new LessThanSByte(BoxedFalse));
-                case TypeCode.Int16: return _Int16 ?? (_Int16 = new LessThanInt16(BoxedFalse));
-                case TypeCode.Char: return _Char ?? (_Char = new LessThanChar(BoxedFalse));
-                case TypeCode.Int32: return _Int32 ?? (_Int32 = new LessThanInt32(BoxedFalse));
-                case TypeCode.Int64: return _Int64 ?? (_Int64 = new LessThanInt64(BoxedFalse));
-                case TypeCode.Byte: return _Byte ?? (_Byte = new LessThanByte(BoxedFalse));
-                case TypeCode.UInt16: return _UInt16 ?? (_UInt16 = new LessThanUInt16(BoxedFalse));
-                case TypeCode.UInt32: return _UInt32 ?? (_UInt32 = new LessThanUInt32(BoxedFalse));
-                case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new LessThanUInt64(BoxedFalse));
-                case TypeCode.Single: return _Single ?? (_Single = new LessThanSingle(BoxedFalse));
-                case TypeCode.Double: return _Double ?? (_Double = new LessThanDouble(BoxedFalse));
+                case TypeCode.SByte: return _SByte ?? (_SByte = new LessThanSByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int16: return _Int16 ?? (_Int16 = new LessThanInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.Char: return _Char ?? (_Char = new LessThanChar(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int32: return _Int32 ?? (_Int32 = new LessThanInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int64: return _Int64 ?? (_Int64 = new LessThanInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.Byte: return _Byte ?? (_Byte = new LessThanByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt16: return _UInt16 ?? (_UInt16 = new LessThanUInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt32: return _UInt32 ?? (_UInt32 = new LessThanUInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new LessThanUInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.Single: return _Single ?? (_Single = new LessThanSingle(ScriptingRuntimeHelpers.False));
+                case TypeCode.Double: return _Double ?? (_Double = new LessThanDouble(ScriptingRuntimeHelpers.False));
                 default:
                     throw Assert.Unreachable;
             }
