@@ -11,12 +11,10 @@
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
-    <MSBuildCommunityTasksPath>$(RootDir)\Util\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
   </PropertyGroup>
 
+  <Import Project="$(BuildSysDir)\Tasks.Targets" />
   <Import Project="$(RootDir)\CurrentVersion.props" />
-
-  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
 
   <PropertyGroup>
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
@@ -77,8 +75,7 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
     <ItemGroup>
-      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*.dll" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.dll" />
-      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*.xml" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.xml" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*;$(BinDir)\$(Configuration)\**\Microsoft.VisualStudio.*" />
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
@@ -108,7 +105,7 @@
   <Target Name="NuGetPackage" DependsOnTargets="Stage;MakePackageDir"
           Inputs="@(NuGetPackageInputs);@(StageOutputs)"
           Outputs="@(NuGetPackageOutputs)">
-    <Exec Command="$(NuGet) pack -Version $(PackageVersion) &quot;%(Package.NuSpecDir)\%(Package.Identity).nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot;" />
+    <Exec Command="$(NuGet) pack -Version $(PackageVersion) &quot;%(Package.NuSpecDir)\%(Package.Identity).nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot; -Symbols -SymbolPackageFormat snupkg" />
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
@@ -117,7 +114,7 @@
       <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
-    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+    <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
   </Target>
 
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
