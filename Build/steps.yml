@@ -1,10 +1,8 @@
 parameters:
   os: ''
-  preBuildSteps: []
 
 steps:
   - powershell: |
-     # Write your powershell commands here.
 
      $xml = [xml] (Get-Content CurrentVersion.props)
      $major = $xml.Project.PropertyGroup.MajorVersion
@@ -46,6 +44,18 @@ steps:
           msbuild /version
           dotnet --info
           df -Th
+
+  # Dump version info on macOS
+  - ${{ if eq(parameters.os, 'macOS') }}:
+    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+      displayName: Version Information
+      inputs:
+        type: InlineScript
+        script: |
+          # Dump some info about the tools
+          mono --version
+          msbuild /version
+          dotnet --info
 
   - powershell: ./make.ps1
     displayName: Build
