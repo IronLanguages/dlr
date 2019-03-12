@@ -25,6 +25,9 @@
     <InformationalVersion>$(MSBuildProjectName) $(MajorVersion).$(MinorVersion).$(MicroVersion) $(ReleaseLevel) $(ReleaseSerial)</InformationalVersion>
 
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+
+    <!-- Don't include SourceRevisionId in InformationalVersion (SourceLink) -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <!-- Signing -->
@@ -90,7 +93,7 @@
   <!-- Release -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugSymbols>false</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DefineConstants>$(Features);$(SignedSym);TRACE</DefineConstants>

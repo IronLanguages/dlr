@@ -1,10 +1,8 @@
 parameters:
   os: ''
-  preBuildSteps: []
 
 steps:
   - powershell: |
-     # Write your powershell commands here.
 
      $xml = [xml] (Get-Content CurrentVersion.props)
      $major = $xml.Project.PropertyGroup.MajorVersion
@@ -46,6 +44,26 @@ steps:
           msbuild /version
           dotnet --info
           df -Th
+
+  # Dump version info on macOS
+  - ${{ if eq(parameters.os, 'macOS') }}:
+    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+      displayName: Version Information
+      inputs:
+        type: InlineScript
+        script: |
+
+          # use Mono 5.16.0 version
+          SYMLINK=5.16.0
+          MONOPREFIX=/Library/Frameworks/Mono.framework/Versions/$SYMLINK
+          echo "##vso[task.setvariable variable=DYLD_FALLBACK_LIBRARY_PATH;]$MONOPREFIX/lib:/lib:/usr/lib:$DYLD_LIBRARY_FALLBACK_PATH"
+          echo "##vso[task.setvariable variable=PKG_CONFIG_PATH;]$MONOPREFIX/lib/pkgconfig:$MONOPREFIX/share/pkgconfig:$PKG_CONFIG_PATH"
+          echo "##vso[task.setvariable variable=PATH;]$MONOPREFIX/bin:$PATH"
+
+          # Dump some info about the tools
+          mono --version
+          msbuild /version
+          dotnet --info
 
   - powershell: ./make.ps1
     displayName: Build

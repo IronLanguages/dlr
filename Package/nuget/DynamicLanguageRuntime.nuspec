@@ -7,7 +7,8 @@
     <authors>DLR Contributors,Microsoft</authors>
     <owners>DLR Community</owners>
     <projectUrl>http://ironpython.net</projectUrl>
-    <licenseUrl>https://github.com/IronLanguages/dlr/blob/master/LICENSE</licenseUrl>
+    <repository type="git" url="https://github.com/IronLanguages/dlr.git" />
+    <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Dynamic Language Runtime</description>
     <summary>Dynamic Language Runtime</summary>
@@ -33,7 +34,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="**\*.dll" target="lib" exclude="**\Microsoft.VisualStudio.CodeCoverage.Shim.dll" />
+    <file src="**\*.dll" target="lib" />
+    <file src="**\*.pdb" target="lib" />
     <file src="**\*.xml" target="lib" />
     <file src="README.md;LICENSE" />
   </files>
