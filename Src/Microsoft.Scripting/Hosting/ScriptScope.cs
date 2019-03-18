@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Hosting {
     /// <summary>

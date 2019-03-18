@@ -257,7 +257,13 @@ namespace Microsoft.Scripting.Metadata {
         /// </summary>
         /// <exception cref="SecurityException">The path is not accessible in partial trust.</exception>
         public string Path {
-            get { return (Module != null) ? Module.Assembly.Location : m_path; }
+            get {
+#if FEATURE_ASSEMBLY_LOCATION
+                return (Module != null) ? Module.Assembly.Location : m_path;
+#else
+                return m_path;
+#endif
+            }
         }
 
         public ModuleDef ModuleDef {

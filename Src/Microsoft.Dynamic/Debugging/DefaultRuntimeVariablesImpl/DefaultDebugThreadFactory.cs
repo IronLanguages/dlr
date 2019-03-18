@@ -6,6 +6,7 @@ using MSAst = System.Linq.Expressions;
 
 using System.Collections.Generic;
 using Microsoft.Scripting.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Debugging {
     using Ast = MSAst.Expression;
@@ -27,7 +28,7 @@ namespace Microsoft.Scripting.Debugging {
             }
 
             return Ast.Call(
-                typeof(RuntimeOps).GetMethod("LiftVariables"),
+                typeof(RuntimeOps).GetTypeInfo().GetDeclaredMethod("LiftVariables"),
                 runtimeThread,
                 Ast.RuntimeVariables(args)
             );

@@ -36,10 +36,10 @@ namespace Microsoft.Scripting.Actions {
         /// extension type when ensuring that we only have 1 MemberTracker ever created.
         /// </summary>
         class MemberKey {
-            private readonly MemberInfo Member;
+            private readonly object Member;
             private readonly Type Extending;
 
-            public MemberKey(MemberInfo member, Type extending) {
+            public MemberKey(object member, Type extending) {
                 Member = member;
                 Extending = extending;
             }
@@ -85,11 +85,11 @@ namespace Microsoft.Scripting.Actions {
             get;
         }
 
-        public static MemberTracker FromMemberInfo(MemberInfo member) {
+        public static MemberTracker FromMemberInfo(object member) {
             return FromMemberInfo(member, null);
         }
 
-        public static MemberTracker FromMemberInfo(MemberInfo member, Type extending) {
+        public static MemberTracker FromMemberInfo(object member, Type extending) {
             ContractUtils.RequiresNotNull(member, nameof(member));
 
             lock (_trackers) {
@@ -107,7 +107,7 @@ namespace Microsoft.Scripting.Actions {
 
                 if ((method = member as MethodInfo) != null) {
                     if (extending != null) {
-                        res = new ExtensionMethodTracker(method, member.IsDefined(typeof(StaticExtensionMethodAttribute), false), extending);
+                        res = new ExtensionMethodTracker(method, method.IsDefined(typeof(StaticExtensionMethodAttribute), false), extending);
                     } else {
                         res = new MethodTracker(method);
                     }

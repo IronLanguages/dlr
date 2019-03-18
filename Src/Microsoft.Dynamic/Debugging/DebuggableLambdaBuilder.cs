@@ -11,6 +11,7 @@ using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Debugging.CompilerServices;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Debugging {
     using Ast = MSAst.Expression;
@@ -435,7 +436,7 @@ namespace Microsoft.Scripting.Debugging {
             List<MSAst.Expression> tryExpressions = new List<MSAst.Expression>();
             List<MSAst.Expression> finallyExpressions = new List<MSAst.Expression>();
 
-            Type returnType = lambdaType.GetMethod("Invoke").ReturnType;
+            Type returnType = lambdaType.GetTypeInfo().GetDeclaredMethod("Invoke").ReturnType;
             MSAst.LabelTarget returnLabelTarget = Ast.Label(returnType);
 
             // Init $funcInfo

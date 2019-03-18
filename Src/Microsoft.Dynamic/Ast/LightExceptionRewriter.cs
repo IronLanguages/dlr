@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -24,7 +25,7 @@ namespace Microsoft.Scripting.Ast {
         private ParameterExpression _rethrow;   // current exception variable that we will rethrow
 
         private static readonly ParameterExpression _lastValue = Expression.Parameter(typeof(object), "$lastValue");
-        private static readonly ReadOnlyCollection<ParameterExpression> _lastValueParamArray = new ReadOnlyCollectionBuilder<ParameterExpression>(1) { _lastValue }.ToReadOnlyCollection();
+        private static readonly ReadOnlyCollection<ParameterExpression> _lastValueParamArray = new List<ParameterExpression>(1) { _lastValue }.AsReadOnly();
         private static readonly Expression _isLightExExpr = Expression.Call(new Func<Exception, bool>(LightExceptions.IsLightException).GetMethodInfo(), _lastValue);
         private static readonly Expression _lastException = Expression.Call(new Func<object, Exception>(LightExceptions.GetLightException).GetMethodInfo(), _lastValue);
         private readonly LabelTarget _returnLabel = Expression.Label(typeof(object), GetEhLabelName("ehUnwind"));
@@ -65,7 +66,7 @@ namespace Microsoft.Scripting.Ast {
             }
 
             public override Expression Reduce() {
-                return Expression.Block(typeof(object), _lastValueParamArray, new ReadOnlyCollectionBuilder<Expression> {
+                return Expression.Block(typeof(object), _lastValueParamArray, new List<Expression> {
                     Expression.Label(_returnLabel, _body)
                 });
             }

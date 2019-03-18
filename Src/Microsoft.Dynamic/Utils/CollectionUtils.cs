@@ -257,7 +257,11 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IEqualityComparer<HashSet<T>> CreateSetComparer<T>() {
+#if WINDOWS_UWP
+            return null;
+#else
             return HashSet<T>.CreateSetComparer();
+#endif
         }
     }
 }

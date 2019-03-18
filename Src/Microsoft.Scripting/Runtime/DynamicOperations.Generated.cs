@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Runtime {
     public sealed partial class DynamicOperations {

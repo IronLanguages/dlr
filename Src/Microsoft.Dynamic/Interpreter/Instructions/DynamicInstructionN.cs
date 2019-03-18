@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Utils;
@@ -17,7 +18,7 @@ namespace Microsoft.Scripting.Interpreter {
         private readonly bool _isVoid;
 
         public DynamicInstructionN(Type delegateType, CallSite site) {
-            var methodInfo = delegateType.GetMethod("Invoke");
+            var methodInfo = delegateType.GetTypeInfo().GetDeclaredMethod("Invoke");
             var parameters = methodInfo.GetParameters();
 
             // <Delegate>.Invoke is ok to target by a delegate in partial trust (SecurityException is not thrown):

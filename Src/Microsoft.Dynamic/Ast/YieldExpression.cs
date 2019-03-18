@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 
 using System;
 using Microsoft.Scripting.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Ast {
     /// <summary>
@@ -75,7 +76,7 @@ namespace Microsoft.Scripting.Ast {
             if (value != null) {
                 if (!TypeUtils.AreReferenceAssignable(target.Type, value.Type)) {
                     // C# autoquotes generator return values
-                    if (target.Type.IsSubclassOf(typeof(Expression)) &&
+                    if (target.Type.GetTypeInfo().IsSubclassOf(typeof(Expression)) &&
                         TypeUtils.AreAssignable(target.Type, value.GetType())) {
                         value = Expression.Quote(value);
                     }

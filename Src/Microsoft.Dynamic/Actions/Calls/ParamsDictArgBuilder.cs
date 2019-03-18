@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             if (dictType == typeof(IDictionary)) {
                 func = BinderOps.MakeDictionary<object, object>;
-            } else if (dictType.IsGenericType()) {
+            } else if (dictType.GetTypeInfo().IsGenericType) {
                 Type[] genArgs = dictType.GetGenericTypeArguments();
                 if (dictType.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
                     dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {

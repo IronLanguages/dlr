@@ -68,7 +68,7 @@ namespace Microsoft.Scripting.Actions {
             if (targetInfo != null) {
                 // we're calling a well-known MethodBase
                 DynamicMetaObject res = MakeMetaMethodCall(signature, resolverFactory, targetInfo);
-                if (res.Expression.Type.IsValueType()) {
+                if (res.Expression.Type.GetTypeInfo().IsValueType) {
                     res = new DynamicMetaObject(
                         AstUtils.Convert(res.Expression, typeof(object)),
                         res.Restrictions

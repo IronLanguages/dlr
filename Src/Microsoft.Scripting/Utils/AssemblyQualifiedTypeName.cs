@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Utils {
 
         public AssemblyQualifiedTypeName(Type type) {
             TypeName = type.FullName;
-            AssemblyName = type.Assembly.GetName();
+            AssemblyName = type.GetTypeInfo().Assembly.GetName();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]

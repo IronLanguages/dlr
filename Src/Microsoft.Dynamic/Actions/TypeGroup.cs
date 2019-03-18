@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using Microsoft.Scripting.Utils;
@@ -117,11 +118,11 @@ namespace Microsoft.Scripting.Actions {
 
         /// <summary> Gets the arity of generic parameters</summary>
         private static int GetGenericArity(Type type) {
-            if (!type.IsGenericType()) {
+            if (!type.GetTypeInfo().IsGenericType) {
                 return 0;
             }
 
-            Debug.Assert(type.IsGenericTypeDefinition());
+            Debug.Assert(type.GetTypeInfo().IsGenericTypeDefinition);
             return type.GetGenericArguments().Length;
         }
 
@@ -178,7 +179,7 @@ namespace Microsoft.Scripting.Actions {
         /// This will return the result only for the non-generic type if one exists, and will throw 
         /// an exception if all types in the TypeGroup are generic
         /// </summary>
-        public override bool IsPublic => GetNonGenericType().IsPublic();
+        public override bool IsPublic => GetNonGenericType().GetTypeInfo().IsPublic;
 
         #endregion
     }

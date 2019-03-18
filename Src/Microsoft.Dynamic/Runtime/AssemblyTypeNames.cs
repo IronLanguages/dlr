@@ -51,9 +51,9 @@ namespace Microsoft.Scripting.Runtime {
 
     internal static class AssemblyTypeNames {
         public static IEnumerable<TypeName> GetTypeNames(Assembly assem, bool includePrivateTypes) {
-            return from t in ReflectionUtils.GetAllTypesFromAssembly(assem, includePrivateTypes)
+            return from t in assem.DefinedTypes
                    where !t.IsNested
-                   select new TypeName(t);
+                   select new TypeName(t.AsType());
         }
 
         static IEnumerable<TypeName> GetTypeNames(string[] namespaces, string[][] types) {

@@ -36,7 +36,7 @@ namespace Microsoft.Scripting.Generation {
             _ilg = ilg;
         }
 
-        #region ILGenerator Methods
+#region ILGenerator Methods
 
         /// <summary>
         /// Begins a catch block.
@@ -284,9 +284,9 @@ namespace Microsoft.Scripting.Generation {
             _ilg.UsingNamespace(usingNamespace);
         }
 
-        #endregion
+#endregion
 
-        #region Simple helpers
+#region Simple helpers
 
         [Conditional("DEBUG")]
         internal void EmitDebugWriteLine(string message) {
@@ -305,9 +305,9 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
 
-        #region Instruction helpers
+#region Instruction helpers
 
         public void EmitLoadArg(int index) {
             ContractUtils.Requires(index >= 0, nameof(index));
@@ -361,7 +361,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitLoadValueIndirect(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
-            if (type.IsValueType()) {
+            if (type.GetTypeInfo().IsValueType) {
                 if (type == typeof(int)) {
                     Emit(OpCodes.Ldind_I4);
                 } else if (type == typeof(uint)) {
@@ -397,7 +397,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitStoreValueIndirect(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
-            if (type.IsValueType()) {
+            if (type.GetTypeInfo().IsValueType) {
                 if (type == typeof(int)) {
                     Emit(OpCodes.Stind_I4);
                 } else if (type == typeof(short)) {
@@ -427,9 +427,9 @@ namespace Microsoft.Scripting.Generation {
         public void EmitLoadElement(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
-            if (!type.IsValueType()) {
+            if (!type.GetTypeInfo().IsValueType) {
                 Emit(OpCodes.Ldelem_Ref);
-            } else if (type.IsEnum()) {
+            } else if (type.GetTypeInfo().IsEnum) {
                 Emit(OpCodes.Ldelem, type);
             } else {
                 switch (type.GetTypeCode()) {
@@ -476,7 +476,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitStoreElement(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
-            if (type.IsEnum()) {
+            if (type.GetTypeInfo().IsEnum) {
                 Emit(OpCodes.Stelem, type);
                 return;
             }
@@ -506,7 +506,7 @@ namespace Microsoft.Scripting.Generation {
                     Emit(OpCodes.Stelem_R8);
                     break;
                 default:
-                    if (type.IsValueType()) {
+                    if (type.GetTypeInfo().IsValueType) {
                         Emit(OpCodes.Stelem, type);
                     } else {
                         Emit(OpCodes.Stelem_Ref);
@@ -527,9 +527,9 @@ namespace Microsoft.Scripting.Generation {
             Emit(OpCodes.Unbox_Any, type);
         }
 
-        #endregion
+#endregion
 
-        #region Fields, properties and methods
+#region Fields, properties and methods
 
         public void EmitPropertyGet(PropertyInfo pi) {
             ContractUtils.RequiresNotNull(pi, nameof(pi));
@@ -585,7 +585,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitNew(ConstructorInfo ci) {
             ContractUtils.RequiresNotNull(ci, nameof(ci));
 
-            if (ci.DeclaringType.ContainsGenericParameters()) {
+            if (ci.DeclaringType.GetTypeInfo().ContainsGenericParameters) {
                 throw Error.IllegalNew_GenericParams(ci.DeclaringType);
             }
 
@@ -605,7 +605,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitCall(MethodInfo mi) {
             ContractUtils.RequiresNotNull(mi, nameof(mi));
 
-            if (mi.IsVirtual && !mi.DeclaringType.IsValueType()) {
+            if (mi.IsVirtual && !mi.DeclaringType.GetTypeInfo().IsValueType) {
                 Emit(OpCodes.Callvirt, mi);
             } else {
                 Emit(OpCodes.Call, mi);
@@ -633,9 +633,9 @@ namespace Microsoft.Scripting.Generation {
             EmitCall(mi);
         }
 
-        #endregion
+#endregion
 
-        #region Constants
+#region Constants
 
         public void EmitNull() {
             Emit(OpCodes.Ldnull);
@@ -784,7 +784,7 @@ namespace Microsoft.Scripting.Generation {
             if (mb != null && ShouldLdtoken(mb)) {
                 Emit(OpCodes.Ldtoken, mb);
                 Type dt = mb.DeclaringType;
-                if (dt != null && dt.IsGenericType()) {
+                if (dt != null && dt.GetTypeInfo().IsGenericType) {
                     Emit(OpCodes.Ldtoken, dt);
                     EmitCall(typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
                 } else {
@@ -807,7 +807,7 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 #endif
-            return t.IsGenericParameter || t.IsVisible();
+            return t.IsGenericParameter || t.GetTypeInfo().IsVisible;
         }
 
         public static bool ShouldLdtoken(MethodBase mb) {
@@ -870,10 +870,10 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
 
         // TODO: deprecate in favor of the Linq versions
-        #region Conversions
+#region Conversions
 
         public void EmitImplicitCast(Type from, Type to) {
             if (!TryEmitCast(from, to, true)) {
@@ -915,19 +915,19 @@ namespace Microsoft.Scripting.Generation {
                     }
                 }
 
-                if (from.IsValueType()) {
+                if (from.GetTypeInfo().IsValueType) {
                     if (to == typeof(object)) {
                         EmitBoxing(from);
                         return true;
                     }
                 }
 
-                if (to.IsInterface()) {
+                if (to.GetTypeInfo().IsInterface) {
                     Emit(OpCodes.Box, from);
                     return true;
                 }
 
-                if (from.IsEnum() && to == typeof(Enum)) {
+                if (from.GetTypeInfo().IsEnum && to == typeof(Enum)) {
                     Emit(OpCodes.Box, from);
                     return true;
                 }
@@ -941,7 +941,7 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 
-            if (to.IsValueType() && from == typeof(object)) {
+            if (to.GetTypeInfo().IsValueType && from == typeof(object)) {
                 if (implicitOnly) {
                     return false;
                 }
@@ -949,11 +949,11 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 
-            if (to.IsValueType() != from.IsValueType()) {
+            if (to.GetTypeInfo().IsValueType != from.GetTypeInfo().IsValueType) {
                 return false;
             }
 
-            if (!to.IsValueType()) {
+            if (!to.GetTypeInfo().IsValueType) {
                 if (implicitOnly) {
                     return false;
                 }
@@ -961,10 +961,10 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 
-            if (to.IsEnum()) {
+            if (to.GetTypeInfo().IsEnum) {
                 to = Enum.GetUnderlyingType(to);
             }
-            if (from.IsEnum()) {
+            if (from.GetTypeInfo().IsEnum) {
                 from = Enum.GetUnderlyingType(from);
             }
 
@@ -1051,7 +1051,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitBoxing(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
-            if (type.IsValueType()) {
+            if (type.GetTypeInfo().IsValueType) {
                 if (type == typeof(void)) {
                     Emit(OpCodes.Ldnull);
                 } else if (type == typeof(int)) {
@@ -1073,9 +1073,9 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
 
-        #region Linq Conversions
+#region Linq Conversions
 
         //CONFORMING
         // (plus support for None, Void conversions)
@@ -1106,8 +1106,8 @@ namespace Microsoft.Scripting.Generation {
             Type nnExprType = typeFrom.GetNonNullableType();
             Type nnType = typeTo.GetNonNullableType();
 
-            if (typeFrom.IsInterface() || // interface cast
-               typeTo.IsInterface() ||
+            if (typeFrom.GetTypeInfo().IsInterface || // interface cast
+               typeTo.GetTypeInfo().IsInterface ||
                typeFrom == typeof(object) || // boxing cast
                typeTo == typeof(object)) {
                 EmitCastToType(typeFrom, typeTo);
@@ -1129,14 +1129,14 @@ namespace Microsoft.Scripting.Generation {
 
         //CONFORMING
         private void EmitCastToType(Type typeFrom, Type typeTo) {
-            if (!typeFrom.IsValueType() && typeTo.IsValueType()) {
+            if (!typeFrom.GetTypeInfo().IsValueType && typeTo.GetTypeInfo().IsValueType) {
                 Emit(OpCodes.Unbox_Any, typeTo);
-            } else if (typeFrom.IsValueType() && !typeTo.IsValueType()) {
+            } else if (typeFrom.GetTypeInfo().IsValueType && !typeTo.GetTypeInfo().IsValueType) {
                 EmitBoxing(typeFrom);
                 if (typeTo != typeof(object)) {
                     Emit(OpCodes.Castclass, typeTo);
                 }
-            } else if (!typeFrom.IsValueType() && !typeTo.IsValueType()) {
+            } else if (!typeFrom.GetTypeInfo().IsValueType && !typeTo.GetTypeInfo().IsValueType) {
                 Emit(OpCodes.Castclass, typeTo);
             } else {
                 throw Error.InvalidCast(typeFrom, typeTo);
@@ -1321,7 +1321,7 @@ namespace Microsoft.Scripting.Generation {
         private void EmitNullableToNonNullableConversion(Type typeFrom, Type typeTo, bool isChecked) {
             Debug.Assert(TypeUtils.IsNullableType(typeFrom));
             Debug.Assert(!TypeUtils.IsNullableType(typeTo));
-            if (typeTo.IsValueType())
+            if (typeTo.GetTypeInfo().IsValueType)
                 EmitNullableToNonNullableStructConversion(typeFrom, typeTo, isChecked);
             else
                 EmitNullableToReferenceConversion(typeFrom);
@@ -1331,7 +1331,7 @@ namespace Microsoft.Scripting.Generation {
         private void EmitNullableToNonNullableStructConversion(Type typeFrom, Type typeTo, bool isChecked) {
             Debug.Assert(TypeUtils.IsNullableType(typeFrom));
             Debug.Assert(!TypeUtils.IsNullableType(typeTo));
-            Debug.Assert(typeTo.IsValueType());
+            Debug.Assert(typeTo.GetTypeInfo().IsValueType);
             LocalBuilder locFrom = null;
             locFrom = DeclareLocal(typeFrom);
             Emit(OpCodes.Stloc, locFrom);
@@ -1365,27 +1365,27 @@ namespace Microsoft.Scripting.Generation {
         //CONFORMING
         internal void EmitHasValue(Type nullableType) {
             MethodInfo mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(nullableType.IsValueType());
+            Debug.Assert(nullableType.GetTypeInfo().IsValueType);
             Emit(OpCodes.Call, mi);
         }
 
         //CONFORMING
         internal void EmitGetValue(Type nullableType) {
             MethodInfo mi = nullableType.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(nullableType.IsValueType());
+            Debug.Assert(nullableType.GetTypeInfo().IsValueType);
             Emit(OpCodes.Call, mi);
         }
 
         //CONFORMING
         internal void EmitGetValueOrDefault(Type nullableType) {
             MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", ReflectionUtils.EmptyTypes);
-            Debug.Assert(nullableType.IsValueType());
+            Debug.Assert(nullableType.GetTypeInfo().IsValueType);
             Emit(OpCodes.Call, mi);
         }
 
-        #endregion
+#endregion
 
-        #region Arrays
+#region Arrays
 
         /// <summary>
         /// Emits an array of constant values provided in the given list.
@@ -1446,9 +1446,9 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
 
-        #region Support for emitting constants
+#region Support for emitting constants
 
         public void EmitDecimal(decimal value) {
             if (Decimal.Truncate(value) == value) {
@@ -1486,10 +1486,10 @@ namespace Microsoft.Scripting.Generation {
             switch (type.GetTypeCode()) {
                 case TypeCode.Object:
                 case TypeCode.DateTime:
-                    if (type.IsValueType()) {
+                    if (type.GetTypeInfo().IsValueType) {
                         // Type.GetTypeCode on an enum returns the underlying
                         // integer TypeCode, so we won't get here.
-                        Debug.Assert(!type.IsEnum());
+                        Debug.Assert(!type.GetTypeInfo().IsEnum);
 
                         // This is the IL for default(T) if T is a generic type
                         // parameter, so it should work for any type. It's also
@@ -1554,10 +1554,10 @@ namespace Microsoft.Scripting.Generation {
                     if (type == typeof(object)) {
                         // parameter of type object receives the actual Missing value
                         Emit(OpCodes.Ldsfld, typeof(Missing).GetDeclaredField("Value"));
-                    } else if (!type.IsValueType()) {
+                    } else if (!type.GetTypeInfo().IsValueType) {
                         // reference type
                         EmitNull();
-                    } else if (type.IsSealed() && !type.IsEnum()) {
+                    } else if (type.GetTypeInfo().IsSealed && !type.GetTypeInfo().IsEnum) {
                         lb = DeclareLocal(type);
                         Emit(OpCodes.Ldloca, lb);
                         Emit(OpCodes.Initobj, type);
@@ -1613,9 +1613,9 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
 
-        #region LocalTemps
+#region LocalTemps
 
         internal LocalBuilder GetLocal(Type type) {
             Debug.Assert(type != null);
@@ -1635,7 +1635,7 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        #endregion
+#endregion
     }
 
     public static partial class GeneratorOps {

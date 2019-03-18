@@ -13,14 +13,18 @@ namespace Microsoft.Scripting.Metadata {
         // The first module in the array is always a manifest module.
         private static Dictionary<Assembly, MetadataTables[]> _metadataCache;
 
-        private static MetadataTables[] GetAsseblyMetadata(Assembly assembly) {
+        private static MetadataTables[] GetAssemblyMetadata(Assembly assembly) {
             if (_metadataCache == null) {
                 _metadataCache = new Dictionary<Assembly, MetadataTables[]>();
             }
 
             lock (_metadataCache) {
                 if (!_metadataCache.TryGetValue(assembly, out MetadataTables[] metadata)) {
+#if WINDOWS_UWP
+                    var modules = assembly.GetModules();
+#else
                     var modules = assembly.GetModules(false);
+#endif
                     metadata = new MetadataTables[modules.Length];
                     int i = 1;
                     foreach (var module in modules) {
@@ -83,7 +87,7 @@ namespace Microsoft.Scripting.Metadata {
                 throw new ArgumentNullException(nameof(assembly));
             }
 
-            MetadataTables manifest = GetAsseblyMetadata(assembly)[0];
+            MetadataTables manifest = GetAssemblyMetadata(assembly)[0];
             MetadataRecord eaCtor = GetExtensionAttributeCtor(manifest);
             var result = new List<KeyValuePair<Module, int>>();
             if (!eaCtor.IsNull) {
@@ -111,9 +115,11 @@ namespace Microsoft.Scripting.Metadata {
             var tokens = GetVisibleExtensionMethods(assembly);
             
             List<MethodInfo> result = new List<MethodInfo>(tokens.Count);
+#if !WINDOWS_UWP
             foreach (var moduleAndToken in tokens) {
                 result.Add((MethodInfo)moduleAndToken.Key.ResolveMethod(moduleAndToken.Value));
             }
+#endif
             return result;
         }
     }

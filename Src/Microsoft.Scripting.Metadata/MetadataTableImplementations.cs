@@ -1385,10 +1385,12 @@ namespace Microsoft.Scripting.Metadata {
             Table = block.GetRange(start, RowSize * numberOfRows);
         }
 
+#if FEATURE_CONFIGURATION
         internal System.Configuration.Assemblies.AssemblyHashAlgorithm GetHashAlgorithm(int rowId) {
             int rowOffset = (rowId - 1) * RowSize;
             return (System.Configuration.Assemblies.AssemblyHashAlgorithm)Table.ReadUInt32(rowOffset + HashAlgIdOffset);
         }
+#endif
 
         internal AssemblyNameFlags GetFlags(int rowId) {
             int rowOffset = (rowId - 1) * RowSize;

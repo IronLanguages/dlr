@@ -195,7 +195,7 @@ namespace Microsoft.Scripting.Actions {
                     // Throws an exception if we don't have a non-generic type, and if we do report an error now.  This matches
                     // the rule version of the default binder but should probably be removed long term.
                     EnsureTrackerRepresentsNonGenericType((TypeTracker)target.Value);
-                } else if (targetType.IsInterface()) {
+                } else if (targetType.GetTypeInfo().IsInterface) {
                     // all interfaces have object members
                     targetType = typeof(object);
                     members = GetMember(MemberRequestKind.Get, targetType, getMemInfo.Name);
@@ -288,7 +288,7 @@ namespace Microsoft.Scripting.Actions {
                         continue;
                     }
 
-                    if (members[i].DeclaringType.IsSubclassOf(bestMemberDeclaringType) ||
+                    if (members[i].DeclaringType.GetTypeInfo().IsSubclassOf(bestMemberDeclaringType) ||
                         !IsTrackerApplicableForType(instanceType, bestMember)) {
                         bestMember = members[i];
                         bestMemberDeclaringType = members[i].DeclaringType;
@@ -300,7 +300,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private static bool IsTrackerApplicableForType(Type type, MemberTracker mt) {
-            return mt.DeclaringType == type || type.IsSubclassOf(mt.DeclaringType);
+            return mt.DeclaringType == type || type.GetTypeInfo().IsSubclassOf(mt.DeclaringType);
         }
 
         private void MakeTypeBody(GetMemberInfo getMemInfo, Type instanceType, MemberGroup members) {

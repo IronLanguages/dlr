@@ -60,12 +60,18 @@ namespace Microsoft.Scripting {
 #endif
 
         public virtual Assembly LoadAssembly(string name) {
+#if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
+            return Assembly.Load(new AssemblyName(name));
+#else
             return Assembly.Load(name);
+#endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFile")]
         public virtual Assembly LoadAssemblyFromPath(string path) {
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
+            throw new PlatformNotSupportedException();
+#elif FEATURE_FILESYSTEM
             return Assembly.LoadFile(path);
 #else
             throw new NotImplementedException();
@@ -73,20 +79,22 @@ namespace Microsoft.Scripting {
         }
 
         public virtual void TerminateScriptExecution(int exitCode) {
-#if FEATURE_PROCESS
+#if WINDOWS_UWP
+            Windows.UI.Xaml.Application.Current.Exit();
+#elif FEATURE_PROCESS
             System.Environment.Exit(exitCode);
 #else
             throw new ExitProcessException(exitCode);
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region Virtual File System
+#region Virtual File System
 
         public virtual bool IsSingleRootFileSystem {
             get {
-#if FEATURE_FILESYSTEM
+#if !WINDOWS_UWP && FEATURE_FILESYSTEM
                 return Environment.OSVersion.Platform == PlatformID.Unix
                     || Environment.OSVersion.Platform == PlatformID.MacOSX;
 #else
@@ -97,7 +105,7 @@ namespace Microsoft.Scripting {
 
         public virtual StringComparer PathComparer {
             get {
-#if FEATURE_FILESYSTEM
+#if !WINDOWS_UWP && FEATURE_FILESYSTEM
                 return Environment.OSVersion.Platform == PlatformID.Unix ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 #else
                 return StringComparer.OrdinalIgnoreCase;
@@ -124,9 +132,15 @@ namespace Microsoft.Scripting {
         // TODO: better APIs
         public virtual Stream OpenFileStream(string path, FileMode mode = FileMode.OpenOrCreate, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.Read, int bufferSize = 8192) {
 #if FEATURE_FILESYSTEM
+#if WINDOWS_UWP
+            if (string.Equals("nul", path, StringComparison.OrdinalIgnoreCase)) {
+                return Stream.Null;
+            }
+#else
             if (string.Equals("nul", path, StringComparison.InvariantCultureIgnoreCase)) {
                 return Stream.Null;
             }
+#endif
             return new FileStream(path, mode, access, share, bufferSize);
 #else
             throw new NotImplementedException();
@@ -242,14 +256,14 @@ namespace Microsoft.Scripting {
 #if FEATURE_FILESYSTEM
                 return Directory.GetCurrentDirectory();
 #else
-                throw new NotImplementedException();
+                throw new NotSupportedException();
 #endif
             }
             set {
 #if FEATURE_FILESYSTEM
                 Directory.SetCurrentDirectory(value);
 #else
-                throw new NotImplementedException();
+                throw new NotSupportedException();
 #endif
             }
         }
@@ -278,9 +292,9 @@ namespace Microsoft.Scripting {
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region Environmental Variables
+#region Environmental Variables
 
         public virtual string GetEnvironmentVariable(string key) {
 #if FEATURE_PROCESS
@@ -314,7 +328,11 @@ namespace Microsoft.Scripting {
             // function here which allows setting of the value to an empty string.
             // This will require high trust and will fail in sandboxed environments
             if (!NativeMethods.SetEnvironmentVariable(key, String.Empty)) {
+#if WINDOWS_UWP
+                throw new Exception($"SetEnvironmentVariable failed: {Marshal.GetLastWin32Error()}");
+#else
                 throw new ExternalException("SetEnvironmentVariable failed", Marshal.GetLastWin32Error());
+#endif
             }
         }
 #endif
@@ -335,6 +353,6 @@ namespace Microsoft.Scripting {
 #endif
         }
 
-        #endregion
+#endregion
     }
 }

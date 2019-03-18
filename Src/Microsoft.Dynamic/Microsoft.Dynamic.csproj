@@ -1,12 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0;uap10.0</TargetFrameworks>
     <RootNamespace>Microsoft.Scripting</RootNamespace>
     <BaseAddress>859832320</BaseAddress>
     <CodeAnalysisRuleSet>..\..\DLR.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.17763.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
+    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.8" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Overlapped" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.WindowsRuntime" Version="4.6.0-preview3.19128.7" />
+    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" Condition=" $(Features.Contains('FEATURE_METADATA_READER')) " />
@@ -23,9 +47,9 @@
     <DefineConstants>$(DefineConstants.Replace(';FEATURE_FILESYSTEM', ''))</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Reflection.Emit" Version="4.6.0-preview.19073.11" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0-preview.19073.11" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="System.Reflection.Emit" Version="4.6.0-preview3.19128.7" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0-preview3.19128.7" />
   </ItemGroup>
 
   <ItemGroup>

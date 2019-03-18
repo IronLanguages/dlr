@@ -337,7 +337,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         break;
                     }
 
-                    curType = curType.GetBaseType();
+                    curType = curType.GetTypeInfo().BaseType;
                 }
 
                 if (mis.Length == 1) {

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Scripting.Utils;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Ast {
     public static partial class Utils {
@@ -33,7 +34,7 @@ namespace Microsoft.Scripting.Ast {
                             clone[j] = initializerList[j];
                         }
                     }
-                    if (type.IsSubclassOf(typeof(Expression)) && TypeUtils.AreAssignable(type, initializer.GetType())) {
+                    if (type.GetTypeInfo().IsSubclassOf(typeof(Expression)) && TypeUtils.AreAssignable(type, initializer.GetType())) {
                         initializer = Expression.Quote(initializer);
                     } else {
                         initializer = Convert(initializer, type);

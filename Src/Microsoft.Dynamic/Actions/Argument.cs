@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
-
+using System.Reflection;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -59,7 +60,7 @@ namespace Microsoft.Scripting.Actions {
 
         internal Expression CreateExpression() {
             return Expression.New(
-                typeof(Argument).GetConstructor(new Type[] { typeof(ArgumentType), typeof(string) }),
+                typeof(Argument).GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (new Type[] { typeof(ArgumentType), typeof(string) }).SequenceEqual(x.GetParameters().Select(y => y.ParameterType))),
                 AstUtils.Constant(_kind),
                 AstUtils.Constant(_name, typeof(string))
             );

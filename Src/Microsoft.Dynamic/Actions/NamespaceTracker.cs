@@ -118,7 +118,8 @@ namespace Microsoft.Scripting.Actions {
                     if (existingTypeEntity == null) {
                         // Replace the existing namespace or module with the new type
                         Debug.Assert(existingValue is NamespaceTracker);
-                        _dict[normalizedTypeName] = MemberTracker.FromMemberInfo(newType);
+                        //WTF?
+                        //_dict[normalizedTypeName] = MemberTracker.FromMemberInfo(newType);
                     } else {
                         // Unify the new type with the existing type
                         _dict[normalizedTypeName] = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
@@ -210,7 +211,7 @@ namespace Microsoft.Scripting.Actions {
                     continue;
                 }
 
-                bool publishType = type.IsPublic() || _topPackage.DomainManager.Configuration.PrivateBinding;
+                bool publishType = type.GetTypeInfo().IsPublic || _topPackage.DomainManager.Configuration.PrivateBinding;
                 if (!publishType) {
                     continue;
                 }

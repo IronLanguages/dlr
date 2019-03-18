@@ -10,9 +10,12 @@ using System.Reflection.Emit;
 
 namespace Microsoft.Scripting.Utils {
     internal static class ReflectionUtils {
+
+#if false && !WINDOWS_UWP
         public static MethodInfo GetMethodInfo(this Delegate d) {
             return d.Method;
         }
+#endif
 
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name) {
             return type.GetMember(name).OfType<MethodInfo>();

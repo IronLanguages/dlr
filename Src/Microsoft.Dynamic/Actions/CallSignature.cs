@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 using Microsoft.Scripting.Generation;
@@ -288,7 +290,7 @@ namespace Microsoft.Scripting.Actions {
         public Expression CreateExpression() {
             if (_infos == null) {
                 return Expression.New(
-                    typeof(CallSignature).GetConstructor(new Type[] { typeof(int) }),
+                    typeof(CallSignature).GetTypeInfo().DeclaredConstructors.Where(x => x.GetParameters().Count() == 1 && x.GetParameters().ElementAt(0).ParameterType == typeof(int)).SingleOrDefault(),
                     AstUtils.Constant(ArgumentCount)
                 );
             }

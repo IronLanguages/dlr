@@ -50,11 +50,11 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         public virtual object Convert(object obj, Type toType) {
             if (obj == null) {
-                if (!toType.IsValueType()) {
+                if (!toType.GetTypeInfo().IsValueType) {
                     return null;
                 }
             } else {
-                if (toType.IsValueType()) {
+                if (toType.GetTypeInfo().IsValueType) {
                     if (toType == obj.GetType()) {
                         return obj;
                     }
@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Actions {
             Type exprType = expr.Type;
 
             if (toType == typeof(object)) {
-                if (exprType.IsValueType()) {
+                if (exprType.GetTypeInfo().IsValueType) {
                     return AstUtils.Convert(expr, toType);
                 }
 
@@ -120,13 +120,13 @@ namespace Microsoft.Scripting.Actions {
             // check for generic types w/ arity...
             string genName = name + ReflectionUtils.GenericArityDelimiter;
             List<Type> genTypes = null;
-            foreach (Type t in type.GetDeclaredNestedTypes()) {
+            foreach (TypeInfo t in type.GetDeclaredNestedTypes()) {
                 if (t.IsPublic && t.Name.StartsWith(genName)) {
                     if (genTypes == null) {
                         genTypes = new List<Type>();
                     }
 
-                    genTypes.Add(t);
+                    genTypes.Add(t.AsType());
                 }
             }
 

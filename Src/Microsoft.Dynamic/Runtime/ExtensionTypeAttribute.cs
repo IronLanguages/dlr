@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Reflection;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -19,7 +20,7 @@ namespace Microsoft.Scripting.Runtime {
             if (extends == null) {
                 throw new ArgumentNullException(nameof(extends));
             }
-            if (extensionType != null && !extensionType.IsPublic && !extensionType.IsNestedPublic) {
+            if (extensionType != null && !extensionType.GetTypeInfo().IsPublic && !extensionType.GetTypeInfo().IsNestedPublic) {
                 throw Error.ExtensionMustBePublic(extensionType.FullName);
             }
 

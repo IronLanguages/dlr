@@ -134,15 +134,18 @@ namespace Microsoft.Scripting.Metadata {
                 throw new ArgumentOutOfRangeException(nameof(offset));
             }
             
-            sbyte* pStart = (sbyte*)_pointer + offset;
-            sbyte* pEnd = pStart + maxByteCount;
-            sbyte* pIter = pStart;
+            byte* pStart = _pointer + offset;
+            byte* pEnd = pStart + maxByteCount;
+            byte* pIter = pStart;
 
             while (*pIter != '\0' && pIter < pEnd) {
                 pIter++;
             }
-
+#if NET45
             return new string((sbyte*)pStart, 0, (int)(pIter - pStart), Encoding.ASCII);
+#else
+            return Encoding.ASCII.GetString(pStart, (int)(pIter - pStart));
+#endif
         }
 
         [CLSCompliant(false)]
@@ -177,7 +180,7 @@ namespace Microsoft.Scripting.Metadata {
             return unchecked((double)ReadInt64(offset));
         }
 
-        #region Metadata-specific
+#region Metadata-specific
 
         internal uint ReadReference(int offset, bool smallRefSize) {
             if (smallRefSize) {
@@ -292,6 +295,6 @@ namespace Microsoft.Scripting.Metadata {
             return -1;
         }
 
-        #endregion
+#endregion
     }
 }

@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Actions {
                 return null;
             }
 
-            if (getter.IsPublic && getter.DeclaringType.IsPublic()) {
+            if (getter.IsPublic && getter.DeclaringType.GetTypeInfo().IsPublic) {
                 return binder.MakeCallExpression(resolverFactory, getter);
             }
 

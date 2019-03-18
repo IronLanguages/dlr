@@ -334,7 +334,7 @@ namespace Microsoft.Scripting {
         internal static Expression CreateNew(Type tupleType, int start, int end, Expression[] values) {
             int size = end - start;
             Debug.Assert(tupleType != null);
-            Debug.Assert(tupleType.IsSubclassOf(typeof(MutableTuple)));
+            Debug.Assert(tupleType.GetTypeInfo().IsSubclassOf(typeof(MutableTuple)));
 
             Expression[] newValues;
             if (size > MutableTuple.MaxSize) {

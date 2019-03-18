@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Generation {
                     // Add the consant pool variable to the top lambda
                     // We first create the array and then assign into it so that we can refer to the
                     // array and read values out that have already been created.
-                    ReadOnlyCollectionBuilder<Expression> assigns = new ReadOnlyCollectionBuilder<Expression>(_constants.Count + 2);
+                    List<Expression> assigns = new List<Expression>(_constants.Count + 2);
                     assigns.Add(Expression.Assign(
                         _constantPool,
                         Expression.NewArrayBounds(typeof(object), Expression.Constant(_constants.Count))
@@ -201,14 +201,14 @@ namespace Microsoft.Scripting.Generation {
             // SaveAssemblies mode prevents us from detecting the module as
             // transient. If that option is turned on, always replace delegates
             // that live in another AssemblyBuilder
-#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD2_0 || WINDOWS_UWP
             return true; // TODO:
 #else
-            var module = delegateType.Module as ModuleBuilder;
+            var module = delegateType.GetTypeInfo().Module as ModuleBuilder;
 
             if (module == null) {
-                if (delegateType.Module.GetType() == typeof(ModuleBuilder).Assembly.GetType("System.Reflection.Emit.InternalModuleBuilder")) {
-                    if ((bool)delegateType.Module.GetType().InvokeMember("IsTransientInternal", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, delegateType.Module, null)) {
+                if (delegateType.GetTypeInfo().Module.GetType() == typeof(ModuleBuilder).GetTypeInfo().Assembly.GetType("System.Reflection.Emit.InternalModuleBuilder")) {
+                    if ((bool)delegateType.GetTypeInfo().Module.GetType().GetTypeInfo().InvokeMember("IsTransientInternal", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, delegateType.Module, null)) {
                         return true;
                     }
                 }

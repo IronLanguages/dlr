@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Debugging.CompilerServices;
@@ -294,7 +295,7 @@ namespace Microsoft.Scripting.Debugging {
         #region Private helpers
         private void CreateGenerator(FunctionInfo targetFuncInfo) {
             object[] paramValues = GetParamValuesForGenerator();
-            _generator = (IDebuggableGenerator)targetFuncInfo.GeneratorFactory.GetType().GetMethod("Invoke").Invoke(targetFuncInfo.GeneratorFactory, paramValues);
+            _generator = (IDebuggableGenerator)targetFuncInfo.GeneratorFactory.GetType().GetTypeInfo().GetDeclaredMethod("Invoke").Invoke(targetFuncInfo.GeneratorFactory, paramValues);
 
             // Update funcInfo to the new version
             if (_funcInfo != targetFuncInfo) {

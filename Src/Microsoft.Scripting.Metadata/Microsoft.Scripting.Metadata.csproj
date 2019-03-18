@@ -1,13 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0;uap10.0;</TargetFrameworks>
     <BaseAddress>859832320</BaseAddress>
     <CodeAnalysisRuleSet>..\..\DLR.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.17763.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
+    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.8" />
+    <PackageReference Include="System.IO.MemoryMappedFiles" Version="4.3.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />

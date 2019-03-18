@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return GetArrayAccessor(info, argumentCount);
             }
 
-            if (ReflectionUtils.IsDynamicMethod(info) || !info.IsStatic && info.DeclaringType.IsValueType()) {
+            if (ReflectionUtils.IsDynamicMethod(info) || !info.IsStatic && info.DeclaringType.GetTypeInfo().IsValueType) {
                 return new MethodInfoCallInstruction(info, argumentCount);
             }
 

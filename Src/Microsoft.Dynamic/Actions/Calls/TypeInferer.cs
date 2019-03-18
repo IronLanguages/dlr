@@ -108,7 +108,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (ArgBuilder oldArgBuilder in candidate.ArgBuilders) {
                 var pi = oldArgBuilder.ParameterInfo;
 
-                if (pi != null && (pi.ParameterType.IsGenericParameter || pi.ParameterType.ContainsGenericParameters())) {
+                if (pi != null && (pi.ParameterType.IsGenericParameter || pi.ParameterType.GetTypeInfo().ContainsGenericParameters)) {
                     ArgBuilder replacement = oldArgBuilder.Clone(newOverload.Parameters[pi.Position]);
 
                     if (replacement == null) {
@@ -239,11 +239,11 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             // need to calculate any dependencies between parameters.
             foreach (Type genArg in info.GenericArguments) {
-                Type[] constraints = genArg.GetGenericParameterConstraints();
+                Type[] constraints = genArg.GetTypeInfo().GetGenericParameterConstraints();
                 foreach (Type t in constraints) {
                     if (t.IsGenericParameter) {
                         AddDependency(dependencies, genArg, t);
-                    } else if (t.ContainsGenericParameters()) {
+                    } else if (t.GetTypeInfo().ContainsGenericParameters) {
                         AddNestedDependencies(dependencies, genArg, t);
                     }
                 }
@@ -256,7 +256,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (Type innerArg in innerArgs) {
                 if (innerArg.IsGenericParameter) {
                     AddDependency(dependencies, genArg, innerArg);
-                } else if (innerArg.ContainsGenericParameters()) {
+                } else if (innerArg.GetTypeInfo().ContainsGenericParameters) {
                     AddNestedDependencies(dependencies, genArg, innerArg);
                 }
             }
@@ -295,7 +295,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Adds any additional ArgumentInputs entries for the given object and parameter type.
         /// </summary>
         private static void AddOneInput(Dictionary<Type, ArgumentInputs> inputs, DynamicMetaObject arg, Type paramType) {
-            if (paramType.ContainsGenericParameters()) {
+            if (paramType.GetTypeInfo().ContainsGenericParameters) {
                 List<Type> containedGenArgs = new List<Type>();
                 CollectGenericParameters(paramType, containedGenArgs);
 
@@ -319,7 +319,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if (!containedGenArgs.Contains(type)) {
                     containedGenArgs.Add(type);
                 }
-            } else if (type.ContainsGenericParameters()) {
+            } else if (type.GetTypeInfo().ContainsGenericParameters) {
                 if (type.IsArray || type.IsByRef) {
                     CollectGenericParameters(type.GetElementType(), containedGenArgs);
                 } else {
@@ -398,7 +398,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         internal static Type GetInferedType(OverloadResolver/*!*/ resolver, Type/*!*/ genericParameter, Type/*!*/ parameterType,
             DynamicMetaObject/*!*/ input, Dictionary<Type, Type>/*!*/ binding, Dictionary<DynamicMetaObject, BindingRestrictions>/*!*/ restrictions) {
 
-            if (parameterType.IsSubclassOf(typeof(Delegate))) {
+            if (parameterType.GetTypeInfo().IsSubclassOf(typeof(Delegate))) {
                 // see if we have an invokable object which can be used to infer into this delegate
                 if (input is IInferableInvokable invokeInfer) {
                     InferenceResult inference = invokeInfer.GetInferredType(parameterType, genericParameter);
@@ -446,7 +446,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 return inputType;
             }
 
-            if (parameterType.IsInterface()) {
+            if (parameterType.GetTypeInfo().IsInterface) {
                 return GetInferedTypeForInterface(genericParameter, parameterType, inputType, binding);
             }
 
@@ -464,11 +464,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             // see if we're anywhere in our base class hierarchy
             Type genType = parameterType.GetGenericTypeDefinition();
             while (argType != typeof(object)) {
-                if (argType.IsGenericType() && argType.GetGenericTypeDefinition() == genType) {
+                if (argType.GetTypeInfo().IsGenericType && argType.GetGenericTypeDefinition() == genType) {
                     // TODO: Merge w/ the interface logic?
                     return binding[genericParameter] = MatchGenericParameter(genericParameter, argType, parameterType, binding);
                 }
-                argType = argType.GetBaseType();
+                argType = argType.GetTypeInfo().BaseType;
             }
                 
             return null;
@@ -482,12 +482,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         // Unless X == Y we can't infer T.
         //
         private static Type GetInferedTypeForInterface(Type/*!*/ genericParameter, Type/*!*/ interfaceType, Type inputType, Dictionary<Type, Type>/*!*/ binding) {
-            Debug.Assert(interfaceType.IsInterface());
+            Debug.Assert(interfaceType.GetTypeInfo().IsInterface);
 
             Type match = null;
             Type genTypeDef = interfaceType.GetGenericTypeDefinition();
             foreach (Type ifaceType in inputType.GetInterfaces()) {
-                if (ifaceType.IsGenericType() && ifaceType.GetGenericTypeDefinition() == genTypeDef) {
+                if (ifaceType.GetTypeInfo().IsGenericType && ifaceType.GetGenericTypeDefinition() == genTypeDef) {
                     if (!MatchGenericParameter(genericParameter, ifaceType, interfaceType, binding, ref match)) {
                         return null;
                     }

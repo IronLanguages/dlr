@@ -38,9 +38,11 @@ namespace Microsoft.Scripting.Metadata {
             var result = new AssemblyName();
 
             result.Name = name.ToString();
+#if !WINDOWS_UWP
             if (!culture.IsEmpty) {
                 result.CultureInfo = new CultureInfo(culture.ToString());
             }
+#endif
 
             result.Version = version;
             result.Flags = flags;

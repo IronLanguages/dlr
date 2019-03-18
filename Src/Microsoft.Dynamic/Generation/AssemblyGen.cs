@@ -346,7 +346,7 @@ namespace Microsoft.Scripting.Generation {
             TypeBuilder builder = DefineType(name, typeof(MulticastDelegate), DelegateAttributes, false);
             builder.DefineConstructor(CtorAttributes, CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(ImplAttributes);
             builder.DefineMethod("Invoke", InvokeAttributes, returnType, parameters).SetImplementationFlags(ImplAttributes);
-            return builder.CreateTypeInfo();
+            return builder.CreateTypeInfo().AsType();
         }
     }
 }

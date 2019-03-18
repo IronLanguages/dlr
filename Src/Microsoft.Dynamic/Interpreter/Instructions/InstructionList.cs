@@ -302,7 +302,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             }
 
-            if (type == null || type.IsValueType()) {
+            if (type == null || type.GetTypeInfo().IsValueType) {
                 if (value is bool b) {
                     EmitLoad(b);
                     return;
@@ -502,7 +502,7 @@ namespace Microsoft.Scripting.Interpreter {
             object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
             if (value != null) {
                 Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
-            } else if (type.IsValueType()) {
+            } else if (type.GetTypeInfo().IsValueType) {
                 Emit(new InitializeLocalInstruction.MutableValue(index, type));
             } else {
                 Emit(InitReference(index));
@@ -571,7 +571,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitGetArrayItem(Type arrayType) {
             Type elementType = arrayType.GetElementType();
-            if (elementType.IsClass() || elementType.IsInterface()) {
+            if (elementType.GetTypeInfo().IsClass || elementType.GetTypeInfo().IsInterface) {
                 Emit(InstructionFactory<object>.Factory.GetArrayItem());
             } else {
                 Emit(InstructionFactory.GetFactory(elementType).GetArrayItem());
@@ -580,7 +580,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitSetArrayItem(Type arrayType) {
             Type elementType = arrayType.GetElementType();
-            if (elementType.IsClass() || elementType.IsInterface()) {
+            if (elementType.GetTypeInfo().IsClass || elementType.GetTypeInfo().IsInterface) {
                 Emit(InstructionFactory<object>.Factory.SetArrayItem());
             } else {
                 Emit(InstructionFactory.GetFactory(elementType).SetArrayItem());

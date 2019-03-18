@@ -4,13 +4,14 @@
 
 
 using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
     internal partial class DynamicInstructionN {
         internal static Type GetDynamicInstructionType(Type delegateType) {
-            Type[] argTypes = delegateType.GetGenericArguments();
+            Type[] argTypes = delegateType.GetTypeInfo().GenericTypeArguments;
             if (argTypes.Length == 0) return null;
             Type genericType;
             Type[] newArgTypes = ArrayUtils.RemoveFirst(argTypes);

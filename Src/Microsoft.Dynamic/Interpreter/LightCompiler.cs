@@ -243,7 +243,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileDefaultExpression(Type type) {
             if (type == typeof(void))
                 return;
-            if (type.IsValueType()) {
+            if (type.GetTypeInfo().IsValueType) {
                 object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
                 if (value != null) {
                     Instructions.EmitLoad(value);
@@ -554,14 +554,14 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileEqual(Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType() && !right.Type.IsValueType());
+            Debug.Assert(left.Type == right.Type || !left.Type.GetTypeInfo().IsValueType && !right.Type.GetTypeInfo().IsValueType);
             Compile(left);
             Compile(right);
             Instructions.EmitEqual(left.Type);
         }
 
         private void CompileNotEqual(Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType() && !right.Type.IsValueType());
+            Debug.Assert(left.Type == right.Type || !left.Type.GetTypeInfo().IsValueType && !right.Type.GetTypeInfo().IsValueType);
             Compile(left);
             Compile(right);
             Instructions.EmitNotEqual(left.Type);
@@ -1168,7 +1168,7 @@ namespace Microsoft.Scripting.Interpreter {
             // also could be a mutable value type, Delegate.CreateDelegate and MethodInfo.Invoke both can't handle this, we
             // need to generate code.
             if (!CollectionUtils.TrueForAll(parameters, (p) => !p.ParameterType.IsByRef) ||
-                (!node.Method.IsStatic && node.Method.DeclaringType.IsValueType() && !node.Method.DeclaringType.IsPrimitive())) {
+                (!node.Method.IsStatic && node.Method.DeclaringType.GetTypeInfo().IsValueType && !node.Method.DeclaringType.GetTypeInfo().IsPrimitive)) {
                 _forceCompile = true;
             }
 
@@ -1227,7 +1227,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
                 Instructions.EmitNew(node.Constructor);
             } else {
-                Debug.Assert(expr.Type.IsValueType());
+                Debug.Assert(expr.Type.GetTypeInfo().IsValueType);
                 Instructions.EmitDefaultValue(node.Type);
             }
         }
@@ -1413,7 +1413,7 @@ namespace Microsoft.Scripting.Interpreter {
             Compile(node.Expression);
 
             // use TypeEqual for sealed types:
-            if (node.TypeOperand.IsSealed()) {
+            if (node.TypeOperand.GetTypeInfo().IsSealed) {
                 Instructions.EmitLoad(node.TypeOperand);
                 Instructions.EmitTypeEquals();
             } else {
