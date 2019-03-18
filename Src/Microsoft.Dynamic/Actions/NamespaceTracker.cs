@@ -118,8 +118,7 @@ namespace Microsoft.Scripting.Actions {
                     if (existingTypeEntity == null) {
                         // Replace the existing namespace or module with the new type
                         Debug.Assert(existingValue is NamespaceTracker);
-                        //WTF?
-                        //_dict[normalizedTypeName] = MemberTracker.FromMemberInfo(newType);
+                        _dict[normalizedTypeName] = MemberTracker.FromMemberInfo(newType);
                     } else {
                         // Unify the new type with the existing type
                         _dict[normalizedTypeName] = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
