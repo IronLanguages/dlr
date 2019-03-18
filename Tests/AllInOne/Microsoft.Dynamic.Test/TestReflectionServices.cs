@@ -2,16 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Actions;
-using Microsoft.Scripting.Runtime;
-
 using Microsoft.Scripting.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -121,12 +114,6 @@ namespace Microsoft.Dynamic.Test {
                 Assert.IsTrue(actual.ContainsKey(name));
                 Assert.IsTrue(expectExact ? expected[name] == actual[name] : expected[name] >= actual[name]);
             }
-        }
-
-        [TestMethod]
-        public void TestReflectionCache() {
-            MethodGroup a = ReflectionCache.GetMethodGroup("Enumerable", typeof(List<>).GetTypeInfo().DeclaredMethods.ToArray());
-            MethodGroup b = ReflectionCache.GetMethodGroup("test", new MemberGroup(typeof(List<>).GetTypeInfo().DeclaredMethods.ToArray()));
         }
     }
 }
