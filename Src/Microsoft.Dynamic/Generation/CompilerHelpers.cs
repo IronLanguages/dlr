@@ -291,7 +291,10 @@ namespace Microsoft.Scripting.Generation {
                 case MemberTypes.Event:
                 case MemberTypes.Property:
                 default:
-                    return
+                    //TODO better check for NativeModule
+                    //MetadataToken causes exception on CoreRT
+                    //https://github.com/dotnet/corert/blob/db9c9ced21afd0848c748960358832bc3e41ae62/src/System.Private.Reflection.Core/src/System/Reflection/Runtime/PropertyInfos/NativeFormat/NativeFormatRuntimePropertyInfo.cs#L126
+                    return PlatformAdaptationLayer.IsNativeModule ? self == other :
                         ((MemberInfo)self).Module == ((MemberInfo)other).Module &&
                         ((MemberInfo)self).MetadataToken == ((MemberInfo)other).MetadataToken;
             }
