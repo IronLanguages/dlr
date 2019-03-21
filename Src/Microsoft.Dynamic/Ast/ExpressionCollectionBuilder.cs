@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
-    using AstExpressions = List<Expression>;
+    using AstExpressions = ReadOnlyCollectionBuilder<Expression>;
 
     public class ExpressionCollectionBuilder<TExpression> : IEnumerable<TExpression>, ICollection<TExpression> {
         public TExpression Expression0 { get; private set; }
@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Ast {
         public TExpression Expression3 { get; private set; }
 
         private int _count;
-        private List<TExpression> _expressions;
+        private ReadOnlyCollectionBuilder<TExpression> _expressions;
 
         public int Count {
             get { return _count; }
@@ -33,7 +33,7 @@ namespace Microsoft.Scripting.Ast {
         /// If the number of items added to the builder is greater than 4 returns a read-only collection builder containing all the items.
         /// Returns <c>null</c> otherwise.
         /// </summary>
-        public List<TExpression> Expressions {
+        public ReadOnlyCollectionBuilder<TExpression> Expressions {
             get { return _expressions; }
         }
 
@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Ast {
                 case 2: Expression2 = item; break;
                 case 3: Expression3 = item; break;
                 case 4:
-                    _expressions = new List<TExpression> {
+                    _expressions = new ReadOnlyCollectionBuilder<TExpression> {
                         Expression0,
                         Expression1,
                         Expression2,

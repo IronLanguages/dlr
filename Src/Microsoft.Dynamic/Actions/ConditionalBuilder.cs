@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -52,10 +52,10 @@ namespace Microsoft.Scripting.Actions {
             for (int i = _bodies.Count - 1; i >= 0; i--) {
                 Type t = _bodies[i].Type;
                 if (t != body.Type) {
-                    if (t.GetTypeInfo().IsSubclassOf(body.Type)) {
+                    if (t.IsSubclassOf(body.Type)) {
                         // subclass
                         t = body.Type;
-                    } else if (body.Type.GetTypeInfo().IsSubclassOf(t)) {
+                    } else if (body.Type.IsSubclassOf(t)) {
                         // keep t
                     } else {
                         // incompatible, both go to object

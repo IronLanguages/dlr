@@ -590,7 +590,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                             return true;
                         }
                         parameterType = lastParameter.Type.GetElementType();
-                    } else if (parameter.Type.GetTypeInfo().ContainsGenericParameters) {
+                    } else if (parameter.Type.ContainsGenericParameters()) {
                         return true;
                     } else {
                         parameterType = parameter.Type;
@@ -873,11 +873,11 @@ namespace Microsoft.Scripting.Actions.Calls {
                     return false;
                 }
 
-                if (toType.GetTypeInfo().IsGenericType && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+                if (toType.IsGenericType() && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return true;
                 }
 
-                if (!toType.GetTypeInfo().IsValueType) {
+                if (!toType.IsValueType()) {
                     return true;
                 }
             }

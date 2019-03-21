@@ -11,15 +11,15 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Generation {
     public sealed class TypeGen {
-        private ILGenerator _initGen;                        // The IL generator for the .cctor()
+        private ILGen _initGen;                        // The IL generator for the .cctor()
 
         /// <summary>
         /// Gets the Compiler associated with the Type Initializer (cctor) creating it if necessary.
         /// </summary>
-        public ILGenerator TypeInitializer {
+        public ILGen TypeInitializer {
             get {
                 if (_initGen == null) {
-                    _initGen = TypeBuilder.DefineTypeInitializer().GetILGenerator();
+                    _initGen = new ILGen(TypeBuilder.DefineTypeInitializer().GetILGenerator());
                 }
                 return _initGen;
             }
@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.Generation {
 
         public TypeGen(AssemblyGen myAssembly, TypeBuilder myType) {
             Assert.NotNull(myAssembly, myType);
-            
+
             AssemblyGen = myAssembly;
             TypeBuilder = myType;
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.Generation {
 
         public Type FinishType() {
             _initGen?.Emit(OpCodes.Ret);
-            Type ret = TypeBuilder.CreateTypeInfo().AsType();
+            Type ret = TypeBuilder.CreateTypeInfo();
             return ret;
         }
 
@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Generation {
             return TypeBuilder.DefineField(name, fieldType, attributes | FieldAttributes.Static);
         }
 
-        public ILGenerator DefineExplicitInterfaceImplementation(MethodInfo baseMethod) {
+        public ILGen DefineExplicitInterfaceImplementation(MethodInfo baseMethod) {
             ContractUtils.RequiresNotNull(baseMethod, nameof(baseMethod));
 
             MethodAttributes attrs = baseMethod.Attributes & ~(MethodAttributes.Abstract | MethodAttributes.Public);
@@ -68,19 +68,19 @@ namespace Microsoft.Scripting.Generation {
                 baseSignature);
 
             TypeBuilder.DefineMethodOverride(mb, baseMethod);
-            return mb.GetILGenerator();
+            return new ILGen(mb.GetILGenerator());
         }
 
-        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.RTSpecialName | MethodAttributes.HasSecurity | MethodAttributes.RequireSecObject;
+        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.ReservedMask;
 
         // TODO: Use ReflectionUtils.DefineMethodOverride?
-        public ILGenerator DefineMethodOverride(MethodInfo baseMethod) {
+        public ILGen DefineMethodOverride(MethodInfo baseMethod) {
             MethodAttributes finalAttrs = baseMethod.Attributes & ~MethodAttributesToEraseInOveride;
             Type[] baseSignature = baseMethod.GetParameters().Map(p => p.ParameterType);
             MethodBuilder mb = TypeBuilder.DefineMethod(baseMethod.Name, finalAttrs, baseMethod.ReturnType, baseSignature);
 
             TypeBuilder.DefineMethodOverride(mb, baseMethod);
-            return mb.GetILGenerator();
+            return new ILGen(mb.GetILGenerator());
         }
     }
 }

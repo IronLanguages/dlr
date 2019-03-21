@@ -39,7 +39,7 @@ namespace Microsoft.Scripting.Interpreter {
         // locals and closure variables defined outside the loop
         private readonly Dictionary<ParameterExpression, LocalVariable> _outerVariables, _closureVariables; 
         private readonly LoopExpression _loop;
-        private List<ParameterExpression> _temps;
+        private ReadOnlyCollectionBuilder<ParameterExpression> _temps;
         // tracks variables that flow in and flow out for initialization and 
         private readonly Dictionary<ParameterExpression, LoopVariable> _loopVariables;
         // variables which are defined and used within the loop
@@ -66,8 +66,8 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal LoopFunc CreateDelegate() {
             var loop = (LoopExpression)Visit(_loop);
-            var body = new List<Expression>();
-            var finallyClause = new List<Expression>();
+            var body = new ReadOnlyCollectionBuilder<Expression>();
+            var finallyClause = new ReadOnlyCollectionBuilder<Expression>();
 
             foreach (var variable in _loopVariables) {
                 if (!_outerVariables.TryGetValue(variable.Key, out LocalVariable local)) {
@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Interpreter {
             body.Add(Expression.Label(_returnLabel, Expression.Constant(_loopEndInstructionIndex - _loopStartInstructionIndex)));
 
             var lambda = Expression.Lambda<LoopFunc>(
-                _temps != null ? Expression.Block(_temps.AsReadOnly(), body) : Expression.Block(body),
+                _temps != null ? Expression.Block(_temps.ToReadOnlyCollection(), body) : Expression.Block(body),
                 new[] { _frameDataVar, _frameClosureVar, _frameVar }
             );
             return lambda.Compile();
@@ -294,7 +294,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private ParameterExpression AddTemp(ParameterExpression variable) {
             if (_temps == null) {
-                _temps = new List<ParameterExpression>();
+                _temps = new ReadOnlyCollectionBuilder<ParameterExpression>();
             }
 
             _temps.Add(variable);

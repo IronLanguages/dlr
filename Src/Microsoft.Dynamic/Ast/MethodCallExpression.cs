@@ -102,7 +102,7 @@ namespace Microsoft.Scripting.Ast {
 
         private static bool CompatibleParameterTypes(Type parameter, Type argument) {
             if (parameter == argument ||
-                (!parameter.GetTypeInfo().IsValueType && !argument.GetTypeInfo().IsValueType && parameter.IsAssignableFrom(argument))) {
+                (!parameter.IsValueType() && !argument.IsValueType() && parameter.IsAssignableFrom(argument))) {
                 return true;
             }
             if (parameter.IsByRef && parameter.GetElementType() == argument) {

@@ -16,7 +16,6 @@ using System.Threading;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Interpreter;
 using Microsoft.Scripting.Runtime;
-using System.Collections.Generic;
 
 #if !FEATURE_DYNAMIC_EXPRESSION_VISITOR
 namespace System.Linq.Expressions {
@@ -90,8 +89,8 @@ namespace Microsoft.Scripting.Utils {
                 var invokeMethod = typeof(T).GetMethod("Invoke");
                 var methodParams = invokeMethod.GetParameters();
 
-                List<ParameterExpression> prms = new List<ParameterExpression>(methodParams.Length);
-                List<Expression> invokePrms = new List<Expression>(methodParams.Length);
+                ReadOnlyCollectionBuilder<ParameterExpression> prms = new ReadOnlyCollectionBuilder<ParameterExpression>(methodParams.Length);
+                ReadOnlyCollectionBuilder<Expression> invokePrms = new ReadOnlyCollectionBuilder<Expression>(methodParams.Length);
                 for (int i = 0; i < methodParams.Length; i++) {
                     var param = Expression.Parameter(methodParams[i].ParameterType);
                     if (i == 0) {
@@ -102,7 +101,7 @@ namespace Microsoft.Scripting.Utils {
                     prms.Add(param);
                 }
 
-                _parameters = prms.AsReadOnly();
+                _parameters = prms.ToReadOnlyCollection();
 
                 _updateExpression = Expression.Block(
                     Expression.Label(CallSiteBinder.UpdateLabel),
@@ -111,7 +110,7 @@ namespace Microsoft.Scripting.Utils {
                             invokePrms[0],
                             typeof(CallSite<T>).GetDeclaredProperty("Update")
                         ),
-                        invokePrms.AsReadOnly()
+                        invokePrms.ToReadOnlyCollection()
                     )
                 );
             }

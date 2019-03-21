@@ -12,7 +12,7 @@ using System.Threading;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Debugging.CompilerServices {
-#pragma warning disable CA1001
+
     /// <summary>
     /// Provides services to compilers for instrumenting code with tracebacks.
     /// </summary>

@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Ast {
                     return Expression.Constant(value, typeof(PropertyInfo));
                 default: {
                     Type t = value.GetType();
-                    if (!t.GetTypeInfo().IsEnum) {
+                    if (!t.IsEnum) {
                         switch (t.GetTypeCode()) {
                             case TypeCode.Boolean:
                                 return (bool)value ? TrueLiteral : FalseLiteral;

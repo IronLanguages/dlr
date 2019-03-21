@@ -11,7 +11,6 @@ using System.Dynamic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.ComInterop {
     /// <summary>
@@ -61,7 +60,7 @@ namespace Microsoft.Scripting.ComInterop {
             int count = ((object[])args[1]).Length;
             ParameterExpression array = parameters[1];
 
-            var nestedArgs = new List<Expression>(count + 1);
+            var nestedArgs = new ReadOnlyCollectionBuilder<Expression>(count + 1);
             var delegateArgs = new Type[count + 3]; // args + target + returnType + CallSite
             nestedArgs.Add(parameters[0]);
             delegateArgs[0] = typeof(CallSite);

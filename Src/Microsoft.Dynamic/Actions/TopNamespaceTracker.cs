@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Actions {
 #if FEATURE_COM
             lock (_comTypeCache) { // We lock over the entire operation so that we can publish a consistent view
 
-                foreach (Type type in interopAssembly.ExportedTypes) {
+                foreach (Type type in ReflectionUtils.GetAllTypesFromAssembly(interopAssembly, false)) {
                     if (type.IsImport && type.IsInterface) {
                         if (_comTypeCache.TryGetValue(type.GUID, out Type existing)) {
                             if (!existing.IsDefined(typeof(CoClassAttribute), false)) {
