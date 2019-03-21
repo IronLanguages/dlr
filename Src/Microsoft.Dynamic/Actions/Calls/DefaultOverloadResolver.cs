@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Reflection;
+
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
@@ -171,7 +171,7 @@ namespace Microsoft.Scripting.Actions {
                                             arg.Expression,
                                             typeof(IList<object>)
                                         ),
-                                        typeof(IList<object>).GetTypeInfo().GetDeclaredMethod("get_Item"),
+                                        typeof(IList<object>).GetMethod("get_Item"),
                                         AstUtils.Constant(j)
                                     )
                                 )
@@ -209,7 +209,7 @@ namespace Microsoft.Scripting.Actions {
                             de.Value,
                             Ast.Call(
                                 AstUtils.Convert(dictMo.Expression, typeof(IDictionary)),
-                                typeof(IDictionary).GetTypeInfo().GetDeclaredMethod("get_Item"),
+                                typeof(IDictionary).GetMethod("get_Item"),
                                 AstUtils.Constant(s)
                             )
                         )

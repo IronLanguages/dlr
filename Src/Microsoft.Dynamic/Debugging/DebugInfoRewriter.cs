@@ -17,8 +17,7 @@ using AstUtils = Microsoft.Scripting.Ast.Utils;
 namespace Microsoft.Scripting.Debugging {
     using Ast = MSAst.Expression;
     using System.Threading;
-    using System.Reflection;
-
+    
     /// <summary>
     /// Used to rewrite expressions containing DebugInfoExpressions.
     /// </summary>
@@ -361,7 +360,7 @@ namespace Microsoft.Scripting.Debugging {
                         tracebackCall = Ast.Empty();
                     } else {
                         tracebackCall = Ast.Call(
-                            typeof(RuntimeOps).GetTypeInfo().GetDeclaredMethod("OnTraceEvent"),
+                            typeof(RuntimeOps).GetMethod("OnTraceEvent"),
                             _thread,
                             AstUtils.Constant(locationCookie),
                             Ast.Convert(Ast.Constant(null), typeof(Exception))

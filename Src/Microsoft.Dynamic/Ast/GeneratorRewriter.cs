@@ -101,7 +101,7 @@ namespace Microsoft.Scripting.Ast {
             allVars.AddRange(_temps);
 
             // Collect temps that don't have to be closed over
-            var innerTemps = new List<ParameterExpression>(1 + (_labelTemps?.Count ?? 0));
+            var innerTemps = new ReadOnlyCollectionBuilder<ParameterExpression>(1 + (_labelTemps?.Count ?? 0));
             innerTemps.Add(_gotoRouter);
             if (_labelTemps != null) {
                 foreach (LabelInfo info in _labelTemps.Values) {
@@ -245,7 +245,7 @@ namespace Microsoft.Scripting.Ast {
 
         private Expression MakeAssignBlock(ParameterExpression variable, Expression value) {
             var node = (BlockExpression)value;
-            var newBlock = new List<Expression>(node.Expressions);
+            var newBlock = new ReadOnlyCollectionBuilder<Expression>(node.Expressions);
 
             Expression blockRhs = newBlock[newBlock.Count - 1];
             if (blockRhs.NodeType == ExpressionType.Label) {
@@ -548,7 +548,7 @@ namespace Microsoft.Scripting.Ast {
 
             var value = Visit(node.Value);
 
-            var block = new List<Expression>();
+            var block = new ReadOnlyCollectionBuilder<Expression>();
             if (value == null) {
                 // Yield break
                 block.Add(Expression.Assign(_state, AstUtils.Constant(Finished)));
@@ -663,7 +663,7 @@ namespace Microsoft.Scripting.Ast {
             return e is ConstantExpression;
         }
 
-        private Expression ToTemp(List<Expression> block, Expression e) {
+        private Expression ToTemp(ReadOnlyCollectionBuilder<Expression> block, Expression e) {
             Debug.Assert(e != null);
             if (IsConstant(e)) {
                 return e;
@@ -675,12 +675,12 @@ namespace Microsoft.Scripting.Ast {
             return temp;
         }
 
-        private ReadOnlyCollection<Expression> ToTemp(List<Expression> block, ICollection<Expression> args) {
-            var spilledArgs = new List<Expression>(args.Count);
+        private ReadOnlyCollection<Expression> ToTemp(ReadOnlyCollectionBuilder<Expression> block, ICollection<Expression> args) {
+            var spilledArgs = new ReadOnlyCollectionBuilder<Expression>(args.Count);
             foreach (var arg in args) {
                 spilledArgs.Add(ToTemp(block, arg));
             }
-            return spilledArgs.AsReadOnly();
+            return spilledArgs.ToReadOnlyCollection();
         }
 
         private Expression Rewrite(Expression node, ReadOnlyCollection<Expression> arguments, 
@@ -705,7 +705,7 @@ namespace Microsoft.Scripting.Ast {
                 return factory(newExpr, newArgs);
             }
 
-            var block = new List<Expression>(newArgs.Count + 1);
+            var block = new ReadOnlyCollectionBuilder<Expression>(newArgs.Count + 1);
 
             if (newExpr != null) {
                 newExpr = ToTemp(block, newExpr);
@@ -729,7 +729,7 @@ namespace Microsoft.Scripting.Ast {
                 return factory(newExpr);
             }
 
-            var block = new List<Expression>(2);
+            var block = new ReadOnlyCollectionBuilder<Expression>(2);
             newExpr = ToTemp(block, newExpr);
             block.Add(factory(newExpr));
             return Expression.Block(block);
@@ -749,7 +749,7 @@ namespace Microsoft.Scripting.Ast {
                 return factory(newExpr1, newExpr2);
             }
 
-            var block = new List<Expression>(3);
+            var block = new ReadOnlyCollectionBuilder<Expression>(3);
 
             // f({yield}, {expr}) -> { t = {yield}; f(t, {expr}) }
             // f({const}, yield) -> { t = {yield}; f({const}, t) }
@@ -776,7 +776,7 @@ namespace Microsoft.Scripting.Ast {
                 return Expression.Assign(left, right);
             }
 
-            var block = new List<Expression>();
+            var block = new ReadOnlyCollectionBuilder<Expression>();
 
             if (_generator.RewriteAssignments) {
                 // We need to make sure that LHS is evaluated before RHS. For example,

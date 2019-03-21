@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.Actions {
                 errorSuggestion ??
                 MakeErrorTarget(toType, kind, typeRestrictions, arg);
 
-            if ((kind == ConversionResultKind.ExplicitTry || kind == ConversionResultKind.ImplicitTry) && toType.GetTypeInfo().IsValueType) {
+            if ((kind == ConversionResultKind.ExplicitTry || kind == ConversionResultKind.ImplicitTry) && toType.IsValueType()) {
                 res = new DynamicMetaObject(
                     AstUtils.Convert(
                         res.Expression,
@@ -60,7 +60,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject TryConvertToObject(Type toType, Type knownType, DynamicMetaObject arg, BindingRestrictions restrictions) {
             if (toType == typeof(object)) {
-                if (knownType.GetTypeInfo().IsValueType) {
+                if (knownType.IsValueType()) {
                     return MakeBoxingTarget(arg, restrictions);
                 }
 
@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject TryAssignableConversion(Type toType, Type type, BindingRestrictions restrictions, DynamicMetaObject arg) {
             if (toType.IsAssignableFrom(type) ||
-                (type == typeof(DynamicNull) && (toType.GetTypeInfo().IsClass || toType.GetTypeInfo().IsInterface))) {
+                (type == typeof(DynamicNull) && (toType.IsClass() || toType.IsInterface()))) {
                 // MakeSimpleConversionTarget handles the ConversionResultKind check
                 return MakeSimpleConversionTarget(toType, restrictions, arg);
             }
@@ -180,7 +180,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject TryImplicitNumericConversion(Type toType, Type type, BindingRestrictions restrictions, DynamicMetaObject arg) {
             Type checkType = type;
-            if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Extensible<>)) {
+            if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Extensible<>)) {
                 checkType = type.GetGenericArguments()[0];
             }
 
@@ -205,7 +205,7 @@ namespace Microsoft.Scripting.Actions {
         /// Checks if there's a conversion to/from Nullable of T.
         /// </summary>
         private DynamicMetaObject TryNullableConversion(OverloadResolverFactory factory, Type toType, ConversionResultKind kind, Type knownType, BindingRestrictions restrictions, DynamicMetaObject arg) {
-            if (toType.GetTypeInfo().IsGenericType && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+            if (toType.IsGenericType() && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
                 if (knownType == typeof(DynamicNull)) {
                     // null -> Nullable<T>
                     return MakeNullToNullableOfTTarget(toType, restrictions);
@@ -230,7 +230,7 @@ namespace Microsoft.Scripting.Actions {
         /// Checks to see if there's a conversion of null to a reference type
         /// </summary>
         private static DynamicMetaObject TryNullConversion(Type toType, Type knownType, BindingRestrictions restrictions) {
-            if (knownType == typeof(DynamicNull) && !toType.GetTypeInfo().IsValueType) {
+            if (knownType == typeof(DynamicNull) && !toType.IsValueType()) {
                 return MakeNullTarget(toType, restrictions);
             }
             return null;
@@ -460,7 +460,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         public static Expression GetTryConvertReturnValue(Type type) {
             Expression res;
-            if (type.GetTypeInfo().IsInterface || type.GetTypeInfo().IsClass) {
+            if (type.IsInterface() || type.IsClass()) {
                 res = AstUtils.Constant(null, type);
             } else {
                 res = AstUtils.Constant(null);
@@ -492,10 +492,10 @@ namespace Microsoft.Scripting.Actions {
         private static Type GetUnderlyingType(Type fromType) {
             Type curType = fromType;
             do {
-                if (curType.GetTypeInfo().IsGenericType && curType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
+                if (curType.IsGenericType() && curType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
                     fromType = curType.GetGenericArguments()[0];
                 }
-                curType = curType.GetTypeInfo().BaseType;
+                curType = curType.GetBaseType();
             } while (curType != null);
             return fromType;
         }

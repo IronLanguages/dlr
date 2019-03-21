@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.Actions {
         public DynamicMetaObject GetDocumentation(DynamicMetaObject target) {
             BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
 
-            DocumentationAttribute attr = target.LimitType.GetTypeInfo().GetCustomAttribute<DocumentationAttribute>();
+            DocumentationAttribute attr = target.LimitType.GetCustomAttribute<DocumentationAttribute>();
             string documentation = (attr != null) ? attr.Documentation : string.Empty;
 
             return new DynamicMetaObject(
@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Actions {
             BindingRestrictions restrictions = BindingRestrictionsHelpers.GetRuntimeTypeRestriction(args[0].Expression, args[0].GetLimitType()).Merge(BindingRestrictions.Combine(args));
 
             if (args[0].GetLimitType() == typeof(DynamicNull)) {
-                if (!otherType.GetTypeInfo().IsValueType) {
+                if (!otherType.IsValueType()) {
                     return new DynamicMetaObject(
                         Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Actions {
                     );
                 }
             } else if (otherType == typeof(DynamicNull)) {
-                if (!args[0].GetLimitType().GetTypeInfo().IsValueType) {
+                if (!args[0].GetLimitType().IsValueType()) {
                     return new DynamicMetaObject(
                         Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions

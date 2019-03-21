@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.Actions {
                     return mi;
                 }
 
-                curType = curType.GetTypeInfo().BaseType;
+                curType = curType.GetBaseType();
             } while (curType != null);
 
             return null;

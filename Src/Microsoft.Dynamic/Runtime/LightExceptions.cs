@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic;
@@ -204,7 +203,7 @@ namespace Microsoft.Scripting.Runtime {
         }
         
         private static ReadOnlyCollection<Expression> ToReadOnly(Expression[] args) {
-            return new List<Expression>(args).AsReadOnly();
+            return new ReadOnlyCollectionBuilder<Expression>(args).ToReadOnlyCollection();
         }
     }
 }

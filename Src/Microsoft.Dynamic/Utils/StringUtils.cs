@@ -136,11 +136,7 @@ namespace Microsoft.Scripting.Utils {
 
         // Aims to be equivalent to Culture.GetCultureInfo for Silverlight
         public static CultureInfo GetCultureInfo(string name) {
-#if WINDOWS_UWP
-            return null;
-#else
             return CultureInfo.GetCultureInfo(name);
-#endif
         }
 
         // Like string.Split, but enumerates

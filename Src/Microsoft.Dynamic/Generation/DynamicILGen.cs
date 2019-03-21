@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public override T CreateDelegate<T>(out MethodInfo mi) {
-            ContractUtils.Requires(typeof(T).GetTypeInfo().IsSubclassOf(typeof(Delegate)), "T");
+            ContractUtils.Requires(typeof(T).IsSubclassOf(typeof(Delegate)), "T");
             mi = _dm;
             return (T)(object)_dm.CreateDelegate(typeof(T), null);
         }

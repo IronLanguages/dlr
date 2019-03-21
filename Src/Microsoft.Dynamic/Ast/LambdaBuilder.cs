@@ -261,7 +261,7 @@ namespace Microsoft.Scripting.Ast {
                 lambdaType,
                 AddDefaultReturn(MakeBody()),
                 _name + "$" + Interlocked.Increment(ref _lambdaId),
-                new List<ParameterExpression>(_params)
+                new ReadOnlyCollectionBuilder<ParameterExpression>(_params)
             );
 
             // The builder is now completed

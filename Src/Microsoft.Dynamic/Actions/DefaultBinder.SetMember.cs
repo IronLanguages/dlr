@@ -267,7 +267,7 @@ namespace Microsoft.Scripting.Actions {
                     memInfo.Body.FinishCondition(
                         MakeGenericPropertyExpression(memInfo)
                     );
-                } else if (setter.IsPublic && !setter.DeclaringType.GetTypeInfo().IsValueType) {
+                } else if (setter.IsPublic && !setter.DeclaringType.IsValueType()) {
                     if (instance == null) {
                         memInfo.Body.FinishCondition(
                             Expression.Block(
@@ -327,7 +327,7 @@ namespace Microsoft.Scripting.Actions {
             FieldTracker field = (FieldTracker)fields[0];
 
             // TODO: Tmp variable for target
-            if (instance != null && field.DeclaringType.GetTypeInfo().IsGenericType && field.DeclaringType.GetGenericTypeDefinition() == typeof(StrongBox<>)) {
+            if (instance != null && field.DeclaringType.IsGenericType() && field.DeclaringType.GetGenericTypeDefinition() == typeof(StrongBox<>)) {
                 // work around a CLR bug where we can't access generic fields from dynamic methods.
                 Type[] generic = field.DeclaringType.GetGenericArguments();
                 memInfo.Body.FinishCondition(
@@ -356,14 +356,14 @@ namespace Microsoft.Scripting.Actions {
                         typeof(object)
                     )
                 );
-            } else if (field.DeclaringType.GetTypeInfo().IsValueType && !field.IsStatic) {
+            } else if (field.DeclaringType.IsValueType() && !field.IsStatic) {
                 memInfo.Body.FinishError(
                     errorSuggestion ?? MakeError(
                         MakeSetValueTypeFieldError(field, instance, target),
                         typeof(object)
                     )
                 );
-            } else if (field.IsPublic && field.DeclaringType.GetTypeInfo().IsVisible) {
+            } else if (field.IsPublic && field.DeclaringType.IsVisible()) {
                 if (!field.IsStatic && instance == null) {
                     memInfo.Body.FinishError(
                         Expression.Throw(

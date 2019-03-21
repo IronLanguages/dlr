@@ -218,7 +218,7 @@ namespace Microsoft.Scripting.Runtime {
         /// depending on what the langauge prefers.
         /// </summary>
         public object ConvertTo(object obj, Type type) {
-            if (type.GetTypeInfo().IsInterface || type.GetTypeInfo().IsClass) {
+            if (type.IsInterface || type.IsClass) {
                 CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, null));
                 return site.Target(site, obj);
             }
