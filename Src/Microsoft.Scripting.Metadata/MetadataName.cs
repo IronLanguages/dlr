@@ -112,11 +112,7 @@ namespace Microsoft.Scripting.Metadata {
             }
 
             // TODO: use FastAllocateString (if we know character length we can optimize):
-#if NET45
             string result = new string((sbyte*)m_data, 0, byteCount, Encoding.UTF8);
-#else
-            string result = Encoding.UTF8.GetString(m_data, byteCount);
-#endif
             GC.KeepAlive(m_keepAlive);
             return result;
         }

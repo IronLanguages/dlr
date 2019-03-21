@@ -39,26 +39,24 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (type.IsByRef) type = type.GetElementType();
-            if (type.GetTypeInfo().IsEnum) return Activator.CreateInstance(type);
+            if (type.IsEnum()) return Activator.CreateInstance(type);
 
             switch (type.GetTypeCode()) {
                 default:
                 case TypeCode.Object:
                     // struct
-                    if (type.GetTypeInfo().IsSealed && type.GetTypeInfo().IsValueType) {
+                    if (type.IsSealed() && type.IsValueType()) {
                         return Activator.CreateInstance(type);
                     } else if (type == typeof(object)) {
                         // parameter of type object receives the actual Missing value
                         return Missing.Value;
-                    } else if (!type.GetTypeInfo().IsValueType) {
+                    } else if (!type.IsValueType()) {
                         return null;
                     } else {
                         throw Error.CantCreateDefaultTypeFor(type);
                     }
                 case TypeCode.Empty:
-#if !WINDOWS_UWP
                 case TypeCode.DBNull:
-#endif
                 case TypeCode.String:
                     return null;
 
@@ -162,7 +160,7 @@ namespace Microsoft.Scripting.Generation {
             if (method.ContainsGenericParameters ||
                 method.IsProtected() ||
                 method.IsPrivate ||
-                !method.DeclaringType.GetTypeInfo().IsVisible) {
+                !method.DeclaringType.IsVisible()) {
                 return false;
             }
             return true;
@@ -176,14 +174,14 @@ namespace Microsoft.Scripting.Generation {
         /// Returns the original method if the method if a public version cannot be found.
         /// </summary>
         public static MethodInfo TryGetCallableMethod(Type targetType, MethodInfo method) {
-            if (method.DeclaringType == null || method.DeclaringType.GetTypeInfo().IsVisible) {
+            if (method.DeclaringType == null || method.DeclaringType.IsVisible()) {
                 return method;
             }
 
             // first try and get it from the base type we're overriding...
             MethodInfo baseMethod = method.GetRuntimeBaseDefinition();
 
-            if (baseMethod.DeclaringType.GetTypeInfo().IsVisible || baseMethod.DeclaringType.GetTypeInfo().IsInterface) {
+            if (baseMethod.DeclaringType.IsVisible() || baseMethod.DeclaringType.IsInterface()) {
                 // We need to instantiate the method as GetBaseDefinition might return a generic definition of the base method:
                 if (baseMethod.IsGenericMethodDefinition) {
                     baseMethod = baseMethod.MakeGenericMethod(method.GetGenericArguments());
@@ -193,20 +191,14 @@ namespace Microsoft.Scripting.Generation {
 
             // maybe we can get it from an interface on the type this
             // method came from...
-            foreach (Type iface in targetType.GetInterfaces()) {
-                if (iface.GetTypeInfo().IsPublic) {
-                    InterfaceMapping mapping = targetType.GetTypeInfo().GetRuntimeInterfaceMap(iface);
+            foreach (Type iface in targetType.GetImplementedInterfaces()) {
+                if (iface.IsPublic()) {
+                    InterfaceMapping mapping = targetType.GetInterfaceMap(iface);
                     for (int i = 0; i < mapping.TargetMethods.Length; i++) {
                         MethodInfo targetMethod = mapping.TargetMethods[i];
-#if WINDOWS_UWP
-                        if (targetMethod != null && targetMethod.Name == method.Name && targetMethod.GetParameters().SequenceEqual(method.GetParameters()) && targetMethod.ReturnType == method.ReturnType) {
-                            return mapping.InterfaceMethods[i];
-                        }
-#else
                         if (targetMethod != null && targetMethod.MethodHandle == method.MethodHandle) {
                             return mapping.InterfaceMethods[i];
                         }
-#endif
                     }
                 }
             }
@@ -221,7 +213,7 @@ namespace Microsoft.Scripting.Generation {
         /// If no correct visible type can be found then the member is not visible and we won't call it.
         /// </summary>
         public static IEnumerable<MemberInfo> FilterNonVisibleMembers(Type targetType, IEnumerable<MemberInfo> members) {
-            if (targetType.GetTypeInfo().IsVisible) {
+            if (targetType.IsVisible()) {
                 return members;
             }
 
@@ -281,9 +273,7 @@ namespace Microsoft.Scripting.Generation {
                 // both null
                 return true;
             }
-#if WINDOWS_UWP
-            return self == other;
-#else
+
             if (self.MemberType != other.MemberType) {
                 return false;
             }
@@ -305,15 +295,14 @@ namespace Microsoft.Scripting.Generation {
                         ((MemberInfo)self).Module == ((MemberInfo)other).Module &&
                         ((MemberInfo)self).MetadataToken == ((MemberInfo)other).MetadataToken;
             }
-#endif
         }
 
         public static bool IsVisible(MethodBase info) {
-            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.GetTypeInfo().IsVisible);
+            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.IsVisible());
         }
 
         public static bool IsVisible(FieldInfo info) {
-            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.GetTypeInfo().IsVisible);
+            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.IsVisible());
         }
 
         public static bool IsProtected(this MethodBase info) {
@@ -325,7 +314,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static bool IsProtected(this Type type) {
-            return type.GetTypeInfo().IsNestedFamily || type.GetTypeInfo().IsNestedFamORAssem;
+            return type.IsNestedFamily || type.IsNestedFamORAssem;
         }
 
         public static Type GetVisibleType(object value) {
@@ -333,8 +322,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static Type GetVisibleType(Type t) {
-            while (!t.GetTypeInfo().IsVisible) {
-                t = t.GetTypeInfo().BaseType;
+            while (!t.IsVisible()) {
+                t = t.GetBaseType();
             }
             return t;
         }
@@ -362,7 +351,7 @@ namespace Microsoft.Scripting.Generation {
                 ctors = FilterConstructorsToPublicAndProtected(ctors);
             }
 
-            if (t.GetTypeInfo().IsValueType) {
+            if (t.IsValueType()) {
                 try {
                     // certain types (e.g. ArgIterator) will fail with BadImageFormatException
                     MethodBase structDefaultCtor = GetStructDefaultCtor(t);
@@ -386,14 +375,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private static MethodBase GetStructDefaultCtor(Type t) {
-            return typeof(ScriptingRuntimeHelpers).GetTypeInfo().GetDeclaredMethod("CreateInstance").MakeGenericMethod(t);
+            return typeof(ScriptingRuntimeHelpers).GetDeclaredMethods("CreateInstance").Single().MakeGenericMethod(t);
         }
 
         private static MethodBase GetArrayCtor(Type t) {
-            return typeof(ScriptingRuntimeHelpers).GetTypeInfo().GetDeclaredMethod("CreateArray").MakeGenericMethod(t.GetElementType());
+            return typeof(ScriptingRuntimeHelpers).GetDeclaredMethods("CreateArray").Single().MakeGenericMethod(t.GetElementType());
         }
 
-#region Type Conversions
+        #region Type Conversions
 
         public static MethodInfo GetImplicitConverter(Type fromType, Type toType) {
             return GetConverter(fromType, fromType, toType, "op_Implicit") ?? GetConverter(toType, fromType, toType, "op_Implicit");
@@ -405,7 +394,7 @@ namespace Microsoft.Scripting.Generation {
 
         private static MethodInfo GetConverter(Type type, Type fromType, Type toType, string opMethodName) {
             foreach (MethodInfo mi in type.GetInheritedMembers(opMethodName).WithBindingFlags(BindingFlags.Public | BindingFlags.Static)) {
-                if ((mi.DeclaringType == null || mi.DeclaringType.GetTypeInfo().IsVisible) && mi.IsPublic &&
+                if ((mi.DeclaringType == null || mi.DeclaringType.IsVisible()) && mi.IsPublic &&
                     mi.ReturnType == toType && mi.GetParameters()[0].ParameterType.IsAssignableFrom(fromType)) {
                     return mi;
                 }
@@ -423,7 +412,7 @@ namespace Microsoft.Scripting.Generation {
                 if (CompilerHelpers.TryImplicitConvert(value, to, curType.GetInheritedMethods("op_Implicit").WithBindingFlags(BindingFlags.Public | BindingFlags.Static), out result)) {
                     return true;
                 }
-                curType = curType.GetTypeInfo().BaseType;
+                curType = curType.GetBaseType();
             } while (curType != null);
 
             return false;
@@ -431,7 +420,7 @@ namespace Microsoft.Scripting.Generation {
 
         private static bool TryImplicitConvert(Object value, Type to, IEnumerable<MethodInfo> implicitConv, out object result) {
             foreach (MethodInfo mi in implicitConv) {
-                if (to.GetTypeInfo().IsValueType == mi.ReturnType.GetTypeInfo().IsValueType && to.IsAssignableFrom(mi.ReturnType)) {
+                if (to.IsValueType() == mi.ReturnType.IsValueType() && to.IsAssignableFrom(mi.ReturnType)) {
                     if (mi.IsStatic) {
                         result = mi.Invoke(null, new object[] { value });
                     } else {
@@ -452,7 +441,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static bool IsStrongBox(Type t) {
-            return t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == typeof(StrongBox<>);
+            return t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(StrongBox<>);
         }
 
         /// <summary>
@@ -461,7 +450,7 @@ namespace Microsoft.Scripting.Generation {
         /// </summary>
         public static Expression GetTryConvertReturnValue(Type type) {
             Expression res;
-            var info = type.GetTypeInfo();
+            var info = type;
             if (info.IsInterface || info.IsClass || (info.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))) {
                 res = AstUtils.Constant(null, type);
             } else {
@@ -524,7 +513,7 @@ namespace Microsoft.Scripting.Generation {
         }
 #endif
 
-#endregion
+        #endregion
 
         public static MethodBase[] GetMethodTargets(object obj) {
             Type t = CompilerHelpers.GetType(obj);
@@ -856,7 +845,7 @@ namespace Microsoft.Scripting.Generation {
             );
         }
 
-#region Factories
+        #region Factories
 
         [Obsolete("Use CreateBigInteger instead.")]
         public static BigInteger CreateBigInt(int value) => CreateBigInteger(value);
@@ -876,6 +865,6 @@ namespace Microsoft.Scripting.Generation {
             return isNegative ? -res : res;
         }
 
-#endregion
+        #endregion
     }
 }

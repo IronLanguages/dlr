@@ -7,20 +7,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using Microsoft.Win32.SafeHandles;
-#if !WINDOWS_UWP
-using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace Microsoft.Scripting.Metadata {
     [SecurityCritical]
-#if WINDOWS_UWP
-    public unsafe sealed class MemoryMapping {
-#else
     public unsafe sealed class MemoryMapping : CriticalFinalizerObject {
-#endif
         [SecurityCritical]
         internal byte* _pointer;
         
@@ -76,9 +70,7 @@ namespace Microsoft.Scripting.Metadata {
                 mapping = new MemoryMapping();
 
                 // we need to make sure that the handle and the acquired pointer get stored to MemoryMapping:
-#if !WINDOWS_UWP
                 RuntimeHelpers.PrepareConstrainedRegions();
-#endif
                 try { } finally {
                     handle = accessor.SafeMemoryMappedViewHandle;
                     handle.AcquirePointer(ref ptr);

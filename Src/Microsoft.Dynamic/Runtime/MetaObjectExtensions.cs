@@ -10,7 +10,6 @@ using System.Dynamic;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
-using System.Reflection;
 
 namespace Microsoft.Scripting.Runtime {
     public static class MetaObjectExtensions {
@@ -19,7 +18,7 @@ namespace Microsoft.Scripting.Runtime {
                 return false;
             }
 
-            if (self.Expression.Type.GetTypeInfo().IsSealed) {
+            if (self.Expression.Type.IsSealed()) {
                 return typeof(IDynamicMetaObjectProvider).IsAssignableFrom(self.Expression.Type);
             }
 
@@ -35,7 +34,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             if (type == self.Expression.Type) {
-                if (type.GetTypeInfo().IsSealed ||
+                if (type.IsSealed() ||
                     self.Expression.NodeType == ExpressionType.New ||
                     self.Expression.NodeType == ExpressionType.NewArrayBounds ||
                     self.Expression.NodeType == ExpressionType.NewArrayInit) {
@@ -54,7 +53,7 @@ namespace Microsoft.Scripting.Runtime {
             // if we're converting to a value type just unbox to preserve
             // object identity.  If we're converting from Enum then we're
             // going to a specific enum value and an unbox is not allowed.
-            if (type.GetTypeInfo().IsValueType && self.Expression.Type != typeof(Enum)) {
+            if (type.IsValueType() && self.Expression.Type != typeof(Enum)) {
                 converted = Expression.Unbox(
                     self.Expression,
                     CompilerHelpers.GetVisibleType(type)

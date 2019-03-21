@@ -4,7 +4,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public static Instruction Create(Type type) {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
+            Debug.Assert(!type.IsEnum());
             switch (type.GetTypeCode()) {
                 case TypeCode.SByte: return _SByte ?? (_SByte = new LessThanSByte());
                 case TypeCode.Byte: return _Byte ?? (_Byte = new LessThanByte());

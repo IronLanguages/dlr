@@ -6,7 +6,7 @@
 using Microsoft.Scripting.Metadata;
 #endif
 
-//using TypeInfo = System.Type;
+using TypeInfo = System.Type;
 
 using System;
 using System.Collections.Generic;
@@ -261,12 +261,12 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetTypeInfo().BaseType;
+                type = type.GetBaseType();
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
             foreach (var ancestor in type.Ancestors()) {
-                foreach (var declaredMethod in ancestor.GetTypeInfo().GetDeclaredMethods(name)) {
+                foreach (var declaredMethod in ancestor.GetDeclaredMethods(name)) {
                     if (declaredMethod != null && IncludeMethod(declaredMethod, type, baseDefinitions, flattenHierarchy)) {
                         yield return declaredMethod;
                     }
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<PropertyInfo> GetInheritedProperties(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetTypeInfo().BaseType;
+                type = type.GetBaseType();
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -346,7 +346,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<EventInfo> GetInheritedEvents(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetTypeInfo().BaseType;
+                type = type.GetBaseType();
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<FieldInfo> GetInheritedFields(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetTypeInfo().BaseType;
+                type = type.GetBaseType();
             }
 
             foreach (var ancestor in type.Ancestors()) {
@@ -452,6 +452,14 @@ namespace Microsoft.Scripting.Utils {
             return type.GetConstructors(BindingFlags.DeclaredOnly | AllMembers);
         }
 
+        public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name = null) {
+            if (name == null) {
+                return type.GetMethods(BindingFlags.DeclaredOnly | AllMembers);
+            }
+
+            return type.GetMember(name, MemberTypes.Method, BindingFlags.DeclaredOnly | AllMembers).OfType<MethodInfo>();
+        }
+
         public static IEnumerable<PropertyInfo> GetDeclaredProperties(this Type type) {
             return type.GetProperties(BindingFlags.DeclaredOnly | AllMembers);
         }
@@ -480,12 +488,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IEnumerable<TypeInfo> GetDeclaredNestedTypes(this Type type) {
-            return type.GetNestedTypes(BindingFlags.DeclaredOnly | AllMembers).Select(x => x.GetTypeInfo());
+            return type.GetNestedTypes(BindingFlags.DeclaredOnly | AllMembers);
         }
 
         public static TypeInfo GetDeclaredNestedType(this Type type, string name) {
             Debug.Assert(name != null);
-            return type.GetNestedType(name, BindingFlags.DeclaredOnly | AllMembers).GetTypeInfo();
+            return type.GetNestedType(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
         public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string name = null) {
@@ -499,74 +507,95 @@ namespace Microsoft.Scripting.Utils {
         #endregion
 
         public static Type[] GetGenericTypeArguments(this Type type) {
-            return type.GetTypeInfo().IsGenericType && !type.GetTypeInfo().IsGenericTypeDefinition ? type.GetGenericArguments() : null;
+            return type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
         public static Type[] GetGenericTypeParameters(this Type type) {
-            return type.GetTypeInfo().IsGenericTypeDefinition ? type.GetGenericArguments() : null;
+            return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
-        public static TypeCode GetTypeCode(this Enum value) {
-            return Enum.GetUnderlyingType(value.GetType()).GetTypeCode();
+        public static IEnumerable<Module> GetModules(this Assembly assembly) {
+            return assembly.GetModules();
         }
-        
+
+        public static IEnumerable<Type> GetImplementedInterfaces(this Type type) {
+            return type.GetInterfaces();
+        }
+
         public static TypeCode GetTypeCode(this Type type) {
-#if WINDOWS_UWP
-            if (type == typeof(bool)) {
-                return TypeCode.Boolean;
-            } else if (type == typeof(byte)) {
-                return TypeCode.Byte;
-            } else if (type == typeof(char)) {
-                return TypeCode.Char;
-            } else if (type == typeof(DateTime)) {
-                return TypeCode.DateTime;
-            } else if (type == typeof(decimal)) {
-                return TypeCode.Decimal;
-            } else if (type == typeof(double)) {
-                return TypeCode.Double;
-            } else if (type == typeof(void)) {
-                return TypeCode.Empty;
-            } else if (type == typeof(short)) {
-                return TypeCode.Int16;
-            } else if (type == typeof(int)) {
-                return TypeCode.Int32;
-            } else if (type == typeof(long)) {
-                return TypeCode.Int64;
-            } else if (type == typeof(sbyte)) {
-                return TypeCode.SByte;
-            } else if (type == typeof(float)) {
-                return TypeCode.Single;
-            } else if (type == typeof(string)) {
-                return TypeCode.String;
-            } else if (type == typeof(ushort)) {
-                return TypeCode.UInt16;
-            } else if (type == typeof(uint)) {
-                return TypeCode.UInt32;
-            } else if (type == typeof(ulong)) {
-                return TypeCode.UInt64;
-            } else {
-                return TypeCode.Object;
-            }
-#else
             return Type.GetTypeCode(type);
-#endif
         }
 
         public static MethodInfo GetMethod(this Delegate d) {
             return d.GetMethodInfo();
         }
-        
+
         public static bool IsDefined(this Assembly assembly, Type attributeType) {
-#if WINDOWS_UWP
-            return assembly.GetCustomAttributes().Any(x => x.GetType() == attributeType);
-#else
             return assembly.IsDefined(attributeType, false);
-#endif
         }
 
         public static T GetCustomAttribute<T>(this Assembly assembly, bool inherit = false) where T : Attribute {
-            //return (T)Attribute.GetCustomAttribute(assembly, typeof(T), inherit);
-            return assembly.GetCustomAttributes<T>().First();
+            return (T)Attribute.GetCustomAttribute(assembly, typeof(T), inherit);
+        }
+
+        public static T GetCustomAttribute<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
+            return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
+        }
+
+        public static bool ContainsGenericParameters(this Type type) {
+            return type.ContainsGenericParameters;
+        }
+
+        public static bool IsInterface(this Type type) {
+            return type.IsInterface;
+        }
+
+        public static bool IsClass(this Type type) {
+            return type.IsClass;
+        }
+
+        public static bool IsGenericType(this Type type) {
+            return type.IsGenericType;
+        }
+
+        public static bool IsGenericTypeDefinition(this Type type) {
+            return type.IsGenericTypeDefinition;
+        }
+
+        public static bool IsSealed(this Type type) {
+            return type.IsSealed;
+        }
+
+        public static bool IsAbstract(this Type type) {
+            return type.IsAbstract;
+        }
+
+        public static bool IsPublic(this Type type) {
+            return type.IsPublic;
+        }
+
+        public static bool IsVisible(this Type type) {
+            return type.IsVisible;
+        }
+
+        public static Type GetBaseType(this Type type) {
+            return type.BaseType;
+        }
+
+        public static bool IsValueType(this Type type) {
+            return type.IsValueType;
+        }
+
+        public static bool IsEnum(this Type type) {
+            return type.IsEnum;
+        }
+
+        public static bool IsPrimitive(this Type type) {
+            return type.IsPrimitive;
+        }
+
+        public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
+            return type.GenericParameterAttributes;
         }
 
         public static Type[] EmptyTypes = new Type[0];
@@ -577,7 +606,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             object value = field.GetValue(null);
-            return field.FieldType.GetTypeInfo().IsEnum ? UnwrapEnumValue(value) : value;
+            return field.FieldType.IsEnum() ? UnwrapEnumValue(value) : value;
         }
 
         /// <summary>
@@ -636,7 +665,7 @@ namespace Microsoft.Scripting.Utils {
 #endif
 #endif
 
-#region Signature and Type Formatting
+        #region Signature and Type Formatting
 
         // Generic type names have the arity (number of generic type paramters) appended at the end. 
         // For eg. the mangled name of System.List<T> is "List`1". This mangling is done to enable multiple 
@@ -658,7 +687,7 @@ namespace Microsoft.Scripting.Utils {
                 result.Append(' ');
             }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1 && !NETSTANDARD2_0 && !WINDOWS_UWP
+#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1 && !NETSTANDARD2_0
             MethodBuilder builder = method as MethodBuilder;
             if (builder != null) {
                 result.Append(builder.Signature);
@@ -707,14 +736,14 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(result, nameof(result));
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
-            if (type.GetTypeInfo().IsGenericType) {
+            if (type.IsGenericType()) {
                 Type genType = type.GetGenericTypeDefinition();
                 string genericName = nameDispenser(genType).Replace('+', '.');
                 int tickIndex = genericName.IndexOf('`');
                 result.Append(tickIndex != -1 ? genericName.Substring(0, tickIndex) : genericName);
 
                 Type[] typeArgs = type.GetGenericArguments();
-                if (type.GetTypeInfo().IsGenericTypeDefinition) {
+                if (type.IsGenericTypeDefinition()) {
                     result.Append('<');
                     result.Append(',', typeArgs.Length - 1);
                     result.Append('>');
@@ -768,7 +797,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static string GetNormalizedTypeName(Type type) {
             string name = type.Name;
-            if (type.GetTypeInfo().IsGenericType) {
+            if (type.IsGenericType()) {
                 return GetNormalizedTypeName(name);
             }
             return name;
@@ -781,9 +810,9 @@ namespace Microsoft.Scripting.Utils {
             return typeName;
         }
 
-#endregion
+        #endregion
 
-#region Delegates and Dynamic Methods
+        #region Delegates and Dynamic Methods
 
         /// <summary>
         /// Creates an open delegate for the given (dynamic)method.
@@ -801,7 +830,7 @@ namespace Microsoft.Scripting.Utils {
                 return dm.CreateDelegate(delegateType, target);
             }
 #endif
-            return methodInfo.CreateDelegate(delegateType, target);
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 
 #if FEATURE_LCG
@@ -876,9 +905,9 @@ namespace Microsoft.Scripting.Utils {
         }
 #endif
 
-#endregion
+        #endregion
 
-#region Methods and Parameters
+        #region Methods and Parameters
 
         public static MethodBase[] GetMethodInfos(MemberInfo[] members) {
             return ArrayUtils.ConvertAll<MemberInfo, MethodBase>(
@@ -973,9 +1002,9 @@ namespace Microsoft.Scripting.Utils {
             return info.DefaultValue;
         }
 
-#endregion
+        #endregion
 
-#region Types
+        #region Types
 
         /// <summary>
         /// Yields all ancestors of the given type including the type itself.
@@ -984,7 +1013,7 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<Type> Ancestors(this Type type) {
             do {
                 yield return type;
-                type = type.GetTypeInfo().BaseType;
+                type = type.BaseType;
             } while (type != null);
         }
 
@@ -993,7 +1022,7 @@ namespace Microsoft.Scripting.Utils {
         /// and not its parents.
         /// </summary>
         public static List<Type> GetDeclaredInterfaces(Type type) {
-            IEnumerable<Type> baseInterfaces = (type.GetTypeInfo().BaseType != null) ? type.GetTypeInfo().BaseType.GetInterfaces() : EmptyTypes;
+            IEnumerable<Type> baseInterfaces = (type.GetBaseType() != null) ? type.GetBaseType().GetInterfaces() : EmptyTypes;
             List<Type> interfaces = new List<Type>();
             foreach (Type iface in type.GetInterfaces()) {
                 if (!baseInterfaces.Contains(iface)) {
@@ -1002,16 +1031,62 @@ namespace Microsoft.Scripting.Utils {
             }
             return interfaces;
         }
-#endregion
 
-#region Type Builder
+        internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly asm) {
+            // TODO: WP7, SL5
+
+            foreach (Module module in asm.GetModules()) {
+                Type[] moduleTypes;
+                try {
+                    moduleTypes = module.GetTypes();
+                } catch (ReflectionTypeLoadException e) {
+                    moduleTypes = e.Types;
+                }
+
+                foreach (var type in moduleTypes) {
+                    if (type != null) {
+                        yield return type;
+                    }
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly assembly, bool includePrivateTypes) {
+            ContractUtils.RequiresNotNull(assembly, nameof(assembly));
+
+            if (includePrivateTypes) {
+                return GetAllTypesFromAssembly(assembly);
+            }
+
+            try {
+                var exportedTypes = assembly.GetExportedTypes();
+#if NETCOREAPP2_1
+                var forwardedTypes = assembly.GetForwardedTypes();
+                return Enumerable.Concat(exportedTypes, forwardedTypes);
+#else
+                return exportedTypes;
+#endif
+            } catch (NotSupportedException) {
+                // GetExportedTypes does not work with dynamic assemblies
+            } catch (Exception) {
+                // Some type loads may cause exceptions. Unfortunately, there is no way to ask GetExportedTypes
+                // for just the list of types that we successfully loaded.
+            }
+
+            return GetAllTypesFromAssembly(assembly).Where(type => type.IsPublic);
+        }
+
+        #endregion
+
+        #region Type Builder
 #if FEATURE_REFEMIT
 
-        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.HasSecurity | MethodAttributes.RTSpecialName | MethodAttributes.RequireSecObject;
+        private const MethodAttributes MethodAttributesToEraseInOveride = MethodAttributes.Abstract | MethodAttributes.ReservedMask;
 
         public static MethodBuilder DefineMethodOverride(TypeBuilder tb, MethodAttributes extra, MethodInfo decl) {
             MethodAttributes finalAttrs = (decl.Attributes & ~MethodAttributesToEraseInOveride) | extra;
-            if (!decl.DeclaringType.GetTypeInfo().IsInterface) {
+            if (!decl.DeclaringType.IsInterface) {
                 finalAttrs &= ~MethodAttributes.NewSlot;
             }
 
@@ -1085,13 +1160,13 @@ namespace Microsoft.Scripting.Utils {
                 var builders = to.DefineGenericParameters(names);
                 for (int i = 0; i < args.Length; i++) {
                     // Copy template parameter attributes
-                    builders[i].SetGenericParameterAttributes(args[i].GetTypeInfo().GenericParameterAttributes);
+                    builders[i].SetGenericParameterAttributes(args[i].GetGenericParameterAttributes());
 
                     // Copy template parameter constraints
-                    Type[] constraints = args[i].GetTypeInfo().GetGenericParameterConstraints();
+                    Type[] constraints = args[i].GetGenericParameterConstraints();
                     List<Type> interfaces = new List<Type>(constraints.Length);
                     foreach (Type constraint in constraints) {
-                        if (constraint.GetTypeInfo().IsInterface) {
+                        if (constraint.IsInterface()) {
                             interfaces.Add(constraint);
                         } else {
                             builders[i].SetBaseTypeConstraint(constraint);
@@ -1104,12 +1179,12 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 #endif
-#endregion
+        #endregion
 
-#region Extension Methods
+        #region Extension Methods
 
         public static IEnumerable<MethodInfo> GetVisibleExtensionMethods(Assembly assembly) {
-#if FEATURE_METADATA_READER && !WINDOWS_UWP
+#if FEATURE_METADATA_READER
             if (!assembly.IsDynamic && AppDomain.CurrentDomain.IsFullyTrusted) {
                 try {
                     return GetVisibleExtensionMethodsFast(assembly);
@@ -1135,13 +1210,13 @@ namespace Microsoft.Scripting.Utils {
         public static IEnumerable<MethodInfo> GetVisibleExtensionMethodsSlow(Assembly assembly) {
             var ea = typeof(ExtensionAttribute);
             if (assembly.IsDefined(ea)) {
-                foreach (TypeInfo type in assembly.DefinedTypes) {
+                foreach (TypeInfo type in GetAllTypesFromAssembly(assembly)) {
                     if ((type.IsPublic || type.IsNestedPublic) &&
                         type.IsAbstract &&
                         type.IsSealed &&
                         type.IsDefined(ea, false)) {
 
-                        foreach (MethodInfo method in type.DeclaredMethods) {
+                        foreach (MethodInfo method in type.GetDeclaredMethods()) {
                             if (method.IsPublic && method.IsStatic && method.IsDefined(ea, false)) {
                                 yield return method;
                             }
@@ -1176,7 +1251,7 @@ namespace Microsoft.Scripting.Utils {
 
             Dictionary<string, List<ExtensionMethodInfo>> result = null;
             foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
-                if (method.DeclaringType == null || method.DeclaringType.GetTypeInfo().IsGenericTypeDefinition) {
+                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition()) {
                     continue;
                 }
 
@@ -1222,9 +1297,9 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-#endregion
+        #endregion
 
-#region Generic Types
+        #region Generic Types
 
         internal static Dictionary<Type, Type> BindGenericParameters(Type/*!*/ openType, Type/*!*/ closedType, bool ignoreUnboundParameters) {
             var binding = new Dictionary<Type, Type>();
@@ -1258,7 +1333,7 @@ namespace Microsoft.Scripting.Utils {
                 return BindGenericParameters(openType.GetElementType(), closedType.GetElementType(), binder);
             }
 
-            if (!openType.GetTypeInfo().IsGenericType || !closedType.GetTypeInfo().IsGenericType) {
+            if (!openType.IsGenericType() || !closedType.IsGenericType()) {
                 return openType == closedType;
             }
 
@@ -1289,24 +1364,24 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static bool ConstraintsViolated(Type/*!*/ genericParameter, Type/*!*/ closedType, Dictionary<Type, Type>/*!*/ binding, bool ignoreUnboundParameters) {
-            if ((genericParameter.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.GetTypeInfo().IsValueType) {
+            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType()) {
                 // value type to parameter type constrained as class
                 return true;
             }
 
-            if ((genericParameter.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
-                (!closedType.GetTypeInfo().IsValueType || (closedType.GetTypeInfo().IsGenericType && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
+            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
+                (!closedType.IsValueType() || (closedType.IsGenericType() && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
                 // nullable<T> or class/interface to parameter type constrained as struct
                 return true;
             }
 
-            if ((genericParameter.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
-                (!closedType.GetTypeInfo().IsValueType && closedType.GetConstructor(EmptyTypes) == null)) {
+            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
+                (!closedType.IsValueType() && closedType.GetConstructor(EmptyTypes) == null)) {
                 // reference type w/o a default constructor to type constrianed as new()
                 return true;
             }
 
-            Type[] constraints = genericParameter.GetTypeInfo().GetGenericParameterConstraints();
+            Type[] constraints = genericParameter.GetGenericParameterConstraints();
             for (int i = 0; i < constraints.Length; i++) {
                 Type instantiation = InstantiateConstraint(constraints[i], binding);
 
@@ -1327,8 +1402,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static Type InstantiateConstraint(Type/*!*/ constraint, Dictionary<Type, Type>/*!*/ binding) {
-            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.GetTypeInfo().IsGenericTypeDefinition);
-            if (!constraint.GetTypeInfo().ContainsGenericParameters) {
+            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition());
+            if (!constraint.ContainsGenericParameters()) {
                 return constraint;
             }
 
@@ -1347,7 +1422,7 @@ namespace Microsoft.Scripting.Utils {
             return constraint.GetGenericTypeDefinition().MakeGenericType(args);
         }
 
-#endregion
+        #endregion
     }
 
     public struct ExtensionMethodInfo : IEquatable<ExtensionMethodInfo> {
@@ -1397,7 +1472,7 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             }
 #endif
-            if (!_extendedType.GetTypeInfo().ContainsGenericParameters) {
+            if (!_extendedType.ContainsGenericParameters) {
                 return false;
             }
 

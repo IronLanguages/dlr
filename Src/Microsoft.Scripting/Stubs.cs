@@ -9,17 +9,14 @@ using System.Reflection;
 namespace System {
     using System.Diagnostics;
 
-#pragma warning disable CA1018
     [Conditional("STUB")]
-    public sealed class SerializableAttribute : Attribute {
+    public class SerializableAttribute : Attribute {
     }
 
     [Conditional("STUB")]
-    public sealed class NonSerializedAttribute : Attribute {
+    public class NonSerializedAttribute : Attribute {
     }
-#pragma warning restore CA1018
 
-#pragma warning disable CA1040
     namespace Runtime.Serialization {
         public interface ISerializable {
         }
@@ -27,7 +24,6 @@ namespace System {
         public interface IDeserializationCallback {
         }
     }
-#pragma warning restore CA1040
 
     public class SerializationException : Exception {
     }

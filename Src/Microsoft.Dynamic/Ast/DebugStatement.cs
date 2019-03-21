@@ -7,8 +7,6 @@ using System.Linq.Expressions;
 using System.Diagnostics;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
-using System.Reflection;
-using System.Linq;
 
 namespace Microsoft.Scripting.Ast {
     public partial class Utils {
@@ -39,7 +37,7 @@ namespace Microsoft.Scripting.Ast {
 #if DEBUG
         private static MethodCallExpression CallDebugWriteLine(string marker) {
             return Expression.Call(
-                typeof(Debug).GetTypeInfo().GetDeclaredMethods("WriteLine").Where(x => x.GetParameters().Select(y => y.ParameterType).SequenceEqual(new[] { typeof(string)})).Single(),
+                typeof(Debug).GetMethod("WriteLine", new[] { typeof(string) }),
                 Constant(marker)
             );
         }

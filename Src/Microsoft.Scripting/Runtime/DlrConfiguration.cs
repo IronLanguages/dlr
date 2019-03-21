@@ -45,8 +45,8 @@ namespace Microsoft.Scripting.Runtime {
                     throw new InvalidOperationException(
                         String.Format(
                             "Failed to load language '{0}': assembly '{1}' does not contain type '{2}'",
-                            DisplayName,
-#if FEATURE_ASSEMBLY_LOCATION
+                            DisplayName, 
+#if FEATURE_FILESYSTEM
                             assembly.Location,
 #else
                             assembly.FullName,
@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Runtime {
                     ));
                 }
 
-                if (!type.GetTypeInfo().IsSubclassOf(typeof(LanguageContext))) {
+                if (!type.IsSubclassOf(typeof(LanguageContext))) {
                     throw new InvalidOperationException(
                         $"Failed to load language '{DisplayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
                 }

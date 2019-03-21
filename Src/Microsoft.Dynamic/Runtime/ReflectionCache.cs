@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 using Microsoft.Scripting.Actions;
@@ -88,9 +87,6 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             private static int CompareMethods(MethodBase x, MethodBase y) {
-#if WINDOWS_UWP
-                return x.GetHashCode().CompareTo(y.GetHashCode());
-#else
                 Module xModule = x.Module;
                 Module yModule = y.Module;
 
@@ -99,7 +95,6 @@ namespace Microsoft.Scripting.Runtime {
                 }
                 
                 return xModule.ModuleVersionId.CompareTo(yModule.ModuleVersionId);
-#endif
             }
 
             public override bool Equals(object obj) {
@@ -110,9 +105,7 @@ namespace Microsoft.Scripting.Runtime {
 
                 for (int i = 0; i < _members.Length; i++) {
                     if (_members[i].DeclaringType != other._members[i].DeclaringType ||
-#if !WINDOWS_UWP
                         _members[i].MetadataToken != other._members[i].MetadataToken ||
-#endif
                         _members[i].IsGenericMethod != other._members[i].IsGenericMethod) {
                         return false;
                     }
@@ -139,12 +132,7 @@ namespace Microsoft.Scripting.Runtime {
             public override int GetHashCode() {
                 int res = 6551;
                 foreach (MethodBase mi in _members) {
-                    res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^
-#if WINDOWS_UWP
-                        mi.GetParameters().Aggregate(res, (x, y) => x.GetHashCode() ^ y.GetHashCode());
-#else
-                        mi.MetadataToken;
-#endif
+                    res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^ mi.MetadataToken;
                 }
                 res ^= _name.GetHashCode();
 

@@ -10,10 +10,9 @@ using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
-using System.Threading;
 
 namespace Microsoft.Scripting.Interpreter {
-    using InterpretedFrameThreadLocal = ThreadLocal<InterpretedFrame>;
+    using InterpretedFrameThreadLocal = Microsoft.Scripting.Utils.ThreadLocal<InterpretedFrame>;
 
     public sealed class InterpretedFrame {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
@@ -172,14 +171,14 @@ namespace Microsoft.Scripting.Interpreter {
         }
 #endif
 
-        internal InterpretedFrameThreadLocal Enter() {
-            var currentFrame = InterpretedFrame.CurrentFrame;
+        internal InterpretedFrameThreadLocal.StorageInfo Enter() {
+            var currentFrame = InterpretedFrame.CurrentFrame.GetStorageInfo();
             Parent = currentFrame.Value;
             currentFrame.Value = this;
             return currentFrame;
         }
 
-        internal void Leave(InterpretedFrameThreadLocal currentFrame) {
+        internal void Leave(InterpretedFrameThreadLocal.StorageInfo currentFrame) {
             currentFrame.Value = Parent;
         }
 

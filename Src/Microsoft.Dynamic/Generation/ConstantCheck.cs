@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 
 using System.Diagnostics;
 using Microsoft.Scripting.Utils;
-using System.Reflection;
 
 namespace Microsoft.Scripting.Generation {
 

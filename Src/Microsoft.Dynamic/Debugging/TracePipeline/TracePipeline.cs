@@ -15,7 +15,6 @@ namespace Microsoft.Scripting.Debugging {
     /// Basically holds a list of last encountered DebugFrame instances 
     /// (one per running thread).
     /// </summary>
-#pragma warning disable CA1001
     public sealed class TracePipeline : ITracePipeline, IDebugCallback {
         private readonly DebugContext _debugContext;
         private readonly ThreadLocal<DebugFrame> _traceFrame = new ThreadLocal<DebugFrame>();

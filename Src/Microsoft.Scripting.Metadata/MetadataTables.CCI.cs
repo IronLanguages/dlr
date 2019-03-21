@@ -673,13 +673,11 @@ namespace Microsoft.Scripting.Metadata {
             m_record = record;
         }
 
-#if FEATURE_CONFIGURATION
         public System.Configuration.Assemblies.AssemblyHashAlgorithm HashAlgorithm {
             get {
                 return m_record.Import.AssemblyTable.GetHashAlgorithm(m_record.Rid);
             }
         }
-#endif
 
         public Version Version {
             get {

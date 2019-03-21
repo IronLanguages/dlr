@@ -81,10 +81,7 @@ namespace Microsoft.Scripting.Interpreter {
         /// interpreted stack traces by aligning interpreted frames to the frames of this method.
         /// Each group of subsequent frames of Run method corresponds to a single interpreted frame.
         /// </remarks>
-#if !WINDOWS_UWP
-        [SpecialName]
-#endif
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [SpecialName, MethodImpl(MethodImplOptions.NoInlining)]
         public void Run(InterpretedFrame frame) {
             while (true) {
                 try {
