@@ -90,7 +90,9 @@ namespace Microsoft.Scripting.Runtime {
                 Module xModule = x.Module;
                 Module yModule = y.Module;
 
-                if (xModule == yModule) {
+                //MetadataToken causes exception on CoreRT
+                //https://github.com/dotnet/corert/blob/db9c9ced21afd0848c748960358832bc3e41ae62/src/System.Private.Reflection.Core/src/System/Reflection/Runtime/MethodInfos/NativeFormat/NativeFormatMethodCommon.cs#L184
+                if (!PlatformAdaptationLayer.IsNativeModule && xModule == yModule) {
                     return x.MetadataToken - y.MetadataToken;
                 }
                 
@@ -105,8 +107,10 @@ namespace Microsoft.Scripting.Runtime {
 
                 for (int i = 0; i < _members.Length; i++) {
                     if (_members[i].DeclaringType != other._members[i].DeclaringType ||
-                        _members[i].MetadataToken != other._members[i].MetadataToken ||
-                        _members[i].IsGenericMethod != other._members[i].IsGenericMethod) {
+                        _members[i].IsGenericMethod != other._members[i].IsGenericMethod ||
+                        //MetadataToken causes exception on CoreRT
+                        //https://github.com/dotnet/corert/blob/db9c9ced21afd0848c748960358832bc3e41ae62/src/System.Private.Reflection.Core/src/System/Reflection/Runtime/MethodInfos/NativeFormat/NativeFormatMethodCommon.cs#L184
+                        (PlatformAdaptationLayer.IsNativeModule ? false : _members[i].MetadataToken != other._members[i].MetadataToken)) {
                         return false;
                     }
 
@@ -132,7 +136,9 @@ namespace Microsoft.Scripting.Runtime {
             public override int GetHashCode() {
                 int res = 6551;
                 foreach (MethodBase mi in _members) {
-                    res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^ mi.MetadataToken;
+                    //MetadataToken causes exception on CoreRT
+                    //https://github.com/dotnet/corert/blob/db9c9ced21afd0848c748960358832bc3e41ae62/src/System.Private.Reflection.Core/src/System/Reflection/Runtime/MethodInfos/NativeFormat/NativeFormatMethodCommon.cs#L184
+                    res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^ (PlatformAdaptationLayer.IsNativeModule ? mi.MethodHandle.GetHashCode() : mi.MetadataToken);
                 }
                 res ^= _name.GetHashCode();
 

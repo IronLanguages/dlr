@@ -41,6 +41,12 @@ namespace Microsoft.Scripting {
         [Obsolete("This will be removed in the the future.")]
         public static readonly bool IsCompactFramework = false;
 
+        public static bool IsNativeModule { get; } = _IsNativeModule();
+
+        private static bool _IsNativeModule() {
+            return typeof(void).Assembly.GetType().FullName != "System.Reflection.RuntimeAssembly";
+        }
+
         #region Assembly Loading
 
 #if NETCOREAPP2_0 || NETCOREAPP2_1
