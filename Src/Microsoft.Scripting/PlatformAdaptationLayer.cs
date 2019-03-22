@@ -13,6 +13,7 @@ using System.Security;
 using Microsoft.Scripting.Utils;
 using System.Runtime.CompilerServices;
 using System.Collections;
+using System.Linq;
 
 namespace Microsoft.Scripting {
 
@@ -40,6 +41,12 @@ namespace Microsoft.Scripting {
 
         [Obsolete("This will be removed in the the future.")]
         public static readonly bool IsCompactFramework = false;
+
+        public static bool IsNativeModule { get; } = _IsNativeModule();
+
+        private static bool _IsNativeModule() {
+            return typeof(void).Assembly.Modules.First().ToString() == "<Unknown>";
+        }
 
         #region Assembly Loading
 
