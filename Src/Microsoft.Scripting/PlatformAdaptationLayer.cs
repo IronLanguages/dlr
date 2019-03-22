@@ -13,6 +13,7 @@ using System.Security;
 using Microsoft.Scripting.Utils;
 using System.Runtime.CompilerServices;
 using System.Collections;
+using System.Linq;
 
 namespace Microsoft.Scripting {
 
@@ -44,7 +45,7 @@ namespace Microsoft.Scripting {
         public static bool IsNativeModule { get; } = _IsNativeModule();
 
         private static bool _IsNativeModule() {
-            return typeof(void).Assembly.GetType().FullName != "System.Reflection.RuntimeAssembly";
+            return typeof(void).Assembly.Modules.First().ToString() == "<Unknown>";
         }
 
         #region Assembly Loading
