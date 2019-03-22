@@ -55,7 +55,7 @@
   </Target>
 
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveReferences;LoadOrder;ReachType;CSManyArea;VBManyArea" Condition="'$(Staging)' != 'true'" />
-  
+
   <Target Name="CleanAssemblies" AfterTargets="Clean">
     <Delete Files="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
     <Delete Files="@(AreaVBFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />

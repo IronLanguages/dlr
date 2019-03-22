@@ -45,7 +45,7 @@ namespace Microsoft.Scripting {
         public static bool IsNativeModule { get; } = _IsNativeModule();
 
         private static bool _IsNativeModule() {
-            return typeof(void).Assembly.Modules.First().ToString() == "<Unknown>";
+            return typeof(void).Assembly.Modules.FirstOrDefault()?.ToString() == "<Unknown>";
         }
 
         #region Assembly Loading
