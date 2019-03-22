@@ -19,12 +19,12 @@
   <PropertyGroup>
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
-  
+
     <StageDir>$(RootDir)\Package\$(Configuration)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
     <PackageDir>$(RootDir)\Package\$(Configuration)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
   </PropertyGroup>
 
-  <PropertyGroup>  
+  <PropertyGroup>
     <BuildProperties>
       RootDir=$(RootDir);
       Solution=$(Solution);
@@ -34,36 +34,36 @@
       BuildSysDir=$(BuildSysDir);
       Mono=$(Mono)
     </BuildProperties>
-  </PropertyGroup>  
+  </PropertyGroup>
 
   <Target Name="RestoreReferences">
     <MSBuild Projects="$(Solution)" Targets="Restore" />
   </Target>
 
   <Target Name="Build" DependsOnTargets="RestoreReferences">
-    <MSBuild 
-      Projects="$(Solution)" 
+    <MSBuild
+      Projects="$(Solution)"
       Targets="Build"
       Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="Rebuild">
-    <MSBuild 
-      Projects="$(Solution)" 
-      Targets="Rebuild" 
+    <MSBuild
+      Projects="$(Solution)"
+      Targets="Rebuild"
       Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="Clean">
-    <MSBuild 
-      Projects="$(Solution)" 
-      Targets="Clean" 
+    <MSBuild
+      Projects="$(Solution)"
+      Targets="Clean"
       Properties="$(BuildProperties);Configuration=$(Configuration)" />
   </Target>
 
   <Target Name="StageBuild" DependsOnTargets="RestoreReferences">
-    <MSBuild 
-      Projects="$(Solution)" 
+    <MSBuild
+      Projects="$(Solution)"
       Targets="Build"
       Properties="$(BuildProperties);Configuration=$(Configuration);Staging=true" />
   </Target>
@@ -122,4 +122,3 @@
   </Target>
 
 </Project>
-

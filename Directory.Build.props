@@ -7,7 +7,7 @@
     <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
 
     <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
-    
+
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
@@ -65,7 +65,6 @@
        used). Fill then in here based on the selected configuration. -->
   <PropertyGroup Condition=" '$(Configuration)' == '' ">
     <Configuration>Debug</Configuration>
-    <Configuration Condition="'$(Configuration)' == 'FxCop'">Release</Configuration>
     <Configuration Condition="'$(Configuration)' == 'Release'">Release</Configuration>
   </PropertyGroup>
 
@@ -76,7 +75,7 @@
 
   <!-- References -->
   <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
-  
+
   <PropertyGroup>
     <BaseOutputPath>$(DlrRootDir)\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
@@ -86,7 +85,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis Condition="'$(Configuration)' == 'FxCop'">true</RunCodeAnalysis>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -109,4 +107,3 @@
     <DefineConstants>$(Features);$(SignedSym);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>
-

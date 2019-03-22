@@ -25,8 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		DLR.ruleset = DLR.ruleset
 		LICENSE = LICENSE
-		make.cmd = make.cmd
-		Makefile = Makefile
+		make.ps1 = make.ps1
 		NuGet.config = NuGet.config
 		README.md = README.md
 	EndProjectSection
