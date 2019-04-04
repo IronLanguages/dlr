@@ -293,5 +293,10 @@ namespace Microsoft.Dynamic.Test {
 
             #endregion
         }
+
+        [Test]
+        public static void IronPython2_Gh563() {
+            LightExceptions.Rewrite(Expression.Constant(3.14, typeof(double))).Reduce();
+        }
     }
 }
