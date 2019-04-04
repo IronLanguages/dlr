@@ -47,6 +47,8 @@ namespace Microsoft.Scripting.Ast {
             expr = Visit(expr);
             if (expr.Type == typeof(void)) {
                 expr = Expression.Block(expr, Utils.Constant(null));
+            } else if (expr.Type != typeof(object)) {
+                expr = Expression.Convert(expr, typeof(object));
             }
 
             return new LightExceptionRewrittenCode(_returnLabel, expr);
