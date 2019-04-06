@@ -182,8 +182,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="binder"></param>
         /// <returns></returns>
         public static bool SupportsLightThrow(this CallSiteBinder binder) {
-            ILightExceptionBinder lightBinder = binder as ILightExceptionBinder;
-            if (lightBinder != null) {  
+            if (binder is ILightExceptionBinder lightBinder) {
                 return lightBinder.SupportsLightThrow;
             }
             return false;

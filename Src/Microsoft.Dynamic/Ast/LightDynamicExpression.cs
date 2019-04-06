@@ -68,8 +68,7 @@ namespace Microsoft.Scripting.Ast {
         protected abstract Expression GetArgument(int index);
 
         protected CallSiteBinder GetLightBinder() {
-            ILightExceptionBinder binder = _binder as ILightExceptionBinder;
-            if (binder != null) {
+            if (_binder is ILightExceptionBinder binder) {
                 return binder.GetLightExceptionBinder();
             }
             return _binder;
