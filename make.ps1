@@ -21,7 +21,7 @@ if(!$global:isUnix) {
     if([System.IO.File]::Exists($_VSWHERE)) {
         $_VSINSTPATH = & "$_VSWHERE" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
     } else {
-        Write-Error "Visual Studio 2017 15.9 or later is required"
+        Write-Error "Visual Studio 2019 16.3.0 or later is required"
         Exit 1
     }
 
