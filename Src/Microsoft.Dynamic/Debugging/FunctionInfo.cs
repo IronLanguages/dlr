@@ -9,7 +9,6 @@ using System.Diagnostics;
 namespace Microsoft.Scripting.Debugging {
     [DebuggerDisplay("{Name}")]
     public sealed class FunctionInfo {
-        private readonly IList<VariableInfo>[] _variableScopeMap;
         private readonly bool[] _traceLocations;
 
         internal FunctionInfo(
@@ -23,7 +22,7 @@ namespace Microsoft.Scripting.Debugging {
             GeneratorFactory = generatorFactory;
             Name = name;
             SequencePoints = sequencePoints;
-            _variableScopeMap = scopedVariables;
+            VariableScopeMap = scopedVariables;
             Variables = variables;
             CustomPayload = customPayload;
             _traceLocations = new bool[sequencePoints.Length];
@@ -33,9 +32,7 @@ namespace Microsoft.Scripting.Debugging {
 
         internal IList<VariableInfo> Variables { get; }
 
-        internal IList<VariableInfo>[] VariableScopeMap {
-            get { return _variableScopeMap; }
-        }
+        internal IList<VariableInfo>[] VariableScopeMap { get; }
 
         internal FunctionInfo PreviousVersion { get; set; }
 

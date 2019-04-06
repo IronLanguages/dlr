@@ -23,14 +23,13 @@ namespace Microsoft.Scripting.Ast {
         private readonly Expression _body;
         private Expression _reduced;
         private readonly string _name;
-        private readonly bool _rewriteAssignments;
 
         internal GeneratorExpression(string name, Type type, LabelTarget label, Expression body, bool rewriteAssignments) {
             _target = label;
             _body = body;
             Type = type;
             _name = name;
-            _rewriteAssignments = rewriteAssignments;
+            RewriteAssignments = rewriteAssignments;
         }
 
         public override bool CanReduce => true;
@@ -57,7 +56,7 @@ namespace Microsoft.Scripting.Ast {
         /// Indicates whether the lhs instances are preserved when assignments
         /// are made to expressions containing yields.
         /// </summary>
-        public bool RewriteAssignments => _rewriteAssignments;
+        public bool RewriteAssignments { get; }
 
         public override Expression Reduce() {
             if (_reduced == null) {
