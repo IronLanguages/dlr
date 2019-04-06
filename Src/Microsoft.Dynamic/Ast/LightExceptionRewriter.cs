@@ -121,8 +121,7 @@ namespace Microsoft.Scripting.Ast {
         protected override Expression VisitDynamic(DynamicExpression node) {
             // check if we have a light exception aware binder, and if so upgrade
             // to light exceptions.
-            var lightBinder = node.Binder as ILightExceptionBinder;
-            if (lightBinder != null) {
+            if (node.Binder is ILightExceptionBinder lightBinder) {
                 var newBinder = lightBinder.GetLightExceptionBinder();
                 if (newBinder != node.Binder) {
                     return CheckExpression(
