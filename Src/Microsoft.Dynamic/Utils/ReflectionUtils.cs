@@ -1062,8 +1062,14 @@ namespace Microsoft.Scripting.Utils {
             try {
                 var exportedTypes = assembly.GetExportedTypes();
 #if NETCOREAPP2_1
-                var forwardedTypes = assembly.GetForwardedTypes();
-                return Enumerable.Concat(exportedTypes, forwardedTypes);
+                try {
+                    var forwardedTypes = assembly.GetForwardedTypes();
+                    return Enumerable.Concat(exportedTypes, forwardedTypes);
+                } catch (ReflectionTypeLoadException ex) {
+                    // GetForwardedTypes can throw if an assembly failed to load. In this case add the types
+                    // which successfully loaded. Note that Types may include null so we need to filter it out.
+                    return Enumerable.Concat(exportedTypes, ex.Types.OfType<Type>());
+                }
 #else
                 return exportedTypes;
 #endif
