@@ -154,7 +154,7 @@ namespace Microsoft.Scripting.Actions {
 
             foreach (TypeName typeName in AssemblyTypeNames.GetTypeNames(assem, _topPackage.DomainManager.Configuration.PrivateBinding)) {
                 NamespaceTracker package;
-                Debug.Assert(!string.IsNullOrEmpty(typeName.Namespace));
+                Debug.Assert(typeName.Namespace?.Length != 0);
                 if (typeName.Namespace == previousFullNamespace) {
                     // We have a cache hit. We dont need to call GetOrMakePackageHierarchy (which generates
                     // a fair amount of temporary substrings)
