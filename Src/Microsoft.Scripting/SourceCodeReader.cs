@@ -85,7 +85,9 @@ namespace Microsoft.Scripting {
         }
 
         protected override void Dispose(bool disposing) {
-            BaseReader.Dispose();
+            if (disposing) {
+                BaseReader.Dispose();
+            }
             base.Dispose(disposing);
         }
     }
