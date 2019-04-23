@@ -66,7 +66,7 @@ namespace Microsoft.Scripting.Generation {
         private AssemblyGen CreateNewAssembly(string nameSuffix, bool emitSymbols) {
             string dir = null;
 
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
             if (_saveSnippets) {
                 dir = _snippetsDirectory ?? Directory.GetCurrentDirectory();
             }

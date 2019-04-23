@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Generation {
         private readonly ModuleBuilder _myModule;
         private readonly bool _isDebuggable;
 
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
         private readonly string _outFileName;       // can be null iff !SaveAndReloadAssemblies
         private readonly string _outDir;            // null means the current directory
         private const string peverify_exe = "peverify.exe";
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Generation {
         public AssemblyGen(AssemblyName name, string outDir, string outFileExtension, bool isDebuggable, IDictionary<string, object> attrs=null) {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
             if (outFileExtension == null) {
                 outFileExtension = ".dll";
             }
@@ -143,7 +143,7 @@ namespace Microsoft.Scripting.Generation {
         #region Dump and Verify
 
         public string SaveAssembly() {
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
             _myAssembly.Save(_outFileName, PortableExecutableKinds.ILOnly, ImageFileMachine.I386);
             return Path.Combine(_outDir, _outFileName);
 #else
@@ -152,14 +152,14 @@ namespace Microsoft.Scripting.Generation {
         }
 
         internal void Verify() {
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
             PeVerifyThis();
 #endif
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         internal static void PeVerifyAssemblyFile(string fileLocation) {
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
             Debug.WriteLine("Verifying generated IL: " + fileLocation);
             string outDir = Path.GetDirectoryName(fileLocation);
             string outFileName = Path.GetFileName(fileLocation);
@@ -240,7 +240,7 @@ namespace Microsoft.Scripting.Generation {
 #endif
         }
 
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
         internal static string FindPeverify() {
             string path = System.Environment.GetEnvironmentVariable("PATH");
             string[] dirs = path.Split(';');
@@ -322,7 +322,7 @@ namespace Microsoft.Scripting.Generation {
             return _myModule.DefineType(name, attr, parent);
         }
 
-#if FEATURE_FILESYSTEM
+#if FEATURE_ASSEMBLYBUILDER_SAVE
         internal void SetEntryPoint(MethodInfo mi, PEFileKinds kind) {
             _myAssembly.SetEntryPoint(mi, kind);
         }

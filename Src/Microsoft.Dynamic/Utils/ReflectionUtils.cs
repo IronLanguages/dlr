@@ -687,7 +687,7 @@ namespace Microsoft.Scripting.Utils {
                 result.Append(' ');
             }
 
-#if FEATURE_REFEMIT && !NETCOREAPP2_0 && !NETCOREAPP2_1 && !NETSTANDARD2_0
+#if FEATURE_REFEMIT && FEATURE_REFEMIT_FULL
             MethodBuilder builder = method as MethodBuilder;
             if (builder != null) {
                 result.Append(builder.Signature);
@@ -1061,7 +1061,7 @@ namespace Microsoft.Scripting.Utils {
 
             try {
                 var exportedTypes = assembly.GetExportedTypes();
-#if NETCOREAPP2_1
+#if FEATURE_ASSEMBLY_GETFORWARDEDTYPES
                 try {
                     var forwardedTypes = assembly.GetForwardedTypes();
                     return Enumerable.Concat(exportedTypes, forwardedTypes);
