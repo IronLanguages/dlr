@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netstandard2.0</TargetFrameworks>
     <RootNamespace>Microsoft.Scripting</RootNamespace>
     <BaseAddress>859832320</BaseAddress>
     <CodeAnalysisRuleSet>..\..\DLR.ruleset</CodeAnalysisRuleSet>
@@ -13,15 +13,11 @@
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Configuration" Condition=" '$(TargetFramework)' == 'net45' AND $(Features.Contains('FEATURE_CONFIGURATION')) " />
+  <ItemGroup Condition=" '$(IsFullFramework)' == 'true' ">
+    <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
     <Reference Include="System.Runtime.Remoting" Condition=" $(Features.Contains('FEATURE_REMOTING')) " />
     <Reference Include="System.Xaml" Condition=" $(Features.Contains('FEATURE_WPF')) " />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' OR '$(TargetFramework)' == 'netstandard2.0' ">
-    <DefineConstants>$(DefineConstants.Replace(';FEATURE_FILESYSTEM', ''))</DefineConstants>
-  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Reflection.Emit" Version="4.6.0-preview3.19128.7" />
