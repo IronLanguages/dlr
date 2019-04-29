@@ -244,7 +244,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         private static MethodInfo Create_ConvertByrefToPtr() {
             // We dont use AssemblyGen.DefineMethod since that can create a anonymously-hosted DynamicMethod which cannot contain unverifiable code.
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("ComSnippets"), AssemblyBuilderAccess.Run);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("ComSnippets"), AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("ComSnippets");
             var type = moduleBuilder.DefineType("Type$ConvertByrefToPtr", TypeAttributes.Public);
 
@@ -497,8 +497,10 @@ namespace Microsoft.Scripting.ComInterop {
                         };
 
                         string name = typeof(VariantArray).Namespace + ".DynamicAssembly";
-                        var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
+                        var assembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
+#if !NETCOREAPP
                         assembly.DefineVersionInfoResource();
+#endif
                         _dynamicModule = assembly.DefineDynamicModule(name);
                     }
                     return _dynamicModule;
@@ -533,9 +535,7 @@ namespace Microsoft.Scripting.ComInterop {
             method.Emit(OpCodes.Add);
             method.Emit(OpCodes.Ldind_I);
 
-            SignatureHelper signature = SignatureHelper.GetMethodSigHelper(CallingConvention.Winapi, typeof(int));
-            signature.AddArgument(typeof(IntPtr));
-            method.Emit(OpCodes.Calli, signature);
+            method.EmitCalli(OpCodes.Calli, CallingConvention.Winapi, typeof(int), new[] { typeof(IntPtr) });
 
             method.Emit(OpCodes.Ret);
 
@@ -647,7 +647,6 @@ namespace Microsoft.Scripting.ComInterop {
             method.Emit(OpCodes.Add);
             method.Emit(OpCodes.Ldind_I);
 
-            SignatureHelper signature = SignatureHelper.GetMethodSigHelper(CallingConvention.Winapi, typeof(int));
             Type[] invokeParamTypes = new Type[] { 
                     typeof(IntPtr), // dispatchPointer
                     typeof(int),    // memberDispId
@@ -659,14 +658,13 @@ namespace Microsoft.Scripting.ComInterop {
                     typeof(IntPtr), // excepInfo
                     typeof(IntPtr), // argErr
                 };
-            signature.AddArguments(invokeParamTypes, null, null);
-            method.Emit(OpCodes.Calli, signature);
+            method.EmitCalli(OpCodes.Calli, CallingConvention.Winapi, typeof(int), invokeParamTypes);
 
             method.Emit(OpCodes.Ret);
             return (IDispatchInvokeDelegate)dm.CreateDelegate(typeof(IDispatchInvokeDelegate));
         }
 
-        #endregion
+#endregion
     }
 
 
