@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Equal(parameter, Expression.Constant(null)),
                 Expression.Constant(IntPtr.Zero),
                 Expression.Call(
-                    typeof(Marshal).GetMethod("GetIDispatchForObject"),
+                    ComRuntimeHelpers.GetGetIDispatchForObjectMethod(),
                     parameter
                 )
             );

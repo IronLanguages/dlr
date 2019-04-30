@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // Expression that unwraps ComObject
         internal static MemberExpression RcwFromComObject(Expression comObject) {
-            Debug.Assert(comObject != null && typeof(ComObject).IsAssignableFrom(comObject.Type), "must be ComObject");
+            Debug.Assert(comObject != null && (typeof(ComObject).IsAssignableFrom(comObject.Type) || comObject.Type == typeof(object)), "must be ComObject");
 
             return Expression.Property(
                 Helpers.Convert(comObject, typeof(ComObject)),

@@ -15,6 +15,7 @@ using System.Security.Permissions;
 using Microsoft.Scripting.Utils;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 using Microsoft.Scripting.Generation;
+using System.Linq;
 
 namespace Microsoft.Scripting.ComInterop {
 
@@ -212,6 +213,14 @@ namespace Microsoft.Scripting.ComInterop {
 
         public static DispCallable CreateDispCallable(IDispatchComObject dispatch, ComMethodDesc method) {
             return new DispCallable(dispatch, method.Name, method.DispId);
+        }
+        internal static MethodInfo GetGetIDispatchForObjectMethod() {
+#if !NETCOREAPP
+            return typeof(Marshal).GetMethod("GetIDispatchForObject");
+#else
+            // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.
+            return typeof(Marshal).GetMethods().Single(m => m.Name == "GetComInterfaceForObject" && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
+#endif
         }
     }
 
@@ -658,7 +667,7 @@ namespace Microsoft.Scripting.ComInterop {
                     typeof(IntPtr), // excepInfo
                     typeof(IntPtr), // argErr
                 };
-            method.EmitCalli(OpCodes.Calli, CallingConvention.Winapi, typeof(int), invokeParamTypes);
+            method.EmitCalli(OpCodes.Calli, CallingConvention.StdCall, typeof(int), invokeParamTypes);
 
             method.Emit(OpCodes.Ret);
             return (IDispatchInvokeDelegate)dm.CreateDelegate(typeof(IDispatchInvokeDelegate));
