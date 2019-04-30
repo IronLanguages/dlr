@@ -6,6 +6,7 @@
     <BaseAddress>859832320</BaseAddress>
     <CodeAnalysisRuleSet>..\..\DLR.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +31,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**/*.netfx.cs" />
+    <Compile Remove="**/*.netcoreapp.cs" />
+    <Compile Include="**/*.netfx.cs" Condition=" '$(IsFullFramework)' == 'true' " />
+    <Compile Include="**/*.netcoreapp.cs" Condition=" '$(IsFullFramework)' != 'true' " />
   </ItemGroup>
 
   <Import Project="$(AfterTargetFiles)" />
