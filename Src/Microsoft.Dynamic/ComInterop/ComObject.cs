@@ -16,10 +16,14 @@ using System.Dynamic;
 
 namespace Microsoft.Scripting.ComInterop {
     /// <summary>
-    /// This is a helper class for runtime-callable-wrappers of COM instances. We create one instance of this type
-    /// for every generic RCW instance.
+    /// The ComObject class wraps a runtime-callable-wrapper and enables it to be used with the Dynamic Language Runtime and the C# dynamic keyword.
     /// </summary>
-    internal class ComObject : IDynamicMetaObjectProvider {
+#if NETCOREAPP3_0
+    public
+#else
+    internal
+#endif
+    class ComObject : IDynamicMetaObjectProvider {
         internal ComObject(object rcw) {
             Debug.Assert(IsComObject(rcw));
             RuntimeCallableWrapper = rcw;
@@ -30,7 +34,7 @@ namespace Microsoft.Scripting.ComInterop {
         private readonly static object _ComObjectInfoKey = new object();
 
         /// <summary>
-        /// This is the factory method to get the ComObject corresponding to an RCW
+        /// Gets a <see cref="ComObject"/> that wraps the runtime-callable-wrapper, or creates one if none currently exists.
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
