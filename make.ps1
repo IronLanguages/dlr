@@ -58,7 +58,7 @@ $_defaultFrameworkSettings = @{
 $_FRAMEWORKS = @{}
 
 function Main([String] $target, [String] $configuration) {
-    msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
     # use the exit code of msbuild as the exit code for this script
     $global:Result = $LastExitCode
 }
@@ -76,13 +76,13 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
     $doc.AppendChild($dec) | Out-Null
 
     $runSettings = $doc.CreateElement("RunSettings")
-    
+
     $runConfiguration = $doc.CreateElement("RunConfiguration")
     $runSettings.AppendChild($runConfiguration) | Out-Null
     $targetPlatform = $doc.CreateElement("TargetPlatform")
     $targetPlatform.InnerText = $platform
     $runConfiguration.AppendChild($targetPlatform) | Out-Null
-    
+
     $testRunParameters = $doc.CreateElement("TestRunParameters")
     $runSettings.AppendChild($testRunParameters) | Out-Null
 
@@ -181,7 +181,7 @@ switch -wildcard ($target) {
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
     "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks $platform; break }
-    
+
     # release targets
     "restore"       { Main "RestoreReferences" "Release" }
     "release"       { Main "Build" "Release" }

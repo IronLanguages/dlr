@@ -13,7 +13,6 @@
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
   </PropertyGroup>
 
-  <Import Project="$(BuildSysDir)\Tasks.Targets" />
   <Import Project="$(RootDir)\CurrentVersion.props" />
 
   <PropertyGroup>
@@ -114,7 +113,7 @@
       <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
-    <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+    <ZipDirectory DestinationFile="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" SourceDirectory="$(StageDir)" Overwrite="true" />
   </Target>
 
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">

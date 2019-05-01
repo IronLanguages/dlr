@@ -21,6 +21,11 @@ steps:
      Write-Host ("##vso[task.setvariable variable=PackageVersion;isSecret=false;isOutput=true;]$PackageVersion")
     displayName: Grab Package Version
 
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: '3.0.100-preview4-011223'
+
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
     - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -28,7 +33,7 @@ steps:
       inputs:
         type: InlineScript
         script: |
-          
+
           # Dump some info about the tools
           mono --version
           msbuild /version
@@ -57,7 +62,7 @@ steps:
 
   - powershell: ./make.ps1
     displayName: Build
-    
+
   - powershell: ./make.ps1 package
     displayName: Package
 
@@ -86,7 +91,7 @@ steps:
 
   - powershell: ./make.ps1 test-all
     displayName: Test
-    
+
   - task: PublishTestResults@2
     displayName: Publish Test Results
     inputs:
@@ -95,4 +100,4 @@ steps:
       mergeTestResults: true
       testRunTitle: ${{ parameters.os }}
 
-  
+

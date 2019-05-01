@@ -5,6 +5,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <IsFullFramework>true</IsFullFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Unix' ">
+    <FrameworkPathOverride>/usr/lib/mono/4.5-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="$([MSBuild]::IsOsPlatform('OSX'))">/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5-api</FrameworkPathOverride>
+  </PropertyGroup>
 
   <PropertyGroup>
     <Features>$(Features);FEATURE_APARTMENTSTATE</Features>
