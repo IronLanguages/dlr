@@ -92,13 +92,13 @@
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
-      <NuSpecDir>$(RootDir)\Package\nuget</NuSpecDir>
+      <NuSpecDir>$(RootDir)/Package/nuget</NuSpecDir>
     </Package>
   </ItemGroup>
 
   <ItemGroup>
-    <NuGetPackageInputs Include="@(Package->'%(NuSpecDir)\*.nuspec')" />
-    <NuGetPackageOutputs Include="@(Package->'$(PackageDir)\$(Filename).$(PackageVersion).nupkg')" />
+    <NuGetPackageInputs Include="@(Package->'%(NuSpecDir)/*.nuspec')" />
+    <NuGetPackageOutputs Include="@(Package->'$(PackageDir)/$(Filename).$(PackageVersion).nupkg')" />
   </ItemGroup>
 
   <Target Name="NuGetPackage" DependsOnTargets="Stage;MakePackageDir"
