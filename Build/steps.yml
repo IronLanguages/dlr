@@ -21,13 +21,13 @@ steps:
      Write-Host ("##vso[task.setvariable variable=PackageVersion;isSecret=false;isOutput=true;]$PackageVersion")
     displayName: Grab Package Version
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@1
     displayName: Install .NET Core 2.1 runtime for running tests
     inputs:
       packageType: 'runtime'
-      version: '2.1.10'
+      version: '2.1.x'
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@1
     displayName: Install .NET Core 3.0 SDK for build
     inputs:
       packageType: 'sdk'
