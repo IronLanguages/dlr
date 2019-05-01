@@ -22,16 +22,16 @@ steps:
     displayName: Grab Package Version
 
   - task: DotNetCoreInstaller@0
-    displayName: Install .NET Core 3.0 SDK for build
-    inputs:
-      packageType: 'sdk'
-      version: '3.0.100-preview4-011223'
-
-  - task: DotNetCoreInstaller@0
     displayName: Install .NET Core 2.1 runtime for running tests
     inputs:
       packageType: 'runtime'
       version: '2.1.10'
+
+  - task: DotNetCoreInstaller@0
+    displayName: Install .NET Core 3.0 SDK for build
+    inputs:
+      packageType: 'sdk'
+      version: '3.0.100-preview4-011223'
 
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
