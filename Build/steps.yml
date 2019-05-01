@@ -28,10 +28,10 @@ steps:
       version: '3.0.100-preview4-011223'
 
   - task: DotNetCoreInstaller@0
-    displayName: Install .NET Core 2.1 SDK for running tests
+    displayName: Install .NET Core 2.1 runtime for running tests
     inputs:
-      packageType: 'sdk'
-      version: '2.1.603'
+      packageType: 'runtime'
+      version: '2.1.10'
 
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
