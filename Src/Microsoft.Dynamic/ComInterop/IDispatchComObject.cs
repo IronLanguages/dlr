@@ -139,20 +139,21 @@ namespace Microsoft.Scripting.ComInterop {
             return hresult;
         }
 
-        private static int Invoke(IDispatch dispatch, int memberDispId, out object result) {
+        private static unsafe int Invoke(IDispatch dispatch, int memberDispId, out object result) {
             Guid emtpyRiid = Guid.Empty;
             ComTypes.DISPPARAMS dispParams = new ComTypes.DISPPARAMS();
-            ComTypes.EXCEPINFO excepInfo = new ComTypes.EXCEPINFO();
-            uint argErr;
+            Variant res = default;
             int hresult = dispatch.TryInvoke(
                 memberDispId,
                 ref emtpyRiid,
                 0,
                 ComTypes.INVOKEKIND.INVOKE_PROPERTYGET,
                 ref dispParams,
-                out result,
-                out excepInfo,
-                out argErr);
+                (IntPtr)(&res),
+                IntPtr.Zero,
+                IntPtr.Zero);
+
+            result = res.ToObject();
 
             return hresult;
         }

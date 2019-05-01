@@ -51,9 +51,9 @@ namespace Microsoft.Scripting.ComInterop {
             int lcid,
             ComTypes.INVOKEKIND wFlags,
             ref ComTypes.DISPPARAMS pDispParams,
-            out object VarResult,
-            out ComTypes.EXCEPINFO pExcepInfo,
-            out uint puArgErr);
+            IntPtr VarResult,
+            IntPtr pExcepInfo,
+            IntPtr puArgErr);
     }
 
     /// <summary>

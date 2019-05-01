@@ -18,80 +18,12 @@ namespace Microsoft.Scripting.ComInterop {
     /// </summary>
     internal class ComEventsMethod {
         /// <summary>
-        /// This delegate wrapper class handles dynamic invocation of delegates. The reason for the wrapper's
-        /// existence is that under certain circumstances we need to coerce arguments to types expected by the
-        /// delegates signature. Normally, reflection (Delegate.DynamicInvoke) handles type coercion
-        /// correctly but one known case is when the expected signature is 'ref Enum' - in this case
-        /// reflection by design does not do the coercion. Since we need to be compatible with COM interop
-        /// handling of this scenario - we are pre-processing delegate's signature by looking for 'ref enums'
-        /// and cache the types required for such coercion.
-        /// </summary>
-        public class DelegateWrapper {
-            private bool _once = false;
-            private int _expectedParamsCount;
-            private Type[] _cachedTargetTypes;
-
-            public DelegateWrapper(Delegate d) {
-                Delegate = d;
-            }
-
-            public Delegate Delegate { get; set; }
-
-            public object Invoke(object[] args) {
-                if (Delegate == null) {
-                    return null;
-                }
-
-                if (_once == false) {
-                    PreProcessSignature();
-                    _once = true;
-                }
-
-                if (_cachedTargetTypes != null && _expectedParamsCount == args.Length) {
-                    for (int i = 0; i < _expectedParamsCount; i++) {
-                        if (_cachedTargetTypes[i] != null) {
-                            args[i] = Enum.ToObject(_cachedTargetTypes[i], args[i]); // TODO-NULLABLE: https://github.com/dotnet/roslyn/issues/34644
-                        }
-                    }
-                }
-
-                return Delegate.DynamicInvoke(args);
-            }
-
-            private void PreProcessSignature() {
-                ParameterInfo[] parameters = Delegate.Method.GetParameters();
-                _expectedParamsCount = parameters.Length;
-
-                bool needToHandleCoercion = false;
-
-                var targetTypes = new List<Type>();
-                foreach (ParameterInfo pi in parameters) {
-                    Type targetType = null;
-
-                    // recognize only 'ref Enum' signatures and cache
-                    // both enum type and the underlying type.
-                    if (pi.ParameterType.IsByRef
-                        && pi.ParameterType.HasElementType
-                        && pi.ParameterType.GetElementType().IsEnum) {
-                        needToHandleCoercion = true;
-                        targetType = pi.ParameterType.GetElementType();
-                    }
-
-                    targetTypes.Add(targetType);
-                }
-
-                if (needToHandleCoercion) {
-                    _cachedTargetTypes = targetTypes.ToArray();
-                }
-            }
-        }
-
-        /// <summary>
         /// Invoking ComEventsMethod means invoking a multi-cast delegate attached to it.
         /// Since multicast delegate's built-in chaining supports only chaining instances of the same type,
         /// we need to complement this design by using an explicit linked list data structure.
         /// </summary>
-        private List<DelegateWrapper> _delegateWrappers = new List<DelegateWrapper>();
+        private Func<object[], object> _delegate;
+        private object lockObject = new object();
 
         private readonly int _dispid;
         private ComEventsMethod _next;
@@ -136,65 +68,27 @@ namespace Microsoft.Scripting.ComInterop {
 
         public bool Empty {
             get {
-                lock (_delegateWrappers) {
-                    return _delegateWrappers.Count == 0;
+                lock (lockObject) {
+                    return _delegate is null;
                 }
             }
         }
 
-        public void AddDelegate(Delegate d) {
-            lock (_delegateWrappers) {
-                // Update an existing delegate wrapper
-                foreach (DelegateWrapper wrapper in _delegateWrappers) {
-                    if (wrapper.Delegate.GetType() == d.GetType()) {
-                        wrapper.Delegate = Delegate.Combine(wrapper.Delegate, d); // TODO-NULLABLE: https://github.com/dotnet/roslyn/issues/26761
-                        return;
-                    }
-                }
-
-                var newWrapper = new DelegateWrapper(d);
-                _delegateWrappers.Add(newWrapper);
+        public void AddDelegate(Func<object[], object> d) {
+            lock (lockObject) {
+                _delegate += d;
             }
         }
 
-        internal void RemoveDelegates(Func<Delegate, bool> condition)
+        internal void RemoveDelegates(Func<Func<object[], object>, bool> condition)
         {
-            lock (_delegateWrappers) {
-                for (int i = 0; i < _delegateWrappers.Count; i++) {
-                    DelegateWrapper wrapperMaybe = _delegateWrappers[i];
-                    if (condition(wrapperMaybe.Delegate)) {
-                        _delegateWrappers.RemoveAt(i);
-                        i--;
+            lock (lockObject) {
+                Delegate[] invocationList = _delegate.GetInvocationList();
+                for (int i = 0; i < invocationList.Length; i++) {
+                    Func<object[], object> delegateMaybe = (Func<object[], object>)invocationList[i];
+                    if (condition(delegateMaybe)) {
+                        _delegate -= delegateMaybe;
                     }
-                }
-            }
-        }
-
-        public void RemoveDelegate(Delegate d) {
-            lock (_delegateWrappers) {
-                // Find delegate wrapper index
-                int removeIdx = -1;
-                DelegateWrapper wrapper = null;
-                for (int i = 0; i < _delegateWrappers.Count; i++) {
-                    DelegateWrapper wrapperMaybe = _delegateWrappers[i];
-                    if (wrapperMaybe.Delegate.GetType() == d.GetType()) {
-                        removeIdx = i;
-                        wrapper = wrapperMaybe;
-                        break;
-                    }
-                }
-
-                if (removeIdx < 0) {
-                    // Not present in collection
-                    return;
-                }
-
-                // Update wrapper or remove from collection
-                Delegate newDelegate = Delegate.Remove(wrapper.Delegate, d);
-                if (newDelegate != null) {
-                    wrapper.Delegate = newDelegate;
-                } else {
-                    _delegateWrappers.RemoveAt(removeIdx);
                 }
             }
         }
@@ -203,10 +97,8 @@ namespace Microsoft.Scripting.ComInterop {
             Debug.Assert(!Empty);
             object result = null;
 
-            lock (_delegateWrappers) {
-                foreach (DelegateWrapper wrapper in _delegateWrappers) {
-                    result = wrapper.Invoke(args);
-                }
+            lock (lockObject) {
+                result = _delegate?.Invoke(args);
             }
 
             return result;

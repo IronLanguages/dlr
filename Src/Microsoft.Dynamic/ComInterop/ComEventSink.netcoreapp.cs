@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (method == null) {
                 method = AddMethod(dispid);
             }
-            method.AddDelegate(new Func<object[], object>(new SplatCallSite(func).Invoke));
+            method.AddDelegate(new SplatCallSite(func).Invoke);
         }
 
         public void RemoveHandler(int dispid, object func) {
@@ -160,12 +160,9 @@ namespace Microsoft.Scripting.ComInterop {
             int lcid,
             INVOKEKIND wFlags,
             ref DISPPARAMS pDispParams,
-            out object VarResult,
-            out EXCEPINFO pExcepInfo,
-            out uint puArgErr) {
-            VarResult = null;
-            pExcepInfo = default;
-            puArgErr = default;
+            IntPtr VarResult,
+            IntPtr pExcepInfo,
+            IntPtr puArgErr) {
 
             ComEventsMethod method = FindMethod(dispIdMember);
             if (method == null) {
@@ -224,7 +221,11 @@ namespace Microsoft.Scripting.ComInterop {
                 }
 
                 // Do the actual delegate invocation
-                VarResult = method.Invoke(args);
+                object result = method.Invoke(args);
+
+                if (VarResult != IntPtr.Zero) {
+                    Marshal.GetNativeVariantForObject(result, VarResult);
+                }
 
                 // Now we need to marshal all the byrefs back
                 for (i = 0; i < pDispParams.cArgs; i++) {
@@ -261,7 +262,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             object sinkObject = this;
 
-            cp.Advise(sinkObject, out _cookie);
+            cp.Advise((IDispatch)sinkObject, out _cookie);
 
             _connectionPoint = cp;
         }
