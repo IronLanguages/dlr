@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <RootNamespace>merlintest</RootNamespace>
     <AssemblyName>merlintest.dummy</AssemblyName>
   </PropertyGroup>
@@ -14,17 +14,48 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
-  <Target Name="GetFrameworkPath">
-    <GetFrameworkPath>
-      <Output TaskParameter="Path" PropertyName="DotNetFrameworkPath" />
-    </GetFrameworkPath>
+  <!-- Load ilasm from NuGet - TODO: use an ilproj when it becomes supported? -->
+  <PropertyGroup>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('windows'))">win</_OSPlatform>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('linux'))">linux</_OSPlatform>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('osx'))">osx</_OSPlatform>
+    <_OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</_OSArchitecture>
+
+    <MicrosoftNetCoreIlasmPackageRuntimeId>$(_OSPlatform)-$(_OSArchitecture.ToLower())</MicrosoftNetCoreIlasmPackageRuntimeId>
+    <MicrosoftNetCoreIlasmPackageVersion>2.0.8</MicrosoftNetCoreIlasmPackageVersion>
+    <MicrosoftNetCoreIlasmPackageName>runtime.$(MicrosoftNetCoreIlasmPackageRuntimeId).microsoft.netcore.ilasm</MicrosoftNetCoreIlasmPackageName>
+    <MicrosoftNetCoreRuntimeCoreClrPackageName>runtime.$(MicrosoftNetCoreIlasmPackageRuntimeId).microsoft.netcore.runtime.coreclr</MicrosoftNetCoreRuntimeCoreClrPackageName>
+    <MicrosoftNetCoreJitPackageName>runtime.$(MicrosoftNetCoreIlasmPackageRuntimeId).microsoft.netcore.jit</MicrosoftNetCoreJitPackageName>
+
+    <ToolsDir Condition="'$(ToolsDir)' == ''">$([System.IO.Path]::Combine($([System.IO.Path]::GetTempPath()), $([System.IO.Path]::GetRandomFileName())))</ToolsDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="$(MicrosoftNetCoreIlasmPackageName)" Version="$(MicrosoftNetCoreIlasmPackageVersion)" PrivateAssets="all" IsImplicitlyDefined="true" />
+    <PackageReference Include="$(MicrosoftNetCoreRuntimeCoreClrPackageName)" Version="$(MicrosoftNetCoreIlasmPackageVersion)" PrivateAssets="all" IsImplicitlyDefined="true" />
+    <PackageReference Include="$(MicrosoftNetCoreJitPackageName)" Version="$(MicrosoftNetCoreIlasmPackageVersion)" PrivateAssets="all" IsImplicitlyDefined="true" />
+  </ItemGroup>
+
+  <Target Name="LoadIlasm">
+    <ItemGroup>
+      <_IlasmSourceFiles Include="$(NuGetPackageRoot)\$(MicrosoftNetCoreIlasmPackageName)\$(MicrosoftNetCoreIlasmPackageVersion)\runtimes\$(MicrosoftNetCoreIlasmPackageRuntimeId)\native\**\*" />
+      <_IlasmSourceFiles Include="$(NuGetPackageRoot)\$(MicrosoftNetCoreRuntimeCoreClrPackageName)\$(MicrosoftNetCoreIlasmPackageVersion)\runtimes\$(MicrosoftNetCoreIlasmPackageRuntimeId)\native\**\*" />
+      <_IlasmSourceFiles Include="$(NuGetPackageRoot)\$(MicrosoftNetCoreJitPackageName)\$(MicrosoftNetCoreIlasmPackageVersion)\runtimes\$(MicrosoftNetCoreIlasmPackageRuntimeId)\native\**\*" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_IlasmDir>$(ToolsDir)\ilasm</_IlasmDir>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(_IlasmDir)" />
+    <Copy DestinationFolder="$(_IlasmDir)" SourceFiles="@(_IlasmSourceFiles)" />
   </Target>
 
   <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll">
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="%(LoadOrderCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(LoadOrderCSFile.Filename).dll" />
   </Target>
 
-  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="GetFrameworkPath" Condition="'$(MSBuildRuntimeType)' != 'Core'">
+  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="LoadIlasm">
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
     <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="Src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
@@ -32,7 +63,7 @@
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
     <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee1.dll" Sources="Src\typeforwarder1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
-    <Exec Command="&quot;$(DotNetFrameworkPath)\ilasm.exe&quot; /NOLOGO /QUIET /DLL /out=&quot;$(OutputPath)\$(Prefix)typeforwarder2.dll&quot; Src\typeforwarder2.il" />
+    <Exec Command="&quot;$(_IlasmDir)/ilasm&quot; -NOLOGO -QUIET -DLL -OUTPUT=&quot;$(OutputPath)/$(Prefix)typeforwarder2.dll&quot; Src/typeforwarder2.il" />
     <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
     <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee3.dll" Sources="Src\typeforwarder3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
@@ -100,6 +131,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

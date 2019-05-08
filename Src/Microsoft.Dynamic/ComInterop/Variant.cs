@@ -681,11 +681,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
                 VariantType = VarEnum.VT_DISPATCH;
                 if (value != null) {
-#if !NETCOREAPP
-                    _typeUnion._unionTypes._unknown = Marshal.GetIDispatchForObject(value);
-#else
-                    _typeUnion._unionTypes._unknown = Marshal.GetComInterfaceForObject<object, IDispatch>(value);
-#endif
+                    _typeUnion._unionTypes._unknown = GetIDispatchForObject(value);
                 }
             }
         }
@@ -701,6 +697,16 @@ namespace Microsoft.Scripting.ComInterop {
 
         #endregion
 
+        /// <summary>
+        /// Helper method for generated code
+        /// </summary>
+        private static IntPtr GetIDispatchForObject(object value) {
+#if !NETCOREAPP
+            return Marshal.GetIDispatchForObject(value);
+#else
+            return Marshal.GetComInterfaceForObject<object, IDispatch>(value);
+#endif
+        }
 
         // VT_VARIANT
 

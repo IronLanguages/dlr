@@ -84,7 +84,7 @@ namespace Microsoft.Dynamic.Test {
                 "DefaultIfEmpty", "ElementAt", "ElementAtOrDefault"
             }).ToList();
 
-#if !NETCOREAPP2_0 && !NETCOREAPP2_1 && !NETSTANDARD2_0
+#if !NETCOREAPP && !NETSTANDARD
             names.AddRange(
                 new string[] {
                     "AsQueryable", "AsQueryable", "AsParallel", "AsParallel", "AsParallel", "AsOrdered",
