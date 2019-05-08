@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
+#pragma warning disable 612, 618
 
 using System.Linq.Expressions;
 

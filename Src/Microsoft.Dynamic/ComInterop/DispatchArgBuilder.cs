@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
+#pragma warning disable 612, 618
 
 using System;
 using System.Linq.Expressions;
@@ -41,7 +42,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Equal(parameter, Expression.Constant(null)),
                 Expression.Constant(IntPtr.Zero),
                 Expression.Call(
-                    typeof(Marshal).GetMethod("GetIDispatchForObject"),
+                    ComRuntimeHelpers.GetGetIDispatchForObjectMethod(),
                     parameter
                 )
             );

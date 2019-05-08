@@ -56,9 +56,13 @@ namespace Microsoft.Scripting.ComInterop {
         #endregion
 
         private void DisposeAll() {
+#if !NETCOREAPP
             foreach (ComEventSink sink in this) {
                 sink.Dispose();
             }
+#else
+            this.Clear();
+#endif
         }
 
         ~ComEventSinksContainer() {

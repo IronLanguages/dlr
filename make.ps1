@@ -19,7 +19,7 @@ if(!$global:isUnix) {
     $_VSINSTPATH = ''
 
     if([System.IO.File]::Exists($_VSWHERE)) {
-        $_VSINSTPATH = & "$_VSWHERE" -latest -requires Microsoft.Component.MSBuild -property installationPath
+        $_VSINSTPATH = & "$_VSWHERE" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
     } else {
         Write-Error "Visual Studio 2017 15.9 or later is required"
         Exit 1
@@ -58,7 +58,12 @@ $_defaultFrameworkSettings = @{
 $_FRAMEWORKS = @{}
 
 function Main([String] $target, [String] $configuration) {
-    msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    if (!$global:isUnix) {
+        msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    }
+    else {
+        dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    }
     # use the exit code of msbuild as the exit code for this script
     $global:Result = $LastExitCode
 }
@@ -76,13 +81,13 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
     $doc.AppendChild($dec) | Out-Null
 
     $runSettings = $doc.CreateElement("RunSettings")
-    
+
     $runConfiguration = $doc.CreateElement("RunConfiguration")
     $runSettings.AppendChild($runConfiguration) | Out-Null
     $targetPlatform = $doc.CreateElement("TargetPlatform")
     $targetPlatform.InnerText = $platform
     $runConfiguration.AppendChild($targetPlatform) | Out-Null
-    
+
     $testRunParameters = $doc.CreateElement("TestRunParameters")
     $runSettings.AppendChild($testRunParameters) | Out-Null
 
@@ -181,7 +186,7 @@ switch -wildcard ($target) {
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
     "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks $platform; break }
-    
+
     # release targets
     "restore"       { Main "RestoreReferences" "Release" }
     "release"       { Main "Build" "Release" }

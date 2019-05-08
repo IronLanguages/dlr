@@ -15,6 +15,7 @@ using System.Security.Permissions;
 using Microsoft.Scripting.Utils;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 using Microsoft.Scripting.Generation;
+using System.Linq;
 
 namespace Microsoft.Scripting.ComInterop {
 
@@ -29,7 +30,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             switch (hresult) {
                 case ComHresults.DISP_E_BADPARAMCOUNT:
-                    // The number of elements provided to DISPPARAMS is different from the number of arguments 
+                    // The number of elements provided to DISPPARAMS is different from the number of arguments
                     // accepted by the method or property.
                     throw Error.DispBadParamCount(message);
 
@@ -38,12 +39,12 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case ComHresults.DISP_E_EXCEPTION:
-                    // The application needs to raise an exception. In this case, the structure passed in pExcepInfo 
+                    // The application needs to raise an exception. In this case, the structure passed in pExcepInfo
                     // should be filled in.
                     throw excepInfo.GetException();
 
                 case ComHresults.DISP_E_MEMBERNOTFOUND:
-                    // The requested member does not exist, or the call to Invoke tried to set the value of a 
+                    // The requested member does not exist, or the call to Invoke tried to set the value of a
                     // read-only property.
                     throw Error.DispMemberNotFound(message);
 
@@ -56,12 +57,12 @@ namespace Microsoft.Scripting.ComInterop {
                     throw Error.DispOverflow(message);
 
                 case ComHresults.DISP_E_PARAMNOTFOUND:
-                    // One of the parameter DISPIDs does not correspond to a parameter on the method. In this case, 
-                    // puArgErr should be set to the first argument that contains the error. 
+                    // One of the parameter DISPIDs does not correspond to a parameter on the method. In this case,
+                    // puArgErr should be set to the first argument that contains the error.
                     break;
 
                 case ComHresults.DISP_E_TYPEMISMATCH:
-                    // One or more of the arguments could not be coerced. The index within rgvarg of the first 
+                    // One or more of the arguments could not be coerced. The index within rgvarg of the first
                     // parameter with the incorrect type is returned in the puArgErr parameter.
                     throw Error.DispTypeMismatch(argErr, message);
 
@@ -70,7 +71,7 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case ComHresults.DISP_E_UNKNOWNLCID:
-                    // The member being invoked interprets string arguments according to the LCID, and the 
+                    // The member being invoked interprets string arguments according to the LCID, and the
                     // LCID is not recognized.
                     break;
 
@@ -109,7 +110,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="dispatch"></param>
         /// <param name="throwIfMissingExpectedTypeInfo">
         /// Some COM objects just dont expose typeinfo. In these cases, this method will return null.
-        /// Some COM objects do intend to expose typeinfo, but may not be able to do so if the type-library is not properly 
+        /// Some COM objects do intend to expose typeinfo, but may not be able to do so if the type-library is not properly
         /// registered. This will be considered as acceptable or as an error condition depending on throwIfMissingExpectedTypeInfo</param>
         /// <returns></returns>
         internal static ComTypes.ITypeInfo GetITypeInfoFromIDispatch(IDispatch dispatch, bool throwIfMissingExpectedTypeInfo) {
@@ -149,7 +150,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// will check if the typeinfo is expected to be missing. This can include error cases where
         /// the same error is guaranteed to happen all the time, on all machines, under all circumstances.
         /// In such cases, we just have to operate without the typeinfo.
-        /// 
+        ///
         /// However, if accessing the typeinfo is failing in a transient way, we might want to throw
         /// an exception so that we will eagerly predictably indicate the problem.
         /// </summary>
@@ -213,6 +214,14 @@ namespace Microsoft.Scripting.ComInterop {
         public static DispCallable CreateDispCallable(IDispatchComObject dispatch, ComMethodDesc method) {
             return new DispCallable(dispatch, method.Name, method.DispId);
         }
+        internal static MethodInfo GetGetIDispatchForObjectMethod() {
+#if !NETCOREAPP
+            return typeof(Marshal).GetMethod("GetIDispatchForObject");
+#else
+            // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.
+            return typeof(Marshal).GetMethods().Single(m => m.Name == "GetComInterfaceForObject" && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
+#endif
+        }
     }
 
     /// <summary>
@@ -220,7 +229,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// Callers of these methods need to use them extremely carefully as incorrect use could cause GC-holes
     /// and other problems.
     /// </summary>
-    /// 
+    ///
     internal static class UnsafeMethods {
         [System.Runtime.Versioning.ResourceExposure(System.Runtime.Versioning.ResourceScope.None)]
         [System.Runtime.Versioning.ResourceConsumption(System.Runtime.Versioning.ResourceScope.Process, System.Runtime.Versioning.ResourceScope.Process)]
@@ -244,7 +253,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         private static MethodInfo Create_ConvertByrefToPtr() {
             // We dont use AssemblyGen.DefineMethod since that can create a anonymously-hosted DynamicMethod which cannot contain unverifiable code.
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("ComSnippets"), AssemblyBuilderAccess.Run);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("ComSnippets"), AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("ComSnippets");
             var type = moduleBuilder.DefineType("Type$ConvertByrefToPtr", TypeAttributes.Public);
 
@@ -339,7 +348,7 @@ namespace Microsoft.Scripting.ComInterop {
             Debug.Assert(obj != null);
 
             // GetNativeVariantForObject is very expensive for values that marshal as VT_DISPATCH
-            // also is is extremely common scenario when object at hand is an RCW. 
+            // also is is extremely common scenario when object at hand is an RCW.
             // Therefore we are going to test for IDispatch before defaulting to GetNativeVariantForObject.
             if (obj is IDispatch disp) {
                 variant.AsDispatch = obj;
@@ -462,7 +471,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         /// <summary>
         /// Ensure that "value" is a local variable in some caller's frame. So converting
-        /// the byref to an IntPtr is a safe operation. Alternatively, we could also allow 
+        /// the byref to an IntPtr is a safe operation. Alternatively, we could also allow
         /// allowed "value"  to be a pinned object.
         /// </summary>
         [Conditional("DEBUG")]
@@ -487,18 +496,20 @@ namespace Microsoft.Scripting.ComInterop {
                 }
                 lock (_lock) {
                     if (_dynamicModule == null) {
-                        var attributes = new[] { 
+                        var attributes = new[] {
                             new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), new object[0]),
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
-                            new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}), 
+                            new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}),
                                 new object[]{SecurityAction.Demand},
-                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty("Unrestricted")}, 
+                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty("Unrestricted")},
                                 new object[] {true})
                         };
 
                         string name = typeof(VariantArray).Namespace + ".DynamicAssembly";
-                        var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
+                        var assembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
+#if !NETCOREAPP
                         assembly.DefineVersionInfoResource();
+#endif
                         _dynamicModule = assembly.DefineDynamicModule(name);
                     }
                     return _dynamicModule;
@@ -509,8 +520,8 @@ namespace Microsoft.Scripting.ComInterop {
         private const int _dummyMarker = 0x10101010;
 
         /// <summary>
-        /// We will emit an indirect call to an unmanaged function pointer from the vtable of the given interface pointer. 
-        /// This approach can take only ~300 instructions on x86 compared with ~900 for Marshal.Release. We are relying on 
+        /// We will emit an indirect call to an unmanaged function pointer from the vtable of the given interface pointer.
+        /// This approach can take only ~300 instructions on x86 compared with ~900 for Marshal.Release. We are relying on
         /// the JIT-compiler to do pinvoke-stub-inlining and calling the pinvoke target directly.
         /// </summary>
         private delegate int IUnknownReleaseDelegate(IntPtr interfacePointer);
@@ -533,9 +544,7 @@ namespace Microsoft.Scripting.ComInterop {
             method.Emit(OpCodes.Add);
             method.Emit(OpCodes.Ldind_I);
 
-            SignatureHelper signature = SignatureHelper.GetMethodSigHelper(CallingConvention.Winapi, typeof(int));
-            signature.AddArgument(typeof(IntPtr));
-            method.Emit(OpCodes.Calli, signature);
+            method.EmitCalli(OpCodes.Calli, CallingConvention.Winapi, typeof(int), new[] { typeof(IntPtr) });
 
             method.Emit(OpCodes.Ret);
 
@@ -554,9 +563,9 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         /// <summary>
-        /// We will emit an indirect call to an unmanaged function pointer from the vtable of the given IDispatch interface pointer. 
-        /// It is not possible to express this in C#. Using an indirect pinvoke call allows us to do our own marshalling. 
-        /// We can allocate the Variant arguments cheaply on the stack. We are relying on the JIT-compiler to do 
+        /// We will emit an indirect call to an unmanaged function pointer from the vtable of the given IDispatch interface pointer.
+        /// It is not possible to express this in C#. Using an indirect pinvoke call allows us to do our own marshalling.
+        /// We can allocate the Variant arguments cheaply on the stack. We are relying on the JIT-compiler to do
         /// pinvoke-stub-inlining and calling the pinvoke target directly.
         /// The alternative of calling via a managed interface declaration of IDispatch would have a performance
         /// penalty of going through a CLR stub that would have to re-push the arguments on the stack, etc.
@@ -647,8 +656,7 @@ namespace Microsoft.Scripting.ComInterop {
             method.Emit(OpCodes.Add);
             method.Emit(OpCodes.Ldind_I);
 
-            SignatureHelper signature = SignatureHelper.GetMethodSigHelper(CallingConvention.Winapi, typeof(int));
-            Type[] invokeParamTypes = new Type[] { 
+            Type[] invokeParamTypes = new Type[] {
                     typeof(IntPtr), // dispatchPointer
                     typeof(int),    // memberDispId
                     typeof(IntPtr), // riid
@@ -659,14 +667,13 @@ namespace Microsoft.Scripting.ComInterop {
                     typeof(IntPtr), // excepInfo
                     typeof(IntPtr), // argErr
                 };
-            signature.AddArguments(invokeParamTypes, null, null);
-            method.Emit(OpCodes.Calli, signature);
+            method.EmitCalli(OpCodes.Calli, CallingConvention.Winapi, typeof(int), invokeParamTypes);
 
             method.Emit(OpCodes.Ret);
             return (IDispatchInvokeDelegate)dm.CreateDelegate(typeof(IDispatchInvokeDelegate));
         }
 
-        #endregion
+#endregion
     }
 
 

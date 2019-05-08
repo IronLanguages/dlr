@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
+#pragma warning disable 618
 
 using System;
 using System.Diagnostics;
@@ -680,7 +681,11 @@ namespace Microsoft.Scripting.ComInterop {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
                 VariantType = VarEnum.VT_DISPATCH;
                 if (value != null) {
+#if !NETCOREAPP
                     _typeUnion._unionTypes._unknown = Marshal.GetIDispatchForObject(value);
+#else
+                    _typeUnion._unionTypes._unknown = Marshal.GetComInterfaceForObject<object, IDispatch>(value);
+#endif
                 }
             }
         }
@@ -830,6 +835,120 @@ namespace Microsoft.Scripting.ComInterop {
 
                 default:
                     throw Error.VariantGetAccessorNYI(varType);
+            }
+        }
+
+        unsafe internal void CopyFromIndirect(object value) {
+            VarEnum vt = (VarEnum)(((int)VariantType) & ~((int)VarEnum.VT_BYREF));
+
+            if (value == null) {
+                if (vt == VarEnum.VT_DISPATCH || vt == VarEnum.VT_UNKNOWN || vt == VarEnum.VT_BSTR) {
+                    *(IntPtr*)_typeUnion._unionTypes._byref = IntPtr.Zero;
+                }
+                return;
+            }
+
+            if ((vt & VarEnum.VT_ARRAY) != 0) {
+                Variant vArray;
+                Marshal.GetNativeVariantForObject(value, (IntPtr)(void*)&vArray);
+                *(IntPtr*)_typeUnion._unionTypes._byref = vArray._typeUnion._unionTypes._byref;
+                return;
+            }
+
+            switch (vt) {
+                case VarEnum.VT_I1:
+                    *(sbyte*)_typeUnion._unionTypes._byref = (sbyte)value;
+                    break;
+
+                case VarEnum.VT_UI1:
+                    *(byte*)_typeUnion._unionTypes._byref = (byte)value;
+                    break;
+
+                case VarEnum.VT_I2:
+                    *(short*)_typeUnion._unionTypes._byref = (short)value;
+                    break;
+
+                case VarEnum.VT_UI2:
+                    *(ushort*)_typeUnion._unionTypes._byref = (ushort)value;
+                    break;
+
+                case VarEnum.VT_BOOL:
+                    // VARIANT_TRUE  = -1
+                    // VARIANT_FALSE = 0
+                    *(short*)_typeUnion._unionTypes._byref = (bool)value ? (short)-1 : (short)0;
+                    break;
+
+                case VarEnum.VT_I4:
+                case VarEnum.VT_INT:
+                    *(int*)_typeUnion._unionTypes._byref = (int)value;
+                    break;
+
+                case VarEnum.VT_UI4:
+                case VarEnum.VT_UINT:
+                    *(uint*)_typeUnion._unionTypes._byref = (uint)value;
+                    break;
+
+                case VarEnum.VT_ERROR:
+                    *(int*)_typeUnion._unionTypes._byref = ((ErrorWrapper)value).ErrorCode;
+                    break;
+
+                case VarEnum.VT_I8:
+                    *(Int64*)_typeUnion._unionTypes._byref = (Int64)value;
+                    break;
+
+                case VarEnum.VT_UI8:
+                    *(UInt64*)_typeUnion._unionTypes._byref = (UInt64)value;
+                    break;
+
+                case VarEnum.VT_R4:
+                    *(float*)_typeUnion._unionTypes._byref = (float)value;
+                    break;
+
+                case VarEnum.VT_R8:
+                    *(double*)_typeUnion._unionTypes._byref = (double)value;
+                    break;
+
+                case VarEnum.VT_DATE:
+                    *(double*)_typeUnion._unionTypes._byref = ((DateTime)value).ToOADate();
+                    break;
+
+                case VarEnum.VT_UNKNOWN:
+                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIUnknownForObject(value);
+                    break;
+
+                case VarEnum.VT_DISPATCH:
+#if !NETCOREAPP
+                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIDispatchForObject(value);
+#else
+                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIUnknownForObject(value);
+#endif
+                    break;
+
+                case VarEnum.VT_BSTR:
+                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.StringToBSTR((string)value);
+                    break;
+
+                case VarEnum.VT_CY:
+                    *(long*)_typeUnion._unionTypes._byref = decimal.ToOACurrency((decimal)value);
+                    break;
+
+                case VarEnum.VT_DECIMAL:
+                    *(decimal*)_typeUnion._unionTypes._byref = (decimal)value;
+                    break;
+
+                case VarEnum.VT_VARIANT:
+                    Marshal.GetNativeVariantForObject(value, _typeUnion._unionTypes._byref);
+                    break;
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        public IntPtr AsByRefVariant {
+            get {
+                Debug.Assert(VariantType == (VarEnum.VT_BYREF | VarEnum.VT_VARIANT));
+                return _typeUnion._unionTypes._byref;
             }
         }
     }

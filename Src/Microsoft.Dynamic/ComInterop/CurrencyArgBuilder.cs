@@ -4,6 +4,7 @@
 
 
 #if FEATURE_COM
+#pragma warning disable 612, 618
 using System.Linq.Expressions;
 
 using System;

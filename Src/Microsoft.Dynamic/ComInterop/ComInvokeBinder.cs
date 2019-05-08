@@ -466,7 +466,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Assign(
                     DispatchPointerVariable,
                     Expression.Call(
-                        typeof(Marshal).GetMethod("GetIDispatchForObject"),
+                        ComRuntimeHelpers.GetGetIDispatchForObjectMethod(),
                         DispatchObjectVariable
                     )
                 )

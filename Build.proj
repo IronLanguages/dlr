@@ -13,7 +13,6 @@
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
   </PropertyGroup>
 
-  <Import Project="$(BuildSysDir)\Tasks.Targets" />
   <Import Project="$(RootDir)\CurrentVersion.props" />
 
   <PropertyGroup>
@@ -93,19 +92,19 @@
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
-      <NuSpecDir>$(RootDir)\Package\nuget</NuSpecDir>
+      <NuSpecDir>$(RootDir)/Package/nuget</NuSpecDir>
     </Package>
   </ItemGroup>
 
   <ItemGroup>
-    <NuGetPackageInputs Include="@(Package->'%(NuSpecDir)\*.nuspec')" />
-    <NuGetPackageOutputs Include="@(Package->'$(PackageDir)\$(Filename).$(PackageVersion).nupkg')" />
+    <NuGetPackageInputs Include="@(Package->'%(NuSpecDir)/*.nuspec')" />
+    <NuGetPackageOutputs Include="@(Package->'$(PackageDir)/$(Filename).$(PackageVersion).nupkg')" />
   </ItemGroup>
 
   <Target Name="NuGetPackage" DependsOnTargets="Stage;MakePackageDir"
           Inputs="@(NuGetPackageInputs);@(StageOutputs)"
           Outputs="@(NuGetPackageOutputs)">
-    <Exec Command="$(NuGet) pack -Version $(PackageVersion) &quot;%(Package.NuSpecDir)\%(Package.Identity).nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot; -Symbols -SymbolPackageFormat snupkg" />
+    <Exec Command="$(NuGet) pack -Version $(PackageVersion) &quot;%(Package.NuSpecDir)/%(Package.Identity).nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot; -Symbols -SymbolPackageFormat snupkg" />
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
@@ -114,7 +113,7 @@
       <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
-    <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+    <ZipDirectory DestinationFile="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" SourceDirectory="$(StageDir)" Overwrite="true" />
   </Target>
 
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
