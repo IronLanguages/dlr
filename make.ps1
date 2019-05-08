@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.0','netcoreapp2.1'),
+    [String[]] $frameworks=@('net45','netcoreapp2.0','netcoreapp2.1','netcoreapp3.0'),
     [String] $platform = "x64",
     [switch] $runIgnored
 )
@@ -58,12 +58,7 @@ $_defaultFrameworkSettings = @{
 $_FRAMEWORKS = @{}
 
 function Main([String] $target, [String] $configuration) {
-    if (!$global:isUnix) {
-        msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
-    }
-    else {
-        dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
-    }
+    dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
     # use the exit code of msbuild as the exit code for this script
     $global:Result = $LastExitCode
 }

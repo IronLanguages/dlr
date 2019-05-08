@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.0;netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
@@ -12,10 +12,18 @@
     <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
     <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="NUnitLite" Version="3.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
