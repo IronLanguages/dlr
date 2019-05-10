@@ -734,20 +734,19 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static bool TryToFloat64(this BigInteger self, out double result) {
-            return StringUtils.TryParseDouble(
-                self.ToString(),
-                System.Globalization.NumberStyles.Number,
-                System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
-                out result
-            );
+            result = (double)self;
+            if (double.IsInfinity(result)) {
+                result = default;
+                return false;
+            }
+            return true;
         }
 
         public static double ToFloat64(this BigInteger self) {
-            return double.Parse(
-                self.ToString(),
-                System.Globalization.NumberStyles.Number,
-                System.Globalization.CultureInfo.InvariantCulture.NumberFormat
-            );
+            if (TryToFloat64(self, out double res)) {
+                return res;
+            }
+            throw new OverflowException("Value was either too large or too small for a Double.");
         }
         
         public static int BitLength(BigInteger x) {
