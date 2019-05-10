@@ -114,6 +114,7 @@ namespace Microsoft.Scripting.Utils {
             return result.ToString();
         }
 
+        [Obsolete("Use double.TryParse")]
         public static bool TryParseDouble(string s, NumberStyles style, IFormatProvider provider, out double result) {
             return Double.TryParse(s, style, provider, out result);
         }
