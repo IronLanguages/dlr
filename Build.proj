@@ -13,6 +13,7 @@
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
   </PropertyGroup>
 
+  <Import Project="$(BuildSysDir)\Tasks.Targets" />
   <Import Project="$(RootDir)\CurrentVersion.props" />
 
   <PropertyGroup>
@@ -74,7 +75,7 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
     <ItemGroup>
-      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*;$(BinDir)\$(Configuration)\**\Microsoft.VisualStudio.*" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.Scripting.*;$(BinDir)\$(Configuration)\**\Microsoft.Dynamic.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*" />
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
@@ -110,10 +111,10 @@
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
           Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"/>
+      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE" />
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
-    <ZipDirectory DestinationFile="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" SourceDirectory="$(StageDir)" Overwrite="true" />
+    <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
   </Target>
 
   <Target Name="DebPackage" DependsOnTargets="Stage;MakePackageDir" Condition="'$(OS)' == 'Unix' ">
