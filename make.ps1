@@ -32,13 +32,13 @@ if(!$global:isUnix) {
 
     if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\MSBuild.exe'))) {
         $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\')
-        if ($env:PATH -notcontains $_MSBUILDPATH) {
+        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
             $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
         }
     }
     elseif([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
         $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\')
-        if ($env:PATH -notcontains $_MSBUILDPATH) {
+        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
             $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
         }
     }
@@ -113,7 +113,7 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
 function Test([String] $target, [String] $configuration, [String[]] $frameworks, [String] $platform) {
     foreach ($framework in $frameworks) {
         $frameworkSettings = $_FRAMEWORKS[$framework]
-        if ($frameworkSettings -eq $null) { $frameworkSettings = $_defaultFrameworkSettings }
+        if ($null -eq $frameworkSettings) { $frameworkSettings = $_defaultFrameworkSettings }
 
         foreach ($testdesc in $frameworkSettings["tests"].Keys) {
             $testname = "";
