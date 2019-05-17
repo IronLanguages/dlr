@@ -3,18 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Dynamic;
+using System.Linq.Expressions;
 using System.Security;
 using System.Security.Permissions;
+
 using Microsoft.Scripting.Utils;
-using System.Dynamic;
 
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "System.Dynamic")]
-
 namespace Microsoft.Scripting.ComInterop {
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="value">The object to test.</param>
         /// <returns>true if the object is a COM object, false otherwise.</returns>
         public static bool IsComObject(object value) {
-            return ComObject.IsComObject(value);
+            return Utils.TypeUtils.IsComObject(value);
         }
 
         public static bool CanComBind(object value) {
