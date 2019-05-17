@@ -3,16 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using System.Dynamic;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
     /// <summary>
@@ -25,7 +27,7 @@ namespace Microsoft.Scripting.ComInterop {
 #endif
     class ComObject : IDynamicMetaObjectProvider {
         internal ComObject(object rcw) {
-            Debug.Assert(IsComObject(rcw));
+            Debug.Assert(Utils.TypeUtils.IsComObject(rcw));
             RuntimeCallableWrapper = rcw;
         }
 
@@ -39,7 +41,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         public static ComObject ObjectToComObject(object rcw) {
-            Debug.Assert(ComObject.IsComObject(rcw));
+            Debug.Assert(Utils.TypeUtils.IsComObject(rcw));
 
             // Marshal.Get/SetComObjectData has a LinkDemand for UnmanagedCode which will turn into
             // a full demand. We could avoid this by making this method SecurityCritical
@@ -102,14 +104,6 @@ namespace Microsoft.Scripting.ComInterop {
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) {
             return new ComFallbackMetaObject(parameter, BindingRestrictions.Empty, this);
         }
-
-        private static readonly Type ComObjectType = typeof(object).Assembly.GetType("System.__ComObject");
-
-        internal static bool IsComObject(object obj) {
-            // we can't use System.Runtime.InteropServices.Marshal.IsComObject(obj) since it doesn't work in partial trust
-            return obj != null && ComObjectType.IsAssignableFrom(obj.GetType());
-        }
-
     }
 }
 

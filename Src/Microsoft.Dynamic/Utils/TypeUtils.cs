@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
@@ -337,12 +338,16 @@ namespace Microsoft.Scripting.Utils {
         public static readonly Type ComObjectType = typeof(object).Assembly.GetType("System.__ComObject");
 
         public static bool IsComObjectType(Type/*!*/ type) {
-            return ComObjectType.IsAssignableFrom(type);
+            return ComObjectType?.IsAssignableFrom(type) ?? false;
         }
 
         // we can't use System.Runtime.InteropServices.Marshal.IsComObject(obj) since it doesn't work in partial trust
         public static bool IsComObject(object obj) {
+#if NETCOREAPP || NETSTANDARD
+            return obj != null && Marshal.IsComObject(obj);
+#else
             return obj != null && IsComObjectType(obj.GetType());
+#endif
         }
 #else
         public static bool IsComObjectType(Type/*!*/ type) {

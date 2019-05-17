@@ -4,11 +4,10 @@
 
 #if FEATURE_COM
 
-using System.Linq.Expressions;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Microsoft.Scripting.ComInterop {
@@ -240,4 +239,5 @@ namespace Microsoft.Scripting.ComInterop {
         }
     }
 }
+
 #endif
