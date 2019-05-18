@@ -209,7 +209,7 @@ namespace Microsoft.Scripting.ComInterop {
                         ),
                         BindingRestrictions.GetExpressionRestriction(
                             Expression.Call(
-                                typeof(ComObject).GetMethod("IsComObject", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic),
+                                typeof(ComBinder).GetMethod(nameof(ComBinder.IsComObject), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public),
                                 Helpers.Convert(instance.Expression, typeof(object))
                             )
                         )
