@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
-using System.Dynamic;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq.Expressions;
 
 using Microsoft.Scripting.Utils;
 
@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.ComInterop {
                 ComObject.RcwToComObject(Expression),
                 BindingRestrictions.GetExpressionRestriction(
                     Expression.Call(
-                        typeof(ComObject).GetMethod("IsComObject", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic),
+                        typeof(ComBinder).GetMethod(nameof(ComBinder.IsComObject), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public),
                         Helpers.Convert(Expression, typeof(object))
                     )
                 )
