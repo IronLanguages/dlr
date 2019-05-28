@@ -2,18 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
-
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security;
-using Microsoft.Scripting.Utils;
-using System.Runtime.CompilerServices;
-using System.Collections;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
 
@@ -50,7 +48,7 @@ namespace Microsoft.Scripting {
 
         #region Assembly Loading
 
-#if NETCOREAPP2_0 || NETCOREAPP2_1
+#if NETCOREAPP2_1
         static PlatformAdaptationLayer() {
             // https://github.com/dotnet/coreclr/issues/11498
             // attempt to resolve dependencies in the requesting directory
