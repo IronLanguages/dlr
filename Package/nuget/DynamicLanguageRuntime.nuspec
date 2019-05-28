@@ -17,10 +17,6 @@
     <dependencies>
       <group targetFramework="net45">
       </group>
-      <group targetFramework="netcoreapp2.0">
-        <dependency id="System.CodeDom" version="4.5.0" />
-        <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" />
-      </group>
       <group targetFramework="netcoreapp2.1">
         <dependency id="System.CodeDom" version="4.5.0" />
         <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" />
