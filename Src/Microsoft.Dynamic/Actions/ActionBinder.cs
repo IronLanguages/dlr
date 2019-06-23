@@ -361,8 +361,7 @@ namespace Microsoft.Scripting.Actions {
         private MethodInfo GetExtensionOperator(Type ext, string name) {
             return ext.GetInheritedMethods(name)
                    .WithBindingFlags(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
-                   .Where(mi => mi.IsDefined(typeof(PropertyMethodAttribute), false))
-                   .SingleOrDefault();
+                   .SingleOrDefault(mi => mi.IsDefined(typeof(PropertyMethodAttribute), false));
         }
 
         public virtual bool IncludeExtensionMember(MemberInfo member) {
