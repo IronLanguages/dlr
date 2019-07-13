@@ -20,7 +20,7 @@ namespace Microsoft.Scripting.Hosting {
         protected ErrorListener() {
         }
 
-        internal void ReportError(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity) {
+        internal void ReportError(ScriptSource source, string message, in SourceSpan span, int errorCode, Severity severity) {
             ErrorReported(source, message, span, errorCode, severity);
         }
 
