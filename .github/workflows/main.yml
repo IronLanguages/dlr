@@ -8,14 +8,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '2.1.505'
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.0.100-preview8-013656'
@@ -28,4 +26,5 @@ jobs:
         name: packages
         path: Package/Release/Packages
     - name: Test
-      run: pwsh make.ps1 test-all
+      run: pwsh -Command "& ./make.ps1 -frameworks net45,netcoreapp3.0 test-all"
+      # TODO: figure out how to also test on netcoreapp2.1
