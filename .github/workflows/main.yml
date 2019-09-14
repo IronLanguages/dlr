@@ -1,6 +1,6 @@
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -14,4 +14,9 @@ jobs:
         dotnet-version: '3.0.100-preview8-013656'
     - name: Build
       run: pwsh make.ps1
-
+    - name: Package
+      run: pwsh make.ps1 package
+    - uses: actions/upload-artifact@master
+      with:
+        name: packages
+        path: Package/Release/Packages
