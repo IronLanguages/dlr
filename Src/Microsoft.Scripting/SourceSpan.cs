@@ -22,7 +22,7 @@ namespace Microsoft.Scripting {
             End = end;
         }
 
-        private static void ValidateLocations(SourceLocation start, SourceLocation end) {
+        private static void ValidateLocations(in SourceLocation start, in SourceLocation end) {
             if (start.IsValid && end.IsValid) {
                 if (start > end) {
                     throw new ArgumentException("Start and End must be well ordered");

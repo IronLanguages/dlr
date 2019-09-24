@@ -189,7 +189,7 @@ namespace Microsoft.Scripting.Runtime {
             _frozen = true;
         }
 
-        internal bool TryLoadLanguage(ScriptDomainManager manager, AssemblyQualifiedTypeName providerName, out LanguageContext language) {
+        internal bool TryLoadLanguage(ScriptDomainManager manager, in AssemblyQualifiedTypeName providerName, out LanguageContext language) {
             Assert.NotNull(manager);
 
             if (_languageConfigurations.TryGetValue(providerName, out LanguageConfiguration config)) {

@@ -119,7 +119,7 @@ namespace Microsoft.Scripting.Debugging {
 
         #endregion
 
-        private int GetSequencePointIndexForSourceSpan(string sourceFile, SourceSpan sourceSpan, DebugFrame frame) {
+        private int GetSequencePointIndexForSourceSpan(string sourceFile, in SourceSpan sourceSpan, DebugFrame frame) {
             DebugSourceFile debugSourceFile = _debugContext.Lookup(sourceFile);
             if (debugSourceFile == null) {
                 return Int32.MaxValue;

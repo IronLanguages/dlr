@@ -69,8 +69,8 @@ namespace Microsoft.Scripting.Utils {
             return TypeName + ", " + AssemblyName.FullName;
         }
 
-        public static bool operator ==(AssemblyQualifiedTypeName name, AssemblyQualifiedTypeName other) => name.Equals(other);
+        public static bool operator ==(in AssemblyQualifiedTypeName name, in AssemblyQualifiedTypeName other) => name.Equals(other);
 
-        public static bool operator !=(AssemblyQualifiedTypeName name, AssemblyQualifiedTypeName other) => !name.Equals(other);
+        public static bool operator !=(in AssemblyQualifiedTypeName name, in AssemblyQualifiedTypeName other) => !name.Equals(other);
     }
 }

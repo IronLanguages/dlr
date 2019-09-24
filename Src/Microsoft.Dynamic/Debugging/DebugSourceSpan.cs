@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Debugging {
             _columnEnd = columnEnd;
         }
 
-        internal DebugSourceSpan(DebugSourceFile sourceFile, SourceSpan dlrSpan)
+        internal DebugSourceSpan(DebugSourceFile sourceFile, in SourceSpan dlrSpan)
             : this(sourceFile, dlrSpan.Start.Line, dlrSpan.Start.Column, dlrSpan.End.Line, dlrSpan.End.Column) {
         }
 
