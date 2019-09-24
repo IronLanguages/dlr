@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsFullFramework)' != 'true' ">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0-preview8.19405.3" />
-    <PackageReference Include="System.CodeDom" Version="4.6.0-preview8.19405.3" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
+    <PackageReference Include="System.CodeDom" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Reflection.Emit" Version="4.6.0-preview8.19405.3" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
