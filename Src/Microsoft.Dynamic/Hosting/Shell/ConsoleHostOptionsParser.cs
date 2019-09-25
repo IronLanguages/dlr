@@ -4,28 +4,25 @@
 
 #if FEATURE_FULL_CONSOLE
 
-using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Hosting.Shell {
 
     public class ConsoleHostOptionsParser {
-        private readonly ConsoleHostOptions _options;
-        private readonly ScriptRuntimeSetup _runtimeSetup;
-
-        public ConsoleHostOptions Options { get { return _options; } }
-        public ScriptRuntimeSetup RuntimeSetup { get { return _runtimeSetup; } }
+        public ConsoleHostOptions Options { get; }
+        public ScriptRuntimeSetup RuntimeSetup { get; }
 
         public ConsoleHostOptionsParser(ConsoleHostOptions options, ScriptRuntimeSetup runtimeSetup) {
             ContractUtils.RequiresNotNull(options, nameof(options));
             ContractUtils.RequiresNotNull(runtimeSetup, nameof(runtimeSetup));
 
-            _options = options;
-            _runtimeSetup = runtimeSetup;
+            Options = options;
+            RuntimeSetup = runtimeSetup;
         }
 
         /// <exception cref="InvalidOptionException"></exception>
@@ -40,21 +37,21 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
                 switch (name) {
                     case "console":
-                        _options.RunAction = ConsoleHostOptions.Action.RunConsole;
+                        Options.RunAction = ConsoleHostOptions.Action.RunConsole;
                         break;
 
                     case "run":
                         OptionValueRequired(name, value);
 
-                        _options.RunAction = ConsoleHostOptions.Action.RunFile;
-                        _options.RunFile = value;
+                        Options.RunAction = ConsoleHostOptions.Action.RunFile;
+                        Options.RunFile = value;
                         break;
 
                     case "lang":
                         OptionValueRequired(name, value);
 
                         string provider = null;
-                        foreach (var language in _runtimeSetup.LanguageSetups) {
+                        foreach (var language in RuntimeSetup.LanguageSetups) {
                             if (language.Names.Any(n => DlrConfiguration.LanguageNameComparer.Equals(n, value))) {
                                 provider = language.TypeName;
                                 break;
@@ -64,24 +61,24 @@ namespace Microsoft.Scripting.Hosting.Shell {
                             throw new InvalidOptionException($"Unknown language id '{value}'.");
                         }
 
-                        _options.LanguageProvider = provider;
-                        _options.HasLanguageProvider = true;
+                        Options.LanguageProvider = provider;
+                        Options.HasLanguageProvider = true;
                         break;
 
                     case "path":
                     case "paths":
                         OptionValueRequired(name, value);
-                        _options.SourceUnitSearchPaths = value.Split(';');
+                        Options.SourceUnitSearchPaths = value.Split(';');
                         break;
 
                     case "setenv":
-                        _options.EnvironmentVars.AddRange(value.Split(';'));
+                        Options.EnvironmentVars.AddRange(value.Split(';'));
                         break;
 
                     // first unknown/non-option:
                     case null:
                     default:
-                        _options.IgnoredArgs.Add(current);
+                        Options.IgnoredArgs.Add(current);
                         goto case "";
 
                     // host/passthru argument separator
@@ -89,7 +86,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     case "":
                         // ignore all arguments starting with the next one (arguments are not parsed):
                         while (i < args.Length) {
-                            _options.IgnoredArgs.Add(args[i++]);
+                            Options.IgnoredArgs.Add(args[i++]);
                         }
                         break;
                 }
@@ -126,7 +123,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         protected void OptionValueRequired(string optionName, string value) {
             if (value == null) {
-                throw new InvalidOptionException(String.Format(CultureInfo.CurrentCulture, "Argument expected for the {0} option.", optionName));
+                throw new InvalidOptionException(string.Format(CultureInfo.CurrentCulture, "Argument expected for the {0} option.", optionName));
             }
         }
     }
