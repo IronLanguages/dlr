@@ -554,13 +554,7 @@ namespace Microsoft.Scripting.Runtime {
             return new string[0];
         }
 
-        public virtual bool IsCallable(object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            return typeof(Delegate).IsAssignableFrom(obj.GetType());
-        }
+        public virtual bool IsCallable(object obj) => obj is Delegate;
 
         #endregion
 
