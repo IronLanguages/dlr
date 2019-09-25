@@ -6,19 +6,18 @@
 
 using System;
 using System.IO;
-using Microsoft.Scripting.Utils;
 using System.Threading;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting.Shell {
 
     public class BasicConsole : IConsole, IDisposable {
         private TextWriter _output;
         private TextWriter _errorOutput;
-        private AutoResetEvent _ctrlCEvent;
-        private Thread _creatingThread;
 
         public TextWriter Output {
-            get { return _output; }
+            get => _output;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 _output = value;
@@ -26,22 +25,16 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         public TextWriter ErrorOutput {
-            get { return _errorOutput; }
+            get => _errorOutput;
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
                 _errorOutput = value;
             }
         }
 
-        protected AutoResetEvent CtrlCEvent {
-            get { return _ctrlCEvent; }
-            set { _ctrlCEvent = value; }
-        }
+        protected AutoResetEvent CtrlCEvent { get; set; }
 
-        protected Thread CreatingThread {
-            get { return _creatingThread; }
-            set { _creatingThread = value; }
-        }
+        protected Thread CreatingThread { get; set; }
 
         public ConsoleCancelEventHandler ConsoleCancelEventHandler { get; set; }
         private ConsoleColor _promptColor;
@@ -50,18 +43,18 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private ConsoleColor _warningColor;
 
         public BasicConsole(bool colorful) {            
-            _output = System.Console.Out;
-            _errorOutput = System.Console.Error;
+            _output = Console.Out;
+            _errorOutput = Console.Error;
             SetupColors(colorful);
 
-            _creatingThread = Thread.CurrentThread;            
+            CreatingThread = Thread.CurrentThread;            
 
             // Create the default handler
             ConsoleCancelEventHandler = delegate(object sender, ConsoleCancelEventArgs e) {
                 if (e.SpecialKey == ConsoleSpecialKey.ControlC) {
                     e.Cancel = true;
-                    _ctrlCEvent.Set();
-                    _creatingThread.Abort(new KeyboardInterruptException(""));
+                    CtrlCEvent.Set();
+                    CreatingThread.Abort(new KeyboardInterruptException(""));
                 }
             };
 
@@ -73,7 +66,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 }
             };
 
-            _ctrlCEvent = new AutoResetEvent(false);
+            CtrlCEvent = new AutoResetEvent(false);
         }
 
         private void SetupColors(bool colorful) {
@@ -146,7 +139,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 // delay when shutting down the process via ctrl-z, but it's
                 // not really perceptible.  In the ctrl-C case we will return
                 // as soon as the event is signaled.
-                if (_ctrlCEvent != null && _ctrlCEvent.WaitOne(100, false)) {
+                if (CtrlCEvent != null && CtrlCEvent.WaitOne(100, false)) {
                     // received ctrl-C
                     return "";
                 }
@@ -179,7 +172,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         #region IDisposable Members
 
         public void Dispose() {
-            _ctrlCEvent?.Close();
+            CtrlCEvent?.Close();
 
             GC.SuppressFinalize(this);
         }
