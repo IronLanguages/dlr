@@ -15,7 +15,7 @@ For more information see the [.NET Foundation Code of Conduct](https://dotnetfou
 
 Installation
 ------------
-The best way to install the DLR is through the NuGet DynamicLanguageRuntime package. For now you will need to enable prerelease packages, as there is no production NuGet release yet.
+The best way to install the DLR is through the NuGet DynamicLanguageRuntime package.
 
 Documentation
 -------------
@@ -27,11 +27,11 @@ If you have any questions, [open an issue](https://github.com/IronLanguages/dlr/
 
 History
 -------
-The original DLR site is at http://dlr.codeplex.com. The DLR was part of a much larger repository containing IronPython and IronRuby as well; you can find it at https://github.com/IronLangauges/main/. This is a smaller repository containing just the DLR, which makes it easier to package and should make it easier to do more regular releases.
+The original DLR site is at [CodePlex](http://dlr.codeplex.com). The DLR was part of a much larger repository containing IronPython and IronRuby as well; you can find it at the [main](https://github.com/IronLanguages/main) repository. This is a smaller repository containing just the DLR, which makes it easier to package and should make it easier to do more regular releases.
 
 Build
 -----
-You will need to have Visual Studio 2017 installed on your machine.
+You will need to have Visual Studio 2019 16.3.0 or later installed on your machine.
 
 On Windows machines, start a Visual Studio command prompt and type:
 
