@@ -302,7 +302,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             }
 
-            if (type == null || type.IsValueType()) {
+            if (type == null || type.IsValueType) {
                 if (value is bool b) {
                     EmitLoad(b);
                     return;
@@ -502,7 +502,7 @@ namespace Microsoft.Scripting.Interpreter {
             object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
             if (value != null) {
                 Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
-            } else if (type.IsValueType()) {
+            } else if (type.IsValueType) {
                 Emit(new InitializeLocalInstruction.MutableValue(index, type));
             } else {
                 Emit(InitReference(index));
