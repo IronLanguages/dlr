@@ -5,8 +5,6 @@
 #if FEATURE_CONFIGURATION
 
 using System.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Hosting.Configuration {
 
@@ -16,21 +14,15 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             AddElementName = "set";
         }
 
-        public override ConfigurationElementCollectionType CollectionType {
-            get { return ConfigurationElementCollectionType.AddRemoveClearMap; }
-        }
+        public override ConfigurationElementCollectionType CollectionType =>
+            ConfigurationElementCollectionType.AddRemoveClearMap;
 
-        protected override ConfigurationElement CreateNewElement() {
-            return new OptionElement();
-        }
+        protected override ConfigurationElement CreateNewElement() => new OptionElement();
 
-        protected override bool ThrowOnDuplicate {
-            get { return false; }
-        }
+        protected override bool ThrowOnDuplicate => false;
 
-        protected override object GetElementKey(ConfigurationElement element) {
-            return ((OptionElement)element).GetKey();
-        }
+        protected override object GetElementKey(ConfigurationElement element) =>
+            ((OptionElement)element).GetKey();
     }
 }
 

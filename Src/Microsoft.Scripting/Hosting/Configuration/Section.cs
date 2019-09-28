@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Xml;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -47,24 +48,21 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             new ConfigurationProperty(_Options, typeof(OptionElementCollection), null), 
         };
 
-        protected override ConfigurationPropertyCollection Properties {
-            get { return _Properties; }
-        }
+        protected override ConfigurationPropertyCollection Properties => _Properties;
 
         public bool? DebugMode {
-            get { return (bool?)base[_DebugMode]; }
-            set { base[_DebugMode] = value; }
+            get => (bool?)base[_DebugMode];
+            set => base[_DebugMode] = value;
         }
 
         public bool? PrivateBinding {
-            get { return (bool?)base[_PrivateBinding]; }
-            set { base[_PrivateBinding] = value; }
+            get => (bool?)base[_PrivateBinding];
+            set => base[_PrivateBinding] = value;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<LanguageElement> GetLanguages() {
-            var languages = this[_Languages] as LanguageElementCollection;
-            if (languages == null) {
+            if (!(this[_Languages] is LanguageElementCollection languages)) {
                 yield break;
             }
 
@@ -75,8 +73,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<OptionElement> GetOptions() {
-            var options = this[_Options] as OptionElementCollection;
-            if (options == null) {
+            if (!(this[_Options] is OptionElementCollection options)) {
                 yield break;
             }
 
@@ -98,12 +95,9 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         }
 
         internal static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream configFileStream) {
-            Section config;
-            if (configFileStream != null) {
-                config = LoadFromFile(configFileStream);
-            } else {
-                config = System.Configuration.ConfigurationManager.GetSection(Section.SectionName) as Section;
-            }
+            var config = configFileStream != null
+                ? LoadFromFile(configFileStream)
+                : System.Configuration.ConfigurationManager.GetSection(SectionName) as Section;
 
             if (config == null) {
                 return;
@@ -146,7 +140,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             }
 
             foreach (var option in config.GetOptions()) {
-                if (String.IsNullOrEmpty(option.Language)) {
+                if (string.IsNullOrEmpty(option.Language)) {
                     // common option:
                     setup.Options[option.Name] = option.Value;
                 } else {
@@ -160,7 +154,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
                         }
                     }
                     if (!found) {
-                        throw new ConfigurationErrorsException(string.Format("Unknown language name: '{0}'", option.Language));
+                        throw new ConfigurationErrorsException($"Unknown language name: '{option.Language}'");
                     }
                 }
             }

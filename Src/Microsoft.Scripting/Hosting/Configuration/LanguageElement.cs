@@ -4,9 +4,9 @@
 
 #if FEATURE_CONFIGURATION
 
-using System.Configuration;
 using System;
-using System.Collections.Generic;
+using System.Configuration;
+
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Hosting.Configuration {
@@ -26,42 +26,37 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             new ConfigurationProperty(_DisplayName, typeof(string), null)
         };
 
-        protected override ConfigurationPropertyCollection Properties {
-            get { return _Properties; }
-        }
+        protected override ConfigurationPropertyCollection Properties => _Properties;
 
         public string Names {
-            get { return (string)this[_Names]; }
-            set { this[_Names] = value; }
+            get => (string)this[_Names];
+            set => this[_Names] = value;
         }
 
         public string Extensions {
-            get { return (string)this[_Extensions]; }
-            set { this[_Extensions] = value; }
+            get => (string)this[_Extensions];
+            set => this[_Extensions] = value;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public string Type {
-            get { return (string)this[_Type]; }
-            set { this[_Type] = value; }
+            get => (string)this[_Type];
+            set => this[_Type] = value;
         }
 
         public string DisplayName {
-            get { return (string)this[_DisplayName]; }
-            set { this[_DisplayName] = value; }
+            get => (string)this[_DisplayName];
+            set => this[_DisplayName] = value;
         }
 
-        public string[] GetNamesArray() {
-            return Split(Names);
-        }
+        public string[] GetNamesArray() => Split(Names);
 
-        public string[] GetExtensionsArray() {
-            return Split(Extensions);
-        }
+        public string[] GetExtensionsArray() => Split(Extensions);
 
-        private static string[] Split(string str) {
-            return (str != null) ? str.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries) : ArrayUtils.EmptyStrings;
-        }
+        private static string[] Split(string str) =>
+            str != null
+                ? str.Split(new[] {';', ','}, StringSplitOptions.RemoveEmptyEntries)
+                : ArrayUtils.EmptyStrings;
     }
 }
 
