@@ -244,7 +244,7 @@ namespace Microsoft.Scripting.Utils {
         // ----------------------------------------------------------------------
         // While hiding applies to all members of a type, overriding deals with object layout and is applicable only to instance fields 
         // and virtual methods. The CTS provides two forms of member overriding, new slot and expect existing slot. A member of a derived 
-        // type that is marked as a new slot will always get a new slot in the object’s layout, guaranteeing that the base field or method 
+        // type that is marked as a new slot will always get a new slot in the object's layout, guaranteeing that the base field or method 
         // is available in the object by using a qualified reference that combines the name of the base type with the name of the member 
         // and its type or signature. A member of a derived type that is marked as expect existing slot will re-use (i.e., share or override) 
         // a slot that corresponds to a member of the same kind (field or method), name, and type if one already exists from the base type; 
@@ -252,7 +252,7 @@ namespace Microsoft.Scripting.Utils {
         //
         // The general algorithm that is used for determining the names in a type and the layout of objects of the type is roughly as follows:
         // - Flatten the inherited names (using the hide by name or hide by name-and-signature rule) ignoring accessibility rules. 
-        // - For each new member that is marked “expect existing slot”, look to see if an exact match on kind (i.e., field or method), 
+        // - For each new member that is marked "expect existing slot", look to see if an exact match on kind (i.e., field or method), 
         //   name, and signature exists and use that slot if it is found, otherwise allocate a new slot. 
         // - After doing this for all new members, add these new member-kind/name/signatures to the list of members of this type 
         // - Finally, remove any inherited names that match the new members based on the hide by name or hide by name-and-signature rules.
@@ -314,7 +314,7 @@ namespace Microsoft.Scripting.Utils {
         // -------------------------
         // [Note: The CLS (see Partition I) refers to instance, virtual, and static properties.  
         // The signature of a property (from the Type column) can be used to distinguish a static property, 
-        // since instance and virtual properties will have the “HASTHIS” bit set in the signature (§23.2.1)
+        // since instance and virtual properties will have the "HASTHIS" bit set in the signature (Â§23.2.1)
         // while a static property will not.  The distinction between an instance and a virtual property 
         // depends on the signature of the getter and setter methods, which the CLS requires to be either 
         // both virtual or both instance. end note]
@@ -514,12 +514,12 @@ namespace Microsoft.Scripting.Utils {
             return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
-        [Obsolete("Use assembly.GetModules directly instead.")]
+        [Obsolete("Use Assembly.GetModules directly instead.")]
         public static IEnumerable<Module> GetModules(this Assembly assembly) {
             return assembly.GetModules();
         }
 
-        [Obsolete("Use type.GetInterfaces directly instead.")]
+        [Obsolete("Use Type.GetInterfaces directly instead.")]
         public static IEnumerable<Type> GetImplementedInterfaces(this Type type) {
             return type.GetInterfaces();
         }
@@ -544,72 +544,72 @@ namespace Microsoft.Scripting.Utils {
             return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
 
-        [Obsolete("Use type.ContainsGenericParameters directly instead.")]
+        [Obsolete("Use Type.ContainsGenericParameters directly instead.")]
         public static bool ContainsGenericParameters(this Type type) {
             return type.ContainsGenericParameters;
         }
 
-        [Obsolete("Use type.IsInterface directly instead.")]
+        [Obsolete("Use Type.IsInterface directly instead.")]
         public static bool IsInterface(this Type type) {
             return type.IsInterface;
         }
 
-        [Obsolete("Use type.IsClass directly instead.")]
+        [Obsolete("Use Type.IsClass directly instead.")]
         public static bool IsClass(this Type type) {
             return type.IsClass;
         }
 
-        [Obsolete("Use type.IsGenericType directly instead.")]
+        [Obsolete("Use Type.IsGenericType directly instead.")]
         public static bool IsGenericType(this Type type) {
             return type.IsGenericType;
         }
 
-        [Obsolete("Use type.IsGenericTypeDefinition directly instead.")]
+        [Obsolete("Use Type.IsGenericTypeDefinition directly instead.")]
         public static bool IsGenericTypeDefinition(this Type type) {
             return type.IsGenericTypeDefinition;
         }
 
-        [Obsolete("Use type.IsSealed directly instead.")]
+        [Obsolete("Use Type.IsSealed directly instead.")]
         public static bool IsSealed(this Type type) {
             return type.IsSealed;
         }
 
-        [Obsolete("Use type.IsAbstract directly instead.")]
+        [Obsolete("Use Type.IsAbstract directly instead.")]
         public static bool IsAbstract(this Type type) {
             return type.IsAbstract;
         }
 
-        [Obsolete("Use type.IsPublic directly instead.")]
+        [Obsolete("Use Type.IsPublic directly instead.")]
         public static bool IsPublic(this Type type) {
             return type.IsPublic;
         }
 
-        [Obsolete("Use type.IsVisible directly instead.")]
+        [Obsolete("Use Type.IsVisible directly instead.")]
         public static bool IsVisible(this Type type) {
             return type.IsVisible;
         }
 
-        [Obsolete("Use type.BaseType directly instead.")]
+        [Obsolete("Use Type.BaseType directly instead.")]
         public static Type GetBaseType(this Type type) {
             return type.BaseType;
         }
 
-        [Obsolete("Use type.IsValueType directly instead.")]
+        [Obsolete("Use Type.IsValueType directly instead.")]
         public static bool IsValueType(this Type type) {
             return type.IsValueType;
         }
 
-        [Obsolete("Use type.IsEnum directly instead.")]
+        [Obsolete("Use Type.IsEnum directly instead.")]
         public static bool IsEnum(this Type type) {
             return type.IsEnum;
         }
 
-        [Obsolete("Use type.IsPrimitive directly instead.")]
+        [Obsolete("Use Type.IsPrimitive directly instead.")]
         public static bool IsPrimitive(this Type type) {
             return type.IsPrimitive;
         }
 
-        [Obsolete("Use type.GenericParameterAttributes directly instead.")]
+        [Obsolete("Use Type.GenericParameterAttributes directly instead.")]
         public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
             return type.GenericParameterAttributes;
         }
