@@ -5,32 +5,22 @@
 #if FEATURE_CONFIGURATION
 
 using System.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Hosting.Configuration {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface")]
     public class LanguageElementCollection : ConfigurationElementCollection {
-        public override ConfigurationElementCollectionType CollectionType {
-            get { return ConfigurationElementCollectionType.BasicMap; }
-        }
+        public override ConfigurationElementCollectionType CollectionType =>
+            ConfigurationElementCollectionType.BasicMap;
 
-        protected override bool ThrowOnDuplicate {
-            get { return false; }
-        }
+        protected override bool ThrowOnDuplicate => false;
 
-        protected override ConfigurationElement CreateNewElement() {
-            return new LanguageElement();
-        }
+        protected override ConfigurationElement CreateNewElement() => new LanguageElement();
 
-        protected override string ElementName {
-            get { return "language"; }
-        }
+        protected override string ElementName => "language";
 
-        protected override object GetElementKey(ConfigurationElement element) {
-            return ((LanguageElement)element).Type;
-        }
+        protected override object GetElementKey(ConfigurationElement element) =>
+            ((LanguageElement)element).Type;
     }
 }
 

@@ -4,9 +4,9 @@
 
 #if FEATURE_CONFIGURATION
 
-using System.Configuration;
 using System;
-using System.Collections.Generic;
+using System.Configuration;
+
 using Microsoft.Scripting.Runtime;
 
 namespace Microsoft.Scripting.Hosting.Configuration {
@@ -17,61 +17,51 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         private const string _Language = "language";
 
         private static ConfigurationPropertyCollection _Properties = new ConfigurationPropertyCollection() {
-            new ConfigurationProperty(_Option, typeof(string), String.Empty, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsKey),
-            new ConfigurationProperty(_Value, typeof(string), String.Empty, ConfigurationPropertyOptions.IsRequired),
-            new ConfigurationProperty(_Language, typeof(string), String.Empty, ConfigurationPropertyOptions.IsKey),
+            new ConfigurationProperty(_Option, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsKey),
+            new ConfigurationProperty(_Value, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired),
+            new ConfigurationProperty(_Language, typeof(string), string.Empty, ConfigurationPropertyOptions.IsKey),
         };
 
-        protected override ConfigurationPropertyCollection Properties {
-            get { return _Properties; }
-        }
+        protected override ConfigurationPropertyCollection Properties => _Properties;
 
         public string Name {
-            get { return (string)this[_Option]; }
-            set { this[_Option] = value; }
+            get => (string)this[_Option];
+            set => this[_Option] = value;
         }
 
         public string Value {
-            get { return (string)this[_Value]; }
-            set { this[_Value] = value; }
+            get => (string)this[_Value];
+            set => this[_Value] = value;
         }
 
         public string Language {
-            get { return (string)this[_Language]; }
-            set { this[_Language] = value; }
+            get => (string)this[_Language];
+            set => this[_Language] = value;
         }
 
-        internal object GetKey() {
-            return new Key(Name, Language);
-        }
+        internal object GetKey() => new Key(Name, Language);
 
         internal sealed class Key : IEquatable<Key> {
-            private readonly string _option;
-            private readonly string _language;
+            public string Option { get; }
+            public string Language { get; }
 
-            public string Option { get { return _option; } }
-            public string Language { get { return _language; } }
-            
             public Key(string option, string language) {
-                _option = option;
-                _language = language;
+                Option = option;
+                Language = language;
             }
 
             public override bool Equals(object obj) => Equals(obj as Key);
 
-            public bool Equals(Key other) {
-                return other != null &&
-                    DlrConfiguration.OptionNameComparer.Equals(_option, other._option) &&
-                    DlrConfiguration.LanguageNameComparer.Equals(_language, other._language);
-            }
+            public bool Equals(Key other) =>
+                other != null &&
+                DlrConfiguration.OptionNameComparer.Equals(Option, other.Option) &&
+                DlrConfiguration.LanguageNameComparer.Equals(Language, other.Language);
 
-            public override int GetHashCode() {
-                return _option.GetHashCode() ^ (_language ?? String.Empty).GetHashCode();
-            }
+            public override int GetHashCode() =>
+                Option.GetHashCode() ^ (Language ?? string.Empty).GetHashCode();
 
-            public override string ToString() {
-                return (String.IsNullOrEmpty(_language) ? String.Empty : _language + ":") + _option;
-            }
+            public override string ToString() =>
+                (string.IsNullOrEmpty(Language) ? string.Empty : Language + ":") + Option;
         }
     }
 }
