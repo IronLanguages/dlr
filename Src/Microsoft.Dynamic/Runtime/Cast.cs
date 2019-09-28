@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Runtime {
 
         private static object ExplicitCastToValueType(object o, Type to) {
             Debug.Assert(o != null);
-            Debug.Assert(to.IsValueType());
+            Debug.Assert(to.IsValueType);
 
             if (to == Int32Type) return ScriptingRuntimeHelpers.Int32ToObject(ExplicitCastToInt32(o));
             if (to == DoubleType) return ExplicitCastToDouble(o);

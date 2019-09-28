@@ -528,6 +528,7 @@ namespace Microsoft.Scripting.Utils {
             return Type.GetTypeCode(type);
         }
 
+        [Obsolete("Use Delegate.GetMethodInfo directly instead.")]
         public static MethodInfo GetMethod(this Delegate d) {
             return d.GetMethodInfo();
         }

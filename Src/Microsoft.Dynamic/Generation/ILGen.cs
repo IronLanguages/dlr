@@ -784,7 +784,7 @@ namespace Microsoft.Scripting.Generation {
             if (mb != null && ShouldLdtoken(mb)) {
                 Emit(OpCodes.Ldtoken, mb);
                 Type dt = mb.DeclaringType;
-                if (dt != null && dt.IsGenericType()) {
+                if (dt != null && dt.IsGenericType) {
                     Emit(OpCodes.Ldtoken, dt);
                     EmitCall(typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
                 } else {
