@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Actions {
             BindingRestrictions restrictions = BindingRestrictionsHelpers.GetRuntimeTypeRestriction(args[0].Expression, args[0].GetLimitType()).Merge(BindingRestrictions.Combine(args));
 
             if (args[0].GetLimitType() == typeof(DynamicNull)) {
-                if (!otherType.IsValueType()) {
+                if (!otherType.IsValueType) {
                     return new DynamicMetaObject(
                         Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Actions {
                     );
                 }
             } else if (otherType == typeof(DynamicNull)) {
-                if (!args[0].GetLimitType().IsValueType()) {
+                if (!args[0].GetLimitType().IsValueType) {
                     return new DynamicMetaObject(
                         Expression.Equal(args[0].Expression, AstUtils.Constant(null)),
                         restrictions

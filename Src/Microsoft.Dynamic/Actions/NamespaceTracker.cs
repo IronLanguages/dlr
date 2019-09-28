@@ -210,7 +210,7 @@ namespace Microsoft.Scripting.Actions {
                     continue;
                 }
 
-                bool publishType = type.IsPublic() || _topPackage.DomainManager.Configuration.PrivateBinding;
+                bool publishType = type.IsPublic || _topPackage.DomainManager.Configuration.PrivateBinding;
                 if (!publishType) {
                     continue;
                 }

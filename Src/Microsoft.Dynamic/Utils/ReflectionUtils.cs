@@ -261,7 +261,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<PropertyInfo> GetInheritedProperties(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -346,7 +346,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<EventInfo> GetInheritedEvents(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<FieldInfo> GetInheritedFields(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             foreach (var ancestor in type.Ancestors()) {
@@ -514,10 +514,12 @@ namespace Microsoft.Scripting.Utils {
             return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
+        [Obsolete("Use assembly.GetModules directly instead.")]
         public static IEnumerable<Module> GetModules(this Assembly assembly) {
             return assembly.GetModules();
         }
 
+        [Obsolete("Use type.GetInterfaces directly instead.")]
         public static IEnumerable<Type> GetImplementedInterfaces(this Type type) {
             return type.GetInterfaces();
         }
@@ -542,58 +544,72 @@ namespace Microsoft.Scripting.Utils {
             return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
 
+        [Obsolete("Use type.ContainsGenericParameters directly instead.")]
         public static bool ContainsGenericParameters(this Type type) {
             return type.ContainsGenericParameters;
         }
 
+        [Obsolete("Use type.IsInterface directly instead.")]
         public static bool IsInterface(this Type type) {
             return type.IsInterface;
         }
 
+        [Obsolete("Use type.IsClass directly instead.")]
         public static bool IsClass(this Type type) {
             return type.IsClass;
         }
 
+        [Obsolete("Use type.IsGenericType directly instead.")]
         public static bool IsGenericType(this Type type) {
             return type.IsGenericType;
         }
 
+        [Obsolete("Use type.IsGenericTypeDefinition directly instead.")]
         public static bool IsGenericTypeDefinition(this Type type) {
             return type.IsGenericTypeDefinition;
         }
 
+        [Obsolete("Use type.IsSealed directly instead.")]
         public static bool IsSealed(this Type type) {
             return type.IsSealed;
         }
 
+        [Obsolete("Use type.IsAbstract directly instead.")]
         public static bool IsAbstract(this Type type) {
             return type.IsAbstract;
         }
 
+        [Obsolete("Use type.IsPublic directly instead.")]
         public static bool IsPublic(this Type type) {
             return type.IsPublic;
         }
 
+        [Obsolete("Use type.IsVisible directly instead.")]
         public static bool IsVisible(this Type type) {
             return type.IsVisible;
         }
 
+        [Obsolete("Use type.BaseType directly instead.")]
         public static Type GetBaseType(this Type type) {
             return type.BaseType;
         }
 
+        [Obsolete("Use type.IsValueType directly instead.")]
         public static bool IsValueType(this Type type) {
             return type.IsValueType;
         }
 
+        [Obsolete("Use type.IsEnum directly instead.")]
         public static bool IsEnum(this Type type) {
             return type.IsEnum;
         }
 
+        [Obsolete("Use type.IsPrimitive directly instead.")]
         public static bool IsPrimitive(this Type type) {
             return type.IsPrimitive;
         }
 
+        [Obsolete("Use type.GenericParameterAttributes directly instead.")]
         public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
             return type.GenericParameterAttributes;
         }
@@ -606,7 +622,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             object value = field.GetValue(null);
-            return field.FieldType.IsEnum() ? UnwrapEnumValue(value) : value;
+            return field.FieldType.IsEnum ? UnwrapEnumValue(value) : value;
         }
 
         /// <summary>
@@ -736,14 +752,14 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(result, nameof(result));
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
-            if (type.IsGenericType()) {
+            if (type.IsGenericType) {
                 Type genType = type.GetGenericTypeDefinition();
                 string genericName = nameDispenser(genType).Replace('+', '.');
                 int tickIndex = genericName.IndexOf('`');
                 result.Append(tickIndex != -1 ? genericName.Substring(0, tickIndex) : genericName);
 
                 Type[] typeArgs = type.GetGenericArguments();
-                if (type.IsGenericTypeDefinition()) {
+                if (type.IsGenericTypeDefinition) {
                     result.Append('<');
                     result.Append(',', typeArgs.Length - 1);
                     result.Append('>');
@@ -797,7 +813,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static string GetNormalizedTypeName(Type type) {
             string name = type.Name;
-            if (type.IsGenericType()) {
+            if (type.IsGenericType) {
                 return GetNormalizedTypeName(name);
             }
             return name;
@@ -1022,7 +1038,7 @@ namespace Microsoft.Scripting.Utils {
         /// and not its parents.
         /// </summary>
         public static List<Type> GetDeclaredInterfaces(Type type) {
-            IEnumerable<Type> baseInterfaces = (type.GetBaseType() != null) ? type.GetBaseType().GetInterfaces() : EmptyTypes;
+            IEnumerable<Type> baseInterfaces = (type.BaseType != null) ? type.BaseType.GetInterfaces() : EmptyTypes;
             List<Type> interfaces = new List<Type>();
             foreach (Type iface in type.GetInterfaces()) {
                 if (!baseInterfaces.Contains(iface)) {
@@ -1166,13 +1182,13 @@ namespace Microsoft.Scripting.Utils {
                 var builders = to.DefineGenericParameters(names);
                 for (int i = 0; i < args.Length; i++) {
                     // Copy template parameter attributes
-                    builders[i].SetGenericParameterAttributes(args[i].GetGenericParameterAttributes());
+                    builders[i].SetGenericParameterAttributes(args[i].GenericParameterAttributes);
 
                     // Copy template parameter constraints
                     Type[] constraints = args[i].GetGenericParameterConstraints();
                     List<Type> interfaces = new List<Type>(constraints.Length);
                     foreach (Type constraint in constraints) {
-                        if (constraint.IsInterface()) {
+                        if (constraint.IsInterface) {
                             interfaces.Add(constraint);
                         } else {
                             builders[i].SetBaseTypeConstraint(constraint);
@@ -1257,7 +1273,7 @@ namespace Microsoft.Scripting.Utils {
 
             Dictionary<string, List<ExtensionMethodInfo>> result = null;
             foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
-                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition()) {
+                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition) {
                     continue;
                 }
 
@@ -1339,7 +1355,7 @@ namespace Microsoft.Scripting.Utils {
                 return BindGenericParameters(openType.GetElementType(), closedType.GetElementType(), binder);
             }
 
-            if (!openType.IsGenericType() || !closedType.IsGenericType()) {
+            if (!openType.IsGenericType || !closedType.IsGenericType) {
                 return openType == closedType;
             }
 
@@ -1370,19 +1386,19 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static bool ConstraintsViolated(Type/*!*/ genericParameter, Type/*!*/ closedType, Dictionary<Type, Type>/*!*/ binding, bool ignoreUnboundParameters) {
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType()) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType) {
                 // value type to parameter type constrained as class
                 return true;
             }
 
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
-                (!closedType.IsValueType() || (closedType.IsGenericType() && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
+                (!closedType.IsValueType || (closedType.IsGenericType && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
                 // nullable<T> or class/interface to parameter type constrained as struct
                 return true;
             }
 
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
-                (!closedType.IsValueType() && closedType.GetConstructor(EmptyTypes) == null)) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
+                (!closedType.IsValueType && closedType.GetConstructor(EmptyTypes) == null)) {
                 // reference type w/o a default constructor to type constrianed as new()
                 return true;
             }
@@ -1408,8 +1424,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static Type InstantiateConstraint(Type/*!*/ constraint, Dictionary<Type, Type>/*!*/ binding) {
-            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition());
-            if (!constraint.ContainsGenericParameters()) {
+            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition);
+            if (!constraint.ContainsGenericParameters) {
                 return constraint;
             }
 

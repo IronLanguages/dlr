@@ -19,8 +19,8 @@ namespace Microsoft.Scripting.Runtime {
         public static object Explicit(object o, Type to) {
             if (o == null) {
                 // Null objects can be only cast to Nullable<T> or any reference type
-                if (to.IsValueType()) {
-                    if (to.IsGenericType() && to.GetGenericTypeDefinition() == NullableType) {
+                if (to.IsValueType) {
+                    if (to.IsGenericType && to.GetGenericTypeDefinition() == NullableType) {
                         return NewNullableInstance(to.GetGenericArguments()[0]);
                     }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Scripting.Runtime {
                 return null;
             }
 
-            if (to.IsValueType()) {
+            if (to.IsValueType) {
                 return ExplicitCastToValueType(o, to);
             } 
             
