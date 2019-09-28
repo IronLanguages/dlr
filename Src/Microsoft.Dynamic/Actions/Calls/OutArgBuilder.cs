@@ -49,7 +49,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         internal override Expression ByRefArgument => _isRef ? _tmp : null;
 
         private Expression GetDefaultValue() {
-            if (_parameterType.IsValueType()) {
+            if (_parameterType.IsValueType) {
                 // default(T)
                 return AstUtils.Constant(Activator.CreateInstance(_parameterType));
             }

@@ -571,7 +571,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitGetArrayItem(Type arrayType) {
             Type elementType = arrayType.GetElementType();
-            if (elementType.IsClass() || elementType.IsInterface()) {
+            if (elementType.IsClass || elementType.IsInterface) {
                 Emit(InstructionFactory<object>.Factory.GetArrayItem());
             } else {
                 Emit(InstructionFactory.GetFactory(elementType).GetArrayItem());
@@ -580,7 +580,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitSetArrayItem(Type arrayType) {
             Type elementType = arrayType.GetElementType();
-            if (elementType.IsClass() || elementType.IsInterface()) {
+            if (elementType.IsClass || elementType.IsInterface) {
                 Emit(InstructionFactory<object>.Factory.SetArrayItem());
             } else {
                 Emit(InstructionFactory.GetFactory(elementType).SetArrayItem());

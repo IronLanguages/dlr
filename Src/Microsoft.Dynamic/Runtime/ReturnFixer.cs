@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Generation {
         private readonly Type _argType;
 
         private ReturnFixer(LocalBuilder refSlot, int argIndex, Type argType) {
-            Debug.Assert(refSlot.LocalType.IsGenericType() && refSlot.LocalType.GetGenericTypeDefinition() == typeof(StrongBox<>));
+            Debug.Assert(refSlot.LocalType.IsGenericType && refSlot.LocalType.GetGenericTypeDefinition() == typeof(StrongBox<>));
             _refSlot = refSlot;
             _argIndex = argIndex;
             _argType = argType;

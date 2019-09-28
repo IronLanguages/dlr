@@ -50,11 +50,11 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         public virtual object Convert(object obj, Type toType) {
             if (obj == null) {
-                if (!toType.IsValueType()) {
+                if (!toType.IsValueType) {
                     return null;
                 }
             } else {
-                if (toType.IsValueType()) {
+                if (toType.IsValueType) {
                     if (toType == obj.GetType()) {
                         return obj;
                     }
@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Actions {
             Type exprType = expr.Type;
 
             if (toType == typeof(object)) {
-                if (exprType.IsValueType()) {
+                if (exprType.IsValueType) {
                     return AstUtils.Convert(expr, toType);
                 }
 

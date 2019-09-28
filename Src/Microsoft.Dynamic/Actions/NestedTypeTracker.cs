@@ -20,11 +20,11 @@ namespace Microsoft.Scripting.Actions {
 
         public override string Name => _type.Name;
 
-        public override bool IsPublic => _type.IsPublic();
+        public override bool IsPublic => _type.IsPublic;
 
         public override Type Type => _type;
 
-        public override bool IsGenericType => _type.IsGenericType();
+        public override bool IsGenericType => _type.IsGenericType;
 
         public override string ToString() {
             return _type.ToString();

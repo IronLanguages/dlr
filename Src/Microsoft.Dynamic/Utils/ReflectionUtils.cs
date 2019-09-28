@@ -244,7 +244,7 @@ namespace Microsoft.Scripting.Utils {
         // ----------------------------------------------------------------------
         // While hiding applies to all members of a type, overriding deals with object layout and is applicable only to instance fields 
         // and virtual methods. The CTS provides two forms of member overriding, new slot and expect existing slot. A member of a derived 
-        // type that is marked as a new slot will always get a new slot in the object’s layout, guaranteeing that the base field or method 
+        // type that is marked as a new slot will always get a new slot in the object's layout, guaranteeing that the base field or method 
         // is available in the object by using a qualified reference that combines the name of the base type with the name of the member 
         // and its type or signature. A member of a derived type that is marked as expect existing slot will re-use (i.e., share or override) 
         // a slot that corresponds to a member of the same kind (field or method), name, and type if one already exists from the base type; 
@@ -252,7 +252,7 @@ namespace Microsoft.Scripting.Utils {
         //
         // The general algorithm that is used for determining the names in a type and the layout of objects of the type is roughly as follows:
         // - Flatten the inherited names (using the hide by name or hide by name-and-signature rule) ignoring accessibility rules. 
-        // - For each new member that is marked “expect existing slot”, look to see if an exact match on kind (i.e., field or method), 
+        // - For each new member that is marked "expect existing slot", look to see if an exact match on kind (i.e., field or method), 
         //   name, and signature exists and use that slot if it is found, otherwise allocate a new slot. 
         // - After doing this for all new members, add these new member-kind/name/signatures to the list of members of this type 
         // - Finally, remove any inherited names that match the new members based on the hide by name or hide by name-and-signature rules.
@@ -261,7 +261,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<PropertyInfo> GetInheritedProperties(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -314,7 +314,7 @@ namespace Microsoft.Scripting.Utils {
         // -------------------------
         // [Note: The CLS (see Partition I) refers to instance, virtual, and static properties.  
         // The signature of a property (from the Type column) can be used to distinguish a static property, 
-        // since instance and virtual properties will have the “HASTHIS” bit set in the signature (§23.2.1)
+        // since instance and virtual properties will have the "HASTHIS" bit set in the signature (Â§23.2.1)
         // while a static property will not.  The distinction between an instance and a virtual property 
         // depends on the signature of the getter and setter methods, which the CLS requires to be either 
         // both virtual or both instance. end note]
@@ -346,7 +346,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<EventInfo> GetInheritedEvents(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static IEnumerable<FieldInfo> GetInheritedFields(this Type type, string name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.GetBaseType();
+                type = type.BaseType;
             }
 
             foreach (var ancestor in type.Ancestors()) {
@@ -514,10 +514,12 @@ namespace Microsoft.Scripting.Utils {
             return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
+        [Obsolete("Use Assembly.GetModules directly instead.")]
         public static IEnumerable<Module> GetModules(this Assembly assembly) {
             return assembly.GetModules();
         }
 
+        [Obsolete("Use Type.GetInterfaces directly instead.")]
         public static IEnumerable<Type> GetImplementedInterfaces(this Type type) {
             return type.GetInterfaces();
         }
@@ -542,58 +544,72 @@ namespace Microsoft.Scripting.Utils {
             return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
 
+        [Obsolete("Use Type.ContainsGenericParameters directly instead.")]
         public static bool ContainsGenericParameters(this Type type) {
             return type.ContainsGenericParameters;
         }
 
+        [Obsolete("Use Type.IsInterface directly instead.")]
         public static bool IsInterface(this Type type) {
             return type.IsInterface;
         }
 
+        [Obsolete("Use Type.IsClass directly instead.")]
         public static bool IsClass(this Type type) {
             return type.IsClass;
         }
 
+        [Obsolete("Use Type.IsGenericType directly instead.")]
         public static bool IsGenericType(this Type type) {
             return type.IsGenericType;
         }
 
+        [Obsolete("Use Type.IsGenericTypeDefinition directly instead.")]
         public static bool IsGenericTypeDefinition(this Type type) {
             return type.IsGenericTypeDefinition;
         }
 
+        [Obsolete("Use Type.IsSealed directly instead.")]
         public static bool IsSealed(this Type type) {
             return type.IsSealed;
         }
 
+        [Obsolete("Use Type.IsAbstract directly instead.")]
         public static bool IsAbstract(this Type type) {
             return type.IsAbstract;
         }
 
+        [Obsolete("Use Type.IsPublic directly instead.")]
         public static bool IsPublic(this Type type) {
             return type.IsPublic;
         }
 
+        [Obsolete("Use Type.IsVisible directly instead.")]
         public static bool IsVisible(this Type type) {
             return type.IsVisible;
         }
 
+        [Obsolete("Use Type.BaseType directly instead.")]
         public static Type GetBaseType(this Type type) {
             return type.BaseType;
         }
 
+        [Obsolete("Use Type.IsValueType directly instead.")]
         public static bool IsValueType(this Type type) {
             return type.IsValueType;
         }
 
+        [Obsolete("Use Type.IsEnum directly instead.")]
         public static bool IsEnum(this Type type) {
             return type.IsEnum;
         }
 
+        [Obsolete("Use Type.IsPrimitive directly instead.")]
         public static bool IsPrimitive(this Type type) {
             return type.IsPrimitive;
         }
 
+        [Obsolete("Use Type.GenericParameterAttributes directly instead.")]
         public static GenericParameterAttributes GetGenericParameterAttributes(this Type type) {
             return type.GenericParameterAttributes;
         }
@@ -606,7 +622,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             object value = field.GetValue(null);
-            return field.FieldType.IsEnum() ? UnwrapEnumValue(value) : value;
+            return field.FieldType.IsEnum ? UnwrapEnumValue(value) : value;
         }
 
         /// <summary>
@@ -736,14 +752,14 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(result, nameof(result));
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
-            if (type.IsGenericType()) {
+            if (type.IsGenericType) {
                 Type genType = type.GetGenericTypeDefinition();
                 string genericName = nameDispenser(genType).Replace('+', '.');
                 int tickIndex = genericName.IndexOf('`');
                 result.Append(tickIndex != -1 ? genericName.Substring(0, tickIndex) : genericName);
 
                 Type[] typeArgs = type.GetGenericArguments();
-                if (type.IsGenericTypeDefinition()) {
+                if (type.IsGenericTypeDefinition) {
                     result.Append('<');
                     result.Append(',', typeArgs.Length - 1);
                     result.Append('>');
@@ -797,7 +813,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static string GetNormalizedTypeName(Type type) {
             string name = type.Name;
-            if (type.IsGenericType()) {
+            if (type.IsGenericType) {
                 return GetNormalizedTypeName(name);
             }
             return name;
@@ -1022,7 +1038,7 @@ namespace Microsoft.Scripting.Utils {
         /// and not its parents.
         /// </summary>
         public static List<Type> GetDeclaredInterfaces(Type type) {
-            IEnumerable<Type> baseInterfaces = (type.GetBaseType() != null) ? type.GetBaseType().GetInterfaces() : EmptyTypes;
+            IEnumerable<Type> baseInterfaces = (type.BaseType != null) ? type.BaseType.GetInterfaces() : EmptyTypes;
             List<Type> interfaces = new List<Type>();
             foreach (Type iface in type.GetInterfaces()) {
                 if (!baseInterfaces.Contains(iface)) {
@@ -1166,13 +1182,13 @@ namespace Microsoft.Scripting.Utils {
                 var builders = to.DefineGenericParameters(names);
                 for (int i = 0; i < args.Length; i++) {
                     // Copy template parameter attributes
-                    builders[i].SetGenericParameterAttributes(args[i].GetGenericParameterAttributes());
+                    builders[i].SetGenericParameterAttributes(args[i].GenericParameterAttributes);
 
                     // Copy template parameter constraints
                     Type[] constraints = args[i].GetGenericParameterConstraints();
                     List<Type> interfaces = new List<Type>(constraints.Length);
                     foreach (Type constraint in constraints) {
-                        if (constraint.IsInterface()) {
+                        if (constraint.IsInterface) {
                             interfaces.Add(constraint);
                         } else {
                             builders[i].SetBaseTypeConstraint(constraint);
@@ -1257,7 +1273,7 @@ namespace Microsoft.Scripting.Utils {
 
             Dictionary<string, List<ExtensionMethodInfo>> result = null;
             foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
-                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition()) {
+                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition) {
                     continue;
                 }
 
@@ -1339,7 +1355,7 @@ namespace Microsoft.Scripting.Utils {
                 return BindGenericParameters(openType.GetElementType(), closedType.GetElementType(), binder);
             }
 
-            if (!openType.IsGenericType() || !closedType.IsGenericType()) {
+            if (!openType.IsGenericType || !closedType.IsGenericType) {
                 return openType == closedType;
             }
 
@@ -1370,19 +1386,19 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static bool ConstraintsViolated(Type/*!*/ genericParameter, Type/*!*/ closedType, Dictionary<Type, Type>/*!*/ binding, bool ignoreUnboundParameters) {
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType()) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType) {
                 // value type to parameter type constrained as class
                 return true;
             }
 
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
-                (!closedType.IsValueType() || (closedType.IsGenericType() && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0 &&
+                (!closedType.IsValueType || (closedType.IsGenericType && closedType.GetGenericTypeDefinition() == typeof(Nullable<>)))) {
                 // nullable<T> or class/interface to parameter type constrained as struct
                 return true;
             }
 
-            if ((genericParameter.GetGenericParameterAttributes() & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
-                (!closedType.IsValueType() && closedType.GetConstructor(EmptyTypes) == null)) {
+            if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
+                (!closedType.IsValueType && closedType.GetConstructor(EmptyTypes) == null)) {
                 // reference type w/o a default constructor to type constrianed as new()
                 return true;
             }
@@ -1408,8 +1424,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static Type InstantiateConstraint(Type/*!*/ constraint, Dictionary<Type, Type>/*!*/ binding) {
-            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition());
-            if (!constraint.ContainsGenericParameters()) {
+            Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition);
+            if (!constraint.ContainsGenericParameters) {
                 return constraint;
             }
 

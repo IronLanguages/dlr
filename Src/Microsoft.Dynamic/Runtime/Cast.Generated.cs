@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Byte)(Char)o;
                 } else if (type == DecimalType) {
                     return (Byte)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Byte)ExplicitCastEnumToByte(o);
                 } else if (type == NullableInt32Type) {
                     return (Byte)(Nullable<Int32>)o;
@@ -116,7 +116,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Char)(Char)o;
                 } else if (type == DecimalType) {
                     return (Char)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Char)ExplicitCastEnumToInt32(o);
                 } else if (type == NullableInt32Type) {
                     return (Char)(Nullable<Int32>)o;
@@ -174,7 +174,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Decimal)(Char)o;
                 } else if (type == DecimalType) {
                     return (Decimal)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Decimal)ExplicitCastEnumToInt64(o);
                 } else if (type == NullableInt32Type) {
                     return (Decimal)(Nullable<Int32>)o;
@@ -232,7 +232,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Double)(Char)o;
                 } else if (type == DecimalType) {
                     return (Double)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Double)ExplicitCastEnumToInt64(o);
                 } else if (type == NullableInt32Type) {
                     return (Double)(Nullable<Int32>)o;
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Int16)(Char)o;
                 } else if (type == DecimalType) {
                     return (Int16)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Int16)ExplicitCastEnumToInt16(o);
                 } else if (type == NullableInt32Type) {
                     return (Int16)(Nullable<Int32>)o;
@@ -348,7 +348,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Int32)(Char)o;
                 } else if (type == DecimalType) {
                     return (Int32)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Int32)ExplicitCastEnumToInt32(o);
                 } else if (type == NullableInt32Type) {
                     return (Int32)(Nullable<Int32>)o;
@@ -406,7 +406,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Int64)(Char)o;
                 } else if (type == DecimalType) {
                     return (Int64)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Int64)ExplicitCastEnumToInt64(o);
                 } else if (type == NullableInt32Type) {
                     return (Int64)(Nullable<Int32>)o;
@@ -465,7 +465,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (SByte)(Char)o;
                 } else if (type == DecimalType) {
                     return (SByte)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (SByte)ExplicitCastEnumToSByte(o);
                 } else if (type == NullableInt32Type) {
                     return (SByte)(Nullable<Int32>)o;
@@ -523,7 +523,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (Single)(Char)o;
                 } else if (type == DecimalType) {
                     return (Single)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (Single)ExplicitCastEnumToInt64(o);
                 } else if (type == NullableInt32Type) {
                     return (Single)(Nullable<Int32>)o;
@@ -582,7 +582,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (UInt16)(Char)o;
                 } else if (type == DecimalType) {
                     return (UInt16)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (UInt16)ExplicitCastEnumToUInt16(o);
                 } else if (type == NullableInt32Type) {
                     return (UInt16)(Nullable<Int32>)o;
@@ -641,7 +641,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (UInt32)(Char)o;
                 } else if (type == DecimalType) {
                     return (UInt32)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (UInt32)ExplicitCastEnumToUInt32(o);
                 } else if (type == NullableInt32Type) {
                     return (UInt32)(Nullable<Int32>)o;
@@ -700,7 +700,7 @@ namespace Microsoft.Scripting.Runtime {
                     return (UInt64)(Char)o;
                 } else if (type == DecimalType) {
                     return (UInt64)(Decimal)o;
-                } else if (type.IsEnum()) {
+                } else if (type.IsEnum) {
                     return (UInt64)ExplicitCastEnumToUInt64(o);
                 } else if (type == NullableInt32Type) {
                     return (UInt64)(Nullable<Int32>)o;
@@ -773,7 +773,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Byte>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Byte>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Byte>)ExplicitCastEnumToByte(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Byte>)(Nullable<Int32>)o;
@@ -832,7 +832,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Char>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Char>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Char>)ExplicitCastEnumToInt32(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Char>)(Nullable<Int32>)o;
@@ -891,7 +891,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Decimal>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Decimal>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Decimal>)ExplicitCastEnumToInt64(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Decimal>)(Nullable<Int32>)o;
@@ -950,7 +950,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Double>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Double>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Double>)ExplicitCastEnumToInt64(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Double>)(Nullable<Int32>)o;
@@ -1009,7 +1009,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Int16>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Int16>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Int16>)ExplicitCastEnumToInt16(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Int16>)(Nullable<Int32>)o;
@@ -1068,7 +1068,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Int32>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Int32>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Int32>)ExplicitCastEnumToInt32(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Int32>)(Nullable<Int32>)o;
@@ -1127,7 +1127,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Int64>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Int64>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Int64>)ExplicitCastEnumToInt64(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Int64>)(Nullable<Int32>)o;
@@ -1187,7 +1187,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<SByte>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<SByte>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<SByte>)ExplicitCastEnumToSByte(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<SByte>)(Nullable<Int32>)o;
@@ -1246,7 +1246,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<Single>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<Single>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<Single>)ExplicitCastEnumToInt64(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<Single>)(Nullable<Int32>)o;
@@ -1306,7 +1306,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<UInt16>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<UInt16>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<UInt16>)ExplicitCastEnumToUInt16(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<UInt16>)(Nullable<Int32>)o;
@@ -1366,7 +1366,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<UInt32>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<UInt32>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<UInt32>)ExplicitCastEnumToUInt32(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<UInt32>)(Nullable<Int32>)o;
@@ -1426,7 +1426,7 @@ namespace Microsoft.Scripting.Runtime {
                 return (Nullable<UInt64>)(Char)o;
             } else if (type == DecimalType) {
                 return (Nullable<UInt64>)(Decimal)o;
-            } else if (type.IsEnum()) {
+            } else if (type.IsEnum) {
                 return (Nullable<UInt64>)ExplicitCastEnumToUInt64(o);
             } else if (type == NullableInt32Type) {
                 return (Nullable<UInt64>)(Nullable<Int32>)o;

@@ -115,8 +115,8 @@ namespace Microsoft.Scripting.Utils {
         internal static bool CanAssign(Type to, Expression from) {
             if (CanAssign(to, from.Type)) return true;
 
-            if (to.IsValueType() && 
-                to.IsGenericType() && 
+            if (to.IsValueType && 
+                to.IsGenericType && 
                 to.GetGenericTypeDefinition() == typeof(Nullable<>) && 
                 ConstantCheck.Check(from, null)) {
                 return true;
@@ -130,7 +130,7 @@ namespace Microsoft.Scripting.Utils {
                 return true;
             }
             // Reference types
-            if (!to.IsValueType() && !from.IsValueType()) {
+            if (!to.IsValueType && !from.IsValueType) {
                 if (to.IsAssignableFrom(from)) {
                     return true;
                 }
@@ -145,13 +145,12 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        internal static bool IsGeneric(Type type) {
-            return type.ContainsGenericParameters() || type.IsGenericTypeDefinition();
-        }
+        internal static bool IsGeneric(Type type) =>
+            type.ContainsGenericParameters || type.IsGenericTypeDefinition;
 
         internal static bool CanCompareToNull(Type type) {
             // This is a bit too conservative.
-            return !type.IsValueType();
+            return !type.IsValueType;
         }
 
         /// <summary>
@@ -197,13 +196,13 @@ namespace Microsoft.Scripting.Utils {
 
         internal static bool HasBuiltinEquality(Type left, Type right) {
             // Reference type can be compared to interfaces
-            if (left.IsInterface() && !right.IsValueType() ||
-                right.IsInterface() && !left.IsValueType()) {
+            if (left.IsInterface && !right.IsValueType ||
+                right.IsInterface && !left.IsValueType) {
                 return true;
             }
 
             // Reference types compare if they are assignable
-            if (!left.IsValueType() && !right.IsValueType()) {
+            if (!left.IsValueType && !right.IsValueType) {
                 if (CanAssign(left, right) || CanAssign(right, left)) {
                     return true;
                 }
@@ -218,7 +217,7 @@ namespace Microsoft.Scripting.Utils {
                 return false;
             }
 
-            if (left == typeof(bool) || IsNumeric(left) || left.IsEnum()) {
+            if (left == typeof(bool) || IsNumeric(left) || left.IsEnum) {
                 return true;
             }
 
@@ -244,7 +243,7 @@ namespace Microsoft.Scripting.Utils {
             if (dest == src) {
                 return true;
             }
-            if (!dest.IsValueType() && !src.IsValueType() && AreAssignable(dest, src)) {
+            if (!dest.IsValueType && !src.IsValueType && AreAssignable(dest, src)) {
                 return true;
             }
             return false;
@@ -261,7 +260,7 @@ namespace Microsoft.Scripting.Utils {
             if (dest.IsArray && src.IsArray && dest.GetArrayRank() == src.GetArrayRank() && AreReferenceAssignable(dest.GetElementType(), src.GetElementType())) {
                 return true;
             }
-            if (src.IsArray && dest.IsGenericType() &&
+            if (src.IsArray && dest.IsGenericType &&
                 (dest.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IEnumerable<>)
                 || dest.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IList<>)
                 || dest.GetGenericTypeDefinition() == typeof(System.Collections.Generic.ICollection<>))
@@ -274,15 +273,15 @@ namespace Microsoft.Scripting.Utils {
         // keep in sync with System.Core version
         internal static Type GetConstantType(Type type) {
             // If it's a visible type, we're done
-            if (type.IsVisible()) {
+            if (type.IsVisible) {
                 return type;
             }
 
             // Get the visible base type
             Type bt = type;
             do {
-                bt = bt.GetBaseType();
-            } while (!bt.IsVisible());
+                bt = bt.BaseType;
+            } while (!bt.IsVisible);
 
             // If it's one of the known reflection types,
             // return the known type.
@@ -301,7 +300,7 @@ namespace Microsoft.Scripting.Utils {
 
         internal static bool IsConvertible(Type type) {
             type = GetNonNullableType(type);
-            if (type.IsEnum()) {
+            if (type.IsEnum) {
                 return true;
             }
             switch (type.GetTypeCode()) {

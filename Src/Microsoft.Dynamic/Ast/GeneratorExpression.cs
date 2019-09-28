@@ -105,7 +105,7 @@ namespace Microsoft.Scripting.Ast {
 
             // Generator type must be one of: IEnumerable, IEnumerator,
             // IEnumerable<T>, or IEnumerator<T>, where T is label.Ttpe
-            if (type.IsGenericType()) {
+            if (type.IsGenericType) {
                 Type genType = type.GetGenericTypeDefinition();
                 if (genType != typeof(IEnumerable<>) && genType != typeof(IEnumerator<>)
                     || type.GetGenericArguments()[0] != label.Type) {
@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.Ast {
 
         internal static bool IsEnumerableType(Type type) {
             return type == typeof(IEnumerable) ||
-                type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+                type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
         }
 
         #region Generator lambda factories
