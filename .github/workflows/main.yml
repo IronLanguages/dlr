@@ -26,5 +26,11 @@ jobs:
         name: packages
         path: Package/Release/Packages
     - name: Test
-      run: pwsh -Command "& ./make.ps1 -frameworks net45,netcoreapp3.0 test-all"
+      run: |
+        Write-Host ${env:DOTNET_ROOT}
+        ./make.ps1 -frameworks net45,netcoreapp3.0 test-all
+      env:
+        # Work around https://github.com/actions/setup-dotnet/issues/29
+        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/3.0.100/x64
+      shell: pwsh
       # TODO: figure out how to also test on netcoreapp2.1
