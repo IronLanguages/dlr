@@ -4,7 +4,7 @@ The Dynamic Language Runtime enables language developers to more easily create d
 
 | **What?** | **Where?** |
 | --------: | :------------: |
-| **Windows/Linux/macOS Builds** | [![Build status](https://dotnet.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnet.visualstudio.com/IronLanguages/_build/latest?definitionId=41) |
+| **Windows/Linux/macOS Builds** | [![Build status](https://dotnet.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnet.visualstudio.com/IronLanguages/_build/latest?definitionId=41) [![Github build status](https://github.com/IronLanguages/dlr/workflows/CI/badge.svg)](https://github.com/IronLanguages/dlr/actions?workflow=CI) |
 | **Downloads** | [![NuGet](https://img.shields.io/nuget/v/DynamicLanguageRuntime.svg)](https://www.nuget.org/packages/DynamicLanguageRuntime/) [![Release](https://img.shields.io/github/release/IronLanguages/dlr.svg)](https://github.com/IronLanguages/dlr/releases/latest)|
 | **Help** | [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.svg)](https://gitter.im/IronLanguages/ironpython) [![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/dynamic-language-runtime.svg)](http://stackoverflow.com/questions/tagged/dynamic-language-runtime) |
 
