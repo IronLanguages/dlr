@@ -5,24 +5,19 @@
 #if FEATURE_COM
 
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 
 namespace Microsoft.Scripting.ComInterop {
 
     public class ComTypeDesc : ComTypeLibMemberDesc {
-        private string _typeName;
-        private string _documentation;
-        //Hashtable is threadsafe for multiple readers single writer. 
-        //Enumerating and writing is mutually exclusive so require locking.
-        private Hashtable _funcs;
-        private Hashtable _puts;
-        private Hashtable _putRefs;
+        private readonly string _typeName;
+        private readonly string _documentation;
         private ComMethodDesc _getItem;
         private ComMethodDesc _setItem;
-        private Dictionary<string, ComEventDesc> _events;
         private static readonly Dictionary<string, ComEventDesc> _EmptyEventsDict = new Dictionary<string, ComEventDesc>();
 
         internal ComTypeDesc(ITypeInfo typeInfo, ComType memberType, ComTypeLibDesc typeLibDesc) : base(memberType) {
@@ -51,97 +46,76 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal static ComTypeDesc CreateEmptyTypeDesc() {
             ComTypeDesc typeDesc = new ComTypeDesc(null, ComType.Interface, null);
-            typeDesc._funcs = new Hashtable();
-            typeDesc._puts = new Hashtable();
-            typeDesc._putRefs = new Hashtable();
-            typeDesc._events = _EmptyEventsDict;
+            typeDesc.Funcs = new ConcurrentDictionary<string, ComMethodDesc>();
+            typeDesc.Puts = new ConcurrentDictionary<string, ComMethodDesc>();
+            typeDesc.PutRefs = new ConcurrentDictionary<string, ComMethodDesc>();
+            typeDesc.Events = _EmptyEventsDict;
 
             return typeDesc;
         }
 
-        internal static Dictionary<string, ComEventDesc> EmptyEvents {
-            get { return _EmptyEventsDict; }
-        }
+        internal static Dictionary<string, ComEventDesc> EmptyEvents => _EmptyEventsDict;
 
-        internal Hashtable Funcs {
-            get { return _funcs; }
-            set { _funcs = value; }
-        }
+        internal ConcurrentDictionary<string, ComMethodDesc> Funcs { get; set; }
 
-        internal Hashtable Puts {
-            get { return _puts; }
-            set { _puts = value; }
-        }
+        internal ConcurrentDictionary<string, ComMethodDesc> Puts { get; set; }
 
-        internal Hashtable PutRefs {
-            set { _putRefs = value; }
-        }
+        internal ConcurrentDictionary<string, ComMethodDesc> PutRefs { get; set; }
 
-        internal Dictionary<string, ComEventDesc> Events {
-            get { return _events; }
-            set { _events = value; }
-        }
+        internal Dictionary<string, ComEventDesc> Events { get; set; }
 
         internal bool TryGetFunc(string name, out ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            if (_funcs.ContainsKey(name)) {
-                method = _funcs[name] as ComMethodDesc;
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            if (Funcs.TryGetValue(name, out method)) {
                 return true;
             }
-            method = null;
+
             return false;
         }
 
         internal void AddFunc(string name, ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            lock (_funcs) {
-                _funcs[name] = method;
-            }
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            Funcs[name] = method;
         }
 
         internal bool TryGetPut(string name, out ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            if (_puts.ContainsKey(name)) {
-                method = _puts[name] as ComMethodDesc;
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            if (Puts.TryGetValue(name, out method)) {
                 return true;
             }
-            method = null;
+
             return false;
         }
 
         internal void AddPut(string name, ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            lock (_puts) {
-                _puts[name] = method;
-            }
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            Puts[name] = method;
         }
 
         internal bool TryGetPutRef(string name, out ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            if (_putRefs.ContainsKey(name)) {
-                method = _putRefs[name] as ComMethodDesc;
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            if (PutRefs.TryGetValue(name, out method)) {
                 return true;
             }
-            method = null;
+
             return false;
         }
         internal void AddPutRef(string name, ComMethodDesc method) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            lock (_putRefs) {
-                _putRefs[name] = method;
-            }
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+             PutRefs[name] = method;
+
         }
 
         internal bool TryGetEvent(string name, out ComEventDesc @event) {
-            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-            return _events.TryGetValue(name, out @event);
+            name = name.ToUpper(CultureInfo.InvariantCulture);
+            return Events.TryGetValue(name, out @event);
         }
 
         internal string[] GetMemberNames(bool dataOnly) {
             var names = new Dictionary<string, object>();
 
-            lock (_funcs) {
-                foreach (ComMethodDesc func in _funcs.Values) {
+            lock (Funcs) {
+                foreach (ComMethodDesc func in Funcs.Values) {
                     if (!dataOnly || func.IsDataMember) {
                         names.Add(func.Name, null);
                     }
@@ -149,24 +123,24 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             if (!dataOnly) {
-                lock (_puts) {
-                    foreach (ComMethodDesc func in _puts.Values) {
+                lock (Puts) {
+                    foreach (ComMethodDesc func in Puts.Values) {
                         if (!names.ContainsKey(func.Name)) {
                             names.Add(func.Name, null);
                         }
                     }
                 }
 
-                lock (_putRefs) {
-                    foreach (ComMethodDesc func in _putRefs.Values) {
+                lock (PutRefs) {
+                    foreach (ComMethodDesc func in PutRefs.Values) {
                         if (!names.ContainsKey(func.Name)) {
                             names.Add(func.Name, null);
                         }
                     }
                 }
 
-                if (_events != null && _events.Count > 0) {
-                    foreach (string name in _events.Keys) {
+                if (Events != null && Events.Count > 0) {
+                    foreach (string name in Events.Keys) {
                         if (!names.ContainsKey(name)) {
                             names.Add(name, null);
                         }
@@ -180,30 +154,22 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         // this property is public - accessed by an AST
-        public string TypeName {
-            get { return _typeName; }
-        }
+        public string TypeName => _typeName;
 
-        internal string Documentation {
-            get { return _documentation; }
-        }
+        internal string Documentation => _documentation;
 
         // this property is public - accessed by an AST
         public ComTypeLibDesc TypeLib { get; }
 
         internal Guid Guid { get; set; }
 
-        internal ComMethodDesc GetItem {
-            get { return _getItem; }
-        }
+        internal ComMethodDesc GetItem => _getItem;
 
         internal void EnsureGetItem(ComMethodDesc candidate) {
             Interlocked.CompareExchange(ref _getItem, candidate, null);
         }
 
-        internal ComMethodDesc SetItem {
-            get { return _setItem; }
-        }
+        internal ComMethodDesc SetItem => _setItem;
 
         internal void EnsureSetItem(ComMethodDesc candidate) {
             Interlocked.CompareExchange(ref _setItem, candidate, null);
