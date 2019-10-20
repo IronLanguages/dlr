@@ -153,6 +153,10 @@ namespace Microsoft.Scripting.Utils {
             return Math.Round(value, MidpointRounding.AwayFromZero);
         }
 
+        public static double RoundToEven(double value) {
+            return Math.Round(value, MidpointRounding.ToEven);
+        }
+
         private static readonly double[] _RoundPowersOfTens = new double[] { 1E0, 1E1, 1E2, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8, 1E9, 1E10, 1E11, 1E12, 1E13, 1E14, 1E15 };
 
         private static double GetPowerOf10(int precision) {
@@ -186,6 +190,32 @@ namespace Microsoft.Scripting.Utils {
                 // but the results seem to be more precise if we do it this way
                 double num = GetPowerOf10(-precision);
                 return RoundAwayFromZero(value / num) * num;
+            }
+
+            // Preserve the sign of the input, including +/-0.0
+            return value < 0.0 || 1.0 / value < 0.0 ? -0.0 : 0.0;
+        }
+
+        public static double RoundToEven(double value, int precision) {
+            if (double.IsInfinity(value) || double.IsNaN(value)) {
+                return value;
+            }
+
+            if (precision >= 0) {
+                if (precision > 308) {
+                    return value;
+                }
+
+                double num = GetPowerOf10(precision);
+                return MathUtils.RoundToEven(value * num) / num;
+            }
+
+            if (precision >= -308) {
+                // Note: this code path could be merged with the precision >= 0 path,
+                // (by extending the cache to negative powers of 10)
+                // but the results seem to be more precise if we do it this way
+                double num = GetPowerOf10(-precision);
+                return RoundToEven(value / num) * num;
             }
 
             // Preserve the sign of the input, including +/-0.0
