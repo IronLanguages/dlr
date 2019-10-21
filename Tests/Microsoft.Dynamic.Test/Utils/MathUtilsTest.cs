@@ -115,7 +115,12 @@ namespace Microsoft.Dynamic.Test.Utils
         [TestCase(-35.0, -1, ExpectedResult = -40.0)]
         [TestCase(-25.0, -1, ExpectedResult = -30.0)]
         public double RoundAwayFromZeroTest(double number, int precision) {
-            return Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.AwayFromZero);
+#pragma warning disable 618
+            var obsolete = Scripting.Utils.MathUtils.RoundAwayFromZero(number, precision);
+#pragma warning restore 618
+            var actual = Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.AwayFromZero);
+            Assert.AreEqual(actual, obsolete);
+            return actual;
         }
 
         [TestCase(double.NegativeInfinity, ExpectedResult = double.NegativeInfinity)]
@@ -128,12 +133,21 @@ namespace Microsoft.Dynamic.Test.Utils
         [TestCase(3.5, ExpectedResult = 4.0)]
 
         public double RoundAwayFromZeroTest(double number) {
-            return Scripting.Utils.MathUtils.Round(number, 0, MidpointRounding.AwayFromZero);
+#pragma warning disable 618
+            var obsolete = Scripting.Utils.MathUtils.RoundAwayFromZero(number);
+#pragma warning restore 618
+            var actual = Scripting.Utils.MathUtils.Round(number, 0, MidpointRounding.AwayFromZero);
+            Assert.AreEqual(actual, obsolete);
+            return actual;
         }
 
         [TestCase(2.45, 1, 2.5, 1E-15)]
         public void RoundAwayFromZeroWithToleranceTest(double number, int precision, double expected, double delta) {
+#pragma warning disable 618
+            var obsolete = Scripting.Utils.MathUtils.RoundAwayFromZero(number, precision);
+#pragma warning restore 618
             var actual = Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.AwayFromZero);
+            Assert.AreEqual(actual, obsolete);
             Assert.AreEqual(expected, actual, delta);
         }
     }
