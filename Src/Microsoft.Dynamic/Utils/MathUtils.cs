@@ -219,6 +219,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             // Preserve the sign of the input, including +/-0.0
+            // https://stackoverflow.com/questions/58483347/can-this-double-precision-rounding-error-condition-ever-be-reached
             return value < 0.0 || 1.0 / value < 0.0 ? -0.0 : 0.0;
         }
 
