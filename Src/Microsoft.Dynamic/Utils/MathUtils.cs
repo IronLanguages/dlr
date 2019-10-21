@@ -149,8 +149,9 @@ namespace Microsoft.Scripting.Utils {
         /// Behaves like Math.Round(value, MidpointRounding.AwayFromZero)
         /// Needed because CoreCLR doesn't support this particular overload of Math.Round
         /// </summary>
+        [Obsolete("The method has been deprecated. Call MathUtils.Round(value, 0, MidpointRounding.AwayFromZero) instead.")]
         public static double RoundAwayFromZero(double value) {
-            return Math.Round(value, MidpointRounding.AwayFromZero);
+            return RoundAwayFromZero(value, 0);
         }
 
         private static readonly double[] _RoundPowersOfTens = new double[] { 1E0, 1E1, 1E2, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8, 1E9, 1E10, 1E11, 1E12, 1E13, 1E14, 1E15 };
@@ -166,7 +167,16 @@ namespace Microsoft.Scripting.Utils {
         /// 
         /// (This function is also needed because CoreCLR lacks this overload.)
         /// </summary>
+        [Obsolete("The method has been deprecated. Call MathUtils.Round(value, precision, MidpointRounding.AwayFromZero) instead.")]
         public static double RoundAwayFromZero(double value, int precision) {
+            return Round(value, precision, MidpointRounding.AwayFromZero);
+        }
+
+        public static bool IsNegativeZero(double self) {
+            return (self == 0.0 && 1.0 / self < 0);
+        }
+
+        public static double Round(double value, int precision, MidpointRounding mode) {
             if (double.IsInfinity(value) || double.IsNaN(value)) {
                 return value;
             }
@@ -177,7 +187,7 @@ namespace Microsoft.Scripting.Utils {
                 }
 
                 double num = GetPowerOf10(precision);
-                return RoundAwayFromZero(value * num) / num;
+                return Math.Round(value * num, mode) / num;
             }
 
             if (precision >= -308) {
@@ -185,15 +195,11 @@ namespace Microsoft.Scripting.Utils {
                 // (by extending the cache to negative powers of 10)
                 // but the results seem to be more precise if we do it this way
                 double num = GetPowerOf10(-precision);
-                return RoundAwayFromZero(value / num) * num;
+                return Math.Round(value / num, mode) * num;
             }
 
             // Preserve the sign of the input, including +/-0.0
             return value < 0.0 || 1.0 / value < 0.0 ? -0.0 : 0.0;
-        }
-
-        public static bool IsNegativeZero(double self) {
-            return (self == 0.0 && 1.0 / self < 0);
         }
 
         #region Special Functions
