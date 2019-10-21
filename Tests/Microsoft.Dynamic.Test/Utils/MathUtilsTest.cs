@@ -74,9 +74,10 @@ namespace Microsoft.Dynamic.Test.Utils
         [TestCase(25.0, -1, ExpectedResult = 20.0)]
         [TestCase(3.5, 0, ExpectedResult = 4.0)]
         [TestCase(35.0, -1, ExpectedResult = 40.0)]
-        
-        public double RoundAwayFromZeroTest(double number, int precision) {
-            return Scripting.Utils.MathUtils.RoundToEven(number, precision);
+        [TestCase(-35.0, -1, ExpectedResult = -40.0)]
+        [TestCase(-25.0, -1, ExpectedResult = -20.0)]
+        public double RoundToEvenTest(double number, int precision) {
+            return Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.ToEven);
         }
 
         [TestCase(double.NegativeInfinity, ExpectedResult = double.NegativeInfinity)]
@@ -88,13 +89,51 @@ namespace Microsoft.Dynamic.Test.Utils
         [TestCase(2.5 - 1.0E-15, ExpectedResult = 2.0)]
         [TestCase(3.5, ExpectedResult = 4.0)]
 
-        public double RoundAwayFromZeroTest(double number) {
-            return Scripting.Utils.MathUtils.RoundToEven(number);
+        public double RoundToEvenTest(double number) {
+            return Scripting.Utils.MathUtils.Round(number, 0, MidpointRounding.ToEven);
         }
 
         [TestCase(2.45, 1, 2.4, 1E-15)]
-        public void RoundAwayFromZeroTestWithTolerance(double number, int precision, double expected, double delta) {
-            var actual = Scripting.Utils.MathUtils.RoundToEven(number, precision);
+        public void RoundToEvenWithToleranceTest(double number, int precision, double expected, double delta) {
+            var actual = Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.ToEven);
+            Assert.AreEqual(expected, actual, delta);
+        }
+
+        [TestCase(double.NegativeInfinity, 3, ExpectedResult = double.NegativeInfinity)]
+        [TestCase(double.NaN, 3, ExpectedResult = double.NaN)]
+        [TestCase(3.2934232, 309, ExpectedResult = 3.2934232)]
+        [TestCase(3.2934232, -309, ExpectedResult = 0.0)]
+        [TestCase(-3.2934232, -309, ExpectedResult = -0.0)]
+        [TestCase(-0.0, 1, ExpectedResult = -0.0)]
+        [TestCase(0.0, 1, ExpectedResult = 0.0)]
+        [TestCase(2.5, 0, ExpectedResult = 3.0)]
+        [TestCase(2.5 + 1.0E-15, 0, ExpectedResult = 3.0)]
+        [TestCase(2.5 - 1.0E-15, 0, ExpectedResult = 2.0)]
+        [TestCase(25.0, -1, ExpectedResult = 30.0)]
+        [TestCase(3.5, 0, ExpectedResult = 4.0)]
+        [TestCase(35.0, -1, ExpectedResult = 40.0)]
+        [TestCase(-35.0, -1, ExpectedResult = -40.0)]
+        [TestCase(-25.0, -1, ExpectedResult = -30.0)]
+        public double RoundAwayFromZeroTest(double number, int precision) {
+            return Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.AwayFromZero);
+        }
+
+        [TestCase(double.NegativeInfinity, ExpectedResult = double.NegativeInfinity)]
+        [TestCase(double.NaN, ExpectedResult = double.NaN)]
+        [TestCase(-0.0, ExpectedResult = -0.0)]
+        [TestCase(0.0, ExpectedResult = 0.0)]
+        [TestCase(2.5, ExpectedResult = 3.0)]
+        [TestCase(2.5 + 1.0E-15, ExpectedResult = 3.0)]
+        [TestCase(2.5 - 1.0E-15, ExpectedResult = 2.0)]
+        [TestCase(3.5, ExpectedResult = 4.0)]
+
+        public double RoundAwayFromZeroTest(double number) {
+            return Scripting.Utils.MathUtils.Round(number, 0, MidpointRounding.AwayFromZero);
+        }
+
+        [TestCase(2.45, 1, 2.5, 1E-15)]
+        public void RoundAwayFromZeroWithToleranceTest(double number, int precision, double expected, double delta) {
+            var actual = Scripting.Utils.MathUtils.Round(number, precision, MidpointRounding.AwayFromZero);
             Assert.AreEqual(expected, actual, delta);
         }
     }
