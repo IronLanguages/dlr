@@ -488,7 +488,11 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         inputChanged = optionsObsolete = true;
                         break;
                     case ConsoleKey.Enter:
-                        return OnEnter(inputChanged);
+                        if (key.KeyChar == '\r') {
+                            return OnEnter(inputChanged);
+                        }
+                        inputChanged = optionsObsolete = true;
+                        break;
                     case ConsoleKey.Tab: {
                             bool prefix = false;
                             if (optionsObsolete) {
@@ -539,7 +543,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         continue;
 
                     default:
-                        if (key.KeyChar == '\x0D') goto case ConsoleKey.Enter;      // Ctrl-M
+                        if (key.KeyChar == '\r') goto case ConsoleKey.Enter;        // Ctrl-M
                         if (key.KeyChar == '\x08') goto case ConsoleKey.Backspace;  // Ctrl-H
                         Insert(key);
                         inputChanged = optionsObsolete = true;
