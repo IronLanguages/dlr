@@ -488,11 +488,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         inputChanged = optionsObsolete = true;
                         break;
                     case ConsoleKey.Enter:
-                        if (key.KeyChar == '\r') {
-                            return OnEnter(inputChanged);
+                        // Only discard \n on Windows. On Unix, .NET Core returns \r while Mono returns \n.
+                        if (key.KeyChar == '\n' && Environment.OSVersion.Platform == PlatformID.Win32NT) {
+                            inputChanged = optionsObsolete = true;
+                            break;
                         }
-                        inputChanged = optionsObsolete = true;
-                        break;
+                        return OnEnter(inputChanged);
                     case ConsoleKey.Tab: {
                             bool prefix = false;
                             if (optionsObsolete) {
