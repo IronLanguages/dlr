@@ -14,9 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.0.100'
     - name: Build
       run: pwsh make.ps1
     - name: Package
@@ -27,10 +24,5 @@ jobs:
         path: Package/Release/Packages
     - name: Test
       run: |
-        Write-Host ${env:DOTNET_ROOT}
-        ./make.ps1 -frameworks net45,netcoreapp3.0 test-all
-      env:
-        # Work around https://github.com/actions/setup-dotnet/issues/29
-        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/3.0.100/x64
+        ./make.ps1 -frameworks net45,netcoreapp2.1,netcoreapp3.1 test-all
       shell: pwsh
-      # TODO: figure out how to also test on netcoreapp2.1

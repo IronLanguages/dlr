@@ -20,12 +20,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// <summary>
     /// The ComObject class wraps a runtime-callable-wrapper and enables it to be used with the Dynamic Language Runtime and the C# dynamic keyword.
     /// </summary>
-#if NETCOREAPP3_0
-    public
-#else
-    internal
-#endif
-    class ComObject : IDynamicMetaObjectProvider {
+    internal class ComObject : IDynamicMetaObjectProvider {
         internal ComObject(object rcw) {
             Debug.Assert(Utils.TypeUtils.IsComObject(rcw));
             RuntimeCallableWrapper = rcw;

@@ -28,10 +28,10 @@ steps:
       version: '2.1.x'
 
   - task: DotNetCoreInstaller@1
-    displayName: Install .NET Core 3.0 SDK for build
+    displayName: Install .NET Core 3.1 SDK for build
     inputs:
       packageType: 'sdk'
-      version: '3.0.100'
+      version: '3.1.100'
 
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
