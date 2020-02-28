@@ -119,23 +119,27 @@ namespace Microsoft.Scripting.Utils {
             return Double.TryParse(s, style, provider, out result);
         }
 
+        [Obsolete("Use int.TryParse")]
         public static bool TryParseInt32(string s, out int result) {
             return Int32.TryParse(s, out result);
         }
 
+        [Obsolete("Use DateTime.TryParseExact")]
         public static bool TryParseDateTimeExact(string s, string format, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
             return DateTime.TryParseExact(s, format, provider, style, out result);
         }
 
+        [Obsolete("Use DateTime.TryParseExact")]
         public static bool TryParseDateTimeExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
             return DateTime.TryParseExact(s, formats, provider, style, out result);
         }
 
+        [Obsolete("Use DateTime.TryParse")]
         public static bool TryParseDate(string s, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
             return DateTime.TryParse(s, provider, style, out result);
         }
 
-        // Aims to be equivalent to Culture.GetCultureInfo for Silverlight
+        [Obsolete("Use CultureInfo.GetCultureInfo")]
         public static CultureInfo GetCultureInfo(string name) {
             return CultureInfo.GetCultureInfo(name);
         }
