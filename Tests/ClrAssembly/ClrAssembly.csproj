@@ -96,10 +96,31 @@
   </Target>
 
   <ItemGroup>
+    <AreaCSFile Include="Src\fieldtests.cs" />
+    <AreaCSFile Include="Src\methodargs.cs" />
+    <AreaCSFile Include="Src\returnvalues.cs" />
+    <AreaCSFile Include="Src\operators.cs" />
+    <AreaCSFile Include="Src\userdefinedconversions.cs" />
+    <AreaCSFile Include="Src\delegatedefinitions.cs" />
+    <AreaCSFile Include="Src\eventdefinitions.cs" />
+    <AreaCSFile Include="Src\propertydefinitions.cs" />
+    <AreaCSFile Include="Src\indexerdefinitionscs.cs" />
+    <AreaCSFile Include="Src\defaultmemberscs.cs" />
+    <AreaCSFile Include="Src\baseclasscs.cs" />
+    <AreaCSFile Include="Src\dynamicobjmodel.cs" />
 
     <AreaVBFile Include="Src\*.vb" />
     <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
+
+    <ReachTypeInput Include="Src\loadtypesample.cs" />
+    <ReachTypeInput Include="Src\missingtype.cs" />
+    <ReachTypeInput Include="Src\loadexception.cs" />
+    <ReachTypeInput Include="Src\typeforwardee1.cs" />
+    <ReachTypeInput Include="Src\typeforwarder1.cs" />
+    <ReachTypeInput Include="Src\typeforwardee2.cs" />
     <ReachTypeInput Include="Src\typeforwarder2.il" />
+    <ReachTypeInput Include="Src\typeforwardee3.cs" />
+    <ReachTypeInput Include="Src\typeforwarder3.cs" />
 
     <ReachTypeOutput Include="@(ReachTypeInput->'$(OutputPath)\$(Prefix)%(Filename).dll')" Exclude="$(OutputPath)\$(Prefix)missingtype.dll" />
   </ItemGroup>
