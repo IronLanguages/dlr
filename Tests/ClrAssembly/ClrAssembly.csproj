@@ -127,6 +127,7 @@
 
   <ItemGroup>
     <Compile Include="dummy.cs" />
+    <None Include="Src\**\*" />
   </ItemGroup>
 
   <ItemGroup>
