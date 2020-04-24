@@ -119,11 +119,11 @@ namespace Microsoft.Scripting.Ast {
 
         private static Expression ComplexConstant(Complex value) {
             if (value.Real != 0.0) {
-                if (value.Imaginary() != 0.0) {
+                if (value.Imaginary != 0.0) {
                     return Expression.Call(
                         new Func<double, double, Complex>(MathUtils.MakeComplex).GetMethodInfo(),
                         Constant(value.Real),
-                        Constant(value.Imaginary())
+                        Constant(value.Imaginary)
                     );
                 }
 
@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Ast {
 
             return Expression.Call(
                 new Func<double, Complex>(MathUtils.MakeImaginary).GetMethodInfo(),
-                Constant(value.Imaginary())
+                Constant(value.Imaginary)
             );
         }
     }
