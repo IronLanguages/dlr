@@ -30,6 +30,11 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
+  <!-- Deterministic build -->
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' or '$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
   <!-- Signing -->
   <PropertyGroup>
     <PublicKey>$(DlrBuildDir)\Key.snk</PublicKey>
