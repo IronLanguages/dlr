@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Ast {
                                 return (bool)value ? TrueLiteral : FalseLiteral;
                             case TypeCode.Int32:
                                 int x = (int)value;
-                                int cacheIndex = x + 2;
+                                int cacheIndex = unchecked(x + 2);
                                 if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
                                     ConstantExpression res;
                                     if ((res = IntCache[cacheIndex]) == null) {

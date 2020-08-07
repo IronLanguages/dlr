@@ -102,8 +102,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <!-- TODO: Python & zlib.net need some work -->
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>$(Features);$(SignedSym);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>
