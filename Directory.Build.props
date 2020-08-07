@@ -35,6 +35,10 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
+  </ItemGroup>
+
   <!-- Signing -->
   <PropertyGroup>
     <PublicKey>$(DlrBuildDir)\Key.snk</PublicKey>
