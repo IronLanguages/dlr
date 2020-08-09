@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
@@ -151,23 +151,35 @@ namespace Microsoft.Scripting.Hosting {
         /// If there is no configuration available returns an empty setup.
         /// </summary>
         public static ScriptRuntimeSetup ReadConfiguration() {
-#if FEATURE_CONFIGURATION
             var setup = new ScriptRuntimeSetup();
-            Configuration.Section.LoadRuntimeSetup(setup, null);
-            return setup;
-#else
-            return new ScriptRuntimeSetup();
+#if FEATURE_CONFIGURATION
+            LoadRuntimeSetup(setup, null);
 #endif
+            return setup;
         }
 
+
 #if FEATURE_CONFIGURATION
+        private static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream configFileStream) {
+            try {
+                LoadRuntimeSetupImpl(setup, configFileStream);
+            } catch (FileNotFoundException) {
+                // failed to load the assembly
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void LoadRuntimeSetupImpl(ScriptRuntimeSetup setup, Stream configFileStream) {
+            Configuration.Section.LoadRuntimeSetup(setup, configFileStream);
+        }
+
         /// <summary>
         /// Reads setup from a specified XML stream.
         /// </summary>
         public static ScriptRuntimeSetup ReadConfiguration(Stream configFileStream) {
             ContractUtils.RequiresNotNull(configFileStream, nameof(configFileStream));
             var setup = new ScriptRuntimeSetup();
-            Configuration.Section.LoadRuntimeSetup(setup, configFileStream);
+            LoadRuntimeSetup(setup, configFileStream);
             return setup;
         }
 
