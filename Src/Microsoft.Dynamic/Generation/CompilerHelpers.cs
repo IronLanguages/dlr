@@ -660,7 +660,11 @@ namespace Microsoft.Scripting.Generation {
         public static T Compile<T>(this Expression<T> lambda, bool emitDebugSymbols) {
 #if FEATURE_PDBEMIT && FEATURE_REFEMIT
             if (emitDebugSymbols) {
-                return CompileToMethod(lambda, DebugInfoGenerator.CreatePdbGenerator(), true);
+                try {
+                    return CompileToMethod(lambda, DebugInfoGenerator.CreatePdbGenerator(), true);
+                } catch (PlatformNotSupportedException) {
+                    // DebugInfoGenerator.CreatePdbGenerator can throw PlatformNotSupportedException on Mono
+                }
             }
 #endif
             return lambda.Compile();
