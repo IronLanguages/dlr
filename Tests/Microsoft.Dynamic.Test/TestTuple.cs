@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting;
@@ -110,6 +111,28 @@ namespace Microsoft.Dynamic.Test {
             foreach (int i in new int[] { 1, 2, 4, 8, 16, 32, 64, 127, 128, 129, 256, 512, 1024, 24, 96 }) {
                 VerifyTuple(i);
             }
+        }
+
+        [Test]
+        public void TestNestedTupleSize() {
+            int size = 8;
+            Type[] args = new Type[size];
+            for (int i = 0; i < size; i++) {
+                if (i == 5) {
+                    var nestedTupleType = MutableTuple.MakeTupleType(typeof(int), typeof(int));
+                    args[i] = nestedTupleType;
+                } else {
+                    args[i] = typeof(int);
+                }
+            }
+
+            var tupleType = MutableTuple.MakeTupleType(args);
+
+            // these both fail - https://github.com/IronLanguages/dlr/issues/231
+            //Assert.AreEqual(MutableTuple.GetSize(tupleType), size);
+            //Assert.Throws<ArgumentException>(() => MutableTuple.GetAccessPath(tupleType, size).ToArray());
+            Assert.AreEqual(MutableTuple.GetSize(tupleType), size + 1);
+            Assert.Throws<InvalidOperationException>(() => MutableTuple.GetAccessPath(tupleType, size).ToArray());
         }
 
         [Test]
