@@ -13,15 +13,15 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1.5.0
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
     - name: Build
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
-    - uses: actions/upload-artifact@master
+    - uses: actions/upload-artifact@v2
       with:
         name: packages
         path: Package/Release/Packages
