@@ -177,13 +177,13 @@ namespace Microsoft.Scripting {
         /// Gets the series of properties that needs to be accessed to access a logical item in a potentially nested tuple.
         /// </summary>
         public static IEnumerable<PropertyInfo> GetAccessPath(Type tupleType, int index) {
-            return GetAccessProperties(tupleType, GetSize(tupleType), index);
+            return GetAccessPath(tupleType, GetSize(tupleType), index);
         }
 
         /// <summary>
         /// Gets the series of properties that needs to be accessed to access a logical item in a potentially nested tuple.
         /// </summary>
-        internal static IEnumerable<PropertyInfo> GetAccessProperties(Type tupleType, int size, int index) {
+        public static IEnumerable<PropertyInfo> GetAccessPath(Type tupleType, int size, int index) {
             ContractUtils.RequiresNotNull(tupleType, nameof(tupleType));
 
             if (index < 0 || index >= size) throw new ArgumentException(nameof(index));
