@@ -230,20 +230,22 @@ namespace Microsoft.Scripting.Metadata {
             int hash1 = 5381;
             int hash2 = hash1;
 
-            if (bytes != null) {
-                int c;
-                byte* s = bytes;
-                while ((c = s[0]) != 0) {
-                    hash1 = ((hash1 << 5) + hash1) ^ c;
-                    c = s[1];
-                    if (c == 0) {
-                        break;
+            unchecked {
+                if (bytes != null) {
+                    int c;
+                    byte* s = bytes;
+                    while ((c = s[0]) != 0) {
+                        hash1 = ((hash1 << 5) + hash1) ^ c;
+                        c = s[1];
+                        if (c == 0) {
+                            break;
+                        }
+                        hash2 = ((hash2 << 5) + hash2) ^ c;
+                        s += 2;
                     }
-                    hash2 = ((hash2 << 5) + hash2) ^ c;
-                    s += 2;
                 }
+                return hash1 + (hash2 * 1566083941);
             }
-            return hash1 + (hash2 * 1566083941);
         }
 
         internal static int GetByteHashCode(byte* bytes, int count) {
@@ -252,19 +254,21 @@ namespace Microsoft.Scripting.Metadata {
             int hash1 = 5381;
             int hash2 = hash1;
 
-            if (bytes != null) {
-                byte* last = bytes + count - 1;
-                byte* s = bytes;
-                while (s < last) {
-                    hash1 = ((hash1 << 5) + hash1) ^ (int)s[0];
-                    hash2 = ((hash2 << 5) + hash2) ^ (int)s[1];
-                    s += 2;
+            unchecked {
+                if (bytes != null) {
+                    byte* last = bytes + count - 1;
+                    byte* s = bytes;
+                    while (s < last) {
+                        hash1 = ((hash1 << 5) + hash1) ^ (int)s[0];
+                        hash2 = ((hash2 << 5) + hash2) ^ (int)s[1];
+                        s += 2;
+                    }
+                    if (s < bytes + count) {
+                        hash1 = ((hash1 << 5) + hash1) ^ (int)s[0];
+                    }
                 }
-                if (s < bytes + count) {
-                    hash1 = ((hash1 << 5) + hash1) ^ (int)s[0];
-                }
+                return hash1 + (hash2 * 1566083941);
             }
-            return hash1 + (hash2 * 1566083941);
         }
 
         internal static bool Equals(byte* p, byte* q) {
