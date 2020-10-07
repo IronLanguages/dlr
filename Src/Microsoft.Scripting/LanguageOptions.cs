@@ -118,7 +118,7 @@ namespace Microsoft.Scripting {
 
             // a string:
             if (value is string strValue && separators != null && separators.Length > 0) {
-                return new ReadOnlyCollection<string>(StringUtils.Split(strValue, separators, Int32.MaxValue, StringSplitOptions.RemoveEmptyEntries));
+                return new ReadOnlyCollection<string>(strValue.Split(separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             throw new ArgumentException($"Invalid value for option {name}");

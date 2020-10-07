@@ -10,15 +10,8 @@ using System.Text;
 namespace Microsoft.Scripting.Utils {
     public static class StringUtils {
 
-        public static Encoding DefaultEncoding {
-            get {
-#if FEATURE_ENCODING
-                return Encoding.Default;
-#else
-                return Encoding.UTF8;
-#endif
-            }
-        }
+        [Obsolete("Use Encoding.Default")]
+        public static Encoding DefaultEncoding { get; } = Encoding.Default;
 
         public static string GetSuffix(string str, char separator, bool includeSeparator) {
             ContractUtils.RequiresNotNull(str, nameof(str));
@@ -33,7 +26,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int CountOf(string str, char c) {
-            if (System.String.IsNullOrEmpty(str)) return 0;
+            if (string.IsNullOrEmpty(str)) return 0;
 
             int result = 0;
             for (int i = 0; i < str.Length; i++) {
@@ -49,10 +42,9 @@ namespace Microsoft.Scripting.Utils {
             return str.Split(new string[] { separator }, maxComponents, options);
         }
 
-        public static string[] Split(string str, char[] separators, int maxComponents, StringSplitOptions options) {
-            ContractUtils.RequiresNotNull(str, nameof(str));
-            return str.Split(separators, maxComponents, options);
-        }
+        [Obsolete("Use string.Split")]
+        public static string[] Split(string str, char[] separators, int maxComponents, StringSplitOptions options)
+            => str.Split(separators, maxComponents, options);
 
         /// <summary>
         /// Splits text and optionally indents first lines - breaks along words, not characters.
@@ -72,7 +64,7 @@ namespace Microsoft.Scripting.Utils {
             while (start != text.Length) {
                 if (len >= lineWidth) {
                     // find last space to break on
-                    while (len != 0 && !Char.IsWhiteSpace(text[start + len - 1]))
+                    while (len != 0 && !char.IsWhiteSpace(text[start + len - 1]))
                         len--;
                 }
 
@@ -115,34 +107,28 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [Obsolete("Use double.TryParse")]
-        public static bool TryParseDouble(string s, NumberStyles style, IFormatProvider provider, out double result) {
-            return Double.TryParse(s, style, provider, out result);
-        }
+        public static bool TryParseDouble(string s, NumberStyles style, IFormatProvider provider, out double result)
+            => double.TryParse(s, style, provider, out result);
 
         [Obsolete("Use int.TryParse")]
-        public static bool TryParseInt32(string s, out int result) {
-            return Int32.TryParse(s, out result);
-        }
+        public static bool TryParseInt32(string s, out int result)
+            => int.TryParse(s, out result);
 
         [Obsolete("Use DateTime.TryParseExact")]
-        public static bool TryParseDateTimeExact(string s, string format, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
-            return DateTime.TryParseExact(s, format, provider, style, out result);
-        }
+        public static bool TryParseDateTimeExact(string s, string format, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+            => DateTime.TryParseExact(s, format, provider, style, out result);
 
         [Obsolete("Use DateTime.TryParseExact")]
-        public static bool TryParseDateTimeExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
-            return DateTime.TryParseExact(s, formats, provider, style, out result);
-        }
+        public static bool TryParseDateTimeExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+            => DateTime.TryParseExact(s, formats, provider, style, out result);
 
         [Obsolete("Use DateTime.TryParse")]
-        public static bool TryParseDate(string s, IFormatProvider provider, DateTimeStyles style, out DateTime result) {
-            return DateTime.TryParse(s, provider, style, out result);
-        }
+        public static bool TryParseDate(string s, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+            => DateTime.TryParse(s, provider, style, out result);
 
         [Obsolete("Use CultureInfo.GetCultureInfo")]
-        public static CultureInfo GetCultureInfo(string name) {
-            return CultureInfo.GetCultureInfo(name);
-        }
+        public static CultureInfo GetCultureInfo(string name)
+            => CultureInfo.GetCultureInfo(name);
 
         // Like string.Split, but enumerates
         public static IEnumerable<string> Split(string str, string sep) {
