@@ -326,10 +326,10 @@ namespace Microsoft.Scripting.Hosting {
         /// 
         /// The ScriptSource's Path property will be the path argument.
         /// 
-        /// The encoding defaults to System.Text.Encoding.Default.
+        /// The encoding defaults to the default encoding of the language.
         /// </summary>
         public ScriptSource CreateScriptSourceFromFile(string path) {
-            return CreateScriptSourceFromFile(path, StringUtils.DefaultEncoding, SourceCodeKind.File);
+            return CreateScriptSourceFromFile(path, LanguageContext.DefaultEncoding, SourceCodeKind.File);
         }
 
         /// <summary>
@@ -445,12 +445,12 @@ namespace Microsoft.Scripting.Hosting {
         /// 
         /// The default SourceCodeKind is File.
         /// 
-        /// The encoding defaults to Encoding.Default.
+        /// The encoding defaults to the default encoding of the language.
         /// </summary>
         public ScriptSource CreateScriptSource(StreamContentProvider content, string path) {
             ContractUtils.RequiresNotNull(content, nameof(content));
 
-            return CreateScriptSource(content, path, StringUtils.DefaultEncoding, SourceCodeKind.File);
+            return CreateScriptSource(content, path, LanguageContext.DefaultEncoding, SourceCodeKind.File);
         }
 
         /// <summary>

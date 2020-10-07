@@ -96,7 +96,7 @@ namespace Microsoft.Scripting.Runtime {
                         _inputEncoding = Console.InputEncoding;
                         _inputReader = Console.In;
 #elif FEATURE_BASIC_CONSOLE
-                        _inputEncoding = StringUtils.DefaultEncoding;
+                        _inputEncoding = Encoding.Default;
                         _inputStream = new TextStream(Console.In, _inputEncoding);
                         _inputReader = Console.In;
 #else

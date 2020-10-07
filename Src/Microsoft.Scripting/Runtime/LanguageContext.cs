@@ -242,6 +242,8 @@ namespace Microsoft.Scripting.Runtime {
             return null;
         }
 
+        public virtual Encoding DefaultEncoding { get; } = Encoding.Default;
+
         public virtual Guid LanguageGuid => Guid.Empty;
 
         public virtual Guid VendorGuid => Guid.Empty;
@@ -272,7 +274,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public SourceUnit CreateFileUnit(string path) {
-            return CreateFileUnit(path, StringUtils.DefaultEncoding);
+            return CreateFileUnit(path, DefaultEncoding);
         }
 
         public SourceUnit CreateFileUnit(string path, Encoding encoding) {
