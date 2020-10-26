@@ -11,12 +11,14 @@ namespace Microsoft.Scripting {
     /// passed in a dictionary which is created for the call.
     /// 
     /// Most languages which support params dictionaries will support the following types:
-    ///     IDictionary&lt;string, anything&gt;
-    ///     IDictionary&lt;object, anything&gt;
-    ///     Dictionary&lt;string, anything&gt;
-    ///     Dictionary&lt;object, anything&gt;
+    /// <code>
+    ///     IReadOnlyDictionary&lt;string, anything&gt;<br/>
+    ///     IDictionary&lt;string, anything&gt;<br/>
+    ///     IDictionary&lt;object, anything&gt;<br/>
+    ///     Dictionary&lt;string, anything&gt;<br/>
+    ///     Dictionary&lt;object, anything&gt;<br/>
     ///     IDictionary
-    ///     IAttributesCollection (deprecated)
+    /// </code>
     /// 
     /// For languages which don't have language level support the user will be required to
     /// create and populate the dictionary by hand.
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting {
     /// This attribute is the dictionary equivalent of the System.ParamArrayAttribute.
     /// </summary>
     /// <example>
-    /// public static void KeywordArgFunction([ParamsDictionary]IDictionary&lt;string, object&gt; dict) {
+    /// public static void KeywordArgFunction([ParamDictionary]IDictionary&lt;string, object&gt; dict) {
     ///     foreach (var v in dict) {
     ///         Console.WriteLine("Key: {0} Value: {1}", v.Key, v.Value);
     ///     }
