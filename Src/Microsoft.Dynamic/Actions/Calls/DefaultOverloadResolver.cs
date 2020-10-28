@@ -202,15 +202,16 @@ namespace Microsoft.Scripting.Actions {
             while (dictEnum.MoveNext()) {
                 DictionaryEntry de = dictEnum.Entry;
 
-                if (de.Key is string s) {
-                    splattedNames.Add(s);
+                string strKey = de.Key is string s ? s : de.Key is Extensible<string> es ? es.Value : null;
+                if (strKey != null) {
+                    splattedNames.Add(strKey);
                     splattedArgs.Add(
                         DynamicMetaObject.Create(
                             de.Value,
                             Ast.Call(
                                 AstUtils.Convert(dictMo.Expression, typeof(IDictionary)),
                                 typeof(IDictionary).GetMethod("get_Item"),
-                                AstUtils.Constant(s)
+                                AstUtils.Constant(de.Key)
                             )
                         )
                     );
