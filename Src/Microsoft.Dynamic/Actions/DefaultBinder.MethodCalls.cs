@@ -242,12 +242,14 @@ namespace Microsoft.Scripting.Actions {
             Type[] types = testTypes ? new Type[dict.Count] : null;
             int index = 0;
             while (dictEnum.MoveNext()) {
-                string name = dictEnum.Entry.Key as string;
-                if (name == null) {
+                if (dictEnum.Entry.Key is string name) {
+                    names[index] = name;
+                } else if (dictEnum.Entry.Key is Extensible<string> ename) {
+                    names[index] = ename.Value;
+                } else {
                     throw ScriptingRuntimeHelpers.SimpleTypeError(
-                        $"expected string for dictionary argument got {dictEnum.Entry.Key}");
+                        $"expected string for dictionary argument, got {dictEnum.Entry.Key}");
                 }
-                names[index] = name;
                 if (types != null) {
                     types[index] = CompilerHelpers.GetType(dictEnum.Entry.Value);
                 }
@@ -258,7 +260,7 @@ namespace Microsoft.Scripting.Actions {
                 Expression.AndAlso(
                     Expression.TypeIs(args[args.Count - 1].Expression, typeof(IDictionary)),
                     Expression.Call(
-                        typeof(BinderOps).GetMethod("CheckDictionaryMembers"),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.CheckDictionaryMembers)),
                         Expression.Convert(args[args.Count - 1].Expression, typeof(IDictionary)),
                         AstUtils.Constant(names),
                         testTypes ? AstUtils.Constant(types) : AstUtils.Constant(null, typeof(Type[]))
