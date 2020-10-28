@@ -211,7 +211,7 @@ namespace Microsoft.Scripting.Actions {
                             Ast.Call(
                                 AstUtils.Convert(dictMo.Expression, typeof(IDictionary)),
                                 typeof(IDictionary).GetMethod("get_Item"),
-                                AstUtils.Constant(de.Key)
+                                AstUtils.Constant(strKey)
                             )
                         )
                     );
