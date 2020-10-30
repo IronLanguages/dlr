@@ -59,20 +59,13 @@ namespace Microsoft.Scripting.Runtime {
             return res;
         }
 
-        public static IReadOnlyDictionary<string, TValue> MakeReadOnlyDictionary<TValue>(string[] names, object[] values) {
-            var res = new Dictionary<string, TValue>(names.Length);
-
-            for (int i = 0; i < names.Length; i++) {
-                TValue v;
-                try {
-                    v = (TValue)values[i];
-                } catch (InvalidCastException) {
-                    throw new ArgumentTypeException($"Unable to cast keyword argument of type {CompilerHelpers.GetType(values[i])} to {typeof(TValue)}.");
-                }
-                res[names[i]] = v;
+        public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object[] values) {
+#if NETCOREAPP
+            if (names.Length == 0) {
+                return EmptyReadOnlyDictionary<TKey, TValue>.Instance;
             }
-
-            return res;
+#endif
+            return MakeDictionary<TKey, TValue>(names, values);
         }
 
         public static ArgumentTypeException BadArgumentsForOperation(ExpressionType op, params object[] args) {

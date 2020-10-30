@@ -89,12 +89,13 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             if (dictType.IsGenericType) {
                 Type[] genArgs = dictType.GetGenericTypeArguments();
-                if (dictType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>) && genArgs[0] == typeof(string)) {
+                if (dictType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)) {
 
-                    MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary)).MakeGenericMethod(genArgs[1]);
+                    if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
+                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary)).MakeGenericMethod(genArgs);
 
-                    func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
-
+                        func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
+                    }
                 } else if (dictType.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
                            dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
 

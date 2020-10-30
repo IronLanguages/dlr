@@ -13,6 +13,7 @@ namespace Microsoft.Scripting {
     /// Most languages which support params dictionaries will support the following types:
     /// <code>
     ///     IReadOnlyDictionary&lt;string, anything&gt;<br/>
+    ///     IReadOnlyDictionary&lt;object, anything&gt;<br/>
     ///     IDictionary&lt;string, anything&gt;<br/>
     ///     IDictionary&lt;object, anything&gt;<br/>
     ///     Dictionary&lt;string, anything&gt;<br/>
