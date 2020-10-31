@@ -553,7 +553,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public virtual IList<string> GetCallSignatures(object obj) {
-            return new string[0];
+            return EmptyArray<string>.Instance;
         }
 
         public virtual bool IsCallable(object obj) => obj is Delegate;

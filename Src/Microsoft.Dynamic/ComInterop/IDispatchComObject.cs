@@ -17,6 +17,8 @@ using System.Security.Permissions;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 using System.Dynamic;
 
+using Microsoft.Scripting.Utils;
+
 namespace Microsoft.Scripting.ComInterop {
 
     /// <summary>
@@ -300,7 +302,7 @@ namespace Microsoft.Scripting.ComInterop {
                             BindingFlags.GetProperty,
                             null,
                             RuntimeCallableWrapper,
-                            new object[0],
+                            EmptyArray<object>.Instance,
                             CultureInfo.InvariantCulture
                         );
                         members.Add(new KeyValuePair<string, object>(method.Name, value));

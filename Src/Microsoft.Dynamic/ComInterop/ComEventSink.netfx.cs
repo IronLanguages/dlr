@@ -194,15 +194,15 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public FieldInfo[] GetFields(BindingFlags bindingAttr) {
-            return new FieldInfo[0];
+            return EmptyArray<FieldInfo>.Instance;
         }
 
         public MemberInfo[] GetMember(string name, BindingFlags bindingAttr) {
-            return new MemberInfo[0];
+            return EmptyArray<MemberInfo>.Instance;
         }
 
         public MemberInfo[] GetMembers(BindingFlags bindingAttr) {
-            return new MemberInfo[0];
+            return EmptyArray<MemberInfo>.Instance;
         }
 
         public MethodInfo GetMethod(string name, BindingFlags bindingAttr) {
@@ -214,7 +214,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public MethodInfo[] GetMethods(BindingFlags bindingAttr) {
-            return new MethodInfo[0];
+            return EmptyArray<MethodInfo>.Instance;
         }
 
         public PropertyInfo GetProperty(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers) {
@@ -226,7 +226,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public PropertyInfo[] GetProperties(BindingFlags bindingAttr) {
-            return new PropertyInfo[0];
+            return EmptyArray<PropertyInfo>.Instance;
         }
 
         #endregion
