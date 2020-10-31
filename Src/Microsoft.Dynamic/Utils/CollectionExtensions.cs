@@ -138,7 +138,7 @@ namespace Microsoft.Scripting.Utils {
 
 
     internal static class EmptyReadOnlyCollection<T> {
-        internal static ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
+        internal static readonly ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
     }
 
     internal static class EmptyReadOnlyDictionary<TKey, TValue> {
@@ -153,6 +153,6 @@ namespace Microsoft.Scripting.Utils {
     // TODO: Should we use this everywhere for empty arrays?
     // my thought is, probably more hassle than its worth
     internal static class EmptyArray<T> {
-        internal static T[] Instance = new T[0];
+        internal static readonly T[] Instance = new T[0];
     }
 }

@@ -81,7 +81,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private class GenericInterpretedBinder<T> where T : class {
-            public static GenericInterpretedBinder<T>/*!*/ Instance = new GenericInterpretedBinder<T>();
+            public static readonly GenericInterpretedBinder<T>/*!*/ Instance = new GenericInterpretedBinder<T>();
             private readonly ReadOnlyCollection<ParameterExpression>/*!*/ _parameters;
             private readonly Expression/*!*/ _updateExpression;
 
