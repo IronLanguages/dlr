@@ -87,19 +87,26 @@ namespace Microsoft.Scripting.Actions.Calls {
         private Func<string[], object[], object> GetCreationDelegate(Type dictType) {
             Func<string[], object[], object> func = null;
 
-            if (dictType == typeof(IDictionary)) {
-                func = BinderOps.MakeDictionary<object, object>;
-            } else if (dictType.IsGenericType) {
+            if (dictType.IsGenericType) {
                 Type[] genArgs = dictType.GetGenericTypeArguments();
-                if (dictType.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
-                    dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
+                if (dictType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)) {
 
                     if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
-                        MethodInfo target = typeof(BinderOps).GetMethod("MakeDictionary").MakeGenericMethod(genArgs);
+                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary)).MakeGenericMethod(genArgs);
+
+                        func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
+                    }
+                } else if (dictType.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
+                           dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
+
+                    if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
+                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeDictionary)).MakeGenericMethod(genArgs);
 
                         func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
                     }
                 }
+            } else if (dictType == typeof(IDictionary)) {
+                func = BinderOps.MakeDictionary<object, object>;
             }
 
             if (func == null) {

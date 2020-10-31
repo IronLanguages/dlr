@@ -45,16 +45,27 @@ namespace Microsoft.Scripting.Runtime {
         public static Dictionary<TKey, TValue> MakeDictionary<TKey, TValue>(string[] names, object[] values) {
             Debug.Assert(typeof(TKey) == typeof(string) || typeof(TKey) == typeof(object));
 
-            Dictionary<TKey, TValue> res = new Dictionary<TKey, TValue>();
+            Dictionary<TKey, TValue> res = new Dictionary<TKey, TValue>(names.Length);
             IDictionary id = (IDictionary)res;
-            
+
             for (int i = 0; i < names.Length; i++) {
-                id[names[i]] = values[i];
+                try {
+                    id[names[i]] = values[i];
+                } catch (ArgumentException) {
+                    throw new ArgumentTypeException($"Unable to cast keyword argument of type {CompilerHelpers.GetType(values[i])} to {typeof(TValue)}.");
+                }
             }
 
             return res;
         }
-        
+
+        public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object[] values) {
+            if (names.Length == 0) {
+                return EmptyReadOnlyDictionary<TKey, TValue>.Instance;
+            }
+            return MakeDictionary<TKey, TValue>(names, values);
+        }
+
         public static ArgumentTypeException BadArgumentsForOperation(ExpressionType op, params object[] args) {
             StringBuilder message = new StringBuilder("unsupported operand type(s) for operation ");
             message.Append(op.ToString());
