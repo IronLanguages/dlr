@@ -457,7 +457,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         class IsLightExceptionExpression : Expression, IInstructionProvider {
-            public static IsLightExceptionExpression Instance = new IsLightExceptionExpression();
+            public static readonly IsLightExceptionExpression Instance = new IsLightExceptionExpression();
 
             private IsLightExceptionExpression() { }
 
@@ -494,7 +494,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         class IsLightExceptionInstruction : Instruction {
-            public static IsLightExceptionInstruction Instance = new IsLightExceptionInstruction();
+            public static readonly IsLightExceptionInstruction Instance = new IsLightExceptionInstruction();
 
             private IsLightExceptionInstruction() { }
 

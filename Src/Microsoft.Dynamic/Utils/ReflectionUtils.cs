@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Utils {
     public static class ReflectionUtils {
         #region Accessibility
 
-        public static BindingFlags AllMembers = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        public static readonly BindingFlags AllMembers = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
         public static bool IsPublic(this PropertyInfo property) {
             return property.GetGetMethod(nonPublic: false) != null
@@ -615,7 +615,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GenericParameterAttributes;
         }
 
-        public static Type[] EmptyTypes = new Type[0];
+        public static readonly Type[] EmptyTypes = new Type[0];
 
         public static object GetRawConstantValue(this FieldInfo field) {
             if (!field.IsLiteral) {
