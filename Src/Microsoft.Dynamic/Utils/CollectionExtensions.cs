@@ -141,11 +141,14 @@ namespace Microsoft.Scripting.Utils {
         internal static ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
     }
 
-#if NETCOREAPP
     internal static class EmptyReadOnlyDictionary<TKey, TValue> {
-        internal static IReadOnlyDictionary<TKey, TValue> Instance = System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>();
-    }
+        internal static readonly IReadOnlyDictionary<TKey, TValue> Instance
+#if NETCOREAPP
+            = System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>();
+#else
+            = new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
 #endif
+    }
 
     // TODO: Should we use this everywhere for empty arrays?
     // my thought is, probably more hassle than its worth

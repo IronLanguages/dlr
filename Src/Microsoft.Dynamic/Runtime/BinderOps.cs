@@ -60,11 +60,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object[] values) {
-#if NETCOREAPP
             if (names.Length == 0) {
                 return EmptyReadOnlyDictionary<TKey, TValue>.Instance;
             }
-#endif
             return MakeDictionary<TKey, TValue>(names, values);
         }
 
