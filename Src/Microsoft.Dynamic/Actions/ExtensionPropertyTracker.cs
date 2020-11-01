@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 
 using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     public class ExtensionPropertyTracker : PropertyTracker {
@@ -60,7 +61,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override ParameterInfo[] GetIndexParameters() {
-            return new ParameterInfo[0];
+            return EmptyArray<ParameterInfo>.Instance;
         }
 
         private static bool IsStaticProperty(MethodInfo method) {

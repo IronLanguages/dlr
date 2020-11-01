@@ -24,10 +24,10 @@ namespace Microsoft.Scripting.Utils {
 
         // Emitted:
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
-        public static readonly string[] EmptyStrings = new string[0];
+        public static readonly string[] EmptyStrings = EmptyArray<string>.Instance;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
-        public static readonly object[] EmptyObjects = new object[0];
+        public static readonly object[] EmptyObjects = EmptyArray<object>.Instance;
 
         public static IComparer<T> ToComparer<T>(Comparison<T> comparison) {
             return new FunctorComparer<T>(comparison);
@@ -101,7 +101,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] MakeArray<T>(ICollection<T> list) {
             if (list.Count == 0) {
-                return new T[0];
+                return EmptyArray<T>.Instance;
             }
 
             T[] res = new T[list.Count];

@@ -568,7 +568,7 @@ namespace Microsoft.Scripting.Runtime {
                 return ArrayUtils.ShiftLeft(array, count);
             }
 
-            return new T[0];
+            return EmptyArray<T>.Instance;
         }
     }
 }

@@ -10,10 +10,10 @@ using System.Text;
 namespace Microsoft.Scripting.Utils {
     internal static class ArrayUtils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
-        public static readonly string[] EmptyStrings = new string[0];
+        public static readonly string[] EmptyStrings = EmptyArray<string>.Instance;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
-        public static readonly object[] EmptyObjects = new object[0];
+        public static readonly object[] EmptyObjects = EmptyArray<object>.Instance;
 
         internal sealed class FunctorComparer<T> : IComparer<T> {
             private readonly Comparison<T> _comparison;
@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] MakeArray<T>(ICollection<T> list) {
             if (list.Count == 0) {
-                return new T[0];
+                return EmptyArray<T>.Instance;
             }
 
             T[] res = new T[list.Count];

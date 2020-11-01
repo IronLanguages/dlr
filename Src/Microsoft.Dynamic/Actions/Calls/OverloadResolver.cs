@@ -921,7 +921,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         
         private int[] GetExpectedArgCounts() {
             if (_candidateSets.Count == 0 && _paramsCandidates == null) {
-                return new int[0];
+                return EmptyArray<int>.Instance;
             }
 
             int minParamsArray = Int32.MaxValue;

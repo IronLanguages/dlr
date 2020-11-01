@@ -144,7 +144,7 @@ namespace Microsoft.Scripting.Generation {
         // Return the assembly locations that need to be verified
         private string[] SaveAssemblies() {
             if (!SaveSnippets) {
-                return new string[0];
+                return EmptyArray<string>.Instance;
             }
 
             List<string> assemlyLocations = new List<string>();

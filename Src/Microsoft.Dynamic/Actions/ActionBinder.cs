@@ -371,7 +371,7 @@ namespace Microsoft.Scripting.Actions {
         public virtual IList<Type> GetExtensionTypes(Type t) {
             // None are provided by default, languages need to know how to
             // provide these on their own terms.
-            return new Type[0];
+            return EmptyArray<Type>.Instance;
         }
 
         /// <summary>

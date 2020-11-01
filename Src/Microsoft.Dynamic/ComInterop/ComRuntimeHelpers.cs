@@ -497,7 +497,7 @@ namespace Microsoft.Scripting.ComInterop {
                 lock (_lock) {
                     if (_dynamicModule == null) {
                         var attributes = new[] {
-                            new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), new object[0]),
+                            new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), EmptyArray<object>.Instance),
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
                             new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}),
                                 new object[]{SecurityAction.Demand},

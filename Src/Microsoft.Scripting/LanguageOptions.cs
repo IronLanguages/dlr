@@ -82,7 +82,7 @@ namespace Microsoft.Scripting {
             _perfStats = GetOption(options, "PerfStats", false);
             _noAdaptiveCompilation = GetOption(options, "NoAdaptiveCompilation", false);
             _compilationThreshold = GetOption(options, "CompilationThreshold", -1);
-            _searchPaths = GetSearchPathsOption(options) ?? new ReadOnlyCollection<string>(new string[0]);
+            _searchPaths = GetSearchPathsOption(options) ?? EmptyReadOnlyCollection<string>.Instance;
         }
 
         public static T GetOption<T>(IDictionary<string, object> options, string name, T defaultValue) {

@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Interpreter {
                 int stackDepth = 0;
                 int continuationsDepth = 0;
 
-                using (var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator()) {
+                using (var cookieEnumerator = (debugCookies ?? EmptyArray<KeyValuePair<int, object>>.Instance).GetEnumerator()) {
                     var hasCookie = cookieEnumerator.MoveNext();
 
                     for (int i = 0; i < instructions.Count; i++) {

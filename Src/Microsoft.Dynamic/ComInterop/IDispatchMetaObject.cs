@@ -86,13 +86,13 @@ namespace Microsoft.Scripting.ComInterop {
         private DynamicMetaObject BindGetMember(ComMethodDesc method, bool canReturnCallables) {
             if (method.IsDataMember) {
                 if (method.ParamCount == 0) {
-                    return BindComInvoke(DynamicMetaObject.EmptyMetaObjects, method, new CallInfo(0) , new bool[]{});
+                    return BindComInvoke(DynamicMetaObject.EmptyMetaObjects, method, new CallInfo(0) , EmptyArray<bool>.Instance);
                 }
             }
 
             // ComGetMemberBinder does not expect callables. Try to call always.
             if (!canReturnCallables) {
-                return BindComInvoke(DynamicMetaObject.EmptyMetaObjects, method, new CallInfo(0), new bool[0]);
+                return BindComInvoke(DynamicMetaObject.EmptyMetaObjects, method, new CallInfo(0), EmptyArray<bool>.Instance);
             }
 
             return new DynamicMetaObject(

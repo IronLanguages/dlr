@@ -150,8 +150,6 @@ namespace Microsoft.Scripting.Utils {
 #endif
     }
 
-    // TODO: Should we use this everywhere for empty arrays?
-    // my thought is, probably more hassle than its worth
     internal static class EmptyArray<T> {
         internal static readonly T[] Instance = new T[0];
     }

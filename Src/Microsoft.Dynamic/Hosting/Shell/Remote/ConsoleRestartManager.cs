@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
+using Microsoft.Scripting.Utils;
+
 namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// <summary>
     /// Supports detecting the remote runtime being killed, and starting up a new one.
@@ -125,7 +127,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
                 try {
                     try {
-                        int exitCode = remoteConsoleHost.Run(new string[0]);
+                        int exitCode = remoteConsoleHost.Run(EmptyArray<string>.Instance);
 
                         if (_exitOnNormalExit && exitCode == 0) {
                             return;

@@ -89,11 +89,11 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal virtual IList<string> GetMemberNames(bool dataOnly) {
-            return new string[0];
+            return EmptyArray<string>.Instance;
         }
 
         internal virtual IList<KeyValuePair<string, object>> GetMembers(IEnumerable<string> names) {
-            return new KeyValuePair<string, object>[0];
+            return EmptyArray<KeyValuePair<string, object>>.Instance;
         }
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) {

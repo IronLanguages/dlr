@@ -369,7 +369,7 @@ namespace Microsoft.Scripting.Ast {
 
                     // We need to rewrite rethrows into "throw deferredVar"
                     var catchBody = new RethrowRewriter { Exception = deferredVar }.Visit(c.Body);
-                    
+
                     // if (deferredVar != null) {
                     //     ... catch body ...
                     // }
@@ -384,7 +384,7 @@ namespace Microsoft.Scripting.Ast {
 
                 block[1] = Expression.MakeTry(null, @try, null, null, new ReadOnlyCollection<CatchBlock>(handlers));
                 @try = Expression.Block(block);
-                handlers = new CatchBlock[0]; // so we don't reuse these
+                handlers = EmptyArray<CatchBlock>.Instance; // so we don't reuse these
             }
 
             if (finallyYields != catchYields) {
@@ -405,7 +405,7 @@ namespace Microsoft.Scripting.Ast {
                 // wrap them in a try
                 if (handlers.Count > 0) {
                     @try = Expression.MakeTry(null, @try, null, null, handlers);
-                    handlers = new CatchBlock[0];
+                    handlers = EmptyArray<CatchBlock>.Instance;
                 }
 
                 // NOTE: the order of these routers is important
