@@ -39,7 +39,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public override string ToString() {
-            return $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType.FullName})";
+            return
+                _candidates.Count > 1 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType.FullName}, <{_candidates.Count-1} more>)" :
+                _candidates.Count > 0 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType.FullName})" :
+                $"{_arity}: (<empty>)";
         }
     }
 }

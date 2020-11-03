@@ -92,6 +92,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             List<string> unboundNames = null;
             List<string> duppedNames = null;
+            List<int> duppedPositionals = null;
 
             int positionalArgCount = Arguments.Count;
 
@@ -100,20 +101,23 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if (paramIndex >= 0) {
                     int nameIndex = paramIndex - positionalArgCount;
 
-                    // argument maps to already bound parameter:
-                    if (paramIndex < positionalArgCount || boundParameters[nameIndex]) {
-                        if (duppedNames == null) {
-                            duppedNames = new List<string>();
-                        }
+                    if (paramIndex < positionalArgCount) {
+                        // argument maps to already bound positional parameter
+                        duppedNames ??= new List<string>();
+                        duppedPositionals ??= new List<int>(duppedNames.Count);
                         duppedNames.Add(ArgNames[i]);
+                        duppedPositionals.Add(method.PositionOfParameter(ArgNames[i]));
+                    } else if (boundParameters[nameIndex]) {
+                        // argument maps to already bound named parameter
+                        duppedNames ??= new List<string>();
+                        duppedNames.Add(ArgNames[i]);
+                        duppedPositionals?.Add(0);
                     } else {
                         permutation[i] = nameIndex;
                         boundParameters[nameIndex] = true;
                     }
                 } else {
-                    if (unboundNames == null) {
-                        unboundNames = new List<string>();
-                    }
+                    unboundNames ??= new List<string>();
                     unboundNames.Add(ArgNames[i]);
                 }
             }
@@ -121,12 +125,14 @@ namespace Microsoft.Scripting.Actions.Calls {
             binding = new ArgumentBinding(positionalArgCount, permutation);
 
             if (unboundNames != null) {
-                failure = new CallFailure(method, unboundNames.ToArray(), true);
+                failure = new CallFailure(method, unboundNames.ToArray(), unassignable: true);
                 return false;
             }
 
             if (duppedNames != null) {
-                failure = new CallFailure(method, duppedNames.ToArray(), false);
+                failure = duppedPositionals != null ?
+                    new CallFailure(method, duppedNames.ToArray(), duppedPositionals.ToArray()) :
+                    new CallFailure(method, duppedNames.ToArray(), unassignable: false);
                 return false;
             }
 

@@ -152,6 +152,10 @@ namespace Microsoft.Scripting.Runtime {
             return new ArgumentTypeException($"{name}() got multiple values for keyword argument '{argumentName}'");
         }
 
+        public static ArgumentTypeException TypeErrorForDuplicateArgument(string name, int position, string argumentName) {
+            return new ArgumentTypeException($"Argument for {name}() given by name ('{argumentName}') and position ({position})");
+        }
+
         public static ArgumentTypeException TypeErrorForNonInferrableMethod(string name) {
             return new ArgumentTypeException(
                 $"The type arguments for method '{name}' cannot be inferred from the usage. Try specifying the type arguments explicitly.");

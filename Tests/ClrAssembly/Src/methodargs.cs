@@ -41,6 +41,7 @@ namespace Merlin.Testing.Call {
         public void M235([Optional] EnumInt32 arg) { Flag<EnumInt32>.Set(arg); }
         public void M236([Optional] SimpleClass arg) { Flag<SimpleClass>.Set(arg); }
         public void M237([Optional] SimpleStruct arg) { Flag<SimpleStruct>.Set(arg); }
+        public void M240([Optional] int x, int y) { Flag.Set(x * 10 + y); }
 
         // two parameters
         public void M300(int x, int y) { }
@@ -61,7 +62,9 @@ namespace Merlin.Testing.Call {
         public void M510(int x, int y, [DefaultParameterValue(70)] int z) { Flag.Set(x * 100 + y * 10 + z); }
         public void M520(int x, [DefaultParameterValue(80)]int y, int z) { Flag.Set(x * 100 + y * 10 + z); }
         public void M530([DefaultParameterValue(90)]int x, int y, int z) { Flag.Set(x * 100 + y * 10 + z); }
+        public void M540([DefaultParameterValue(100)] int x, [DefaultParameterValue(110)] int y, int z) { Flag.Set(x + y + z); }
         public void M550(int x, int y, params int[] z) { Flag.Set(x * 100 + y * 10 + z.Length); }
+        public void M560(int x, [ParamDictionary] IDictionary<string, int> y, params int[] z) { Flag.Set(x * 100 + y.Count * 10 + z.Length); }
 
         // long paramater list
         public void M650(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10) {

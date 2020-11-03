@@ -95,6 +95,22 @@ namespace Microsoft.Scripting.Actions.Calls {
             return -1;
         }
 
+        internal int PositionOfParameter(string name) {
+            for (int i = 0, p = 1; i < _parameters.Count; i++) {
+                if (_parameters[i].IsHidden) {
+                    if (_parameters[i].Name == name) {
+                        return 0;
+                    }
+                } else {
+                    if (_parameters[i].Name == name) {
+                        return p;
+                    }
+                    p++;
+                }
+            }
+            return -1;
+        }
+
         public int GetVisibleParameterCount() {
             int result = 0;
             foreach (var parameter in _parameters) {
