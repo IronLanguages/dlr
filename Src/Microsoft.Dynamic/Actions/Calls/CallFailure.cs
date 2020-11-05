@@ -36,9 +36,9 @@ namespace Microsoft.Scripting.Actions.Calls {
             _results = results;
         }
 
-        internal CallFailure(MethodCandidate candidate, string[] keywordArgs, bool unassignable) {
+        internal CallFailure(MethodCandidate candidate, string[] keywordArgs) {
             Candidate = candidate;
-            Reason = unassignable ? CallFailureReason.UnassignableKeyword : CallFailureReason.DuplicateKeyword;
+            Reason = CallFailureReason.UnassignableKeyword;
             _keywordArgs = keywordArgs;
             _positionalArgs = EmptyArray<int>.Instance;
         }
@@ -47,13 +47,13 @@ namespace Microsoft.Scripting.Actions.Calls {
             Candidate = candidate;
             Reason = CallFailureReason.DuplicateKeyword;
             _keywordArgs = keywordArgs;
-            _positionalArgs = positionalArgs;
+            _positionalArgs = positionalArgs ?? EmptyArray<int>.Instance;
         }
 
         internal CallFailure(MethodCandidate candidate, CallFailureReason reason) {
             Debug.Assert(reason != CallFailureReason.ConversionFailure); // use first overload
             Debug.Assert(reason != CallFailureReason.UnassignableKeyword); // use second overload
-            Debug.Assert(reason != CallFailureReason.DuplicateKeyword); // use second or third overload
+            Debug.Assert(reason != CallFailureReason.DuplicateKeyword); // use third overload
 
             Candidate = candidate;
             Reason = reason;

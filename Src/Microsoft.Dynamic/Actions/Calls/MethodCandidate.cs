@@ -97,12 +97,13 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         internal int PositionOfParameter(string name) {
             for (int i = 0, p = 1; i < _parameters.Count; i++) {
-                if (_parameters[i].IsHidden) {
-                    if (_parameters[i].Name == name) {
+                var parameter = _parameters[i];
+                if (parameter.IsHidden) {
+                    if (parameter.Name == name) {
                         return 0;
                     }
                 } else {
-                    if (_parameters[i].Name == name) {
+                    if (parameter.Name == name) {
                         return p;
                     }
                     p++;

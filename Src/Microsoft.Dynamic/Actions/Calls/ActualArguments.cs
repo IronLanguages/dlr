@@ -4,7 +4,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 
 using Microsoft.Scripting.Utils;
 
@@ -104,7 +106,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     if (paramIndex < positionalArgCount) {
                         // argument maps to already bound positional parameter
                         duppedNames ??= new List<string>();
-                        duppedPositionals ??= new List<int>(duppedNames.Count);
+                        duppedPositionals ??= Enumerable.Repeat(0, duppedNames.Count).ToList();
                         duppedNames.Add(ArgNames[i]);
                         duppedPositionals.Add(method.PositionOfParameter(ArgNames[i]));
                     } else if (boundParameters[nameIndex]) {
@@ -122,17 +124,17 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
+            Debug.Assert(duppedPositionals == null || (duppedNames != null && duppedNames.Count == duppedPositionals.Count));
+
             binding = new ArgumentBinding(positionalArgCount, permutation);
 
             if (unboundNames != null) {
-                failure = new CallFailure(method, unboundNames.ToArray(), unassignable: true);
+                failure = new CallFailure(method, unboundNames.ToArray());
                 return false;
             }
 
             if (duppedNames != null) {
-                failure = duppedPositionals != null ?
-                    new CallFailure(method, duppedNames.ToArray(), duppedPositionals.ToArray()) :
-                    new CallFailure(method, duppedNames.ToArray(), unassignable: false);
+                failure = new CallFailure(method, duppedNames.ToArray(), duppedPositionals?.ToArray());
                 return false;
             }
 
