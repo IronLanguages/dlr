@@ -1045,15 +1045,29 @@ namespace Microsoft.Scripting.Actions.Calls {
                         }
                         break;
                     case CallFailureReason.DuplicateKeyword:
-                        return ErrorInfo.FromException(
-                            Expression.Call(
-                                typeof(BinderOps).GetMethod("TypeErrorForDuplicateKeywordArgument"),
-                                AstUtils.Constant(target.Name, typeof(string)),
-                                AstUtils.Constant(
-                                    cf.KeywordArguments[0],
-                                    typeof(string)) // TODO: Report all bad arguments?
+                        int duppedIdx = cf.PositionalArguments.FindIndex(p => p != 0);
+                        return duppedIdx >= 0 ?
+                            ErrorInfo.FromException(
+                                Expression.Call(
+                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateArgument)),
+                                    AstUtils.Constant(target.Name, typeof(string)),
+                                    AstUtils.Constant(
+                                        cf.PositionalArguments[duppedIdx],
+                                        typeof(int)),
+                                    AstUtils.Constant(
+                                        cf.KeywordArguments[duppedIdx],
+                                        typeof(string)) // TODO: Report all bad arguments?
+                                )
                             )
-                        );
+                          : ErrorInfo.FromException(
+                                Expression.Call(
+                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateKeywordArgument)),
+                                    AstUtils.Constant(target.Name, typeof(string)),
+                                    AstUtils.Constant(
+                                        cf.KeywordArguments[0],
+                                        typeof(string)) // TODO: Report all bad arguments?
+                                )
+                            );
                     case CallFailureReason.UnassignableKeyword:
                         return ErrorInfo.FromException(
                             Expression.Call(

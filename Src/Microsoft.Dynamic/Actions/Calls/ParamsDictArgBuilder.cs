@@ -38,6 +38,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Type dictType = ParameterInfo.ParameterType;
+            // TODO: bug: what if ConstantNames().Length > hasBeenUsed.Count(b => !b)?
 
             return Expression.Call(
                 GetCreationDelegate(dictType).GetMethodInfo(),

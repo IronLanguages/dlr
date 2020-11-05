@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         /// <summary>
         /// Creates a new BindingTarget when the method binding has failued due to 
-        /// one or more parameters which could not be converted.
+        /// one or more arguments which could not be converted or assigned to corresponding parameters.
         /// </summary>
         internal BindingTarget(string name, int actualArgumentCount, CallFailure[] failures) {
             Name = name;
