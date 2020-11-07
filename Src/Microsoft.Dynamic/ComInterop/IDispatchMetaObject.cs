@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             return new DynamicMetaObject(
                 Expression.Call(
-                    typeof(ComRuntimeHelpers).GetMethod("CreateDispCallable"),
+                    typeof(ComRuntimeHelpers).GetMethod(nameof(ComRuntimeHelpers.CreateDispCallable)),
                     Helpers.Convert(Expression, typeof(IDispatchComObject)),
                     Expression.Constant(method)
                 ),
@@ -109,7 +109,7 @@ namespace Microsoft.Scripting.ComInterop {
             // BoundDispEvent CreateComEvent(object rcw, Guid sourceIid, int dispid)
             Expression result =
                 Expression.Call(
-                    typeof(ComRuntimeHelpers).GetMethod("CreateComEvent"),
+                    typeof(ComRuntimeHelpers).GetMethod(nameof(ComRuntimeHelpers.CreateComEvent)),
                     ComObject.RcwFromComObject(Expression),
                     Expression.Constant(@event.sourceIID),
                     Expression.Constant(@event.dispid)

@@ -298,7 +298,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     call = AstUtils.SimpleCallHelper(instance, mi, callArgs);
                 } else {
                     call = Expression.Call(
-                        typeof(BinderOps).GetMethod("InvokeMethod"),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeMethod)),
                         AstUtils.Constant(mi),
                         instance != null ? AstUtils.Convert(instance, typeof(object)) : AstUtils.Constant(null),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
@@ -310,7 +310,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     call = AstUtils.SimpleNewHelper(ci, callArgs);
                 } else {
                     call = Expression.Call(
-                        typeof(BinderOps).GetMethod("InvokeConstructor"),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeConstructor)),
                         AstUtils.Constant(ci),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
                     );

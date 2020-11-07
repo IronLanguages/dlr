@@ -389,7 +389,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static DynamicMetaObject MakeNullToNullableOfTTarget(Type toType, BindingRestrictions restrictions) {
             return new DynamicMetaObject(
-                Expression.Call(typeof(ScriptingRuntimeHelpers).GetMethod("CreateInstance").MakeGenericMethod(toType)),
+                Expression.Call(typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.CreateInstance)).MakeGenericMethod(toType)),
                 restrictions
             );
         }

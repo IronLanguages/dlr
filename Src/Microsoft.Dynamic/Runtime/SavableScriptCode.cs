@@ -88,7 +88,7 @@ namespace Microsoft.Scripting {
             // lang ctx array
             ilgen.EmitArray(typeof(Type), langsWithBuilders.Length, (index) => {
                 ilgen.Emit(OpCodes.Ldtoken, langsWithBuilders[index].Key);
-                ilgen.EmitCall(typeof(Type).GetMethod("GetTypeFromHandle", new[] { typeof(RuntimeTypeHandle) }));
+                ilgen.EmitCall(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[] { typeof(RuntimeTypeHandle) }));
             });
 
             // builders array of array

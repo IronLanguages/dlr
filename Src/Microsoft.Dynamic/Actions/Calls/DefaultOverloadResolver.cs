@@ -241,7 +241,7 @@ namespace Microsoft.Scripting.Actions {
 
         private ErrorInfo MakeInvalidSplatteeError(BindingTarget target) {
             return ErrorInfo.FromException(
-                Ast.Call(typeof(BinderOps).GetMethod("InvalidSplatteeError"), 
+                Ast.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.InvalidSplatteeError)), 
                     AstUtils.Constant(target.Name),
                     AstUtils.Constant(Binder.GetTypeName(_invalidSplattee.GetLimitType()))
                 )

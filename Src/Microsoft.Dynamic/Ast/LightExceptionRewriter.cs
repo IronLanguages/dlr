@@ -252,7 +252,7 @@ namespace Microsoft.Scripting.Ast {
             if (realCatch) {
                 return Expression.Block(
                     Expression.Call(
-                        typeof(ScriptingRuntimeHelpers).GetMethod("NoteException"),
+                        typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.NoteException)),
                         exception
                     ),
                     expression

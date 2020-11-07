@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         sets.Add(
                             Expression.Convert(
                                 Expression.Call(
-                                    typeof(ScriptingRuntimeHelpers).GetMethod("ReadOnlyAssignError"),
+                                    typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError)),
                                     AstUtils.Constant(true),
                                     AstUtils.Constant(fi.Name)
                                 ),
@@ -79,7 +79,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                             sets.Add(
                                 Expression.Convert(
                                     Expression.Call(
-                                        typeof(ScriptingRuntimeHelpers).GetMethod("ReadOnlyAssignError"),
+                                        typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError)),
                                         AstUtils.Constant(false),
                                         AstUtils.Constant(pi.Name)
                                     ),

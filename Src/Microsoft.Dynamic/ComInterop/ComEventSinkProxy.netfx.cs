@@ -40,8 +40,8 @@ namespace Microsoft.Scripting.ComInterop {
 
         private Guid _sinkIid;
         private ComEventSink _sink;
-        private static readonly MethodInfo _methodInfoInvokeMember = typeof(ComEventSink).GetMethod("InvokeMember", BindingFlags.Instance | BindingFlags.Public);
-        
+        private static readonly MethodInfo _methodInfoInvokeMember = typeof(ComEventSink).GetMethod(nameof(ComEventSink.InvokeMember), BindingFlags.Instance | BindingFlags.Public);
+
         #region ctors
 
         private ComEventSinkProxy() {

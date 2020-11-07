@@ -297,7 +297,7 @@ namespace Microsoft.Scripting.Actions {
                         MakeReturnValue(
                             Expression.Call(
                                 AstUtils.Constant(((ReflectedPropertyTracker)info).Property), // TODO: Private binding on extension properties
-                                typeof(PropertyInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object), typeof(object[]) }),
+                                typeof(PropertyInfo).GetMethod(nameof(PropertyInfo.SetValue), new Type[] { typeof(object), typeof(object), typeof(object[]) }),
                                 instance == null ? AstUtils.Constant(null) : AstUtils.Convert(instance.Expression, typeof(object)),
                                 AstUtils.Convert(
                                     ConvertExpression(
@@ -398,7 +398,7 @@ namespace Microsoft.Scripting.Actions {
                     MakeReturnValue(
                         Expression.Call(
                             AstUtils.Convert(AstUtils.Constant(field.Field), typeof(FieldInfo)),
-                            typeof(FieldInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object) }),
+                            typeof(FieldInfo).GetMethod(nameof(FieldInfo.SetValue), new Type[] { typeof(object), typeof(object) }),
                             field.IsStatic ?
                                 AstUtils.Constant(null) :
                                 (Expression)AstUtils.Convert(instance.Expression, typeof(object)),

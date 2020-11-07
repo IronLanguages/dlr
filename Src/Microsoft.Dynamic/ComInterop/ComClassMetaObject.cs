@@ -20,7 +20,7 @@ namespace Microsoft.Scripting.ComInterop {
             return new DynamicMetaObject(
                 Expression.Call(
                     AstUtils.Convert(Expression, typeof(ComTypeClassDesc)),
-                    typeof(ComTypeClassDesc).GetMethod("CreateInstance")
+                    typeof(ComTypeClassDesc).GetMethod(nameof(ComTypeClassDesc.CreateInstance))
                 ),
                 BindingRestrictions.Combine(args).Merge(
                     BindingRestrictions.GetTypeRestriction(Expression, typeof(ComTypeClassDesc))

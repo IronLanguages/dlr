@@ -21,7 +21,7 @@ namespace Microsoft.Dynamic.Test {
     public class TestTuple {
         public void VerifyTuple(int size) {
             //Construct a tuple of the right type
-            MethodInfo mi = typeof(MutableTuple).GetMethod("MakeTupleType", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo mi = typeof(MutableTuple).GetMethod(nameof(MutableTuple.MakeTupleType), BindingFlags.Public | BindingFlags.Static);
             Assert.NotNull(mi, "Could not find Tuple.MakeTupleType");
 
             Type[] args = new Type[size];

@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_argBuilder is ConvertibleArgBuilder) {
                 return Expression.Call(
                     variant,
-                    typeof(Variant).GetMethod("SetAsIConvertible"),
+                    typeof(Variant).GetMethod(nameof(Variant.SetAsIConvertible)),
                     argument
                 );
             }
@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.ComInterop {
 
                 case VarEnum.VT_NULL:
                     // paramVariants._elementN.SetAsNull();
-                    return Expression.Call(variant, typeof(Variant).GetMethod("SetAsNull"));
+                    return Expression.Call(variant, typeof(Variant).GetMethod(nameof(Variant.SetAsNull)));
 
                 default:
                     Debug.Assert(false, "Unexpected VarEnum");
@@ -98,14 +98,14 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private static Expression Release(Expression pUnk) {
-            return Expression.Call(typeof(UnsafeMethods).GetMethod("IUnknownReleaseNotZero"), pUnk);
+            return Expression.Call(typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.IUnknownReleaseNotZero)), pUnk);
         }
 
         internal Expression Clear() {
             if (IsByRef) {
                 if (_argBuilder is StringArgBuilder) {
                     Debug.Assert(TempVariable != null);
-                    return Expression.Call(typeof(Marshal).GetMethod("FreeBSTR"), TempVariable);
+                    return Expression.Call(typeof(Marshal).GetMethod(nameof(Marshal.FreeBSTR)), TempVariable);
                 }
 
                 if (_argBuilder is DispatchArgBuilder) {
@@ -120,7 +120,7 @@ namespace Microsoft.Scripting.ComInterop {
 
                 if (_argBuilder is VariantArgBuilder) {
                     Debug.Assert(TempVariable != null);
-                    return Expression.Call(TempVariable, typeof(Variant).GetMethod("Clear"));
+                    return Expression.Call(TempVariable, typeof(Variant).GetMethod(nameof(Variant.Clear)));
                 }
                 return null;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.ComInterop {
                 case VarEnum.VT_RECORD:
                 case VarEnum.VT_VARIANT:
                     // paramVariants._elementN.Clear()
-                    return Expression.Call(_variant, typeof(Variant).GetMethod("Clear"));
+                    return Expression.Call(_variant, typeof(Variant).GetMethod(nameof(Variant.Clear)));
 
                 default:
                     Debug.Assert(Variant.IsPrimitiveType(_targetComType), "Unexpected VarEnum");

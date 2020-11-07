@@ -986,7 +986,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             return ErrorInfo.FromException(
                 Expression.Call(
-                    typeof(BinderOps).GetMethod("TypeErrorForIncorrectArgumentCount", new Type[] {
+                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForIncorrectArgumentCount), new Type[] {
                                 typeof(string), typeof(int), typeof(int) , typeof(int), typeof(int), typeof(bool), typeof(bool)
                             }),
                     AstUtils.Constant(target.Name, typeof(string)),  // name
@@ -1022,7 +1022,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             return ErrorInfo.FromException(
                 Expression.Call(
-                    typeof(BinderOps).GetMethod("SimpleTypeError"),
+                    typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)),
                     AstUtils.Constant(sb.ToString(), typeof(string))
                 )
             );
@@ -1036,7 +1036,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                             if (cr.Failed) {
                                 return ErrorInfo.FromException(
                                     Expression.Call(
-                                        typeof(BinderOps).GetMethod("SimpleTypeError"),
+                                        typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)),
                                         AstUtils.Constant(
                                             $"expected {Binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(Binder)}")
                                     )
@@ -1071,7 +1071,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     case CallFailureReason.UnassignableKeyword:
                         return ErrorInfo.FromException(
                             Expression.Call(
-                                typeof(BinderOps).GetMethod("TypeErrorForExtraKeywordArgument"),
+                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForExtraKeywordArgument)),
                                 AstUtils.Constant(target.Name, typeof(string)),
                                 AstUtils.Constant(
                                     cf.KeywordArguments[0],
@@ -1081,7 +1081,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     case CallFailureReason.TypeInference:
                         return ErrorInfo.FromException(
                             Expression.Call(
-                                typeof(BinderOps).GetMethod("TypeErrorForNonInferrableMethod"),
+                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForNonInferrableMethod)),
                                 AstUtils.Constant(target.Name, typeof(string))
                             )
                         );
@@ -1092,7 +1092,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private ErrorInfo MakeInvalidArgumentsError() {
-            return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod("SimpleTypeError"), AstUtils.Constant("Invalid arguments.")));
+            return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)), AstUtils.Constant("Invalid arguments.")));
         }
 
         private ErrorInfo MakeNoCallableMethodError() {
@@ -1171,7 +1171,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (_maxAccessedCollapsedArg >= 0) {
                 Type[] collapsedTypes = GetAccessedCollapsedArgTypes();
 
-                return Expression.Call(null, typeof(CompilerHelpers).GetMethod("TypesEqual"),
+                return Expression.Call(null, typeof(CompilerHelpers).GetMethod(nameof(CompilerHelpers.TypesEqual)),
                     GetSplattedExpression(),
                     AstUtils.Constant(_actualArguments.ToSplattedItemIndex(0)),
                     Expression.Constant(collapsedTypes)

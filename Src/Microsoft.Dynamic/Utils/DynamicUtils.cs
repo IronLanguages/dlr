@@ -169,7 +169,7 @@ namespace Microsoft.Scripting.Utils {
                 private readonly Expression/*!*/ _test;
                 private readonly CachedBindingInfo/*!*/ _bindingInfo;
 
-                private static readonly MethodInfo InterpretedCallSiteTest = typeof(ScriptingRuntimeHelpers).GetMethod("InterpretedCallSiteTest");
+                private static readonly MethodInfo InterpretedCallSiteTest = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.InterpretedCallSiteTest));
                 public InterpretedRuleHitCheckExpression(Expression/*!*/ test, CachedBindingInfo/*!*/ bindingInfo) {
                     Assert.NotNull(test, bindingInfo);
 

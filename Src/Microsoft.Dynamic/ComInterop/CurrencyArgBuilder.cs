@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.ComInterop {
         internal override Expression MarshalToRef(Expression parameter) {
             // Decimal.ToOACurrency(parameter.WrappedObject)
             return Expression.Call(
-                typeof(Decimal).GetMethod("ToOACurrency"),
+                typeof(Decimal).GetMethod(nameof(Decimal.ToOACurrency)),
                 Marshal(parameter)
             );
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.New(
                     typeof(CurrencyWrapper).GetConstructor(new Type[] { typeof(Decimal) }),
                     Expression.Call(
-                        typeof(Decimal).GetMethod("FromOACurrency"),
+                        typeof(Decimal).GetMethod(nameof(Decimal.FromOACurrency)),
                         value
                     )
                 )

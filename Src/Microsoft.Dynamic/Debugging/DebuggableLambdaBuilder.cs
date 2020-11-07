@@ -336,7 +336,7 @@ namespace Microsoft.Scripting.Debugging {
                 Ast.Assign(
                     _thread,
                     AstUtils.SimpleCallHelper(
-                        typeof(RuntimeOps).GetMethod("GetCurrentThread"),
+                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetCurrentThread)),
                         _debugContextExpression
                     )
                 ),
@@ -354,7 +354,7 @@ namespace Microsoft.Scripting.Debugging {
             if (_lambdaInfo.CompilerSupport != null && _lambdaInfo.CompilerSupport.DoesExpressionNeedReduction(generatorFactoryLambda)) {
                 _functionInfo = _lambdaInfo.CompilerSupport.QueueExpressionForReduction(
                     Ast.Call(
-                        typeof(RuntimeOps).GetMethod("CreateFunctionInfo"),
+                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateFunctionInfo)),
                         generatorFactoryLambda,
                         AstUtils.Constant(_alias),
                         AstUtils.Constant(_debugMarkerLocationMap, typeof(object)),
@@ -451,7 +451,7 @@ namespace Microsoft.Scripting.Debugging {
             tryExpressions.Add(
                 Ast.Assign(
                     _traceLocations,
-                    Ast.Call(typeof(RuntimeOps).GetMethod("GetTraceLocations"), _funcInfo)
+                    Ast.Call(typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetTraceLocations)), _funcInfo)
                 )
             );
 
@@ -468,12 +468,12 @@ namespace Microsoft.Scripting.Debugging {
             if (_noPushFrameOptimization) {
                 tryExpressions.Add(_pushFrame);
             }
-            
+
             tryExpressions.Add(Ast.Call(
-                typeof(RuntimeOps).GetMethod("OnFrameEnterTraceEvent"),
+                typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnFrameEnterTraceEvent)),
                 _thread
             ));
-            
+
             var frameExit = AstUtils.If(
                 Ast.Equal(
                     _debugMarkerLocationMap.Length > 0 ?
@@ -482,7 +482,7 @@ namespace Microsoft.Scripting.Debugging {
                     AstUtils.Constant((int)DebugMode.FullyEnabled)
                 ),
                 Ast.Call(
-                    typeof(RuntimeOps).GetMethod("OnFrameExitTraceEvent"),
+                    typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnFrameExitTraceEvent)),
                     _thread,
                     _debugMarker,
                     _retVal != null ? (MSAst.Expression)Ast.Convert(_retVal, typeof(object)) : Ast.Constant(null)
@@ -505,11 +505,11 @@ namespace Microsoft.Scripting.Debugging {
                 AstUtils.If(
                     // Fire thead-exit event if PopFrame returns true
                     Ast.AndAlso(
-                        Ast.Equal(Ast.Call(typeof(RuntimeOps).GetMethod("PopFrame"), _thread), Ast.Constant(true)),
+                        Ast.Equal(Ast.Call(typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.PopFrame)), _thread), Ast.Constant(true)),
                         Ast.Equal(_globalDebugMode, AstUtils.Constant((int)DebugMode.FullyEnabled))
                     ),
                     Ast.Call(
-                        typeof(RuntimeOps).GetMethod("OnThreadExitEvent"),
+                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnThreadExitEvent)),
                         _thread
                     )
                 )
@@ -551,7 +551,7 @@ namespace Microsoft.Scripting.Debugging {
                                     Ast.NotEqual(_globalDebugMode, AstUtils.Constant((int)DebugMode.Disabled)),
                                     _noPushFrameOptimization ? Ast.Empty() : _conditionalPushFrame,
                                     Ast.Call(
-                                        typeof(RuntimeOps).GetMethod("OnTraceEventUnwind"),
+                                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnTraceEventUnwind)),
                                         _thread,
                                         _debugMarker,
                                         caughtException
@@ -561,7 +561,7 @@ namespace Microsoft.Scripting.Debugging {
                                 AstUtils.If(
                                     Ast.Not(_frameExitException),
                                     frameExit
-                                )                                
+                                )
                             ),
 
                             Ast.Rethrow(),
@@ -581,7 +581,7 @@ namespace Microsoft.Scripting.Debugging {
                                 Ast.Assign(
                                     _retValFromGeneratorLoop, 
                                     Ast.Call(
-                                        typeof(RuntimeOps).GetMethod("GeneratorLoopProc"),
+                                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GeneratorLoopProc)),
                                         _thread
                                     )
                                 ),
@@ -605,7 +605,7 @@ namespace Microsoft.Scripting.Debugging {
                             ) :
                             Ast.Block(
                                 Ast.Call(
-                                    typeof(RuntimeOps).GetMethod("GeneratorLoopProc"),
+                                    typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GeneratorLoopProc)),
                                     _thread
                                 ),
                                 Ast.Return(returnLabelTarget)
@@ -618,7 +618,7 @@ namespace Microsoft.Scripting.Debugging {
                         Ast.Assign(
                             _debugMarker, 
                             Ast.Call(
-                                typeof(RuntimeOps).GetMethod("GetCurrentSequencePointForLeafGeneratorFrame"),
+                                typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetCurrentSequencePointForLeafGeneratorFrame)),
                                 _thread
                             )
                         )
@@ -645,7 +645,7 @@ namespace Microsoft.Scripting.Debugging {
         private MSAst.LambdaExpression CreateGeneratorFactoryLambda(MSAst.Expression generatorBody) {
             MSAst.Expression body = Ast.Block(
                 Ast.Call(
-                    typeof(RuntimeOps).GetMethod("ReplaceLiftedLocals"),
+                    typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.ReplaceLiftedLocals)),
                     _frame,
                     Ast.RuntimeVariables(_pendingLocals)
                 ),
@@ -690,10 +690,10 @@ namespace Microsoft.Scripting.Debugging {
                 returnLabelTarget,
                 Ast.Call(
                     typeof(RuntimeOps),
-                    "CreateDebugGenerator",
+                    nameof(RuntimeOps.CreateDebugGenerator),
                     new[] { _generatorLabelTarget.Type },
                      Ast.Call(
-                        typeof(RuntimeOps).GetMethod("CreateFrameForGenerator"),
+                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateFrameForGenerator)),
                         _debugContextExpression,
                         _functionInfo
                     )

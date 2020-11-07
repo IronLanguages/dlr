@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Actions {
             return new DynamicMetaObject(
                 Expression.Call(
                     AstUtils.Convert(AstUtils.Constant(Field), typeof(FieldInfo)),
-                    typeof(FieldInfo).GetMethod("GetValue"),
+                    typeof(FieldInfo).GetMethod(nameof(FieldInfo.GetValue)),
                     AstUtils.Constant(null)
                 ),
                 BindingRestrictions.Empty

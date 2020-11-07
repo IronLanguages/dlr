@@ -78,11 +78,11 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (method.ReturnType == typeof(void) && paramTypes.Length == 2 &&
                 paramInfos[0].ParameterType.IsByRef && paramInfos[1].ParameterType.IsByRef) {
-                runMethod = typeof(LightLambda).GetMethod("RunVoidRef2", BindingFlags.NonPublic | BindingFlags.Instance);
+                runMethod = typeof(LightLambda).GetMethod(nameof(LightLambda.RunVoidRef2), BindingFlags.NonPublic | BindingFlags.Instance);
                 paramTypes[0] = paramInfos[0].ParameterType.GetElementType();
                 paramTypes[1] = paramInfos[1].ParameterType.GetElementType();
             } else if (method.ReturnType == typeof(void) && paramTypes.Length == 0) {
-                runMethod = typeof(LightLambda).GetMethod("RunVoid0", BindingFlags.NonPublic | BindingFlags.Instance);
+                runMethod = typeof(LightLambda).GetMethod(nameof(LightLambda.RunVoid0), BindingFlags.NonPublic | BindingFlags.Instance);
             } else {
                 for (int i = 0; i < paramInfos.Length; i++) {
                     paramTypes[i] = paramInfos[i].ParameterType;
@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Interpreter {
 
             var data = Expression.NewArrayInit(typeof(object), parametersAsObject);
             var self = AstUtils.Constant(this);
-            var runMethod = typeof(LightLambda).GetMethod("Run");
+            var runMethod = typeof(LightLambda).GetMethod(nameof(LightLambda.Run));
             var body = Expression.Convert(Expression.Call(self, runMethod, data), method.ReturnType);
             var lambda = Expression.Lambda(delegateType, body, parameters);
             return lambda.Compile();

@@ -216,10 +216,10 @@ namespace Microsoft.Scripting.ComInterop {
         }
         internal static MethodInfo GetGetIDispatchForObjectMethod() {
 #if !NETCOREAPP
-            return typeof(Marshal).GetMethod("GetIDispatchForObject");
+            return typeof(Marshal).GetMethod(nameof(Marshal.GetIDispatchForObject));
 #else
             // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.
-            return typeof(Marshal).GetMethods().Single(m => m.Name == "GetComInterfaceForObject" && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
+            return typeof(Marshal).GetMethods().Single(m => m.Name == nameof(Marshal.GetComInterfaceForObject) && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
 #endif
         }
     }
