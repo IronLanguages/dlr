@@ -190,7 +190,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgdispidNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgdispidNamedArgs))
                         ),
                         Expression.Call(typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.GetIdsOfNamedParameters)),
                             DispatchObjectVariable,
@@ -383,7 +383,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgvarg")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgvarg))
                         ),
                         Expression.Call(
                             typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.ConvertVariantByrefToPtr)),
@@ -400,7 +400,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Assign(
                     Expression.Field(
                         DispParamsVariable,
-                        typeof(ComTypes.DISPPARAMS).GetField("cArgs")
+                        typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cArgs))
                     ),
                     Expression.Constant(_totalExplicitArgs)
                 )
@@ -415,7 +415,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("cNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cNamedArgs))
                         ),
                         Expression.Constant(1)
                     )
@@ -432,7 +432,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgdispidNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgdispidNamedArgs))
                         ),
                         Expression.Call(
                             typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.ConvertInt32ByrefToPtr)),
@@ -448,7 +448,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("cNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cNamedArgs))
                         ),
                         Expression.Constant(_keywordArgNames.Length)
                     )

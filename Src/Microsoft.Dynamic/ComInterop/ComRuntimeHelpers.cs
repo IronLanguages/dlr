@@ -643,7 +643,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (returnResult) {
                 EmitLoadArg(method, resultIndex);
             } else {
-                method.Emit(OpCodes.Ldsfld, typeof(IntPtr).GetField("Zero"));
+                method.Emit(OpCodes.Ldsfld, typeof(IntPtr).GetField(nameof(IntPtr.Zero)));
             }
             EmitLoadArg(method, exceptInfoIndex);
             EmitLoadArg(method, argErrIndex);
