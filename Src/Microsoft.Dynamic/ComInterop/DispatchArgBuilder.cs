@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_isWrapper) {
                 parameter = Expression.Property(
                     Helpers.Convert(parameter, typeof(DispatchWrapper)),
-                    typeof(DispatchWrapper).GetProperty("WrappedObject")
+                    typeof(DispatchWrapper).GetProperty(nameof(DispatchWrapper.WrappedObject))
                 );
             }
 

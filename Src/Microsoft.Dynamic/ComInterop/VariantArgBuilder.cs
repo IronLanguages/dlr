@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_isWrapper) {
                 parameter = Expression.Property(
                     Helpers.Convert(parameter, typeof(VariantWrapper)),
-                    typeof(VariantWrapper).GetProperty("WrappedObject")
+                    typeof(VariantWrapper).GetProperty(nameof(VariantWrapper.WrappedObject))
                 );
             }
 

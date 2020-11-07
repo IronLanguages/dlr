@@ -51,7 +51,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Constant(method),
                 Expression.Property(
                     Helpers.Convert(Expression, typeof(IDispatchComObject)),
-                    typeof(IDispatchComObject).GetProperty("DispatchObject")
+                    typeof(IDispatchComObject).GetProperty(nameof(IDispatchComObject.DispatchObject))
                 ),
                 method
             ).Invoke();
@@ -174,7 +174,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression dispatch =
                     Expression.Property(
                         Helpers.Convert(Expression, typeof(IDispatchComObject)),
-                        typeof(IDispatchComObject).GetProperty("DispatchObject")
+                        typeof(IDispatchComObject).GetProperty(nameof(IDispatchComObject.DispatchObject))
                     );
 
                 var result = new ComInvokeBinder(
@@ -222,7 +222,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Equal(
                         Expression.Property(
                             Helpers.Convert(expr, typeof(IDispatchComObject)),
-                            typeof(IDispatchComObject).GetProperty("ComTypeDesc")
+                            typeof(IDispatchComObject).GetProperty(nameof(IDispatchComObject.ComTypeDesc))
                         ),
                         Expression.Constant(typeDesc)
                     )

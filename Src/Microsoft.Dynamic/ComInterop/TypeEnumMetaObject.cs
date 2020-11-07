@@ -47,8 +47,8 @@ namespace Microsoft.Scripting.ComInterop {
                         Expression.Property(
                             Expression.Property(
                                 AstUtils.Convert(Expression, typeof(ComTypeEnumDesc)),
-                                typeof(ComTypeDesc).GetProperty("TypeLib")),
-                            typeof(ComTypeLibDesc).GetProperty("Guid")),
+                                typeof(ComTypeDesc).GetProperty(nameof(ComTypeDesc.TypeLib))),
+                            typeof(ComTypeLibDesc).GetProperty(nameof(ComTypeLibDesc.Guid))),
                         AstUtils.Constant(_desc.TypeLib.Guid)
                     )
                 )
@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Equal(
                         Expression.Property(
                             AstUtils.Convert(Expression, typeof(ComTypeEnumDesc)),
-                            typeof(ComTypeEnumDesc).GetProperty("TypeName")
+                            typeof(ComTypeEnumDesc).GetProperty(nameof(ComTypeEnumDesc.TypeName))
                         ),
                         AstUtils.Constant(_desc.TypeName)
                     )

@@ -211,8 +211,8 @@ namespace Microsoft.Scripting {
                 return Expression.Convert(
                     Expression.Property(
                         Expression.Constant(((IWeakReferencable)variable).WeakReference),
-                        typeof(WeakReference).GetProperty("Target")
-                    ), 
+                        typeof(WeakReference).GetProperty(nameof(WeakReference.Target))
+                    ),
                     variable.GetType()
                 );
             }

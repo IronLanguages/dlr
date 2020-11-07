@@ -371,7 +371,7 @@ namespace Microsoft.Scripting.ComInterop {
             exprs.Add(
                 Expression.Assign(
                     DispIdVariable,
-                    Expression.Property(_method, typeof(ComMethodDesc).GetProperty("DispId"))
+                    Expression.Property(_method, typeof(ComMethodDesc).GetProperty(nameof(ComMethodDesc.DispId)))
                 )
             );
 

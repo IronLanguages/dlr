@@ -501,7 +501,7 @@ namespace Microsoft.Scripting.ComInterop {
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
                             new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}),
                                 new object[]{SecurityAction.Demand},
-                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty("Unrestricted")},
+                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty(nameof(PermissionSetAttribute.Unrestricted))},
                                 new object[] {true})
                         };
 

@@ -112,7 +112,7 @@ namespace Microsoft.Scripting.Runtime {
 
             private MemberExpression StorageExpression => Expression.Property(
                 Expression.Convert(Expression, typeof(Scope)),
-                typeof(Scope).GetProperty("Storage")
+                typeof(Scope).GetProperty(nameof(Scope.Storage))
             );
 
             public override IEnumerable<string> GetDynamicMemberNames() {

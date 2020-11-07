@@ -66,7 +66,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             return Expression.Property(
                 Helpers.Convert(comObject, typeof(ComObject)),
-                typeof(ComObject).GetProperty("RuntimeCallableWrapper", BindingFlags.NonPublic | BindingFlags.Instance)
+                typeof(ComObject).GetProperty(nameof(ComObject.RuntimeCallableWrapper), BindingFlags.NonPublic | BindingFlags.Instance)
             );
         }
 
