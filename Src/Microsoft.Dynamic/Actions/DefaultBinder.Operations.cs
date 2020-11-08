@@ -189,7 +189,7 @@ namespace Microsoft.Scripting.Actions {
             return new DynamicMetaObject(
                 Expression.Throw(
                     AstUtils.ComplexCallHelper(
-                        typeof(BinderOps).GetMethod("BadArgumentsForOperation"),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.BadArgumentsForOperation)),
                         ArrayUtils.Insert((Expression)AstUtils.Constant(info.Operator), DynamicUtils.GetExpressions(args))
                     )
                 ),

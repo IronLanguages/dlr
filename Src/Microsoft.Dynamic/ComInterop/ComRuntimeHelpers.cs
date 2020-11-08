@@ -216,10 +216,10 @@ namespace Microsoft.Scripting.ComInterop {
         }
         internal static MethodInfo GetGetIDispatchForObjectMethod() {
 #if !NETCOREAPP
-            return typeof(Marshal).GetMethod("GetIDispatchForObject");
+            return typeof(Marshal).GetMethod(nameof(Marshal.GetIDispatchForObject));
 #else
             // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.
-            return typeof(Marshal).GetMethods().Single(m => m.Name == "GetComInterfaceForObject" && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
+            return typeof(Marshal).GetMethods().Single(m => m.Name == nameof(Marshal.GetComInterfaceForObject) && m.GetParameters().Length == 1 && m.ContainsGenericParameters).MakeGenericMethod(typeof(object), typeof(IDispatch));
 #endif
         }
     }
@@ -501,7 +501,7 @@ namespace Microsoft.Scripting.ComInterop {
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
                             new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}),
                                 new object[]{SecurityAction.Demand},
-                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty("Unrestricted")},
+                                new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty(nameof(PermissionSetAttribute.Unrestricted))},
                                 new object[] {true})
                         };
 
@@ -643,7 +643,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (returnResult) {
                 EmitLoadArg(method, resultIndex);
             } else {
-                method.Emit(OpCodes.Ldsfld, typeof(IntPtr).GetField("Zero"));
+                method.Emit(OpCodes.Ldsfld, typeof(IntPtr).GetField(nameof(IntPtr.Zero)));
             }
             EmitLoadArg(method, exceptInfoIndex);
             EmitLoadArg(method, argErrIndex);

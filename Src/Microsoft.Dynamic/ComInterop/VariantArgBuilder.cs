@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_isWrapper) {
                 parameter = Expression.Property(
                     Helpers.Convert(parameter, typeof(VariantWrapper)),
-                    typeof(VariantWrapper).GetProperty("WrappedObject")
+                    typeof(VariantWrapper).GetProperty(nameof(VariantWrapper.WrappedObject))
                 );
             }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             // parameter == UnsafeMethods.GetVariantForObject(parameter);
             return Expression.Call(
-                typeof(UnsafeMethods).GetMethod("GetVariantForObject", BindingFlags.Static | BindingFlags.NonPublic),
+                typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.GetVariantForObject), BindingFlags.Static | BindingFlags.NonPublic),
                 parameter
             );
         }
@@ -51,7 +51,7 @@ namespace Microsoft.Scripting.ComInterop {
             // value == IntPtr.Zero ? null : Marshal.GetObjectForNativeVariant(value);
 
             Expression unmarshal = Expression.Call(
-                typeof(UnsafeMethods).GetMethod("GetObjectForVariant"),
+                typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.GetObjectForVariant)),
                 value
             );
 

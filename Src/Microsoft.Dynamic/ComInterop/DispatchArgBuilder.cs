@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_isWrapper) {
                 parameter = Expression.Property(
                     Helpers.Convert(parameter, typeof(DispatchWrapper)),
-                    typeof(DispatchWrapper).GetProperty("WrappedObject")
+                    typeof(DispatchWrapper).GetProperty(nameof(DispatchWrapper.WrappedObject))
                 );
             }
 
@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Equal(value, Expression.Constant(IntPtr.Zero)),
                 Expression.Constant(null),
                 Expression.Call(
-                    typeof(Marshal).GetMethod("GetObjectForIUnknown"),
+                    typeof(Marshal).GetMethod(nameof(System.Runtime.InteropServices.Marshal.GetObjectForIUnknown)),
                     value
                 )
             );

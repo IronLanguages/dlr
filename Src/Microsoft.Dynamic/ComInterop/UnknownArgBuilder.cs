@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (_isWrapper) {
                 parameter = Expression.Property(
                     Helpers.Convert(parameter, typeof(UnknownWrapper)),
-                    typeof(UnknownWrapper).GetProperty("WrappedObject")
+                    typeof(UnknownWrapper).GetProperty(nameof(UnknownWrapper.WrappedObject))
                 );
             }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Equal(parameter, Expression.Constant(null)),
                 Expression.Constant(IntPtr.Zero),
                 Expression.Call(
-                    typeof(Marshal).GetMethod("GetIUnknownForObject"),
+                    typeof(Marshal).GetMethod(nameof(System.Runtime.InteropServices.Marshal.GetIUnknownForObject)),
                     parameter
                 )
             );
@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Equal(value, Expression.Constant(IntPtr.Zero)),
                 Expression.Constant(null),
                 Expression.Call(
-                    typeof(Marshal).GetMethod("GetObjectForIUnknown"),
+                    typeof(Marshal).GetMethod(nameof(System.Runtime.InteropServices.Marshal.GetObjectForIUnknown)),
                     value
                 )
             );

@@ -229,7 +229,7 @@ namespace Microsoft.Scripting.Hosting {
                         Expression.Condition(
                             Expression.Call(
                                 Expression.Convert(Expression, typeof(ScriptScope)),
-                                typeof(ScriptScope).GetMethod("TryGetVariable", new[] { typeof(string), typeof(object).MakeByRefType() }),
+                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() }),
                                 Expression.Constant(action.Name),
                                 result
                             ),
@@ -248,7 +248,7 @@ namespace Microsoft.Scripting.Hosting {
                     Expression.Block(
                         Expression.Call(
                             Expression.Convert(Expression, typeof(ScriptScope)),
-                            typeof(ScriptScope).GetMethod("SetVariable", new[] { typeof(string), typeof(object) }),
+                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.SetVariable), new[] { typeof(string), typeof(object) }),
                             Expression.Constant(action.Name),
                             objValue
                         ),
@@ -265,7 +265,7 @@ namespace Microsoft.Scripting.Hosting {
                     Expression.IfThenElse(
                         Expression.Call(
                             Expression.Convert(Expression, typeof(ScriptScope)),
-                            typeof(ScriptScope).GetMethod("RemoveVariable"),
+                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.RemoveVariable)),
                             Expression.Constant(action.Name)
                         ),
                         Expression.Empty(),
@@ -288,7 +288,7 @@ namespace Microsoft.Scripting.Hosting {
                         Expression.Condition(
                             Expression.Call(
                                 Expression.Convert(Expression, typeof(ScriptScope)),
-                                typeof(ScriptScope).GetMethod("TryGetVariable", new[] { typeof(string), typeof(object).MakeByRefType() }),
+                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() }),
                                 Expression.Constant(action.Name),
                                 result
                             ),

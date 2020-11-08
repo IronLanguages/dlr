@@ -170,11 +170,11 @@ namespace Microsoft.Scripting.Debugging {
                     Expression debugMarker, thread;
                     if (_transformToGenerator) {
                         debugMarker = Ast.Call(
-                            typeof(RuntimeOps).GetMethod("GetCurrentSequencePointForGeneratorFrame"),
+                            typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetCurrentSequencePointForGeneratorFrame)),
                             _frame
                         );
 
-                        thread = Ast.Call(typeof(RuntimeOps).GetMethod("GetThread"), _frame);
+                        thread = Ast.Call(typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetThread)), _frame);
                     } else {
                         debugMarker = _debugMarker;
                         thread = _thread;
@@ -193,10 +193,10 @@ namespace Microsoft.Scripting.Debugging {
                             Ast.Equal(_globalDebugMode, AstUtils.Constant((int)DebugMode.FullyEnabled)),
                             _pushFrame ?? Ast.Empty(),
                             Ast.Call(
-                                typeof(RuntimeOps).GetMethod("OnTraceEvent"),
-                               thread,
-                               debugMarker,
-                               exceptionVar
+                                typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnTraceEvent)),
+                                thread,
+                                debugMarker,
+                                exceptionVar
                             )
                         )
                     );
@@ -218,7 +218,7 @@ namespace Microsoft.Scripting.Debugging {
                 newFinally = AstUtils.If(
                     Ast.Not(
                         Ast.Call(
-                            typeof(RuntimeOps).GetMethod("IsCurrentLeafFrameRemappingToGenerator"),
+                            typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.IsCurrentLeafFrameRemappingToGenerator)),
                             _thread
                         )
                     ),
@@ -360,7 +360,7 @@ namespace Microsoft.Scripting.Debugging {
                         tracebackCall = Ast.Empty();
                     } else {
                         tracebackCall = Ast.Call(
-                            typeof(RuntimeOps).GetMethod("OnTraceEvent"),
+                            typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnTraceEvent)),
                             _thread,
                             AstUtils.Constant(locationCookie),
                             Ast.Convert(Ast.Constant(null), typeof(Exception))

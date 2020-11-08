@@ -786,9 +786,9 @@ namespace Microsoft.Scripting.Generation {
                 Type dt = mb.DeclaringType;
                 if (dt != null && dt.IsGenericType) {
                     Emit(OpCodes.Ldtoken, dt);
-                    EmitCall(typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
+                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
                 } else {
-                    EmitCall(typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle) }));
+                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle) }));
                 }
                 type = TypeUtils.GetConstantType(type);
                 if (type != typeof(MethodBase)) {
@@ -1069,7 +1069,7 @@ namespace Microsoft.Scripting.Generation {
                     Emit(OpCodes.Box, type);
                 }
             } else if (type.IsGenericParameter) {
-                EmitCall(typeof(GeneratorOps).GetMethod("BoxGeneric").MakeGenericMethod(type));
+                EmitCall(typeof(GeneratorOps).GetMethod(nameof(GeneratorOps.BoxGeneric)).MakeGenericMethod(type));
             }
         }
 

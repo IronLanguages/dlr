@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Constant(method),
                 Expression.Property(
                     dispCall,
-                    typeof(DispCallable).GetProperty("DispatchObject")
+                    typeof(DispCallable).GetProperty(nameof(DispCallable.DispatchObject))
                 ),
                 method
             ).Invoke();
@@ -88,8 +88,8 @@ namespace Microsoft.Scripting.ComInterop {
 
             var callableTypeRestrictions = BindingRestrictions.GetTypeRestriction(callable, typeof(DispCallable));
             var dispCall = Helpers.Convert(callable, typeof(DispCallable));
-            var dispatch = Expression.Property(dispCall, typeof(DispCallable).GetProperty("DispatchComObject"));
-            var dispId = Expression.Property(dispCall, typeof(DispCallable).GetProperty("DispId"));
+            var dispatch = Expression.Property(dispCall, typeof(DispCallable).GetProperty(nameof(DispCallable.DispatchComObject)));
+            var dispId = Expression.Property(dispCall, typeof(DispCallable).GetProperty(nameof(DispCallable.DispId)));
 
             var dispatchRestriction = IDispatchMetaObject.IDispatchRestriction(dispatch, _callable.DispatchComObject.ComTypeDesc);
             var memberRestriction = BindingRestrictions.GetExpressionRestriction(

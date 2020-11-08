@@ -433,7 +433,7 @@ namespace Microsoft.Scripting.Ast {
                     paramMapping.Add(mappedParameter, backingVariable);
 
                     // Call the helper
-                    MethodInfo shifter = typeof(RuntimeHelpers).GetMethod("ShiftParamsArray");
+                    MethodInfo shifter = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.ShiftParamsArray));
                     shifter = shifter.MakeGenericMethod(delegateParamarrayPi.ParameterType.GetElementType());
 
                     preambuleExpressions.Add(

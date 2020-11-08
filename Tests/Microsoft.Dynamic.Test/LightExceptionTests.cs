@@ -26,7 +26,7 @@ namespace Microsoft.Dynamic.Test {
             new Func<LightExceptionTests, IEnumerable<Expression>>(ReturnBuilder), 
         };
         private static ParameterExpression _input = Expression.Parameter(typeof(List<string>), "log");
-        private static MethodInfo _addLog = typeof(List<string>).GetMethod("Add");
+        private static MethodInfo _addLog = typeof(List<string>).GetMethod(nameof(List<string>.Add));
         private static LabelTarget _ret = Expression.Label(typeof(object), "return");
         private static Expression[] _catchExtras = new[] { (Expression)Expression.Default(typeof(void)), Expression.Rethrow() };
 
@@ -57,11 +57,11 @@ namespace Microsoft.Dynamic.Test {
             List<string> record = new List<string>();
             List<string> rewriteRecord = new List<string>();
             int testCount = 0;
-            try {                
+            try {
                 foreach (var lambda in builder.MakeLambda()) {
                     // run each test in normal and lightweight exception modes, make sure they have the same result
                     try {
-                        
+
                         object res = lambda.Compile()(record);
                         if (res != null) {
                             record.Add(res.ToString());
@@ -101,7 +101,7 @@ namespace Microsoft.Dynamic.Test {
                 Console.Write("Ran {0} tests", testCount);
             }
         }
-        
+
         private static void PrintLambda(Expression<Func<List<string>, object>> lambda, List<string> record, List<string> rewriteRecord) {
             for (int i = 0; i < Math.Min(record.Count, rewriteRecord.Count); i++) {
                 Console.WriteLine(record[i]);
@@ -214,11 +214,11 @@ namespace Microsoft.Dynamic.Test {
         }
 
         private static IEnumerable<Expression> CallBuilder(LightExceptionTests self) {
-            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod("SomeCall"))), "call");
-            yield return AddLogging(Expression.Call(typeof(LightExceptionTests).GetMethod("ThrowingCall")), "call throw");
-            yield return AddLogging(Expression.Call(typeof(LightExceptionTests).GetMethod("ThrowingCallInvalidOp")), "call throw invalidop");
-            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod("LightThrowingCall"))), "call throw");
-            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod("LightThrowingCallInvalidOp"))), "call throw invalidop");
+            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightExceptionTests.SomeCall)))), "call");
+            yield return AddLogging(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightExceptionTests.ThrowingCall))), "call throw");
+            yield return AddLogging(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightExceptionTests.ThrowingCallInvalidOp))), "call throw invalidop");
+            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightExceptionTests.LightThrowingCall)))), "call throw");
+            yield return AddLogging(LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightExceptionTests.LightThrowingCallInvalidOp)))), "call throw invalidop");
             yield return AddLogging(DynamicExpression.Dynamic(new LightExBinder("test", false), typeof(object), Expression.Constant(42)), "dynamic throw");
             yield return AddLogging(
                 DynamicExpression.Dynamic(new LightExBinder("test", false), typeof(object),

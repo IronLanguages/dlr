@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Actions {
                     return ErrorInfo.FromValueNoError(
                         Expression.Call(
                             AstUtils.Convert(AstUtils.Constant(ft.Field), typeof(FieldInfo)),
-                            typeof(FieldInfo).GetMethod("GetValue"),
+                            typeof(FieldInfo).GetMethod(nameof(FieldInfo.GetValue)),
                             AstUtils.Convert(instance.Expression, typeof(object))
                         )
                     );
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Actions {
             // handles in place addition of events - this validates the user did the right thing.
             return ErrorInfo.FromValueNoError(
                 Expression.Call(
-                    typeof(BinderOps).GetMethod("SetEvent"),
+                    typeof(BinderOps).GetMethod(nameof(BinderOps.SetEvent)),
                     AstUtils.Constant(ev),
                     value.Expression
                 )

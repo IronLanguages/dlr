@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Debugging {
             }
 
             return Ast.Call(
-                typeof(RuntimeOps).GetMethod("LiftVariables"),
+                typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.LiftVariables)),
                 runtimeThread,
                 Ast.RuntimeVariables(args)
             );

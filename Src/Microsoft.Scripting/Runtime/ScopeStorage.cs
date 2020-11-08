@@ -196,7 +196,7 @@ namespace Microsoft.Scripting {
                         Expression.Condition(
                             Expression.Call(
                                 Variable(variable),
-                                variable.GetType().GetMethod("TryGetValue"),
+                                variable.GetType().GetMethod(nameof(IScopeVariable.TryGetValue)),
                                 tmp
                             ),
                             ExpressionUtils.Convert(resultOp(tmp), typeof(object)),
@@ -211,8 +211,8 @@ namespace Microsoft.Scripting {
                 return Expression.Convert(
                     Expression.Property(
                         Expression.Constant(((IWeakReferencable)variable).WeakReference),
-                        typeof(WeakReference).GetProperty("Target")
-                    ), 
+                        typeof(WeakReference).GetProperty(nameof(WeakReference.Target))
+                    ),
                     variable.GetType()
                 );
             }
@@ -225,7 +225,7 @@ namespace Microsoft.Scripting {
                     Expression.Block(
                         Expression.Call(
                             Variable(variable),
-                            variable.GetType().GetMethod("SetValue"),
+                            variable.GetType().GetMethod(nameof(IScopeVariable.SetValue)),
                             objExpression
                         ),
                         objExpression
@@ -240,7 +240,7 @@ namespace Microsoft.Scripting {
                     Expression.Condition(
                         Expression.Call(
                             Variable(variable),
-                            variable.GetType().GetMethod("DeleteValue")
+                            variable.GetType().GetMethod(nameof(IScopeVariable.DeleteValue))
                         ),
                         Expression.Default(binder.ReturnType),
                         binder.FallbackDeleteMember(this).Expression
@@ -270,18 +270,18 @@ namespace Microsoft.Scripting {
         bool HasValue {
             get;
         }
-        
+
         /// <summary>
         /// Atempts to get the value. If a value is assigned it returns true otherwise
         /// it returns false.
         /// </summary>
         bool TryGetValue(out dynamic value);
-        
+
         /// <summary>
         /// Sets the current value in the scope.
         /// </summary>
         void SetValue(object value);
-        
+
         /// <summary>
         /// Removes the current value from the scope.
         /// </summary>
@@ -305,7 +305,7 @@ namespace Microsoft.Scripting {
         private object _value;
         private WeakReference _weakref;
         private static readonly object _novalue = new object();
-        
+
         internal ScopeVariable() {
             _value = _novalue;
         }
@@ -366,7 +366,7 @@ namespace Microsoft.Scripting {
         private readonly ScopeVariable _firstVariable;
         private WeakReference _weakref;
         private Dictionary<string, ScopeVariable> _overflow;
-        
+
         internal ScopeVariableIgnoreCase(string casing) {
             _firstCasing = casing;
             _firstVariable = new ScopeVariable();

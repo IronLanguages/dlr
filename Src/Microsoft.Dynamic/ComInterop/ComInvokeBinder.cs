@@ -190,9 +190,9 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgdispidNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgdispidNamedArgs))
                         ),
-                        Expression.Call(typeof(UnsafeMethods).GetMethod("GetIdsOfNamedParameters"),
+                        Expression.Call(typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.GetIdsOfNamedParameters)),
                             DispatchObjectVariable,
                             Expression.Constant(names),
                             DispIdVariable,
@@ -256,7 +256,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             MethodCallExpression invoke = Expression.Call(
-                typeof(UnsafeMethods).GetMethod("IDispatchInvoke"),
+                typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.IDispatchInvoke)),
                 DispatchPointerVariable,
                 DispIdVariable,
                 Expression.Constant(invokeKind),
@@ -273,7 +273,7 @@ namespace Microsoft.Scripting.ComInterop {
             // ComRuntimeHelpers.CheckThrowException(hresult, excepInfo, argErr, ThisParameter);
             //
             expr = Expression.Call(
-                typeof(ComRuntimeHelpers).GetMethod("CheckThrowException"),
+                typeof(ComRuntimeHelpers).GetMethod(nameof(ComRuntimeHelpers.CheckThrowException)),
                 hresult,
                 excepInfo,
                 argErr,
@@ -287,7 +287,7 @@ namespace Microsoft.Scripting.ComInterop {
             Expression invokeResultObject =
                 Expression.Call(
                     InvokeResultVariable,
-                    typeof(Variant).GetMethod("ToObject"));
+                    typeof(Variant).GetMethod(nameof(Variant.ToObject)));
 
             VariantBuilder[] variants = _varEnumSelector.VariantBuilders;
 
@@ -314,7 +314,7 @@ namespace Microsoft.Scripting.ComInterop {
             //
             finallyStatements.Add(
                 Expression.Call(
-                    typeof(UnsafeMethods).GetMethod("IUnknownRelease"),
+                    typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.IUnknownRelease)),
                     DispatchPointerVariable
                 )
             );
@@ -336,7 +336,7 @@ namespace Microsoft.Scripting.ComInterop {
             finallyStatements.Add(
                 Expression.Call(
                     InvokeResultVariable,
-                    typeof(Variant).GetMethod("Clear")
+                    typeof(Variant).GetMethod(nameof(Variant.Clear))
                 )
             );
 
@@ -347,7 +347,7 @@ namespace Microsoft.Scripting.ComInterop {
                 finallyStatements.Add(
                     Expression.Call(
                         DispIdsOfKeywordArgsPinnedVariable,
-                        typeof(GCHandle).GetMethod("Free")
+                        typeof(GCHandle).GetMethod(nameof(GCHandle.Free))
                     )
                 );
             }
@@ -371,7 +371,7 @@ namespace Microsoft.Scripting.ComInterop {
             exprs.Add(
                 Expression.Assign(
                     DispIdVariable,
-                    Expression.Property(_method, typeof(ComMethodDesc).GetProperty("DispId"))
+                    Expression.Property(_method, typeof(ComMethodDesc).GetProperty(nameof(ComMethodDesc.DispId)))
                 )
             );
 
@@ -383,10 +383,10 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgvarg")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgvarg))
                         ),
                         Expression.Call(
-                            typeof(UnsafeMethods).GetMethod("ConvertVariantByrefToPtr"),
+                            typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.ConvertVariantByrefToPtr)),
                             VariantArray.GetStructField(ParamVariantsVariable, 0)
                         )
                     )
@@ -400,7 +400,7 @@ namespace Microsoft.Scripting.ComInterop {
                 Expression.Assign(
                     Expression.Field(
                         DispParamsVariable,
-                        typeof(ComTypes.DISPPARAMS).GetField("cArgs")
+                        typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cArgs))
                     ),
                     Expression.Constant(_totalExplicitArgs)
                 )
@@ -415,7 +415,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("cNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cNamedArgs))
                         ),
                         Expression.Constant(1)
                     )
@@ -432,10 +432,10 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("rgdispidNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.rgdispidNamedArgs))
                         ),
                         Expression.Call(
-                            typeof(UnsafeMethods).GetMethod("ConvertInt32ByrefToPtr"),
+                            typeof(UnsafeMethods).GetMethod(nameof(UnsafeMethods.ConvertInt32ByrefToPtr)),
                             PropertyPutDispIdVariable
                         )
                     )
@@ -448,7 +448,7 @@ namespace Microsoft.Scripting.ComInterop {
                     Expression.Assign(
                         Expression.Field(
                             DispParamsVariable,
-                            typeof(ComTypes.DISPPARAMS).GetField("cNamedArgs")
+                            typeof(ComTypes.DISPPARAMS).GetField(nameof(ComTypes.DISPPARAMS.cNamedArgs))
                         ),
                         Expression.Constant(_keywordArgNames.Length)
                     )

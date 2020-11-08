@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.ComInterop {
             // parameter.ToOADate()
             return Expression.Call(
                 Marshal(parameter),
-                typeof(DateTime).GetMethod("ToOADate")
+                typeof(DateTime).GetMethod(nameof(DateTime.ToOADate))
             );
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.ComInterop {
             // DateTime.FromOADate(value)
             return base.UnmarshalFromRef(
                 Expression.Call(
-                    typeof(DateTime).GetMethod("FromOADate"),
+                    typeof(DateTime).GetMethod(nameof(DateTime.FromOADate)),
                     value
                 )
             );

@@ -66,14 +66,14 @@ namespace Microsoft.Scripting.ComInterop {
 
             return Expression.Property(
                 Helpers.Convert(comObject, typeof(ComObject)),
-                typeof(ComObject).GetProperty("RuntimeCallableWrapper", BindingFlags.NonPublic | BindingFlags.Instance)
+                typeof(ComObject).GetProperty(nameof(ComObject.RuntimeCallableWrapper), BindingFlags.NonPublic | BindingFlags.Instance)
             );
         }
 
         // Expression that finds or creates a ComObject that corresponds to given Rcw
         internal static MethodCallExpression RcwToComObject(Expression rcw) {
             return Expression.Call(
-                typeof(ComObject).GetMethod("ObjectToComObject"),
+                typeof(ComObject).GetMethod(nameof(ComObject.ObjectToComObject)),
                 Helpers.Convert(rcw, typeof(object))
             );
         }

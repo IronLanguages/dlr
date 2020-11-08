@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Actions {
                         Expression.Convert(
                             Expression.Call(
                                 AstUtils.Constant(Method),
-                                typeof(MethodInfo).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }),
+                                typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
                                 AstUtils.Constant(null),
                                 AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(arguments, x => x.Expression))
                             ),
@@ -84,7 +84,7 @@ namespace Microsoft.Scripting.Actions {
                 Expression.Convert(
                     Expression.Call(
                         AstUtils.Constant(Method),
-                        typeof(MethodInfo).GetMethod("Invoke", new Type[] { typeof(object), typeof(object[]) }),
+                        typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
                         arguments[0].Expression,
                         AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(ArrayUtils.RemoveFirst(arguments), x => x.Expression))
                     ),

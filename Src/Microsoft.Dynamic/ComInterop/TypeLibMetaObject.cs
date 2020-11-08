@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.ComInterop {
                                     AstUtils.Convert(
                                         Expression, typeof(ComTypeLibDesc)
                                     ),
-                                    typeof(ComTypeLibDesc).GetProperty("Guid")
+                                    typeof(ComTypeLibDesc).GetProperty(nameof(ComTypeLibDesc.Guid))
                                 ),
                                 AstUtils.Constant(_lib.Guid)
                             )
