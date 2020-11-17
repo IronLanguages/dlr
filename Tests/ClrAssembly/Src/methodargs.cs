@@ -30,7 +30,9 @@ namespace Merlin.Testing.Call {
         public void M200(int arg) { Flag.Set(arg); }
         public void M201([DefaultParameterValue(20)] int arg) { Flag.Set(arg); }
         public void M202(params int[] arg) { Flag.Set(arg.Length); }
-        public void M203([ParamDictionaryAttribute] IDictionary<object, object> arg) { Flag.Set(arg.Count); }
+        public void M203([ParamDictionary] IDictionary<object, object> arg) { Flag.Set(arg.Count); }
+        public void M204(params object[] arg) { Flag.Set(arg.Length); }
+        public void M205([ParamDictionary] IDictionary<string, int> arg) { Flag.Set(arg.Count); }
 
         // optional (get missing value)
         // - check the value actually passed in
@@ -46,11 +48,11 @@ namespace Merlin.Testing.Call {
         // two parameters
         public void M300(int x, int y) { }
         public void M350(int x, params int[] y) { }
-        public void M351(int x, [ParamDictionary] IDictionary<object, object> arg) { Flag<object>.Set(arg); }
-        public void M352([ParamDictionary] IDictionary<object, object> arg, params int[] x) { Flag<object>.Set(arg); }
+        public void M351(int x, [ParamDictionary] IDictionary<object, object> y) { Flag<object>.Set(y); }
+        public void M352([ParamDictionary] IDictionary<object, object> x, params object[] y) { Flag<object>.Set(x); }
 
         public void M310(int x, [DefaultParameterValue(30)]int y) { Flag.Set(x + y); }
-        public void M320([DefaultParameterValue(40)] int y, int x) { Flag.Set(x + y); }
+        public void M320([DefaultParameterValue(40)] int x, int y) { Flag.Set(x + y); }
         public void M330([DefaultParameterValue(50)] int x, [DefaultParameterValue(60)] int y) { Flag.Set(x + y); }
 
         public void M410(int x, [Optional]int y) { }

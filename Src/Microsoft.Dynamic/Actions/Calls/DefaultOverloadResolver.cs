@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq.Expressions;
-
+using System.Reflection;
 using Microsoft.Scripting.Actions.Calls;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
@@ -104,30 +104,31 @@ namespace Microsoft.Scripting.Actions {
         #region Actual Arguments
 
         private DynamicMetaObject GetArgument(int i) {
+            Debug.Assert(i >= 0);
             return _args[(CallType == CallTypes.ImplicitInstance ? 1 : 0) + i];
         }
 
         protected override void GetNamedArguments(out IList<DynamicMetaObject> namedArgs, out IList<string> argNames) {
-            if (_signature.HasNamedArgument() || _signature.HasDictionaryArgument()) {
+            bool hasNamedArgument = _signature.HasNamedArgument();
+            bool hasDictionaryArgument = _signature.HasDictionaryArgument();
+
+            if (hasNamedArgument || hasDictionaryArgument) {
                 var objects = new List<DynamicMetaObject>();
                 var names = new List<string>();
 
-                for (int i = 0; i < _signature.ArgumentCount; i++) {
-                    if (_signature.GetArgumentKind(i) == ArgumentType.Named) {
-                        objects.Add(GetArgument(i));
-                        names.Add(_signature.GetArgumentName(i));
+                if (hasNamedArgument) {
+                    for (int i = 0; i < _signature.ArgumentCount; i++) {
+                        if (_signature.GetArgumentKind(i) == ArgumentType.Named) {
+                            objects.Add(GetArgument(i));
+                            names.Add(_signature.GetArgumentName(i));
+                        }
                     }
                 }
 
-                if (_signature.HasDictionaryArgument()) {
-                    if (objects == null) {
-                        objects = new List<DynamicMetaObject>();
-                        names = new List<string>();
-                    }
+                if (hasDictionaryArgument) {
                     SplatDictionaryArgument(names, objects);
                 }
 
-               
                 names.TrimExcess();
                 objects.TrimExcess();
                 argNames = names;
@@ -136,6 +137,11 @@ namespace Microsoft.Scripting.Actions {
                 argNames = ArrayUtils.EmptyStrings;
                 namedArgs = DynamicMetaObject.EmptyMetaObjects;
             }
+        }
+
+        // TODO: review the signature, add protected
+        internal override bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
+            return !parameter.ProhibitsByKeyword();
         }
 
         protected override ActualArguments CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit) {
@@ -195,8 +201,9 @@ namespace Microsoft.Scripting.Actions {
 
         private void SplatDictionaryArgument(IList<string> splattedNames, IList<DynamicMetaObject> splattedArgs) {
             Assert.NotNull(splattedNames, splattedArgs);
+            Debug.Assert(_signature.HasDictionaryArgument());
 
-            DynamicMetaObject dictMo = GetArgument(_signature.ArgumentCount - 1);
+            DynamicMetaObject dictMo = GetArgument(_signature.IndexOf(ArgumentType.Dictionary));
             IDictionary dict = (IDictionary)dictMo.Value;
             IDictionaryEnumerator dictEnum = dict.GetEnumerator();
             while (dictEnum.MoveNext()) {

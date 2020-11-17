@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public void MapParameter(ParameterInfo pi) {
             int indexForArgBuilder;
-            int nameIndex = _argNames.IndexOf(pi.Name);
+            int nameIndex = _resolver.AllowByKeywordArgument(Overload, pi) ? _argNames.IndexOf(pi.Name) : -1;
             if (nameIndex == -1) {
                 // positional argument, we simply consume the next argument
                 indexForArgBuilder = ArgIndex++;

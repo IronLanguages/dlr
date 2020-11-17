@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -38,12 +39,15 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Type dictType = ParameterInfo.ParameterType;
-            // TODO: bug: what if ConstantNames().Length > hasBeenUsed.Count(b => !b)?
+            var names = ConstantNames();
+            var expressions = GetParameters(args, hasBeenUsed);
+
+            Debug.Assert(names.Length == expressions.Count);
 
             return Expression.Call(
                 GetCreationDelegate(dictType).GetMethodInfo(),
-                Expression.NewArrayInit(typeof(string), ConstantNames()),
-                AstUtils.NewArrayHelper(typeof(object), GetParameters(args, hasBeenUsed))
+                Expression.NewArrayInit(typeof(string), names),
+                AstUtils.NewArrayHelper(typeof(object), expressions)
             );
         }
 

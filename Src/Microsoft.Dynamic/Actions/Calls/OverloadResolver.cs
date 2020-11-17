@@ -184,6 +184,16 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         /// <summary>
+        /// Checks whether the given parameter may be mapped to by a keyword argument.
+        /// </summary>
+        /// <seealso cref="GetNamedArguments"/>
+        /// <seealso cref="BindToUnexpandedParams"/>
+        // TODO: review the signature, add protected
+        internal virtual bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
+            return true; // legacy behavior, but by default OverloadResolver doesn't recognize named arguments anyway
+        }
+
+        /// <summary>
         /// Called before arguments binding.
         /// </summary>
         /// <returns>
@@ -289,7 +299,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             var mapping = new ParameterMapping(this, method, _argNames);
 
-            mapping.MapParameters(false);
+            mapping.MapParameters(reduceByRef: false);
 
             foreach (var defaultCandidate in mapping.CreateDefaultCandidates()) {
                 AddSimpleTarget(defaultCandidate);
@@ -1188,11 +1198,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public override string ToString() {
-            string res = string.Empty;
-            foreach (CandidateSet set in _candidateSets.Values) {
-                res += set + Environment.NewLine;
+            if (_candidateSets != null) {
+                string res = string.Empty;
+                foreach (CandidateSet set in _candidateSets.Values) {
+                    res += set + Environment.NewLine;
+                }
+                return res;
+            } else {
+                return $"<unresolved {nameof(OverloadResolver)}>";
             }
-            return res;
         }
     }
 }
