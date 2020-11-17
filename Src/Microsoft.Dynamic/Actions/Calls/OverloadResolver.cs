@@ -158,21 +158,21 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Checks to see if the language allows named arguments to be bound to instance fields or
         /// properties and turned into setters. By default this is only allowed on contructors.
         /// </summary>
-        internal protected virtual bool AllowMemberInitialization(OverloadInfo method) {
+        protected internal virtual bool AllowMemberInitialization(OverloadInfo method) {
 #pragma warning disable 618 // obsolete
             return AllowKeywordArgumentSetting(method.ReflectionInfo);
 #pragma warning restore 618
         }
 
         [Obsolete("Use OverloadInfo.AllowMemberInitialization instead")]
-        internal protected virtual bool AllowKeywordArgumentSetting(MethodBase method) {
+        protected internal virtual bool AllowKeywordArgumentSetting(MethodBase method) {
             return CompilerHelpers.IsConstructor(method);
         }
 
         /// <summary>
         /// Gets an expression that evaluates to the result of GetByRefArray operation.
         /// </summary>
-        internal protected virtual Expression GetByRefArrayExpression(Expression argumentArrayExpression) {
+        protected internal virtual Expression GetByRefArrayExpression(Expression argumentArrayExpression) {
             return argumentArrayExpression;
         }
 
@@ -186,11 +186,20 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Checks whether the given parameter may be mapped to by a keyword argument.
         /// </summary>
+        /// <remarks>
+        /// If overriden, the derived class may only add more constraints to the constraints from the base class.
+        /// </remarks>
+        /// <example>
+        /// <code><![CDATA[
+        /// protected internal override bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter)
+        ///   => base.AllowByKeywordArgument(method, parameter)
+        ///      && AdditionalCheckIfByKeywordAllowed(method, parameter);
+        /// ]]></code>
+        /// </example>
         /// <seealso cref="GetNamedArguments"/>
         /// <seealso cref="BindToUnexpandedParams"/>
-        // TODO: review the signature, add protected
-        internal virtual bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
-            return true; // legacy behavior, but by default OverloadResolver doesn't recognize named arguments anyway
+        protected internal virtual bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
+            return  true; // no constraints, but by default OverloadResolver doesn't recognize named arguments anyway
         }
 
         /// <summary>
@@ -201,7 +210,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// A default mapping will be constructed for the remaining parameters (cleared bits).
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
-        internal protected virtual BitArray MapSpecialParameters(ParameterMapping mapping) {
+        protected internal virtual BitArray MapSpecialParameters(ParameterMapping mapping) {
             if (!mapping.Overload.IsStatic) {
                 var type = mapping.Overload.DeclaringType;
                 mapping.AddParameter(new ParameterWrapper(null, type, null, ParameterBindingFlags.ProhibitNull));

@@ -1004,13 +1004,6 @@ namespace Microsoft.Scripting.Utils {
             return parameter.IsDefined(typeof(ParamDictionaryAttribute), false);
         }
 
-        // TODO: revisit, make public or eliminate
-        internal static bool ProhibitsByKeyword(this ParameterInfo parameter) {
-            // params arrays & dictionaries don't allow assignment by keyword
-            return parameter.IsParamArray() || parameter.IsParamDictionary();
-            // TODO: extend if NonKeywordAttribute introduced
-        }
-
         public static bool IsParamsMethod(MethodBase method) {
             return IsParamsMethod(method.GetParameters());
         }

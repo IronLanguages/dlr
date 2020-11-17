@@ -139,9 +139,10 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        // TODO: review the signature, add protected
-        internal override bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
-            return !parameter.ProhibitsByKeyword();
+        protected internal override bool AllowByKeywordArgument(OverloadInfo method, ParameterInfo parameter) {
+            // params arrays & dictionaries don't allow assignment by keyword
+            return base.AllowByKeywordArgument(method, parameter)
+                && !parameter.IsParamArray() && !parameter.IsParamDictionary();
         }
 
         protected override ActualArguments CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit) {
