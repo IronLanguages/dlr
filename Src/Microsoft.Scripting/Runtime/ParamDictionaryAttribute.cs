@@ -6,8 +6,8 @@ using System;
 
 namespace Microsoft.Scripting {
     /// <summary>
-    /// This attribute is used to mark a parameter that can accept any keyword parameters that
-    /// are not bound to normal arguments.  The extra keyword parameters will be
+    /// This attribute is used to mark a parameter that can accept any keyword arguments that
+    /// are not bound to normal parameters.  The extra keyword arguments will be
     /// passed in a dictionary which is created for the call.
     /// 
     /// Most languages which support params dictionaries will support the following types:
