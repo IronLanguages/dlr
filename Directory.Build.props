@@ -81,11 +81,6 @@
     <Configuration Condition="'$(Configuration)' == 'Release'">Release</Configuration>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Mono)' == 'true'">
-    <CscToolExeSuffix Condition="'$(OS)' == 'Windows_NT'">.bat</CscToolExeSuffix>
-    <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
-  </PropertyGroup>
-
   <!-- References -->
   <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
 
@@ -99,6 +94,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <!-- Release -->
