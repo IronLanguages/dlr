@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Utils {
         #region Storage implementation
 
         private static int GetCurrentThreadId() {
-            return Thread.CurrentThread.ManagedThreadId;
+            return Environment.CurrentManagedThreadId;
         }
 
         /// <summary>

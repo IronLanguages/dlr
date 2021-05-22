@@ -40,7 +40,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         private StorageInfo GetStorageInfo(StorageInfo[] curStorage) {
-            int threadId = Thread.CurrentThread.ManagedThreadId;
+            int threadId = Environment.CurrentManagedThreadId;
 
             // fast path if we already have a value in the array
             if (curStorage != null && curStorage.Length > threadId) {
@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Debugging {
             Thread.BeginCriticalRegion();
             StorageInfo[] curStorage = Updating;
             try {
-                int threadId = Thread.CurrentThread.ManagedThreadId;
+                int threadId = Environment.CurrentManagedThreadId;
                 StorageInfo newInfo = new StorageInfo(Thread.CurrentThread);
 
                 // set to updating while potentially resizing/mutating, then we'll
