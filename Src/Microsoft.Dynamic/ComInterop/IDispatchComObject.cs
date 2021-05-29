@@ -3,19 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-using System.Linq.Expressions;
 
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
+
 using ComTypes = System.Runtime.InteropServices.ComTypes;
-using System.Dynamic;
 
 using Microsoft.Scripting.Utils;
 
@@ -503,9 +502,9 @@ namespace Microsoft.Scripting.ComInterop {
 
             ComMethodDesc getItem = null;
             ComMethodDesc setItem = null;
-            Hashtable funcs = new Hashtable(typeAttr.cFuncs);
-            Hashtable puts = new Hashtable();
-            Hashtable putrefs = new Hashtable();
+            ConcurrentDictionary<string, ComMethodDesc> funcs = new ConcurrentDictionary<string, ComMethodDesc>(Environment.ProcessorCount, typeAttr.cFuncs);
+            ConcurrentDictionary<string, ComMethodDesc> puts = new ConcurrentDictionary<string, ComMethodDesc>();
+            ConcurrentDictionary<string, ComMethodDesc> putrefs = new ConcurrentDictionary<string, ComMethodDesc>();
 
             for (int definedFuncIndex = 0; definedFuncIndex < typeAttr.cFuncs; definedFuncIndex++) {
                 IntPtr funcDescHandleToRelease = IntPtr.Zero;
@@ -522,7 +521,7 @@ namespace Microsoft.Scripting.ComInterop {
                     string name = method.Name.ToUpper(CultureInfo.InvariantCulture);
 
                     if ((funcDesc.invkind & ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT) != 0) {
-                        puts.Add(name, method);
+                        puts.TryAdd(name, method);
 
                         // for the special dispId == 0, we need to store
                         // the method descriptor for the Do(SetItem) binder. 
@@ -532,7 +531,7 @@ namespace Microsoft.Scripting.ComInterop {
                         continue;
                     }
                     if ((funcDesc.invkind & ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF) != 0) {
-                        putrefs.Add(name, method);
+                        putrefs.TryAdd(name, method);
                         // for the special dispId == 0, we need to store
                         // the method descriptor for the Do(SetItem) binder. 
                         if (method.DispId == ComDispIds.DISPID_VALUE && setItem == null) {
@@ -542,11 +541,11 @@ namespace Microsoft.Scripting.ComInterop {
                     }
 
                     if (funcDesc.memid == ComDispIds.DISPID_NEWENUM) {
-                        funcs.Add("GETENUMERATOR", method);
+                        funcs.TryAdd("GETENUMERATOR", method);
                         continue;
                     }
 
-                    funcs.Add(name, method);
+                    funcs.TryAdd(name, method);
 
                     // for the special dispId == 0, we need to store the method descriptor 
                     // for the Do(GetItem) binder. 
