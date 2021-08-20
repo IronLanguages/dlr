@@ -133,7 +133,7 @@ namespace Microsoft.Scripting.Utils {
         // Like string.Split, but enumerates
         public static IEnumerable<string> Split(string str, string sep) {
             int start = 0, end;
-            while ((end = str.IndexOf(sep, start)) != -1) {
+            while ((end = str.IndexOf(sep, start, StringComparison.Ordinal)) != -1) {
                 yield return str.Substring(start, end - start);
 
                 start = end + sep.Length;

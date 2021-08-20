@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Utils {
         public AssemblyQualifiedTypeName(string assemblyQualifiedTypeName) {
             ContractUtils.RequiresNotNull(assemblyQualifiedTypeName, nameof(assemblyQualifiedTypeName));
 
-            int firstColon = assemblyQualifiedTypeName.IndexOf(",");
+            int firstColon = assemblyQualifiedTypeName.IndexOf(',');
             if (firstColon != -1) {
                 TypeName = assemblyQualifiedTypeName.Substring(0, firstColon).Trim();
                 var assemblyNameStr = assemblyQualifiedTypeName.Substring(firstColon + 1).Trim();

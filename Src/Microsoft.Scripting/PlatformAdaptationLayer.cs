@@ -236,7 +236,7 @@ namespace Microsoft.Scripting {
                 return Path.IsPathRooted(path);
             }
             var root = Path.GetPathRoot(path);
-            return root.EndsWith(@":\") || root.EndsWith(@":/");
+            return root.EndsWith(@":\", StringComparison.Ordinal) || root.EndsWith(@":/", StringComparison.Ordinal);
 #else
             throw new NotImplementedException();
 #endif
