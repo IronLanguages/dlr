@@ -4,6 +4,7 @@
 
 #if FEATURE_FULL_CONSOLE
 
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -110,9 +111,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 value = null;
             }
 
-            if (name.StartsWith("--")) name = name.Substring("--".Length);
-            else if (name.StartsWith("-") && name.Length > 1) name = name.Substring("-".Length);
-            else if (name.StartsWith("/") && name.Length > 1) name = name.Substring("/".Length);
+            if (name.StartsWith("--", StringComparison.Ordinal)) name = name.Substring("--".Length);
+            else if (name.StartsWith("-", StringComparison.Ordinal) && name.Length > 1) name = name.Substring("-".Length);
+            else if (name.StartsWith("/", StringComparison.Ordinal) && name.Length > 1) name = name.Substring("/".Length);
             else {
                 value = name;
                 name = null;

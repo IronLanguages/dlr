@@ -422,7 +422,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public virtual IList<string> GetGlobals(string name) {
             List<string> res = new List<string>();
             foreach (string scopeName in _scope.GetVariableNames()) {
-                if (scopeName.StartsWith(name)) {
+                if (scopeName.StartsWith(name, StringComparison.Ordinal)) {
                     res.Add(scopeName);
                 }
             }

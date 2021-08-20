@@ -121,7 +121,7 @@ namespace Microsoft.Scripting.Actions {
             string genName = name + ReflectionUtils.GenericArityDelimiter;
             List<Type> genTypes = null;
             foreach (Type t in type.GetDeclaredNestedTypes()) {
-                if (t.IsPublic && t.Name.StartsWith(genName)) {
+                if (t.IsPublic && t.Name.StartsWith(genName, StringComparison.Ordinal)) {
                     if (genTypes == null) {
                         genTypes = new List<Type>();
                     }
