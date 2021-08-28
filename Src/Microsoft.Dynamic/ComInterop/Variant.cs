@@ -701,7 +701,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// Helper method for generated code
         /// </summary>
         private static IntPtr GetIDispatchForObject(object value) {
-#if !NETCOREAPP
+#if NETFRAMEWORK || NET5_0_OR_GREATER
             return Marshal.GetIDispatchForObject(value);
 #else
             return Marshal.GetComInterfaceForObject<object, IDispatch>(value);
@@ -923,11 +923,7 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case VarEnum.VT_DISPATCH:
-#if !NETCOREAPP
-                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIDispatchForObject(value);
-#else
-                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIUnknownForObject(value);
-#endif
+                    *(IntPtr*)_typeUnion._unionTypes._byref = GetIDispatchForObject(value);
                     break;
 
                 case VarEnum.VT_BSTR:

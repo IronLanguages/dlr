@@ -1,0 +1,12 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- References -->
+  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
+
+  <PropertyGroup>
+    <DefineConstants>$(Features);$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+</Project>
