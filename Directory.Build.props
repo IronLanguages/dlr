@@ -81,9 +81,6 @@
     <Configuration Condition="'$(Configuration)' == 'Release'">Release</Configuration>
   </PropertyGroup>
 
-  <!-- References -->
-  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
-
   <PropertyGroup>
     <BaseOutputPath>$(DlrRootDir)\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
@@ -103,7 +100,7 @@
     <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);TRACE</DefineConstants>
+    <DefineConstants>$(SignedSym);TRACE</DefineConstants>
   </PropertyGroup>
 
   <!-- Debug -->
@@ -112,6 +109,6 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(SignedSym);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>
