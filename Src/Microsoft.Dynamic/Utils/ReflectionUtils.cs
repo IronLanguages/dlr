@@ -1050,8 +1050,6 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly asm) {
-            // TODO: WP7, SL5
-
             foreach (Module module in asm.GetModules()) {
                 Type[] moduleTypes;
                 try {
@@ -1068,6 +1066,23 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
+
+#if !FEATURE_ASSEMBLY_GETFORWARDEDTYPES
+#if NETSTANDARD2_0
+        private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", EmptyTypes);
+
+        internal static Type[] GetForwardedTypes(this Assembly assembly) {
+            if (GetForwardedTypesMethodInfo is not null) {
+                // just in case we're running on .NET Core 2.1...
+                return GetForwardedTypesMethodInfo.Invoke(assembly, null) as Type[] ?? Array.Empty<Type>();
+            }
+            return Array.Empty<Type>();
+        }
+#else
+        internal static Type[] GetForwardedTypes(this Assembly assembly) => EmptyTypes;
+#endif
+#endif
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly assembly, bool includePrivateTypes) {
             ContractUtils.RequiresNotNull(assembly, nameof(assembly));
@@ -1078,7 +1093,6 @@ namespace Microsoft.Scripting.Utils {
 
             try {
                 var exportedTypes = assembly.GetExportedTypes();
-#if FEATURE_ASSEMBLY_GETFORWARDEDTYPES
                 try {
                     var forwardedTypes = assembly.GetForwardedTypes();
                     return Enumerable.Concat(exportedTypes, forwardedTypes);
@@ -1087,9 +1101,6 @@ namespace Microsoft.Scripting.Utils {
                     // which successfully loaded. Note that Types may include null so we need to filter it out.
                     return Enumerable.Concat(exportedTypes, ex.Types.OfType<Type>());
                 }
-#else
-                return exportedTypes;
-#endif
             } catch (NotSupportedException) {
                 // GetExportedTypes does not work with dynamic assemblies
             } catch (Exception) {
