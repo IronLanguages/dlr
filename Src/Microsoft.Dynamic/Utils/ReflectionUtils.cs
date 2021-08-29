@@ -1069,12 +1069,16 @@ namespace Microsoft.Scripting.Utils {
 
 #if !FEATURE_ASSEMBLY_GETFORWARDEDTYPES
 #if NETSTANDARD2_0
-        private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", EmptyTypes);
+        private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", Array.Empty<Type>());
 
         internal static Type[] GetForwardedTypes(this Assembly assembly) {
             if (GetForwardedTypesMethodInfo is not null) {
                 // just in case we're running on .NET Core 2.1...
-                return GetForwardedTypesMethodInfo.Invoke(assembly, null) as Type[] ?? Array.Empty<Type>();
+                try {
+                    return GetForwardedTypesMethodInfo.Invoke(assembly, null) as Type[] ?? Array.Empty<Type>();
+                } catch (TargetInvocationException ex) {
+                    throw ex.InnerException;
+                }
             }
             return Array.Empty<Type>();
         }
