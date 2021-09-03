@@ -39,7 +39,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
         private ProcessStartInfo GetProcessStartInfo() {
             ProcessStartInfo processInfo = new ProcessStartInfo();
-            processInfo.Arguments = RemoteRuntimeServer.RemoteRuntimeArg + " " + _channelName;
+            processInfo.Arguments = "-X:" + RemoteRuntimeServer.RemoteRuntimeArg + " " + _channelName;
             processInfo.CreateNoWindow = true;
 
             // Set UseShellExecute to false to enable redirection.

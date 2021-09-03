@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// </summary>
     public static class RemoteRuntimeServer {
         internal const string CommandDispatcherUri = "CommandDispatcherUri";
-        internal const string RemoteRuntimeArg = "-X:RemoteRuntimeChannel";
+        internal const string RemoteRuntimeArg = "RemoteRuntimeChannel";
 
         private static TimeSpan GetSevenDays() {
             return new TimeSpan(7, 0, 0, 0); // days,hours,mins,secs 
