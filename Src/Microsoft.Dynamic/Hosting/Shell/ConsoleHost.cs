@@ -249,7 +249,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return sb.ToString();
         }
 
-        public void PrintLanguageHelp(StringBuilder output) {
+        public virtual void PrintLanguageHelp(StringBuilder output) {
             ContractUtils.RequiresNotNull(output, nameof(output));
 
             CreateOptionsParser().GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
