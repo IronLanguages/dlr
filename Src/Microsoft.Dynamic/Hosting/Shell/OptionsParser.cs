@@ -259,6 +259,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_REFEMIT
 
                 case "AssembliesDir":
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X {arg} option.");
                     _assembliesDir = val;
                     break;
 
@@ -299,7 +300,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
 #if FEATURE_REMOTING
                 case Remote.RemoteRuntimeServer.RemoteRuntimeArg:
-                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X {Remote.RemoteRuntimeServer.RemoteRuntimeArg} option.");
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X {arg} option.");
                     ConsoleOptions.RemoteRuntimeChannel = val;
                     break;
 #endif
