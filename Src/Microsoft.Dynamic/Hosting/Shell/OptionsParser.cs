@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         private TConsoleOptions _consoleOptions;
 
-#if FEATURE_REFEMIT
+#if FEATURE_REFEMIT && DEBUG
         private bool _saveAssemblies = false;
         private string _assembliesDir = null;
 #endif
@@ -214,12 +214,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     ConsoleOptions.FileName = arg.Trim();
                     break;
             }
-
-#if FEATURE_REFEMIT
-            if (_saveAssemblies) {
-                Snippets.SetSaveAssemblies(true, _assembliesDir);
-            }
-#endif
         }
 
         protected virtual void HandleImplementationSpecificOption(string arg, string val) {
@@ -254,10 +248,14 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 case "AssembliesDir":
                     if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X:{arg} option.");
                     _assembliesDir = val;
+                    if (_saveAssemblies) {
+                        Snippets.SetSaveAssemblies(true, _assembliesDir);
+                    }
                     break;
 
                 case "SaveAssemblies":
                     _saveAssemblies = true;
+                    Snippets.SetSaveAssemblies(true, _assembliesDir);
                     break;
 #endif
 
