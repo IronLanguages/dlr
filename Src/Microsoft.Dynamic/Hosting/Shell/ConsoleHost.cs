@@ -249,7 +249,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return sb.ToString();
         }
 
-        public void PrintLanguageHelp(StringBuilder output) {
+        public virtual void PrintLanguageHelp(StringBuilder output) {
             ContractUtils.RequiresNotNull(output, nameof(output));
 
             CreateOptionsParser().GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
@@ -300,7 +300,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected virtual void ExecuteInternal() {
             Debug.Assert(_engine != null);
 
-            if (_consoleOptions.PrintVersion){
+            if (_consoleOptions.PrintVersion) {
                 PrintVersion();
             }
 
@@ -409,7 +409,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return exitCodeOverride.Value;
         }
 
-        private void PrintUsage()
+        protected virtual void PrintUsage()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Usage: {0}.exe ", ExeName);
@@ -417,7 +417,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             Console.Write(sb.ToString());
         }
 
-        protected  void PrintVersion() {
+        protected virtual void PrintVersion() {
             Console.WriteLine("{0} {1} on {2}", Engine.Setup.DisplayName, Engine.LanguageVersion, GetRuntime());
         }
 

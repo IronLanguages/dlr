@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.Serialization;
 
 using Microsoft.Scripting.Generation;
@@ -49,13 +48,13 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
 #if FEATURE_FULL_CONSOLE
-        public abstract ConsoleOptions CommonConsoleOptions { 
-            get; 
+        public abstract ConsoleOptions CommonConsoleOptions {
+            get;
         }
 #endif
         public IList<string> IgnoredArgs {
             get { return _ignoredArgs; }
-        } 
+        }
 
         /// <exception cref="InvalidOptionException">On error.</exception>
         public void Parse(string[] args, ScriptRuntimeSetup setup, LanguageSetup languageSetup, PlatformAdaptationLayer platform) {
@@ -109,11 +108,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             if (_current < _args.Length)
                 return _args[_current];
 
-            throw new InvalidOptionException(
-                String.Format(
-                    CultureInfo.CurrentCulture,
-                    "Argument expected for the {0} option.",
-                    _current > 0 ? _args[_current - 1] : string.Empty));
+            throw new InvalidOptionException($"Argument expected for the {(_current > 0 ? _args[_current - 1] : string.Empty)} option.");
         }
 
         protected string PopNextArg() {
@@ -137,10 +132,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_FULL_CONSOLE
     public class OptionsParser<TConsoleOptions> : OptionsParser
         where TConsoleOptions : ConsoleOptions, new() {
-       
+
         private TConsoleOptions _consoleOptions;
 
-#if FEATURE_REFEMIT
+#if FEATURE_REFEMIT && DEBUG
         private bool _saveAssemblies = false;
         private string _assembliesDir = null;
 #endif
@@ -149,13 +144,13 @@ namespace Microsoft.Scripting.Hosting.Shell {
             get {
                 if (_consoleOptions == null) {
                     _consoleOptions = new TConsoleOptions();
-                } 
-                
-                return _consoleOptions; 
+                }
+
+                return _consoleOptions;
             }
             set {
                 ContractUtils.RequiresNotNull(value, nameof(value));
-                _consoleOptions = value; 
+                _consoleOptions = value;
             }
         }
 
@@ -178,73 +173,129 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     IgnoreRemainingArgs();
                     break;
 
-                case "-D": 
-                    RuntimeSetup.DebugMode = true; 
-                    break;
-                
-                case "-X:PrivateBinding": 
-                    RuntimeSetup.PrivateBinding = true; 
+                case "-D":
+                    RuntimeSetup.DebugMode = true;
                     break;
 
-                case "-X:PassExceptions": ConsoleOptions.HandleExceptions = false; break;
+                case "-X:PrivateBinding":
+                case "-X:PassExceptions":
                 // TODO: #if !IRONPYTHON_WINDOW
-                case "-X:ColorfulConsole": ConsoleOptions.ColorfulConsole = true; break;
-                case "-X:TabCompletion": ConsoleOptions.TabCompletion = true; break;
-                case "-X:AutoIndent": ConsoleOptions.AutoIndent = true; break;
-                //#endif
-
+                case "-X:ColorfulConsole":
+                case "-X:TabCompletion":
+                case "-X:AutoIndent":
+                // #endif
 #if DEBUG
 #if FEATURE_REFEMIT
-                case "-X:AssembliesDir":
-                    _assembliesDir = PopNextArg();
-                    break;
-
                 case "-X:SaveAssemblies":
-                    _saveAssemblies = true;
-                    break;
 #endif
-
                 case "-X:TrackPerformance":
-                    SetDlrOption(arg.Substring(3));
-                    break;
 #endif
-                // TODO: remove
                 case "-X:Interpret":
-                    LanguageSetup.Options["InterpretedMode"] = ScriptingRuntimeHelpers.True;
-                    break;
-
                 case "-X:NoAdaptiveCompilation":
-                    LanguageSetup.Options["NoAdaptiveCompilation"] = true;
-                    break;
-
-                case "-X:CompilationThreshold":
-                    LanguageSetup.Options["CompilationThreshold"] = Int32.Parse(PopNextArg());
-                    break;
-
                 case "-X:ExceptionDetail":
                 case "-X:ShowClrExceptions":
 #if DEBUG
                 case "-X:PerfStats":
 #endif
-                    // TODO: separate options dictionary?
-                    LanguageSetup.Options[arg.Substring(3)] = ScriptingRuntimeHelpers.True; 
+                    HandleImplementationSpecificOption(arg.Substring(3), null);
                     break;
 
-#if FEATURE_REMOTING
-                case Remote.RemoteRuntimeServer.RemoteRuntimeArg:
-                    ConsoleOptions.RemoteRuntimeChannel = PopNextArg();
-                    break;
+#if DEBUG && FEATURE_REFEMIT
+                case "-X:AssembliesDir":
 #endif
+                case "-X:CompilationThreshold":
+#if FEATURE_REMOTING
+                case "-X:" + Remote.RemoteRuntimeServer.RemoteRuntimeArg:
+#endif
+                    HandleImplementationSpecificOption(arg.Substring(3), PopNextArg());
+                    break;
+
                 default:
                     ConsoleOptions.FileName = arg.Trim();
                     break;
             }
+        }
 
+        protected virtual void HandleImplementationSpecificOption(string arg, string val) {
+            switch (arg) {
+                case "PrivateBinding":
+                    RuntimeSetup.PrivateBinding = true;
+                    break;
+
+                case "PassExceptions":
+                    ConsoleOptions.HandleExceptions = false;
+                    break;
+
+                // TODO: #if !IRONPYTHON_WINDOW
+
+                case "ColorfulConsole":
+                    ConsoleOptions.ColorfulConsole = true;
+                    break;
+
+                case "TabCompletion":
+                    ConsoleOptions.TabCompletion = true;
+                    break;
+
+                case "AutoIndent":
+                    ConsoleOptions.AutoIndent = true;
+                    break;
+
+                //#endif
+
+#if DEBUG
 #if FEATURE_REFEMIT
-            if (_saveAssemblies) {
-                Snippets.SetSaveAssemblies(true, _assembliesDir);
-            }
+
+                case "AssembliesDir":
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X:{arg} option.");
+                    _assembliesDir = val;
+                    if (_saveAssemblies) {
+                        Snippets.SetSaveAssemblies(true, _assembliesDir);
+                    }
+                    break;
+
+                case "SaveAssemblies":
+                    _saveAssemblies = true;
+                    Snippets.SetSaveAssemblies(true, _assembliesDir);
+                    break;
 #endif
+
+                case "TrackPerformance":
+                    SetDlrOption(arg);
+                    break;
+#endif
+
+                // TODO: remove
+                case "Interpret":
+                    LanguageSetup.Options["InterpretedMode"] = ScriptingRuntimeHelpers.True;
+                    break;
+
+                case "NoAdaptiveCompilation":
+                    LanguageSetup.Options["NoAdaptiveCompilation"] = true;
+                    break;
+
+                case "CompilationThreshold":
+                    int threshold;
+                    if (!int.TryParse(val, out threshold)) {
+                        throw new InvalidOptionException($"The argument for the -X:{arg} option must be an integer.");
+                    }
+                    LanguageSetup.Options["CompilationThreshold"] = threshold;
+                    break;
+
+                case "ExceptionDetail":
+                case "ShowClrExceptions":
+#if DEBUG
+                case "PerfStats":
+#endif
+                    LanguageSetup.Options[arg] = ScriptingRuntimeHelpers.True;
+                    break;
+
+#if FEATURE_REMOTING
+                case Remote.RemoteRuntimeServer.RemoteRuntimeArg:
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X:{arg} option.");
+                    ConsoleOptions.RemoteRuntimeChannel = val;
+                    break;
+#endif
+            }
         }
 
         internal static void SetDlrOption(string option) {
@@ -259,14 +310,13 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")] // TODO: fix
         public override void GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments) {
-
             commandLine = "[options] [file|- [arguments]]";
 
             options = new string[,] {
                 { "-c cmd",                      "Program passed in as string (terminates option list)" },
                 { "-h",                          "Display usage" },
-                { "-i",                          "Inspect interactively after running script" },
-                { "-V",                          "Print the version number and exit" },
+                { "-i",                          "Inspect interactively after running script" }, // TODO: remove this? not handled by OptionsParser.ParseArgument
+                { "-V",                          "Print the version number and exit" }, // TODO: remove this? not handled by OptionsParser.ParseArgument
                 { "-D",                          "Enable application debugging" },
 
                 { "-X:AutoIndent",               "Enable auto-indenting in the REPL loop" },
@@ -284,11 +334,11 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 { "-X:TrackPerformance",         "Track performance sensitive areas [debug only]" },
                 { "-X:PerfStats",                "Print performance stats when the process exists [debug only]" },
 #if FEATURE_REMOTING
-                { Remote.RemoteRuntimeServer.RemoteRuntimeArg + " <channel_name>", 
+                { $"-X:{Remote.RemoteRuntimeServer.RemoteRuntimeArg} <channel_name>",
                                                  "Start a remoting server for a remote console session." },
 #endif
 #endif
-           };
+            };
 
             environmentVariables = new string[0, 0];
 
