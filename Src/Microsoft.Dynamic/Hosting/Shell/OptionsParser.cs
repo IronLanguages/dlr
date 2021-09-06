@@ -177,13 +177,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     RuntimeSetup.DebugMode = true;
                     break;
 
-                case "-X":
-                    if (!UseImplementationSpecificOptions) goto default;
-                    var split = PopNextArg().Split(new[] { '=' }, 2);
-                    HandleImplementationSpecificOption(split[0], split.Length > 1 ? split[1] : null);
-                    break;
-
-                // old implementation specific options for compat
                 case "-X:PrivateBinding":
                 case "-X:PassExceptions":
                 // TODO: #if !IRONPYTHON_WINDOW
@@ -259,7 +252,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_REFEMIT
 
                 case "AssembliesDir":
-                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X {arg} option.");
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X:{arg} option.");
                     _assembliesDir = val;
                     break;
 
@@ -285,7 +278,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 case "CompilationThreshold":
                     int threshold;
                     if (!int.TryParse(val, out threshold)) {
-                        throw new InvalidOptionException(string.Format("The argument for the -X {0} option must be an integer.", arg));
+                        throw new InvalidOptionException($"The argument for the -X:{arg} option must be an integer.");
                     }
                     LanguageSetup.Options["CompilationThreshold"] = threshold;
                     break;
@@ -300,7 +293,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
 #if FEATURE_REMOTING
                 case Remote.RemoteRuntimeServer.RemoteRuntimeArg:
-                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X {arg} option.");
+                    if (string.IsNullOrEmpty(val)) throw new InvalidOptionException($"Argument expected for the -X:{arg} option.");
                     ConsoleOptions.RemoteRuntimeChannel = val;
                     break;
 #endif
@@ -316,8 +309,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         internal static void SetDlrOption(string option, string value) {
             Environment.SetEnvironmentVariable("DLR_" + option, value);
         }
-
-        protected virtual bool UseImplementationSpecificOptions { get; } = false;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")] // TODO: fix
         public override void GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments) {
@@ -350,14 +341,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #endif
 #endif
             };
-
-            if (UseImplementationSpecificOptions) {
-                for (var i = 0; i < options.GetLength(0); i++) {
-                    if (options[i, 0].StartsWith("-X:", StringComparison.Ordinal)) {
-                        options[i, 0] = options[i, 0].Replace(' ', '=').Replace(':', ' ');
-                    }
-                }
-            }
 
             environmentVariables = new string[0, 0];
 
