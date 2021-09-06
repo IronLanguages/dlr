@@ -317,8 +317,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
             options = new string[,] {
                 { "-c cmd",                      "Program passed in as string (terminates option list)" },
                 { "-h",                          "Display usage" },
-                { "-i",                          "Inspect interactively after running script" },
-                { "-V",                          "Print the version number and exit" },
+                { "-i",                          "Inspect interactively after running script" }, // TODO: remove this? not handled by OptionsParser.ParseArgument
+                { "-V",                          "Print the version number and exit" }, // TODO: remove this? not handled by OptionsParser.ParseArgument
                 { "-D",                          "Enable application debugging" },
 
                 { "-X:AutoIndent",               "Enable auto-indenting in the REPL loop" },
