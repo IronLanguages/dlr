@@ -111,7 +111,8 @@
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
           Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE" />
+      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"
+                Exclude="$(StageDir)\netcoreapp2.1\**\*;$(StageDir)\net5.0*\**\*;$(StageDir)\net6.0*\**\*" />
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
     <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
