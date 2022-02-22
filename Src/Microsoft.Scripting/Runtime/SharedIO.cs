@@ -91,10 +91,11 @@ namespace Microsoft.Scripting.Runtime {
             if (_inputStream == null) {
                 lock (_mutex) {
                     if (_inputStream == null) {
+                        try {
 #if FEATURE_FULL_CONSOLE
-                        _inputStream = ConsoleInputStream.Instance;
-                        _inputEncoding = Console.InputEncoding;
-                        _inputReader = Console.In;
+                            _inputStream = ConsoleInputStream.Instance;
+                            _inputEncoding = Console.InputEncoding;
+                            _inputReader = Console.In;
 #elif FEATURE_BASIC_CONSOLE
                         _inputEncoding = Encoding.Default;
                         _inputStream = new TextStream(Console.In, _inputEncoding);
@@ -104,6 +105,11 @@ namespace Microsoft.Scripting.Runtime {
                         _inputStream = Stream.Null;
                         _inputReader = TextReader.Null;
 #endif
+                        } catch (TypeInitializationException) {
+                            _inputEncoding = Encoding.UTF8;
+                            _inputStream = Stream.Null;
+                            _inputReader = TextReader.Null;
+                        }
                     }
                 }
             }
