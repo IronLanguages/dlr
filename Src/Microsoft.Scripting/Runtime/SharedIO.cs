@@ -105,7 +105,7 @@ namespace Microsoft.Scripting.Runtime {
                         _inputStream = Stream.Null;
                         _inputReader = TextReader.Null;
 #endif
-                        } catch (TypeInitializationException) {
+                        } catch (PlatformNotSupportedException) {
                             // When on BlazorWebassembly, this exception is thrown.
                             _inputEncoding = Encoding.UTF8;
                             _inputStream = Stream.Null;
