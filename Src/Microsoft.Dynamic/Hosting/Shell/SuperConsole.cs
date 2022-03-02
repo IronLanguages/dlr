@@ -272,7 +272,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private bool BackspaceAutoIndentation() {
             if (_input.Length == 0 || _input.Length > _autoIndentSize) return false;
 
-            // Is the auto-indenation all white space, or has the user since edited the auto-indentation?
+            // Is the auto-indentation all white space, or has the user since edited the auto-indentation?
             for (int i = 0; i < _input.Length; i++) {
                 if (_input[i] != ' ') return false;
             }
@@ -288,12 +288,17 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return true;
         }
 
-        private void OnBackspace() {
+        private void OnBackspace(ConsoleModifiers keyModifiers) {
             if (BackspaceAutoIndentation()) return;
 
             if (_input.Length > 0 && _current > 0) {
-                _input.Remove(_current - 1, 1);
-                _current--;
+                int last = _current;
+                if ((keyModifiers & ConsoleModifiers.Alt) != 0) {
+                    MovePrevWordStart();
+                } else {
+                    _current--;
+                }
+                _input.Remove(_current, last - _current);
                 Render();
             }
         }
@@ -334,6 +339,20 @@ namespace Microsoft.Scripting.Hosting.Shell {
             } else {
                 _input.Insert(_current, c);
                 _current++;
+                Render();
+            }
+        }
+        private void DeleteTillEnd() {
+            if (_input.Length > 0 && _current < _input.Length) {
+                _input.Remove(_current, _input.Length - _current);
+                Render();
+            }
+        }
+
+        private void DeleteFromStart() {
+            if (_input.Length > 0 && _current > 0) {
+                _input.Remove(0, _current);
+                _current = 0;
                 Render();
             }
         }
@@ -383,60 +402,80 @@ namespace Microsoft.Scripting.Hosting.Shell {
             _cursor.Place(position);
         }
 
-        private void MoveLeft(ConsoleModifiers keyModifiers) {
-            if ((keyModifiers & ConsoleModifiers.Control) != 0) {
-                // move back to the start of the previous word
-                if (_input.Length > 0 && _current != 0) {
-                    bool nonLetter = IsSeperator(_input[_current - 1]);
-                    while (_current > 0 && (_current - 1 < _input.Length)) {
-                        MoveLeft();
+        private static bool IsSeparator(char ch) {
+            return Environment.OSVersion.Platform == PlatformID.Unix ?
+                 !Char.IsLetterOrDigit(ch)
+               : Char.IsWhiteSpace(ch);
+        }
 
-                        if (IsSeperator(_input[_current]) != nonLetter) {
-                            if (!nonLetter) {
-                                MoveRight();
-                                break;
-                            }
+        private void MovePrevWordStart() {
+            // move back to the start of the previous word
+            if (_input.Length > 0 && _current != 0) {
+                bool nonLetter = IsSeparator(_input[_current - 1]);
+                while (_current > 0 && (_current - 1 < _input.Length)) {
+                    MoveLeft();
 
-                            nonLetter = false;
+                    if (IsSeparator(_input[_current]) != nonLetter) {
+                        if (!nonLetter) {
+                            MoveRight();
+                            break;
                         }
+
+                        nonLetter = false;
                     }
                 }
+            }
+        }
+
+        private void MoveNextWordEnd() {
+            // move to the next end-of-word position
+            if (_input.Length != 0 && _current < _input.Length) {
+                bool nonLetter = IsSeparator(_input[Math.Min(_current + 1, _input.Length - 1)]);
+                while (_current < _input.Length) {
+                    MoveRight();
+
+                    if (_current == _input.Length) break;
+                    if (IsSeparator(_input[_current]) != nonLetter) {
+                        if (!nonLetter)
+                            break;
+
+                        nonLetter = false;
+                    }
+                }
+            }
+        }
+
+        private void MoveNextWordStart() {
+            // move to the next word
+            if (_input.Length != 0 && _current < _input.Length) {
+                bool nonLetter = IsSeparator(_input[_current]);
+                while (_current < _input.Length) {
+                    MoveRight();
+
+                    if (_current == _input.Length) break;
+                    if (IsSeparator(_input[_current]) != nonLetter) {
+                        if (nonLetter)
+                            break;
+
+                        nonLetter = true;
+                    }
+                }
+            }
+        }
+
+        private void MoveLeft(ConsoleModifiers keyModifiers) {
+            if ((keyModifiers & ConsoleModifiers.Control) != 0) {
+                MovePrevWordStart();
             } else {
                 MoveLeft();
             }
         }
 
-        private static bool IsSeperator(char ch) {
-            return !Char.IsLetter(ch);
-        }
-
         private void MoveRight(ConsoleModifiers keyModifiers) {
             if ((keyModifiers & ConsoleModifiers.Control) != 0) {
-                // move to the next word
-                if (_input.Length != 0 && _current < _input.Length) {
-                    bool nonLetter = IsSeperator(_input[_current]);
-                    while (_current < _input.Length) {
-                        MoveRight();
-
-                        if (_current == _input.Length) break;
-                        if (IsSeperator(_input[_current]) != nonLetter) {
-                            if (nonLetter)
-                                break;
-
-                            nonLetter = true;
-                        }
-                    }
-                }
+                MoveNextWordStart();
             } else {
                 MoveRight();
-            }
-        }
-
-        private void MoveRight() {
-            if (_current < _input.Length) {
-                char c = _input[_current];
-                _current++;
-                Cursor.Move(GetCharacterSize(c));
             }
         }
 
@@ -445,6 +484,14 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 _current--;
                 char c = _input[_current];
                 Cursor.Move(-GetCharacterSize(c));
+            }
+        }
+
+        private void MoveRight() {
+            if (_current < _input.Length) {
+                char c = _input[_current];
+                _current++;
+                Cursor.Move(GetCharacterSize(c));
             }
         }
 
@@ -480,7 +527,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
                 switch (key.Key) {
                     case ConsoleKey.Backspace:
-                        OnBackspace();
+                        OnBackspace(key.Modifiers);
                         inputChanged = optionsObsolete = true;
                         break;
                     case ConsoleKey.Delete:
@@ -531,11 +578,21 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         inputChanged = optionsObsolete = true;
                         break;
                     case ConsoleKey.Home:
-                        MoveHome();
+                        if ((key.Modifiers & ConsoleModifiers.Control) != 0) {
+                            DeleteFromStart();
+                            inputChanged = true;
+                        } else {
+                            MoveHome();
+                        }
                         optionsObsolete = true;
                         break;
                     case ConsoleKey.End:
-                        MoveEnd();
+                        if ((key.Modifiers & ConsoleModifiers.Control) != 0) {
+                            DeleteTillEnd();
+                            inputChanged = true;
+                        } else {
+                            MoveEnd();
+                        }
                         optionsObsolete = true;
                         break;
                     case ConsoleKey.LeftWindows:
@@ -544,8 +601,80 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         continue;
 
                     default:
+                        if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                            // GNU Readline mappings
+
+                            // Ctrl-key mappings
+                            if (key.Modifiers == ConsoleModifiers.Control) {
+                                if (key.Key == ConsoleKey.P) goto case ConsoleKey.UpArrow;   // Ctrl-P
+                                if (key.Key == ConsoleKey.N) goto case ConsoleKey.DownArrow; // Ctrl-N
+                                if (key.Key == ConsoleKey.B) { // Ctrl-B
+                                    MoveLeft();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.F) { // Ctrl-F
+                                    MoveRight();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.A) { // Ctrl-A
+                                    MoveHome();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.E) { // Ctrl-E
+                                    MoveEnd();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.K) { // Ctrl-K
+                                    DeleteTillEnd();
+                                    inputChanged = optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.U) { // Ctrl-U
+                                    DeleteFromStart();
+                                    inputChanged = optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.W) { // Ctrl-W
+                                    OnBackspace(ConsoleModifiers.Alt);
+                                    inputChanged = optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.D) { // Ctrl-D
+                                    if (_input.Length == 0) {
+                                        // Ctrl-D on empty input should exit REPL
+                                        _input.Append(FinalLineText);
+                                        return OnEnter(inputChanged);
+                                    } else {
+                                        OnDelete();
+                                        inputChanged = optionsObsolete = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Meta-key mappings
+                            if (key.Modifiers == ConsoleModifiers.Alt) {
+                                if (key.Key == ConsoleKey.B) { // Alt-B
+                                    MovePrevWordStart();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.F) { // Alt-F
+                                    MoveNextWordEnd();
+                                    optionsObsolete = true;
+                                    break;
+                                }
+                            }
+                        }; // if Unix
+
                         if (key.KeyChar == '\r') goto case ConsoleKey.Enter;        // Ctrl-M
                         if (key.KeyChar == '\x08') goto case ConsoleKey.Backspace;  // Ctrl-H
+
+                        // Unmapped key is inserted as is
                         Insert(key);
                         inputChanged = optionsObsolete = true;
                         break;
