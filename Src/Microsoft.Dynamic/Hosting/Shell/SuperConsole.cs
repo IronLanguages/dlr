@@ -430,7 +430,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private void MoveNextWordEnd() {
             // move to the next end-of-word position
             if (_input.Length != 0 && _current < _input.Length) {
-                bool nonLetter = IsSeparator(_input[Math.Min(_current + 1, _input.Length - 1)]);
+                bool nonLetter = IsSeparator(_input[_current]);
                 while (_current < _input.Length) {
                     MoveRight();
 
