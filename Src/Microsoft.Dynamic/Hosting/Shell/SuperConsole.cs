@@ -14,7 +14,15 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Hosting.Shell {
     public sealed class SuperConsole : BasicConsole {
 
-        #region Nested types: History, SuperConsoleOptions, Cursor
+        #region Nested types: EditMode, History, SuperConsoleOptions, Cursor
+
+        /// <summary>
+        /// Keybindings and cursor movement style.
+        /// </summary>
+        public enum EditMode {
+            Windows,
+            Emacs,
+        }
 
         /// <summary>
         /// Class managing the command history.
@@ -191,10 +199,21 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// </summary>
         private CommandLine _commandLine;
 
+        /// <summary>
+        /// The current edit mode of the console.
+        /// </summary>
+        private EditMode _editMode;
+
         public SuperConsole(CommandLine commandLine, bool colorful)
             : base(colorful) {
             ContractUtils.RequiresNotNull(commandLine, nameof(commandLine));
             _commandLine = commandLine;
+            _editMode = Environment.OSVersion.Platform == PlatformID.Unix ? EditMode.Emacs : EditMode.Windows;
+        }
+
+        public SuperConsole(CommandLine commandLine, bool colorful, EditMode editMode)
+            : this(commandLine, colorful) {
+            _editMode = editMode;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -402,10 +421,11 @@ namespace Microsoft.Scripting.Hosting.Shell {
             _cursor.Place(position);
         }
 
-        private static bool IsSeparator(char ch) {
-            return Environment.OSVersion.Platform == PlatformID.Unix ?
-                 !Char.IsLetterOrDigit(ch)
-               : Char.IsWhiteSpace(ch);
+        private bool IsSeparator(char ch) {
+            return _editMode switch {
+                EditMode.Emacs => !Char.IsLetterOrDigit(ch),
+                _ => Char.IsWhiteSpace(ch)
+            };
         }
 
         private void MovePrevWordStart() {
@@ -464,7 +484,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         private void MoveLeft(ConsoleModifiers keyModifiers) {
-            if ((keyModifiers & ConsoleModifiers.Control) != 0) {
+            if ((keyModifiers & (ConsoleModifiers.Control | ConsoleModifiers.Alt )) != 0) {
                 MovePrevWordStart();
             } else {
                 MoveLeft();
@@ -472,8 +492,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         private void MoveRight(ConsoleModifiers keyModifiers) {
-            if ((keyModifiers & ConsoleModifiers.Control) != 0) {
-                MoveNextWordStart();
+            if ((keyModifiers & (ConsoleModifiers.Control | ConsoleModifiers.Alt )) != 0) {
+                if (_editMode == EditMode.Emacs) {
+                    MoveNextWordEnd();
+                } else {
+                    MoveNextWordStart();
+                }
             } else {
                 MoveRight();
             }
@@ -601,7 +625,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                         continue;
 
                     default:
-                        if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                        if (_editMode == EditMode.Emacs) {
                             // GNU Readline mappings
 
                             // Ctrl-key mappings
@@ -669,7 +693,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                                     break;
                                 }
                             }
-                        }; // if Unix
+                        }; // EditMode.Emacs
 
                         if (key.KeyChar == '\r') goto case ConsoleKey.Enter;        // Ctrl-M
                         if (key.KeyChar == '\x08') goto case ConsoleKey.Backspace;  // Ctrl-H
