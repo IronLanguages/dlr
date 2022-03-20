@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+    <!-- EOL netcoreapp2.1 is used to test netstandard2.0 assemblies -->
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>

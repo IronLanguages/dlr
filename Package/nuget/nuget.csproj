@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.3">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <NuspecFile>DynamicLanguageRuntime.nuspec</NuspecFile>
+    <NuspecBasePath>$(StageDir)</NuspecBasePath>
+    <NuspecProperties>version=$(PackageVersion)</NuspecProperties>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <PackageOutputPath>$(PackageDir)</PackageOutputPath>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>
