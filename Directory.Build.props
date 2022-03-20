@@ -6,8 +6,6 @@
     <DlrRootDir>$(MSBuildThisFileDirectory)</DlrRootDir>
     <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
 
-    <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
-
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
