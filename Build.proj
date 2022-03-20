@@ -100,11 +100,8 @@
   <Target Name="NuGetPackage" DependsOnTargets="Stage;MakePackageDir"
           Inputs="@(NuGetPackageInputs);@(StageOutputs)"
           Outputs="@(NuGetPackageOutputs)">
-    <MSBuild Projects="%(Package.NuSpecDir)\nuget.csproj" Targets="Restore" />
-    <MSBuild
-      Projects="%(Package.NuSpecDir)\nuget.csproj"
-      Targets="Pack"
-      Properties="$(BuildProperties);Configuration=$(Configuration)" />
+    <MSBuild Projects="%(Package.NuSpecDir)\NuGet.Packaging.csproj" Targets="Restore" />
+    <MSBuild Projects="%(Package.NuSpecDir)\NuGet.Packaging.csproj" Targets="Pack" Properties="$(BuildProperties);NuspecFile=%(Package.Identity).nuspec" />
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
