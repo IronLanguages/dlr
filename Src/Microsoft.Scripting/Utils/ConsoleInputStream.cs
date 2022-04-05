@@ -16,16 +16,7 @@ namespace Microsoft.Scripting.Utils {
     /// This class wraps the standard input stream with a buffer that ensures that enough data are read from the underlying stream.
     /// </summary>
     public sealed class ConsoleInputStream : Stream {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        private static ConsoleInputStream _instance = null;
-
-        public static ConsoleInputStream Instance {
-            // When there is no input stream available (e.g. BlazorWasm), propagate PlatformNotSupportedException
-            get {
-                if (_instance == null) _instance = new();
-                return _instance;
-            }
-        }
+        public static readonly ConsoleInputStream Instance = new ConsoleInputStream();
 
         // we use 0x1000 to be safe (MSVCRT uses this value for stdin stream buffer).
         private const int MinimalBufferSize = 0x1000; 
@@ -35,9 +26,13 @@ namespace Microsoft.Scripting.Utils {
         private readonly byte[] _buffer = new byte[MinimalBufferSize];
         private int _bufferPos;
         private int _bufferSize;
-        
+
         private ConsoleInputStream() {
-            _input = Console.OpenStandardInput();
+            try {
+                _input = Console.OpenStandardInput();
+            } catch (PlatformNotSupportedException) {
+                _input = Stream.Null;
+            }
         }
 
         public override bool CanRead {

@@ -97,13 +97,13 @@ namespace Microsoft.Scripting.Runtime {
                             _inputEncoding = Console.InputEncoding;
                             _inputReader = Console.In;
 #elif FEATURE_BASIC_CONSOLE
-                        _inputEncoding = Encoding.Default;
-                        _inputStream = new TextStream(Console.In, _inputEncoding);
-                        _inputReader = Console.In;
+                            _inputEncoding = Encoding.Default;
+                            _inputStream = new TextStream(Console.In, _inputEncoding);
+                            _inputReader = Console.In;
 #else
-                        _inputEncoding = Encoding.UTF8;
-                        _inputStream = Stream.Null;
-                        _inputReader = TextReader.Null;
+                            _inputEncoding = Encoding.UTF8;
+                            _inputStream = Stream.Null;
+                            _inputReader = TextReader.Null;
 #endif
                         } catch (PlatformNotSupportedException) {
                             // When on BlazorWebassembly, this exception is thrown.
