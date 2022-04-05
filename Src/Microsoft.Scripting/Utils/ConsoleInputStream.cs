@@ -17,8 +17,16 @@ namespace Microsoft.Scripting.Utils {
     /// </summary>
     public sealed class ConsoleInputStream : Stream {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ConsoleInputStream Instance = new ConsoleInputStream();
-        
+        private static ConsoleInputStream _instance = null;
+
+        public static ConsoleInputStream Instance {
+            // When there is no input stream available (e.g. BlazorWasm), propagate PlatformNotSupportedException
+            get {
+                if (_instance == null) _instance = new();
+                return _instance;
+            }
+        }
+
         // we use 0x1000 to be safe (MSVCRT uses this value for stdin stream buffer).
         private const int MinimalBufferSize = 0x1000; 
 
