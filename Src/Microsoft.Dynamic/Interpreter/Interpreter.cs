@@ -167,7 +167,7 @@ namespace Microsoft.Scripting.Interpreter {
         // To get to the current AbortReason object on Thread.CurrentThread 
         // we need to use ExceptionState property of any ThreadAbortException instance.
         [ThreadStatic]
-        private static ThreadAbortException _anyAbortException = null;
+        private static ThreadAbortException _anyAbortException;
 
         internal static void AbortThreadIfRequested(InterpretedFrame frame, int targetLabelIndex) {
             var abortHandler = frame.CurrentAbortHandler;
