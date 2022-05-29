@@ -15,7 +15,7 @@
     <language>en-US</language>
     <tags>dynamic dlr</tags>
     <dependencies>
-      <group targetFramework="net45">
+      <group targetFramework="net452">
       </group>
       <group targetFramework="netstandard2.0">
         <dependency id="System.CodeDom" version="4.6.0" />
@@ -30,9 +30,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
-    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
-    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
     <file src="README.md;LICENSE" />
   </files>
 </package>

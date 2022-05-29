@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Metadata {
     public unsafe sealed class MemoryMapping : CriticalFinalizerObject {
         [SecurityCritical]
         internal byte* _pointer;
-        
+
         private SafeMemoryMappedViewHandle _handle;
         internal long _capacity;
 
@@ -57,11 +57,11 @@ namespace Microsoft.Scripting.Metadata {
             MemoryMapping mapping = null;
             FileStream stream = null;
             byte* ptr = null;
-            
+
             try {
                 stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Delete | FileShare.ReadWrite);
 
-#if NET45
+#if NET452
                 file = MemoryMappedFile.CreateFromFile(stream, null, 0, MemoryMappedFileAccess.Read, null, HandleInheritability.None, true);
 #else
                 file = MemoryMappedFile.CreateFromFile(stream, null, 0, MemoryMappedFileAccess.Read, HandleInheritability.None, true);
