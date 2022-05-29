@@ -215,7 +215,7 @@ namespace Microsoft.Scripting.ComInterop {
             return new DispCallable(dispatch, method.Name, method.DispId);
         }
         internal static MethodInfo GetGetIDispatchForObjectMethod() {
-#if NETFRAMEWORK || NET5_0_OR_GREATER
+#if NETFRAMEWORK || NET
             return typeof(Marshal).GetMethod(nameof(Marshal.GetIDispatchForObject));
 #else
             // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.

@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.ComInterop {
 #if DEBUG
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2207:InitializeValueTypeStaticFieldsInline")]
         static Variant() {
-            // Variant size is the size of 4 pointers (16 bytes) on a 32-bit processor, 
+            // Variant size is the size of 4 pointers (16 bytes) on a 32-bit processor,
             // and 3 pointers (24 bytes) on a 64-bit processor.
             int intPtrSize = Marshal.SizeOf(typeof(IntPtr));
             int variantSize = Marshal.SizeOf(typeof(Variant));
@@ -216,7 +216,7 @@ namespace Microsoft.Scripting.ComInterop {
             // to safe ourselves the cost of interop transition.
             // ByRef indicates the memory is not owned by the VARIANT itself while
             // primitive types do not have any resources to free up.
-            // Hence, only safearrays, BSTRs, interfaces and user types are 
+            // Hence, only safearrays, BSTRs, interfaces and user types are
             // handled differently.
             VarEnum vt = VariantType;
             if ((vt & VarEnum.VT_BYREF) != 0) {
@@ -701,7 +701,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// Helper method for generated code
         /// </summary>
         private static IntPtr GetIDispatchForObject(object value) {
-#if NETFRAMEWORK || NET5_0_OR_GREATER
+#if NETFRAMEWORK || NET
             return Marshal.GetIDispatchForObject(value);
 #else
             return Marshal.GetComInterfaceForObject<object, IDispatch>(value);

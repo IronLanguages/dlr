@@ -34,10 +34,10 @@ steps:
       version: '3.1.x'
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 5.0 SDK for build
+    displayName: Install .NET 6.0 SDK for build
     inputs:
       packageType: 'sdk'
-      version: '5.0.x'
+      version: '6.0.x'
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:

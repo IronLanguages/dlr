@@ -30,9 +30,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
-    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
-    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\**\*;net5.0*\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
+    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\**\*;net6.0*\**\*;net7.0*\**\*" />
     <file src="README.md;LICENSE" />
   </files>
 </package>
