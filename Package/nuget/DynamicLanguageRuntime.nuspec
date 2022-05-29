@@ -15,7 +15,7 @@
     <language>en-US</language>
     <tags>dynamic dlr</tags>
     <dependencies>
-      <group targetFramework="net45">
+      <group targetFramework="net452">
       </group>
       <group targetFramework="netstandard2.0">
         <dependency id="System.CodeDom" version="4.6.0" />

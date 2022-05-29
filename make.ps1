@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.1','netcoreapp3.1','net5.0'),
+    [String[]] $frameworks=@('net452','netcoreapp2.1','netcoreapp3.1','net5.0'),
     [String] $platform = "x64",
     [switch] $runIgnored
 )
@@ -62,7 +62,7 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
 
 #   <RunSettings>
 #     <TestRunParameters>
-#       <Parameter name="FRAMEWORK" value="net45" />
+#       <Parameter name="FRAMEWORK" value="net452" />
 #     </TestRunParameters>
 #   </RunSettings>
 

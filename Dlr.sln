@@ -35,7 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49-17D6-4C5C-80EC-F203BA2F7E3B}"
 	ProjectSection(SolutionItems) = preProject
 		Build\After.targets = Build\After.targets
-		Build\net45.props = Build\net45.props
+		Build\net452.props = Build\net452.props
 		Build\netcoreapp3.1.props = Build\netcoreapp3.1.props
 		Build\netstandard2.0.props = Build\netstandard2.0.props
 		Build\steps.yml = Build\steps.yml
