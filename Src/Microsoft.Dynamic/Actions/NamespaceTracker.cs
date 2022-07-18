@@ -386,8 +386,7 @@ namespace Microsoft.Scripting.Actions {
                 }
 
                 // Look for generic types
-                if (_genericTypeNames.ContainsKey(normalizedTypeName)) {
-                    List<string> actualNames = _genericTypeNames[normalizedTypeName];
+                if (_genericTypeNames.TryGetValue(normalizedTypeName, out List<string> actualNames)) {
                     foreach (string actualName in actualNames) {
                         Type newType = LoadType(_assembly, GetFullChildName(actualName));
                         if (newType != null) {
