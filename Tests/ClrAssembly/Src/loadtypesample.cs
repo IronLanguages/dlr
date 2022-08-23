@@ -95,7 +95,7 @@ namespace NSwInterestingClassName {
 
     public class abs { public static int A = 10; }
     public class type { public static int A = 10; }
-    public class file { public static int A = 10;}
+    public class @file { public static int A = 10;}
 
     public class complex { public static int A = 10; }
     public class StandardError { public static int A = 10;}
