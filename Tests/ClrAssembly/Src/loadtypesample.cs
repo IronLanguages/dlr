@@ -1,18 +1,6 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
- 
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 public class PublicRefTypeWithoutNS {
     public class Nested { public static int A = 10;    }
@@ -77,7 +65,7 @@ namespace def { public class A { } }
 namespace exec { public class A { } }
 namespace except { public class A { } }
 
-// builtin-func 
+// builtin-func
 namespace abs { public class A { } }
 namespace type { public class A { } }
 namespace file { public class A { } }

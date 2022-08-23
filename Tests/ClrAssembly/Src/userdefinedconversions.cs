@@ -1,24 +1,12 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
-
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Runtime.InteropServices;
 using Merlin.Testing.TypeSample;
 
-// C# test reference: 
+// C# test reference:
 //   \\vcslabsrv\Drops\orcas\VCS\Tst\current\qa\md\src\vcs\Compiler\csharp\Source\Conformance\conversions
 
 namespace Merlin.Testing.Call {
@@ -386,7 +374,7 @@ namespace Merlin.Testing.Call {
     public class T1 : TBase1 { }
     public class TDerived1 : T1 { }
 
-    // TODO: more scenarios, 
+    // TODO: more scenarios,
     //       -- including value type
     //       -- defined the operator in Tx
 
@@ -444,7 +432,7 @@ namespace Merlin.Testing.Call {
 
         public static void EatFirst(First arg) { Flag.Set(808); }
         public static void EatValueType(ValueType arg) { Flag.Set(809); } // boxing conversion
-        public static void EatEnumType(Enum arg) { Flag.Set(810); } // boxing conversion 
+        public static void EatEnumType(Enum arg) { Flag.Set(810); } // boxing conversion
 
         public static void EatAnyStruct(AnyStruct arg) { Flag.Set(850); }
         public static void EatNullableAnyStruct(Nullable<AnyStruct> arg) { Flag.Set(851); }
