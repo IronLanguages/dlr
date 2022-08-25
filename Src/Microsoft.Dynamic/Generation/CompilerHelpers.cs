@@ -105,7 +105,7 @@ namespace Microsoft.Scripting.Generation {
             for (int i = 0; i < count; i++) ret[i] = item;
             return ret;
         }
-        
+
         public static bool IsComparisonOperator(ExpressionType op) {
             switch (op) {
                 case ExpressionType.LessThan: return true;
@@ -253,7 +253,7 @@ namespace Microsoft.Scripting.Generation {
                     visible = mi.DeclaringType.GetDeclaredEvent(evnt.Name);
                 }
             }
-        
+
             // all others can't be exposed out this way
             return visible;
         }
@@ -354,7 +354,11 @@ namespace Microsoft.Scripting.Generation {
                 ctors = FilterConstructorsToPublicAndProtected(ctors);
             }
 
-            if (t.IsValueType) {
+            if (t.IsValueType
+#if NETCOREAPP
+                    && !t.IsByRefLike // GetStructDefaultCtor will fail for ref structs
+#endif
+                ) {
                 try {
                     // certain types (e.g. ArgIterator) will fail with BadImageFormatException
                     MethodBase structDefaultCtor = GetStructDefaultCtor(t);
@@ -465,7 +469,6 @@ namespace Microsoft.Scripting.Generation {
 
         public static bool HasTypeConverter(Type fromType, Type toType) {
 #if FEATURE_TYPECONVERTER
-             TypeConverter _;
             return TryGetTypeConverter(fromType, toType, out _);
 #else
             return false;
