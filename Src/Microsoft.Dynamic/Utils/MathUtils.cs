@@ -255,7 +255,7 @@ namespace Microsoft.Scripting.Utils {
                 // in "Efficient Computation of erfc(x) for Large Arguments"
                 const double h = 0.5;
                 const double hSquared = 0.25;
-                const int nTerms = 10;
+                const int nTerms = 11;
                 double sq = a * a;
                 res = 0.0;
                 for (int i = nTerms; i > 0; i--) {
@@ -469,12 +469,18 @@ namespace Microsoft.Scripting.Utils {
 
         // polynomial coefficients ordered by increasing degree
         private static readonly double[] ErfNumerCoeffs = {
-            2.4266795523053175e02, 2.1979261618294152e01,
-            6.9963834886191355, -3.5609843701815385e-02
+            3.20937_75891_38469_47256_2e03,
+            3.77485_23768_53020_20813_7e02,
+            1.13864_15415_10501_55649_5e02,
+            3.16112_37438_70565_59694_7e00,
+            1.85777_70618_46031_52673_0e-01
         };
         private static readonly double[] ErfDenomCoeffs = {
-            2.1505887586986120e02, 9.1164905404514901e01,
-            1.5082797630407787e01, 1.0
+            2.84423_68334_39170_62227_3e03,
+            1.28261_65260_77372_27564_5e03,
+            2.44024_63793_44441_73305_6e02,
+            2.36012_90952_34412_09349_9e01,
+            1.0
         };
         private static readonly double[] ErfcNumerCoeffs = {
             3.004592610201616005e02, 4.519189537118729422e02,
