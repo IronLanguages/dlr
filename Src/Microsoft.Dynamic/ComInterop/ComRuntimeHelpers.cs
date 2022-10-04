@@ -4,6 +4,8 @@
 
 #if FEATURE_COM
 
+#pragma warning disable CA1416 // Validate platform compatibility
+
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

@@ -3,21 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-using System.Linq.Expressions;
+
+#pragma warning disable CA1416 // Validate platform compatibility
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using ComTypes = System.Runtime.InteropServices.ComTypes;
-using System.Dynamic;
 
 using Microsoft.Scripting.Utils;
+
+using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Microsoft.Scripting.ComInterop {
 

@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-#pragma warning disable 612, 618
+
+#pragma warning disable CA1416 // Validate platform compatibility
+#pragma warning disable CS0618 // Type or member is obsolete
 
 using System;
 using System.Linq.Expressions;

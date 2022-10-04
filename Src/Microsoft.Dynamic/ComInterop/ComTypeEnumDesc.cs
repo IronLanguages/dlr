@@ -4,12 +4,14 @@
 
 #if FEATURE_COM
 
-using System.Linq.Expressions;
+#pragma warning disable CA1416 // Validate platform compatibility
 
 using System;
-using System.Runtime.InteropServices;
 using System.Dynamic;
 using System.Globalization;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Microsoft.Scripting.ComInterop {
