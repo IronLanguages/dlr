@@ -288,7 +288,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_APARTMENTSTATE
             if (_consoleOptions.IsMta) {
                 Thread thread = new Thread(ExecuteInternal);
+#pragma warning disable CA1416 // Validate platform compatibility
                 thread.SetApartmentState(ApartmentState.MTA);
+#pragma warning restore CA1416 // Validate platform compatibility
                 thread.Start();
                 thread.Join();
                 return;

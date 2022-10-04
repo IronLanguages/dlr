@@ -178,12 +178,14 @@ namespace Microsoft.Scripting.Interpreter {
                 if ((currentThread.ThreadState & System.Threading.ThreadState.AbortRequested) != 0) {
                     Debug.Assert(_anyAbortException != null);
 
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
 #if FEATURE_EXCEPTION_STATE
                     // The current abort reason needs to be preserved.
                     currentThread.Abort(_anyAbortException.ExceptionState);
 #else
                     currentThread.Abort();
 #endif
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                 }
             }
         }

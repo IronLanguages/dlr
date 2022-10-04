@@ -54,7 +54,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 if (e.SpecialKey == ConsoleSpecialKey.ControlC) {
                     e.Cancel = true;
                     CtrlCEvent.Set();
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
                     CreatingThread.Abort(new KeyboardInterruptException(""));
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                 }
             };
 

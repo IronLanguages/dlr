@@ -177,6 +177,9 @@ namespace Microsoft.Scripting.Actions {
         }
 
 #if FEATURE_COM
+
+#pragma warning disable CA1416 // Validate platform compatibility
+
         /// <summary>
         /// Gets the stub list for a COM Object.  For COM objects we store the stub list
         /// directly on the object using the Marshal APIs.  This allows us to not have
@@ -200,6 +203,9 @@ namespace Microsoft.Scripting.Actions {
 
             return hl;
         }
+
+#pragma warning restore CA1416 // Validate platform compatibility
+
 #endif
 
         /// <summary>

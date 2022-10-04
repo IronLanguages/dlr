@@ -3,19 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-#pragma warning disable 618
+
+#pragma warning disable CA1416 // Validate platform compatibility
 
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using Microsoft.Scripting.Utils;
-using System.Reflection;
+
 using Microsoft.Scripting.Generation;
-using System.Reflection.Emit;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
@@ -895,7 +897,9 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case VarEnum.VT_ERROR:
+#pragma warning disable CS0618 // Type or member is obsolete
                     *(int*)_typeUnion._unionTypes._byref = ((ErrorWrapper)value).ErrorCode;
+#pragma warning restore CS0618 // Type or member is obsolete
                     break;
 
                 case VarEnum.VT_I8:

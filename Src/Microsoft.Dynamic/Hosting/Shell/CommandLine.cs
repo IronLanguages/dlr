@@ -102,7 +102,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_EXCEPTION_STATE
             } catch (System.Threading.ThreadAbortException tae) {
                 if (tae.ExceptionState is KeyboardInterruptException) {
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
                     Thread.ResetAbort();
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                     _exitCode = -1;
                 } else {
                     throw;
@@ -282,7 +284,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
             } catch (ThreadAbortException tae) {
                 if (tae.ExceptionState is KeyboardInterruptException pki) {
                     UnhandledException(tae);
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
                     Thread.ResetAbort();
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                 } else {
                     throw;
                 }
