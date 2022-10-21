@@ -17,13 +17,6 @@ using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Interpreter;
 using Microsoft.Scripting.Runtime;
 
-#if !FEATURE_DYNAMIC_EXPRESSION_VISITOR
-namespace System.Linq.Expressions {
-    public abstract class DynamicExpressionVisitor : ExpressionVisitor {
-    }
-}
-#endif
-
 namespace Microsoft.Scripting.Utils {
     using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -62,7 +55,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Produces an interpreted binding using the given binder which falls over to a compiled
         /// binding after hitCount tries.
-        /// 
+        ///
         /// This method should be called whenever an interpreted binding is required.  Sometimes it will
         /// return a compiled binding if a previous binding was produced and it's hit count was exhausted.
         /// In this case the binder will not be called back for a new binding - the previous one will
@@ -217,10 +210,10 @@ namespace Microsoft.Scripting.Utils {
 
     /// <summary>
     /// Base class for storing information about the binding that a specific rule is applicable for.
-    /// 
+    ///
     /// We have a derived generic class but this class enables us to refer to it w/o having the
     /// generic type information around.
-    /// 
+    ///
     /// This class tracks both the count down to when we should compile.  When we compile we
     /// take the Expression[T] that was used before and compile it.  While this is happening
     /// we continue to allow the interpreted code to run.  When the compilation is complete we

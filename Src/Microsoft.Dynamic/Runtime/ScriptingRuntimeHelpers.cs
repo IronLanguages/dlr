@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Runtime {
     /// These are some generally useful helper methods. Currently the only methods are those to
     /// cached boxed representations of commonly used primitive types so that they can be shared.
     /// This is useful to most dynamic languages that use object as a universal type.
-    /// 
+    ///
     /// The methods in RuntimeHelepers are caleld by the generated code. From here the methods may
     /// dispatch to other parts of the runtime to get bulk of the work done, but the entry points
     /// should be here.
@@ -106,9 +106,7 @@ namespace Microsoft.Scripting.Runtime {
                 case TypeCode.UInt64: return default(UInt64);
                 case TypeCode.Single: return default(Single);
                 case TypeCode.Double: return default(Double);
-#if FEATURE_DBNULL
                 case TypeCode.DBNull: return default(DBNull);
-#endif
                 case TypeCode.DateTime: return default(DateTime);
                 case TypeCode.Decimal: return default(Decimal);
                 default: return null;
@@ -140,7 +138,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Helper method to create an instance.  Work around for Silverlight where Activator.CreateInstance
         /// is SecuritySafeCritical.
-        /// 
+        ///
         /// TODO: Why can't we just emit the right thing for default(T)?
         /// It's always null for reference types and it's well defined for value types
         /// </summary>
@@ -152,7 +150,7 @@ namespace Microsoft.Scripting.Runtime {
         public static T[] CreateArray<T>(int args) {
             return new T[args];
         }
-        
+
         /// <summary>
         /// EventInfo.EventHandlerType getter is marked SecuritySafeCritical in CoreCLR
         /// This method is to get to the property without using Reflection
@@ -220,7 +218,7 @@ namespace Microsoft.Scripting.Runtime {
         public static Exception MakeIncorrectBoxTypeError(Type type, object received) {
             return Error.UnexpectedType("StrongBox<" + type.Name + ">", CompilerHelpers.GetType(received).Name);
         }
-        
+
         /// <summary>
         /// Provides the test to see if an interpreted call site should switch over to being compiled.
         /// </summary>
