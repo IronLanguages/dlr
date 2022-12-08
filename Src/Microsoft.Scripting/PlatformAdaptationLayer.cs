@@ -160,6 +160,10 @@ namespace Microsoft.Scripting {
 
         public virtual string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories) {
 #if FEATURE_FILESYSTEM
+            // workaround for bug in .NET Framework 4.6.2 - https://github.com/IronLanguages/ironpython3/pull/1601
+            if (path == ".") {
+                path += Path.DirectorySeparatorChar;
+            }
             if (includeFiles && includeDirectories) {
                 return Directory.GetFileSystemEntries(path, searchPattern);
             }
