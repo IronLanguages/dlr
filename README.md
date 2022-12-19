@@ -42,4 +42,4 @@ On Unix machines, make sure Mono is installed and in the PATH, and type:
     $ make
 
 Since the main development is on Windows, Mono bugs may inadvertantly be introduced
-- please report them!
+&mdash; please report them!
