@@ -6,7 +6,7 @@
     <version>1.3.3</version>
     <authors>DLR Contributors,Microsoft</authors>
     <owners>DLR Community</owners>
-    <projectUrl>http://ironpython.net</projectUrl>
+    <projectUrl>https://ironpython.net</projectUrl>
     <repository type="git" url="https://github.com/IronLanguages/dlr.git" />
     <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
