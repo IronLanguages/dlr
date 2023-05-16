@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// <remarks>
     /// WARNING: This is a temporary API that will undergo breaking changes in future versions.
     /// </remarks>
-    [DebuggerDisplay("{(object)ReflectionInfo ?? Name}")]
+    [DebuggerDisplay("{DebugString}")]
     public abstract class OverloadInfo {
         public abstract string Name { get; }
         public abstract IList<ParameterInfo> Parameters { get; }
@@ -67,6 +67,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         public virtual CallingConventions CallingConvention => CallingConventions.Standard;
 
         public virtual MethodBase ReflectionInfo => null;
+
+        private object DebugString => (object)ReflectionInfo ?? Name;
 
         // TODO: remove
         public virtual bool IsInstanceFactory => IsConstructor;
