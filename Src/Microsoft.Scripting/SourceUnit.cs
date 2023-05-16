@@ -13,7 +13,7 @@ using Microsoft.Scripting.Utils;
 using System.Text;
 
 namespace Microsoft.Scripting {
-    [DebuggerDisplay("{Path ?? \"<anonymous>\"}")]
+    [DebuggerDisplay("{DebugString}")]
     public sealed class SourceUnit {
         private readonly LanguageContext _language;
         private readonly TextContentProvider _contentProvider;
@@ -29,6 +29,8 @@ namespace Microsoft.Scripting {
         /// Empty string for anonymous source units.
         /// </summary>
         public string Path { get; }
+
+        private string DebugString => Path ?? "<anonymous>";
 
         public bool HasPath => Path != null;
 

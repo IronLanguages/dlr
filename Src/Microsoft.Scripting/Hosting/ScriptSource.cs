@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Hosting {
     /// <summary>
     /// Hosting counterpart for <see cref="SourceUnit"/>.
     /// </summary>
-    [DebuggerDisplay("{Path ?? \"<anonymous>\"}")]
+    [DebuggerDisplay("{DebugString}")]
     public sealed class ScriptSource : MarshalByRefObject
     {
         internal SourceUnit SourceUnit { get; }
@@ -31,6 +31,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Cannot be an empty string.
         /// </summary>
         public string Path => SourceUnit.Path;
+
+        private string DebugString => Path ?? "<anonymous>";
 
         public SourceCodeKind Kind => SourceUnit.Kind;
 
