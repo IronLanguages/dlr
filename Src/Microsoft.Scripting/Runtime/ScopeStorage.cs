@@ -13,9 +13,9 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting {
     /// <summary>
     /// Provides optimized and cacheable support for scope storage.
-    /// 
+    ///
     /// This is the default object used for storing values in a scope.
-    /// 
+    ///
     /// </summary>
     /// <remarks>
     /// The implementation uses a case-insensitive dictionary which holds
@@ -24,10 +24,10 @@ namespace Microsoft.Scripting {
     /// </remarks>
     public sealed class ScopeStorage : IDynamicMetaObjectProvider {
         private readonly Dictionary<string, ScopeVariableIgnoreCase> _storage = new Dictionary<string, ScopeVariableIgnoreCase>(StringComparer.OrdinalIgnoreCase);
-        
+
         /// <summary>
         /// Gets the named value from the scope optionally ignoring case.
-        /// 
+        ///
         /// If the named value is not present an InvalidOperationException is raised.
         /// </summary>
         public dynamic GetValue(string name, bool ignoreCase) {
@@ -39,15 +39,28 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Attempts to get the named value from the scope optionally ignoring the case.
-        /// 
+        ///
         /// Returns true if the value is present, false if it is not.
         /// </summary>
         public bool TryGetValue(string name, bool ignoreCase, out dynamic value) {
-            if (HasVariable(name)) {
-                if (GetScopeVariable(name, ignoreCase).TryGetValue(out object objValue)) {
-                    value = objValue;
-                    return true;
+            bool TryGetScopeVariable(out IScopeVariable scopeVariable) {
+                lock(_storage) {
+                    if (_storage.TryGetValue(name, out ScopeVariableIgnoreCase storageInfo)) {
+                        scopeVariable = ignoreCase
+                            ? storageInfo
+                            : storageInfo.GetCaseSensitiveStorage(name);
+                        return true;
+                    }
+
+                    scopeVariable = default;
+                    return false;
                 }
+            }
+
+            if (TryGetScopeVariable(out var storage)
+                && storage.TryGetValue(out object objValue)) {
+                value = objValue;
+                return true;
             }
 
             value = null;
@@ -83,7 +96,7 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Gets the IScopeVariable for the scope optionally ignoring case.
-        /// 
+        ///
         /// The IScopeVariable can be held onto and get/set/deleted without performing
         /// a dictionary lookup on subsequent accesses.
         /// </summary>
@@ -96,7 +109,7 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Gets the ScopeVariable for the scope in a case-sensitive manner.
-        /// 
+        ///
         /// The ScopeVariable can be held onto and get/set/deleted without performing
         /// a dictionary lookup on subsequent accesses.
         /// </summary>
@@ -106,7 +119,7 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Gets the ScopeVariableIgnoreCase for the scope in a case-insensitive manner.
-        /// 
+        ///
         /// The ScopeVariable can be held onto and get/set/deleted without performing
         /// a dictionary lookup on subsequent accesses.
         /// </summary>
@@ -128,7 +141,7 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Returns all of the member names which currently have values in the scope.
-        /// 
+        ///
         /// The list contains all available casings.
         /// </summary>
         public IList<string> GetMemberNames() {
@@ -143,7 +156,7 @@ namespace Microsoft.Scripting {
 
         /// <summary>
         /// Returns all of the member names and their associated values from the scope.
-        /// 
+        ///
         /// The list contains all available casings.
         /// </summary>
         public IList<KeyValuePair<string, dynamic>> GetItems() {
@@ -174,14 +187,14 @@ namespace Microsoft.Scripting {
             }
 
             public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
-                return DynamicTryGetValue(binder.Name, binder.IgnoreCase, 
+                return DynamicTryGetValue(binder.Name, binder.IgnoreCase,
                     binder.FallbackGetMember(this).Expression,
                     (tmp) => tmp
                 );
             }
 
             public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args) {
-                return DynamicTryGetValue(binder.Name, binder.IgnoreCase, 
+                return DynamicTryGetValue(binder.Name, binder.IgnoreCase,
                     binder.FallbackInvokeMember(this, args).Expression,
                     (tmp) => binder.FallbackInvoke(new DynamicMetaObject(tmp, BindingRestrictions.Empty), args, null).Expression
                 );
@@ -260,7 +273,7 @@ namespace Microsoft.Scripting {
     }
 
     /// <summary>
-    /// Provides a common interface for accessing both case sensitive and 
+    /// Provides a common interface for accessing both case sensitive and
     /// case insensitive variable storage.
     /// </summary>
     public interface IScopeVariable {
@@ -298,7 +311,7 @@ namespace Microsoft.Scripting {
     /// Boxes the value for storage in a scope. Languages or consumers of the scope
     /// can save this value and use it to get/set the current value in the scope for
     /// commonly accessed values.
-    /// 
+    ///
     /// ScopeVariables are case sensitive and will only refer to a single value.
     /// </summary>
     public sealed class ScopeVariable : IScopeVariable, IWeakReferencable {
@@ -357,7 +370,7 @@ namespace Microsoft.Scripting {
     /// Boxes the value for storage in a scope. Languages or consumers of the scope
     /// can save this value and use it to get/set the current value in the scope for
     /// commonly accessed values.
-    /// 
+    ///
     /// ScopeVariablesIgnoreCase are case insensitive and may access different casings
     /// depending on how other gets/sets occur in the scope.
     /// </summary>
