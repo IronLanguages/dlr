@@ -347,7 +347,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public T GetObjectFromId(int id) {
-            if (_dict.TryGetValue(id, out object ret)) {
+            bool success;
+            object ret;
+            lock (_synchObject) {
+                success = _dict.TryGetValue(id, out ret);
+            }
+            if (success) {
                 if (ret is WeakObject weakObj) {
                     return (T)weakObj.Target;
                 }
@@ -393,10 +398,12 @@ namespace Microsoft.Scripting.Utils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")] // TODO: fix
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")] // TODO: fix (rename?)
         public void RemoveOnObject(T value) {
-            try {
-                int id = GetIdFromObject(value);
-                RemoveOnId(id);
-            } catch { }
+            lock (_synchObject) {
+                try {
+                    int id = GetIdFromObject(value);
+                    RemoveOnId(id);
+                } catch { }
+            }
         }
     }
 }
