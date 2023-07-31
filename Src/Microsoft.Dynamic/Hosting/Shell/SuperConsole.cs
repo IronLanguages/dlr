@@ -170,7 +170,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private int _current;
 
         /// <summary>
-        /// The number of white-spaces displayed for the auto-indenation of the current line
+        /// The number of white-spaces displayed for the auto-indentation of the current line
         /// </summary>
         private int _autoIndentSize;
 
@@ -190,7 +190,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private SuperConsoleOptions _options = new SuperConsoleOptions();
 
         /// <summary>
-        /// Cursort anchor - position of cursor when the routine was called
+        /// Cursor anchor - position of cursor when the routine was called
         /// </summary>
         private Cursor _cursor;
 
@@ -204,11 +204,15 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// </summary>
         private EditMode _editMode;
 
-        public SuperConsole(CommandLine commandLine, bool colorful)
-            : base(colorful) {
+        public SuperConsole(CommandLine commandLine, ConsoleOptions options)
+            : base(options) {
             ContractUtils.RequiresNotNull(commandLine, nameof(commandLine));
             _commandLine = commandLine;
             _editMode = Environment.OSVersion.Platform == PlatformID.Unix ? EditMode.Emacs : EditMode.Windows;
+        }
+
+        public SuperConsole(CommandLine commandLine, bool colorful)
+            : this(commandLine, new ConsoleOptions() { ColorfulConsole = colorful }) {
         }
 
         public SuperConsole(CommandLine commandLine, bool colorful, EditMode editMode)

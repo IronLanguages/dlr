@@ -42,12 +42,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private ConsoleColor _errorColor;
         private ConsoleColor _warningColor;
 
-        public BasicConsole(bool colorful) {            
+        private BasicConsole(bool colorful, bool? isDarkConsole) {
             _output = Console.Out;
             _errorOutput = Console.Error;
-            SetupColors(colorful);
+            SetupColors(colorful, isDarkConsole);
 
-            CreatingThread = Thread.CurrentThread;            
+            CreatingThread = Thread.CurrentThread;
 
             // Create the default handler
             ConsoleCancelEventHandler = delegate(object sender, ConsoleCancelEventArgs e) {
@@ -71,27 +71,48 @@ namespace Microsoft.Scripting.Hosting.Shell {
             CtrlCEvent = new AutoResetEvent(false);
         }
 
-        private void SetupColors(bool colorful) {
+        public BasicConsole(bool colorful) : this(colorful, null) { }
+
+        public BasicConsole(ConsoleOptions options) : this(options.ColorfulConsole, options.DarkConsole) { }
+
+        private void SetupColors(bool colorful, bool? isDarkConsole) {
 
             if (colorful) {
-                _promptColor = PickColor(ConsoleColor.Gray, ConsoleColor.White);
-                _outColor = PickColor(ConsoleColor.Cyan, ConsoleColor.White);
-                _errorColor = PickColor(ConsoleColor.Red, ConsoleColor.White);
-                _warningColor = PickColor(ConsoleColor.Yellow, ConsoleColor.White);
+                bool darkBackground = HasDarkBackground(isDarkConsole);
+                _promptColor = PickColor(ConsoleColor.White, Console.ForegroundColor, darkBackground);
+                _outColor = PickColor(ConsoleColor.Cyan, Console.ForegroundColor, darkBackground);
+                _errorColor = PickColor(ConsoleColor.Red, Console.ForegroundColor, darkBackground);
+                _warningColor = PickColor(ConsoleColor.Yellow, Console.ForegroundColor, darkBackground);
             } else {
                 _promptColor = _outColor = _errorColor = _warningColor = Console.ForegroundColor;
             }
         }
 
-        private static ConsoleColor PickColor(ConsoleColor best, ConsoleColor other) {
-            best = IsDark(Console.BackgroundColor) ? MakeLight(best) : MakeDark(best);
-            other = IsDark(Console.BackgroundColor) ? MakeLight(other) : MakeDark(other);
+        private static ConsoleColor PickColor(ConsoleColor best, ConsoleColor other, bool darkBackground) {
+            best = darkBackground ? MakeLight(best) : MakeDark(best);
+            other = darkBackground ? MakeLight(other) : MakeDark(other);
 
             if (Console.BackgroundColor != best) {
                 return best;
             }
 
             return other;
+        }
+
+        private static bool HasDarkBackground(bool? isDarkConsole) {
+            // Use preference if specified
+            if (isDarkConsole.HasValue) {
+                return isDarkConsole.Value;
+            }
+
+            // Try autodetect
+            if (Enum.IsDefined(typeof(ConsoleColor), Console.BackgroundColor)) {
+                return IsDark(Console.BackgroundColor);
+            }
+
+            // On Unix, Console.BackgroundColor may be undefined (-1)
+            // Assume it's dark, which is a fair guess on Linux but poor on macOS
+            return true;
         }
 
         private static bool IsDark(ConsoleColor color) {
@@ -101,21 +122,23 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         private static ConsoleColor MakeLight(ConsoleColor color) {
-            // DarkGray would stay dark gray, which would be hard to read on a dark background
-            if (color == ConsoleColor.DarkGray)
-                return ConsoleColor.White;
+            if (!IsDark(color)) return color;
 
-            // The light colours all have their 8 bit set
-            return (ConsoleColor)(((int)color) | 0xF);
+            return color switch {
+                ConsoleColor.DarkGray => ConsoleColor.White, // DarkGray would stay dark gray, which would be hard to read on a dark background
+                ConsoleColor.Black => ConsoleColor.Gray,     // Black would turn into DarkGray, which would be hard to read on a dark background
+                _ => (ConsoleColor)(((int)color) | 0b1000)   // The light colours all have their 4th bit set
+            };
         }
 
         private static ConsoleColor MakeDark(ConsoleColor color) {
-            // Gray would stay gray, which would be hard to read on a light background
-            if (color == ConsoleColor.Gray)
-                return ConsoleColor.Black;
+            if (IsDark(color)) return color;
 
-            // The dark colours all have their 8 bit unset
-            return (ConsoleColor)(((int)color) & ~0xF);
+            return color switch {
+                ConsoleColor.Gray => ConsoleColor.Black,     // Gray would stay gray, which would be hard to read on a light background
+                ConsoleColor.White => ConsoleColor.DarkGray, // White would turn into Gray, which would be hard to read on a light background
+                _ => (ConsoleColor)(((int)color) & ~0b1000)  // The dark colours all have their 4th bit unset
+            };
         }
 
         protected void WriteColor(TextWriter output, string str, ConsoleColor c) {

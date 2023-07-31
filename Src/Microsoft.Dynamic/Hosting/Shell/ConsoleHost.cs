@@ -121,17 +121,17 @@ namespace Microsoft.Scripting.Hosting.Shell {
             ContractUtils.RequiresNotNull(options, nameof(options));
 
             if (options.TabCompletion) {
-                return CreateSuperConsole(commandLine, options.ColorfulConsole);
+                return CreateSuperConsole(commandLine, options);
             }
 
-            return new BasicConsole(options.ColorfulConsole);
+            return new BasicConsole(options);
         }
 
         // The advanced console functions are in a special non-inlined function so that 
         // dependencies are pulled in only if necessary.
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        private static IConsole CreateSuperConsole(CommandLine commandLine, bool isColorful) {
-            return new SuperConsole(commandLine, isColorful);
+        private static IConsole CreateSuperConsole(CommandLine commandLine, ConsoleOptions options) {
+            return new SuperConsole(commandLine, options);
         }
 
         #endregion

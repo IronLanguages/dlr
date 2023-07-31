@@ -230,6 +230,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
                 case "ColorfulConsole":
                     ConsoleOptions.ColorfulConsole = true;
+                    ConsoleOptions.DarkConsole = val switch {
+                        "dark" => true,
+                        "light" => false,
+                        null => null,
+                        _ => throw new InvalidOptionException($"Argument for -X:{arg} option must be \"dark\" or \"light\".")
+                    };
                     break;
 
                 case "TabCompletion":
@@ -327,7 +333,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 { "-X:PrivateBinding",           "Enable binding to private members" },
                 { "-X:ShowClrExceptions",        "Display CLS Exception information" },
                 { "-X:TabCompletion",            "Enable TabCompletion mode" },
-                { "-X:ColorfulConsole",          "Enable ColorfulConsole" },
+                { "-X:ColorfulConsole[=(dark|light)]",
+                                                 "Enable ColorfulConsole (on dark or light background)" },
 #if DEBUG
                 { "-X:AssembliesDir <dir>",      "Set the directory for saving generated assemblies [debug only]" },
                 { "-X:SaveAssemblies",           "Save generated assemblies [debug only]" },
