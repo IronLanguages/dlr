@@ -180,7 +180,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 case "-X:PrivateBinding":
                 case "-X:PassExceptions":
                 // TODO: #if !IRONPYTHON_WINDOW
-                case "-X:ColorfulConsole":
                 case "-X:TabCompletion":
                 case "-X:AutoIndent":
                 // #endif
@@ -197,6 +196,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if DEBUG
                 case "-X:PerfStats":
 #endif
+                    // Option without argument
                     HandleImplementationSpecificOption(arg.Substring(3), null);
                     break;
 
@@ -207,11 +207,21 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_REMOTING
                 case "-X:" + Remote.RemoteRuntimeServer.RemoteRuntimeArg:
 #endif
+                    // Option with mandatory argument
                     HandleImplementationSpecificOption(arg.Substring(3), PopNextArg());
                     break;
 
                 default:
-                    ConsoleOptions.FileName = arg.Trim();
+                    string[] split = arg.Split(new[] { '=' }, 2);
+                    switch (split[0]) {
+                        case "-X:ColorfulConsole":
+                            // Option with optional argument
+                            HandleImplementationSpecificOption(split[0].Substring(3), split.Length > 1 ? split[1] : null);
+                            break;
+                        default:
+                            ConsoleOptions.FileName = arg.Trim();
+                            break;
+                    }
                     break;
             }
         }
