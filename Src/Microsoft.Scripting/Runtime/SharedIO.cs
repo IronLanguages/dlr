@@ -233,5 +233,9 @@ namespace Microsoft.Scripting.Runtime {
         public Stream GetStreamProxy(ConsoleStreamType type) {
             return new StreamProxy(this, type);
         }
+
+        public static bool IsConsoleStream(Stream stream) {
+            return stream is StreamProxy;
+        }
     }
 }
