@@ -84,6 +84,10 @@ namespace Microsoft.Scripting.Runtime {
         public Encoding OutputEncoding { get { InitializeOutput(); return _outputWriter.Encoding; } }
         public Encoding ErrorEncoding { get { InitializeErrorOutput(); return _errorWriter.Encoding; } }
 
+#if FEATURE_FULL_CONSOLE && FEATURE_BASIC_CONSOLE
+        public bool PreferBasicIO { get; set; }
+#endif
+
         internal SharedIO() {
         }
 
@@ -93,14 +97,22 @@ namespace Microsoft.Scripting.Runtime {
                     if (_inputStream == null) {
                         try {
 #if FEATURE_FULL_CONSOLE
-                            _inputStream = ConsoleInputStream.Instance;
-                            _inputEncoding = Console.InputEncoding;
-                            _inputReader = Console.In;
-#elif FEATURE_BASIC_CONSOLE
+    #if FEATURE_BASIC_CONSOLE
+                            if (!PreferBasicIO) {
+    #endif
+                                _inputEncoding = Console.InputEncoding;
+                                _inputStream = ConsoleInputStream.Instance;
+                                _inputReader = Console.In;
+    #if FEATURE_BASIC_CONSOLE
+                                return;
+                            }
+    #endif
+#endif
+#if FEATURE_BASIC_CONSOLE
                             _inputEncoding = Encoding.Default;
                             _inputStream = new TextStream(Console.In, _inputEncoding);
                             _inputReader = Console.In;
-#else
+#elif !FEATURE_FULL_CONSOLE
                             _inputEncoding = Encoding.UTF8;
                             _inputStream = Stream.Null;
                             _inputReader = TextReader.Null;
@@ -121,12 +133,20 @@ namespace Microsoft.Scripting.Runtime {
                 lock (_mutex) {
                     if (_outputStream == null) {
 #if FEATURE_FULL_CONSOLE
-                        _outputStream = Console.OpenStandardOutput();
-                        _outputWriter = Console.Out;
-#elif FEATURE_BASIC_CONSOLE
+    #if FEATURE_BASIC_CONSOLE
+                        if (!PreferBasicIO) {
+    #endif
+                            _outputStream = Console.OpenStandardOutput();
+                            _outputWriter = Console.Out;
+    #if FEATURE_BASIC_CONSOLE
+                            return;
+                        }
+    #endif
+#endif
+#if FEATURE_BASIC_CONSOLE
                         _outputStream = new TextStream(Console.Out);
                         _outputWriter = Console.Out;
-#else
+#elif !FEATURE_FULL_CONSOLE
                         _outputStream = Stream.Null;
                         _outputWriter = TextWriter.Null;
 #endif
@@ -140,12 +160,20 @@ namespace Microsoft.Scripting.Runtime {
                 lock (_mutex) {
                     if (_errorStream == null) {
 #if FEATURE_FULL_CONSOLE
-                        _errorStream = Console.OpenStandardError();
-                        _errorWriter = Console.Error;
-#elif FEATURE_BASIC_CONSOLE
+    #if FEATURE_BASIC_CONSOLE
+                        if (!PreferBasicIO) {
+    #endif
+                            _errorStream = Console.OpenStandardError();
+                            _errorWriter = Console.Error;
+    #if FEATURE_BASIC_CONSOLE
+                            return;
+                        }
+    #endif
+#endif
+#if FEATURE_BASIC_CONSOLE
                         _errorStream =  new TextStream(Console.Error);
                         _errorWriter = Console.Error;
-#else
+#elif !FEATURE_FULL_CONSOLE
                         _errorStream = Stream.Null;
                         _errorWriter = TextWriter.Null;
 #endif
