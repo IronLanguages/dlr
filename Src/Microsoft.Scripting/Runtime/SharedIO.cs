@@ -139,7 +139,9 @@ namespace Microsoft.Scripting.Runtime {
                             case SupportLevel.None:
                             default:
                                 _outputStream = Stream.Null;
-                                _outputWriter = new StreamWriter(_outputStream, Encoding.UTF8, bufferSize: 16);
+                                _outputWriter = TextWriter.Null.Encoding.CodePage is 1200 or 65001
+                                    ? TextWriter.Null // uses UTF-16LE or UTF-8
+                                    : new StreamWriter(_outputStream, Encoding.Unicode, bufferSize: 64);
                                 break;
                         }
                     }
@@ -163,7 +165,9 @@ namespace Microsoft.Scripting.Runtime {
                             case SupportLevel.None:
                             default:
                                 _errorStream = Stream.Null;
-                                _errorWriter = new StreamWriter(_errorStream, Encoding.UTF8, bufferSize: 16);
+                                _errorWriter = TextWriter.Null.Encoding.CodePage is 1200 or 65001
+                                    ? TextWriter.Null // uses UTF-16LE or UTF-8
+                                    : new StreamWriter(_errorStream, Encoding.Unicode, bufferSize: 64);
                                 break;
                         }
                     }
