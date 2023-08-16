@@ -10,6 +10,13 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
     public sealed class SharedIO {
+
+        public enum SupportLevel {
+            None,
+            Basic,
+            Full,
+        }
+
         // prevents this object from transitions to an inconsistent state, doesn't sync output or input:
         private readonly object _mutex = new object();
 
@@ -84,9 +91,7 @@ namespace Microsoft.Scripting.Runtime {
         public Encoding OutputEncoding { get { InitializeOutput(); return _outputWriter.Encoding; } }
         public Encoding ErrorEncoding { get { InitializeErrorOutput(); return _errorWriter.Encoding; } }
 
-#if FEATURE_FULL_CONSOLE && FEATURE_BASIC_CONSOLE
-        public bool PreferBasicIO { get; set; }
-#endif
+        public SupportLevel ConsoleSupportLevel { get; set; } = SupportLevel.Full;
 
         internal SharedIO() {
         }
@@ -95,33 +100,23 @@ namespace Microsoft.Scripting.Runtime {
             if (_inputStream == null) {
                 lock (_mutex) {
                     if (_inputStream == null) {
-                        try {
-#if FEATURE_FULL_CONSOLE
-    #if FEATURE_BASIC_CONSOLE
-                            if (!PreferBasicIO) {
-    #endif
+                        switch (ConsoleSupportLevel) {
+                            case SupportLevel.Full:
                                 _inputEncoding = Console.InputEncoding;
                                 _inputStream = ConsoleInputStream.Instance;
                                 _inputReader = Console.In;
-    #if FEATURE_BASIC_CONSOLE
-                                return;
-                            }
-    #endif
-#endif
-#if FEATURE_BASIC_CONSOLE
-                            _inputEncoding = Encoding.Default;
-                            _inputStream = new TextStream(Console.In, _inputEncoding);
-                            _inputReader = Console.In;
-#elif !FEATURE_FULL_CONSOLE
-                            _inputEncoding = Encoding.UTF8;
-                            _inputStream = Stream.Null;
-                            _inputReader = TextReader.Null;
-#endif
-                        } catch (PlatformNotSupportedException) {
-                            // When on BlazorWebassembly, this exception is thrown.
-                            _inputEncoding = Encoding.UTF8;
-                            _inputStream = Stream.Null;
-                            _inputReader = TextReader.Null;
+                                break;
+                            case SupportLevel.Basic:
+                                _inputEncoding = Encoding.UTF8;
+                                _inputStream = new TextStream(Console.In, _inputEncoding);
+                                _inputReader = Console.In;
+                                break;
+                            case SupportLevel.None:
+                            default:
+                                _inputEncoding = Encoding.UTF8;
+                                _inputStream = Stream.Null;
+                                _inputReader = TextReader.Null;
+                                break;
                         }
                     }
                 }
@@ -132,24 +127,21 @@ namespace Microsoft.Scripting.Runtime {
             if (_outputStream == null) {
                 lock (_mutex) {
                     if (_outputStream == null) {
-#if FEATURE_FULL_CONSOLE
-    #if FEATURE_BASIC_CONSOLE
-                        if (!PreferBasicIO) {
-    #endif
-                            _outputStream = Console.OpenStandardOutput();
-                            _outputWriter = Console.Out;
-    #if FEATURE_BASIC_CONSOLE
-                            return;
+                        switch (ConsoleSupportLevel) {
+                            case SupportLevel.Full:
+                                _outputStream = Console.OpenStandardOutput();
+                                _outputWriter = Console.Out;
+                                break;
+                            case SupportLevel.Basic:
+                                _outputStream = new TextStream(Console.Out);
+                                _outputWriter = Console.Out;
+                                break;
+                            case SupportLevel.None:
+                            default:
+                                _outputStream = Stream.Null;
+                                _outputWriter = new StreamWriter(_outputStream, Encoding.UTF8, bufferSize: 16);
+                                break;
                         }
-    #endif
-#endif
-#if FEATURE_BASIC_CONSOLE
-                        _outputStream = new TextStream(Console.Out);
-                        _outputWriter = Console.Out;
-#elif !FEATURE_FULL_CONSOLE
-                        _outputStream = Stream.Null;
-                        _outputWriter = TextWriter.Null;
-#endif
                     }
                 }
             }
@@ -159,26 +151,22 @@ namespace Microsoft.Scripting.Runtime {
             if (_errorStream == null) {
                 lock (_mutex) {
                     if (_errorStream == null) {
-#if FEATURE_FULL_CONSOLE
-    #if FEATURE_BASIC_CONSOLE
-                        if (!PreferBasicIO) {
-    #endif
-                            _errorStream = Console.OpenStandardError();
-                            _errorWriter = Console.Error;
-    #if FEATURE_BASIC_CONSOLE
-                            return;
+                        switch (ConsoleSupportLevel) {
+                            case SupportLevel.Full:
+                                _errorStream = Console.OpenStandardError();
+                                _errorWriter = Console.Error;
+                                break;
+                            case SupportLevel.Basic:
+                                _errorStream = new TextStream(Console.Error);
+                                _errorWriter = Console.Error;
+                                break;
+                            case SupportLevel.None:
+                            default:
+                                _errorStream = Stream.Null;
+                                _errorWriter = new StreamWriter(_errorStream, Encoding.UTF8, bufferSize: 16);
+                                break;
                         }
-    #endif
-#endif
-#if FEATURE_BASIC_CONSOLE
-                        _errorStream =  new TextStream(Console.Error);
-                        _errorWriter = Console.Error;
-#elif !FEATURE_FULL_CONSOLE
-                        _errorStream = Stream.Null;
-                        _errorWriter = TextWriter.Null;
-#endif
                     }
-
                 }
             }
         }
