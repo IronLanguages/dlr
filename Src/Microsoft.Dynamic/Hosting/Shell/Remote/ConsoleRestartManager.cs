@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_REMOTING && FEATURE_FULL_CONSOLE
+#if FEATURE_REMOTING
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// Threading model:
     /// 
     /// ConsoleRestartManager creates a separate thread on which to create and execute the consoles. 
-    /// There are usually atleast three threads involved:
+    /// There are usually at least three threads involved:
     /// 
     /// 1. Main app thread: Instantiates ConsoleRestartManager and accesses its APIs. This thread has to stay 
     ///    responsive to user input and so the ConsoleRestartManager APIs cannot be long-running or blocking.
@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// 3. CompletionPort async callbacks:
     ///        Process.Exited | Process.OutputDataReceived | Process.ErrorDataReceived
     /// 
-    /// 4. Finalizer thred
+    /// 4. Finalizer thread
     ///    Some objects may have a Finalize method (which possibly calls Dispose). Not many (if any) types
     ///    should have a Finalize method.
     /// 

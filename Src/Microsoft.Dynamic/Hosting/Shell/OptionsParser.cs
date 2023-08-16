@@ -47,11 +47,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
             get { return _platform; }
         }
 
-#if FEATURE_FULL_CONSOLE
         public abstract ConsoleOptions CommonConsoleOptions {
             get;
         }
-#endif
+
         public IList<string> IgnoredArgs {
             get { return _ignoredArgs; }
         }
@@ -129,7 +128,6 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public abstract void GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
     }
 
-#if FEATURE_FULL_CONSOLE
     public class OptionsParser<TConsoleOptions> : OptionsParser
         where TConsoleOptions : ConsoleOptions, new() {
 
@@ -345,5 +343,4 @@ namespace Microsoft.Scripting.Hosting.Shell {
             comments = null;
         }
     }
-#endif
 }
