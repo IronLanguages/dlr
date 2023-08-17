@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_FULL_CONSOLE
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -291,7 +289,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         // Check if the user is backspacing the auto-indentation. In that case, we go back all the way to
         // the previous indentation level.
-        // Return true if we did backspace the auto-indenation.
+        // Return true if we did backspace the auto-indentation.
         private bool BackspaceAutoIndentation() {
             if (_input.Length == 0 || _input.Length > _autoIndentSize) return false;
 
@@ -752,4 +750,3 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
     }
 }
-#endif

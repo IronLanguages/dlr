@@ -13,8 +13,6 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_BASIC_CONSOLE // see SharedIO
-
 using System;
 using System.IO;
 using System.Text;
@@ -136,5 +134,3 @@ namespace Microsoft.Scripting.Utils {
 
 
 }
-
-#endif

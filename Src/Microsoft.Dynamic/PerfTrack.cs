@@ -63,7 +63,6 @@ namespace Microsoft.Scripting {
             return result;
         }
 
-#if FEATURE_BASIC_CONSOLE
         public static void DumpHistogram<TKey>(IDictionary<TKey, int> histogram) {
             DumpHistogram(histogram, Console.Out);
         }
@@ -71,7 +70,6 @@ namespace Microsoft.Scripting {
         public static void DumpStats() {
             DumpStats(Console.Out);
         }
-#endif
 
         public static void DumpHistogram<TKey>(IDictionary<TKey, int> histogram, TextWriter output) {
             var keys = ArrayUtils.MakeArray(histogram.Keys);
