@@ -33,9 +33,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\**\*;net7.0*\**\*" />
-    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\**\*;net7.0*\**\*" />
-    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\**\*;net7.0*\**\*" />
+    <file src="**\*.dll" target="lib" exclude="netcoreapp2.1\*;net462\*;net7.0\*;net8.0\*" />
+    <file src="**\*.pdb" target="lib" exclude="netcoreapp2.1\*;net462\*;net7.0\*;net8.0\*" />
+    <file src="**\*.xml" target="lib" exclude="netcoreapp2.1\*;net462\*;net7.0\*;net8.0\*" />
     <file src="README.md;LICENSE" />
   </files>
 </package>
