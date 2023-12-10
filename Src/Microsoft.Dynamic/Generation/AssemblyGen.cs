@@ -283,7 +283,8 @@ namespace Microsoft.Scripting.Generation {
                 string toFile = Path.Combine(to, fi.Name);
                 FileInfo toInfo = new FileInfo(toFile);
 
-                if (fi.Extension.ToLowerInvariant() == ".dll" || fi.Extension.ToLowerInvariant() == ".exe") {
+                if (fi.Extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase)
+                    || fi.Extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase)) {
                     if (!File.Exists(toFile) || toInfo.CreationTime != fi.CreationTime) {
                         try {
                             File.Copy(filename, toFile, true);
