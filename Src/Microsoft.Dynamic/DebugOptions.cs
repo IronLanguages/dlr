@@ -19,7 +19,7 @@ namespace Microsoft.Scripting {
 
         private static bool ReadOption(string name) {
             string envVar = ReadString(name);
-            return envVar != null && envVar.ToLowerInvariant() == "true";
+            return "true".Equals(envVar, StringComparison.OrdinalIgnoreCase);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "name")]
