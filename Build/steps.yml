@@ -48,7 +48,7 @@ steps:
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    - task: Bash@3
       displayName: Set Mono Version
       inputs:
         type: InlineScript
@@ -62,7 +62,7 @@ steps:
 
   # Install mono when running on Linux
   - ${{ if eq(parameters.os, 'Linux') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    - task: Bash@3
       displayName: Version Information
       inputs:
         type: InlineScript
@@ -76,7 +76,7 @@ steps:
 
   # Dump version info on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    - task: Bash@3
       displayName: Version Information
       inputs:
         type: InlineScript
