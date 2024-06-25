@@ -51,7 +51,7 @@ steps:
     - task: Bash@3
       displayName: Set Mono Version
       inputs:
-        type: InlineScript
+        targetType: inline
         script: |
           # use Mono 6.4.0 version
           SYMLINK=6.4.0
