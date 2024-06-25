@@ -99,7 +99,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private void ParseOption(string arg, out string name, out string value) {
             Debug.Assert(arg != null);
 
-            int colon = arg.IndexOf(':');
+            int colon = arg.IndexOf(':', StringComparison.Ordinal);
 
             if (colon >= 0) {
                 name = arg.Substring(0, colon);

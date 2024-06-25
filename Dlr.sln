@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{60056F49
 		Build\net462.props = Build\net462.props
 		Build\net6.0.props = Build\net6.0.props
 		Build\net8.0.props = Build\net8.0.props
+		Build\net9.0.props = Build\net9.0.props
 		Build\netstandard2.0.props = Build\netstandard2.0.props
 		Build\steps.yml = Build\steps.yml
 	EndProjectSection

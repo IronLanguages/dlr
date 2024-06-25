@@ -14,6 +14,11 @@ namespace Microsoft.Scripting
         {
             return str.StartsWith(value.ToString(), StringComparison.Ordinal);
         }
+
+        public static int IndexOf(this string str, char value, StringComparison comparisonType) {
+            if (comparisonType == StringComparison.Ordinal) return str.IndexOf(value);
+            return str.IndexOf(value.ToString(), comparisonType);
+        }
 #endif
     }
 }
