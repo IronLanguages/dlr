@@ -60,31 +60,15 @@ steps:
           echo "##vso[task.setvariable variable=PKG_CONFIG_PATH;]$MONOPREFIX/lib/pkgconfig:$MONOPREFIX/share/pkgconfig:$PKG_CONFIG_PATH"
           echo "##vso[task.setvariable variable=PATH;]$MONOPREFIX/bin:$PATH"
 
-  # Install mono when running on Linux
-  - ${{ if eq(parameters.os, 'Linux') }}:
-    - task: Bash@3
-      displayName: Version Information
-      inputs:
-        type: InlineScript
-        script: |
-
-          # Dump some info about the tools
-          mono --version
-          msbuild /version
-          dotnet --info
-          df -Th
-
-  # Dump version info on macOS
-  - ${{ if eq(parameters.os, 'macOS') }}:
-    - task: Bash@3
-      displayName: Version Information
-      inputs:
-        type: InlineScript
-        script: |
-          # Dump some info about the tools
-          mono --version
-          msbuild /version
-          dotnet --info
+  # Dump version info
+  - task: PowerShell@2
+    displayName: Version Information
+    inputs:
+      targetType: inline
+      script: |
+        dotnet --info
+        try { msbuild -version } catch { }
+        try { mono --version } catch { }
 
   - powershell: ./make.ps1
     displayName: Build
