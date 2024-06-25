@@ -615,7 +615,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GenericParameterAttributes;
         }
 
-        public static readonly Type[] EmptyTypes = new Type[0];
+        public static readonly Type[] EmptyTypes = Array.Empty<TypeInfo>();
 
         public static object GetRawConstantValue(this FieldInfo field) {
             if (!field.IsLiteral) {

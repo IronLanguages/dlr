@@ -88,10 +88,10 @@ namespace Microsoft.Scripting.Utils {
 
 
     internal static class EmptyReadOnlyCollection<T> {
-        internal static readonly ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
+        internal static readonly ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(Array.Empty<T>());
     }
 
     internal static class EmptyArray<T> {
-        internal static readonly T[] Instance = new T[0];
+        internal static readonly T[] Instance = Array.Empty<T>();
     }
 }

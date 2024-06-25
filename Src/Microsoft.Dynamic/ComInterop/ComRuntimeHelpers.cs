@@ -186,7 +186,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             try {
-                return (ComTypes.TYPEATTR)Marshal.PtrToStructure(pAttrs, typeof(ComTypes.TYPEATTR));
+                return Marshal.PtrToStructure<ComTypes.TYPEATTR>(pAttrs);
             } finally {
                 typeInfo.ReleaseTypeAttr(pAttrs);
             }
@@ -203,7 +203,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             try {
-                return (ComTypes.TYPELIBATTR)Marshal.PtrToStructure(pAttrs, typeof(ComTypes.TYPELIBATTR));
+                return Marshal.PtrToStructure<ComTypes.TYPELIBATTR>(pAttrs);
             } finally {
                 typeLib.ReleaseTLibAttr(pAttrs);
             }
@@ -541,7 +541,7 @@ namespace Microsoft.Scripting.ComInterop {
             method.Emit(OpCodes.Ldarg_0);
 
             // functionPtr = *(IntPtr*)(*(interfacePointer) + VTABLE_OFFSET)
-            int iunknownReleaseOffset = ((int)IDispatchMethodIndices.IUnknown_Release) * Marshal.SizeOf(typeof(IntPtr));
+            int iunknownReleaseOffset = ((int)IDispatchMethodIndices.IUnknown_Release) * Marshal.SizeOf<IntPtr>();
             method.Emit(OpCodes.Ldarg_0);
             method.Emit(OpCodes.Ldind_I);
             method.Emit(OpCodes.Ldc_I4, iunknownReleaseOffset);
@@ -653,7 +653,7 @@ namespace Microsoft.Scripting.ComInterop {
             EmitLoadArg(method, argErrIndex);
 
             // functionPtr = *(IntPtr*)(*(dispatchPointer) + VTABLE_OFFSET)
-            int idispatchInvokeOffset = ((int)IDispatchMethodIndices.IDispatch_Invoke) * Marshal.SizeOf(typeof(IntPtr));
+            int idispatchInvokeOffset = ((int)IDispatchMethodIndices.IDispatch_Invoke) * Marshal.SizeOf<IntPtr>();
             EmitLoadArg(method, dispatchPointerIndex);
             method.Emit(OpCodes.Ldind_I);
             method.Emit(OpCodes.Ldc_I4, idispatchInvokeOffset);

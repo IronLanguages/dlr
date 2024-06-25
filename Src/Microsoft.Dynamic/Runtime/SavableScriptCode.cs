@@ -173,7 +173,7 @@ namespace Microsoft.Scripting {
             // get the type which has our cached code...
             Type t = assembly.GetType("DLRCachedCode");
             if (t == null) {
-                return new ScriptCode[0];
+                return Array.Empty<ScriptCode>();
             }
 
             List<ScriptCode> codes = new List<ScriptCode>();

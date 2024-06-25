@@ -14,7 +14,7 @@ namespace Metadata {
     public sealed class TypeNestings {
         private readonly MetadataTables _tables;
         private readonly Dictionary<MetadataToken, List<MetadataToken>> _mapping;
-        private static readonly TypeDef[] _EmptyTypeDefs = new TypeDef[0];
+        private static readonly TypeDef[] _EmptyTypeDefs = Array.Empty<TypeDef>();
 
         public TypeNestings(MetadataTables tables) {
             ContractUtils.Requires(tables != null);

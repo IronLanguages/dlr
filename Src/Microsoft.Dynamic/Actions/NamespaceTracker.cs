@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Actions {
 
             if (_dict.TryGetValue(childName, out MemberTracker ret)) {
                 // If we have a module, then we add the assembly to the InnerModule
-                // If it's not a module, we'll wipe it out below, eg "def System(): pass" then 
+                // If it's not a module, we'll wipe it out below, eg "def System(): pass" then
                 // "import System" will result in the namespace being visible.
                 if (ret is NamespaceTracker package) {
                     if (!package._packageAssemblies.Contains(assem)) {
@@ -102,10 +102,11 @@ namespace Microsoft.Scripting.Actions {
             Assert.NotNull(typeName, assem);
             Debug.Assert(typeName.IndexOf('.') == -1); // This is the simple name, not the full name
 
-            if (!_typeNames.ContainsKey(assem)) {
-                _typeNames[assem] = new TypeNames(assem, _fullName);
+            if (!_typeNames.TryGetValue(assem, out TypeNames typeNames)) {
+                typeNames = new TypeNames(assem, _fullName);
+                _typeNames[assem] = typeNames;
             }
-            _typeNames[assem].AddTypeName(typeName);
+            typeNames.AddTypeName(typeName);
 
             string normalizedTypeName = ReflectionUtils.GetNormalizedTypeName(typeName);
             if (_dict.ContainsKey(normalizedTypeName)) {
@@ -194,9 +195,9 @@ namespace Microsoft.Scripting.Actions {
         }
         /// <summary>
         /// As a fallback, so if the type does exist in any assembly. This would happen if a new type was added
-        /// that was not in the hardcoded list of types. 
+        /// that was not in the hardcoded list of types.
         /// This code is not accurate because:
-        /// 1. We dont deal with generic types (TypeCollision). 
+        /// 1. We dont deal with generic types (TypeCollision).
         /// 2. Previous calls to GetCustomMemberNames (eg. "from foo import *" in Python) would not have included this type.
         /// 3. This does not deal with new namespaces added to the assembly
         /// </summary>
@@ -215,7 +216,7 @@ namespace Microsoft.Scripting.Actions {
                     continue;
                 }
 
-                // We dont use TypeCollision.UpdateTypeEntity here because we do not handle generic type names                    
+                // We dont use TypeCollision.UpdateTypeEntity here because we do not handle generic type names
                 return TypeTracker.GetTypeTracker(type);
             }
 
@@ -309,7 +310,7 @@ namespace Microsoft.Scripting.Actions {
                     }
                 }
             }
-            
+
             return res;
         }
 
@@ -405,10 +406,7 @@ namespace Microsoft.Scripting.Actions {
                 if (normalizedName == typeName) {
                     _simpleTypeNames.Add(typeName);
                 } else {
-                    List<string> actualNames;
-                    if (_genericTypeNames.ContainsKey(normalizedName)) {
-                        actualNames = _genericTypeNames[normalizedName];
-                    } else {
+                    if (!_genericTypeNames.TryGetValue(normalizedName, out List<string> actualNames)) {
                         actualNames = new List<string>();
                         _genericTypeNames[normalizedName] = actualNames;
                     }

@@ -60,7 +60,7 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
                 }
 
-                TYPEDESC childTypeDesc = (TYPEDESC)Marshal.PtrToStructure(typeDesc.lpValue, typeof(TYPEDESC));
+                TYPEDESC childTypeDesc = Marshal.PtrToStructure<TYPEDESC>(typeDesc.lpValue);
                 _vt = (VarEnum)childTypeDesc.vt;
                 typeDesc = childTypeDesc;
             }

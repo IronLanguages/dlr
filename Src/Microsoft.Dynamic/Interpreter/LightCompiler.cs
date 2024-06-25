@@ -164,7 +164,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private readonly LightCompiler _parent;
 
-        private static readonly LocalDefinition[] EmptyLocals = new LocalDefinition[0];
+        private static readonly LocalDefinition[] EmptyLocals = Array.Empty<LocalDefinition>();
 
         internal LightCompiler(int compilationThreshold) {
             Instructions = new InstructionList();

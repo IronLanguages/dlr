@@ -34,8 +34,8 @@ namespace Microsoft.Scripting.ComInterop {
         static Variant() {
             // Variant size is the size of 4 pointers (16 bytes) on a 32-bit processor,
             // and 3 pointers (24 bytes) on a 64-bit processor.
-            int intPtrSize = Marshal.SizeOf(typeof(IntPtr));
-            int variantSize = Marshal.SizeOf(typeof(Variant));
+            int intPtrSize = Marshal.SizeOf<IntPtr>();
+            int variantSize = Marshal.SizeOf<Variant>();
             if (intPtrSize == 4) {
                 Debug.Assert(variantSize == (4 * intPtrSize));
             } else {

@@ -110,8 +110,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
 
             if (name.StartsWith("--", StringComparison.Ordinal)) name = name.Substring("--".Length);
-            else if (name.StartsWith("-", StringComparison.Ordinal) && name.Length > 1) name = name.Substring("-".Length);
-            else if (name.StartsWith("/", StringComparison.Ordinal) && name.Length > 1) name = name.Substring("/".Length);
+            else if (name.StartsWith('-') && name.Length > 1) name = name.Substring("-".Length);
+            else if (name.StartsWith('/') && name.Length > 1) name = name.Substring("/".Length);
             else {
                 value = name;
                 name = null;

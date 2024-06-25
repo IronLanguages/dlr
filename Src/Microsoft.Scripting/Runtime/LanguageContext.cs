@@ -256,7 +256,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public virtual IList<DynamicStackFrame> GetStackFrames(Exception exception) {
-            return new DynamicStackFrame[0];
+            return Array.Empty<DynamicStackFrame>();
         }
         
         public virtual LanguageOptions Options => new LanguageOptions();

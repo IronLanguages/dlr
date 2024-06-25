@@ -7,7 +7,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Actions.Calls {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO
     public struct ArgumentBinding {
-        private static readonly int[] _EmptyBinding = new int[0];
+        private static readonly int[] _EmptyBinding = System.Array.Empty<int>();
 
         private readonly int _positionalArgCount;
         private readonly int[] _binding; // immutable

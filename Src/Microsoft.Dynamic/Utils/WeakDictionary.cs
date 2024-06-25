@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Utils {
 
         static WeakDictionary()
         {
-            valueConstructor = typeof(TValue).GetConstructor(new Type[] { });
+            valueConstructor = typeof(TValue).GetConstructor(Array.Empty<Type>());
         }
 
         #region IDictionary<TKey,TValue> Members
@@ -78,7 +78,7 @@ namespace Microsoft.Scripting.Utils {
                     throw new InvalidOperationException($"{typeof(TValue).Name} does not have a default constructor.");
                 }
             
-                value = (TValue)valueConstructor.Invoke(new object[] { });
+                value = (TValue)valueConstructor.Invoke(Array.Empty<object>());
                 Add(key, value);
             }
 
