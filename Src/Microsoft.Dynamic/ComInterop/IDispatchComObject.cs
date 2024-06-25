@@ -335,7 +335,7 @@ namespace Microsoft.Scripting.ComInterop {
                 throw Error.CannotRetrieveTypeInformation();
             }
 
-            funcDesc = (ComTypes.FUNCDESC)Marshal.PtrToStructure(pFuncDesc, typeof(ComTypes.FUNCDESC));
+            funcDesc = Marshal.PtrToStructure<ComTypes.FUNCDESC>(pFuncDesc);
             funcDescHandle = pFuncDesc;
         }
 

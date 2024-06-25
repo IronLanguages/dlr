@@ -25,7 +25,9 @@ namespace Microsoft.Scripting.ComInterop {
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
     Guid("00020400-0000-0000-C000-000000000046"),
     ]
+#pragma warning disable SYSLIB1096 // Convert to 'GeneratedComInterface'
     internal interface IDispatch {
+#pragma warning restore SYSLIB1096 // Convert to 'GeneratedComInterface'
 
         [PreserveSig]
         int TryGetTypeInfoCount(out uint pctinfo);
@@ -75,7 +77,9 @@ namespace Microsoft.Scripting.ComInterop {
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
     Guid("B196B283-BAB4-101A-B69C-00AA00341D07")
     ]
+#pragma warning disable SYSLIB1096 // Convert to 'GeneratedComInterface'
     internal interface IProvideClassInfo {
+#pragma warning restore SYSLIB1096 // Convert to 'GeneratedComInterface'
         void GetClassInfo(out IntPtr info);
     }
 

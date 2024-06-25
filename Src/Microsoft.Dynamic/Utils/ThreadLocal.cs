@@ -13,7 +13,7 @@ namespace Microsoft.Scripting.Utils {
     /// </summary>
     public class ThreadLocal<T> {
         private StorageInfo[] _stores;                                         // array of storage indexed by managed thread ID
-        private static readonly StorageInfo[] Updating = new StorageInfo[0];   // a marker used when updating the array
+        private static readonly StorageInfo[] Updating = Array.Empty<StorageInfo>();   // a marker used when updating the array
         private readonly bool _refCounted;
 
         public ThreadLocal() {

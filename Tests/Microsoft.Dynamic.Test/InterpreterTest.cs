@@ -30,7 +30,7 @@ namespace Microsoft.Dynamic.Test {
             // Equal gets converted to an EqualReference instruction which does two pops and a push.
             // If pop doesn't clear the stack one of the two TestGc objects should remain alive.
             var lambda = Expression.Lambda(Expression.Block(
-                Expression.Equal(Expression.New(typeof(TestGc).GetConstructor(new Type[0])), Expression.New(typeof(TestGc).GetConstructor(new Type[0]))),
+                Expression.Equal(Expression.New(typeof(TestGc).GetConstructor(Array.Empty<Type>())), Expression.New(typeof(TestGc).GetConstructor(Array.Empty<Type>()))),
                 Expression.Call(typeof(TestGc).GetMethod(nameof(TestGc.CheckCount)))
             ));
 

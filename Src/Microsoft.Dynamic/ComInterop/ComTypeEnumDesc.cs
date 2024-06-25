@@ -40,7 +40,7 @@ namespace Microsoft.Scripting.ComInterop {
                 ComTypes.VARDESC varDesc;
 
                 try {
-                    varDesc = (ComTypes.VARDESC)Marshal.PtrToStructure(p, typeof(ComTypes.VARDESC));
+                    varDesc = Marshal.PtrToStructure<ComTypes.VARDESC>(p);
 
                     if (varDesc.varkind == ComTypes.VARKIND.VAR_CONST) {
                         memberValues[i] = Marshal.GetObjectForNativeVariant(varDesc.desc.lpvarValue);

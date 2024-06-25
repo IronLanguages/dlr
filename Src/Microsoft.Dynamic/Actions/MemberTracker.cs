@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Actions {
     /// </summary>
     public abstract class MemberTracker {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
-        public static readonly MemberTracker[] EmptyTrackers = new MemberTracker[0];
+        public static readonly MemberTracker[] EmptyTrackers = Array.Empty<MemberTracker>();
 
         private static readonly Dictionary<MemberKey, MemberTracker> _trackers = new Dictionary<MemberKey, MemberTracker>();
 

@@ -28,17 +28,30 @@ steps:
       version: '3.1.x'
 
   - task: UseDotNet@2
-    displayName: Install .NET 6.0 SDK for build
+    displayName: Install .NET 6.0 runtime for testing
+    inputs:
+      packageType: 'runtime'
+      version: '6.0.x'
+
+  - task: UseDotNet@2
+    displayName: Install .NET 8.0 SDK for build
     inputs:
       packageType: 'sdk'
-      version: '6.0.x'
+      version: '8.0.x'
+
+  - task: UseDotNet@2
+    displayName: Install .NET 9.0 SDK for build
+    inputs:
+      packageType: 'sdk'
+      version: '9.0.x'
+      includePreviewVersions: true
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    - task: Bash@3
       displayName: Set Mono Version
       inputs:
-        type: InlineScript
+        targetType: inline
         script: |
           # use Mono 6.4.0 version
           SYMLINK=6.4.0
@@ -47,31 +60,15 @@ steps:
           echo "##vso[task.setvariable variable=PKG_CONFIG_PATH;]$MONOPREFIX/lib/pkgconfig:$MONOPREFIX/share/pkgconfig:$PKG_CONFIG_PATH"
           echo "##vso[task.setvariable variable=PATH;]$MONOPREFIX/bin:$PATH"
 
-  # Install mono when running on Linux
-  - ${{ if eq(parameters.os, 'Linux') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-      displayName: Version Information
-      inputs:
-        type: InlineScript
-        script: |
-
-          # Dump some info about the tools
-          mono --version
-          msbuild /version
-          dotnet --info
-          df -Th
-
-  # Dump version info on macOS
-  - ${{ if eq(parameters.os, 'macOS') }}:
-    - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-      displayName: Version Information
-      inputs:
-        type: InlineScript
-        script: |
-          # Dump some info about the tools
-          mono --version
-          msbuild /version
-          dotnet --info
+  # Dump version info
+  - task: PowerShell@2
+    displayName: Version Information
+    inputs:
+      targetType: inline
+      script: |
+        dotnet --info
+        try { msbuild -version } catch { }
+        try { mono --version } catch { }
 
   - powershell: ./make.ps1
     displayName: Build
