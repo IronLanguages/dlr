@@ -17,7 +17,7 @@ using AstUtils = Microsoft.Scripting.Ast.Utils;
 namespace Microsoft.Scripting.Debugging {
     using Ast = MSAst.Expression;
     using System.Threading;
-
+    
     /// <summary>
     /// Used to rewrite expressions containing DebugInfoExpressions.
     /// </summary>
@@ -355,12 +355,17 @@ namespace Microsoft.Scripting.Debugging {
                 // Update the location cookie
                 int locationCookie = _locationCookie++;
                 if (!_transformToGenerator) {
-                    var tracebackCall = Ast.Call(
-                        typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnTraceEvent)),
-                        _thread,
-                        AstUtils.Constant(locationCookie),
-                        Ast.Convert(Ast.Constant(null), typeof(Exception))
-                    );
+                    MSAst.Expression tracebackCall = null;
+                    if (locationCookie == 0) {
+                        tracebackCall = Ast.Empty();
+                    } else {
+                        tracebackCall = Ast.Call(
+                            typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnTraceEvent)),
+                            _thread,
+                            AstUtils.Constant(locationCookie),
+                            Ast.Convert(Ast.Constant(null), typeof(Exception))
+                        );
+                    }
 
                     transformedExpression = Ast.Block(
                         Ast.Assign(
