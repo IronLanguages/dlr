@@ -31,7 +31,7 @@ namespace Microsoft.Scripting {
         } 
         
         /// <summary>
-        /// The number of iterations before the interpreter starts compiling.s
+        /// The number of iterations before the interpreter starts compiling.
         /// </summary>
         public int CompilationThreshold {
             get { return _compilationThreshold; }
