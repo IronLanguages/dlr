@@ -108,7 +108,7 @@
           Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
       <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"
-                Exclude="$(StageDir)\netcoreapp3.1\*;$(StageDir)\net9.0*\*" />
+                Exclude="$(StageDir)\net6.0\*;$(StageDir)\net9.0*\*" />
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
     <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>

@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net462','netcoreapp3.1','net6.0','net8.0','net9.0'),
+    [String[]] $frameworks=@('net462','net6.0','net8.0','net9.0'),
     [String] $platform = "x64",
     [switch] $runIgnored
 )
