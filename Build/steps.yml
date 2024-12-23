@@ -22,21 +22,15 @@ steps:
     displayName: Grab Package Version
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1 runtime for testing
-    inputs:
-      packageType: 'runtime'
-      version: '3.1.x'
-
-  - task: UseDotNet@2
     displayName: Install .NET 6.0 runtime for testing
     inputs:
       packageType: 'runtime'
       version: '6.0.x'
 
   - task: UseDotNet@2
-    displayName: Install .NET 8.0 SDK for build
+    displayName: Install .NET 8.0 runtime for testing
     inputs:
-      packageType: 'sdk'
+      packageType: 'runtime'
       version: '8.0.x'
 
   - task: UseDotNet@2
@@ -44,7 +38,6 @@ steps:
     inputs:
       packageType: 'sdk'
       version: '9.0.x'
-      includePreviewVersions: true
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:

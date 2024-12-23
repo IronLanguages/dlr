@@ -14,10 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '3.1.x'
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v4
       with:
@@ -30,7 +26,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
-        include-prerelease: true
     - name: Build
       run: pwsh make.ps1
     - name: Package
@@ -41,9 +36,6 @@ jobs:
         path: Package/Release/Packages
     - name: Test (net462)
       run: ./make.ps1 -frameworks net462 test-all
-      shell: pwsh
-    - name: Test (netcoreapp3.1)
-      run: ./make.ps1 -frameworks netcoreapp3.1 test-all
       shell: pwsh
     - name: Test (net6.0)
       run: ./make.ps1 -frameworks net6.0 test-all
