@@ -13,7 +13,31 @@ jobs:
         os: [windows-latest, ubuntu-22.04, macos-latest]
 
     steps:
+      # Prerequisites
+    - name: Install tools
+      # Tools needed to build Mono from source
+      if: matrix.os == 'macos-latest'
+      run: brew install autoconf automake libtool
     - uses: actions/checkout@v4
+
+      # Set up Mono
+    - name: Build Mono from source release
+      if: matrix.os == 'macos-latest'
+      run: |
+        export MONO_VERSION="6.14.1"
+        mkdir -p ../mono
+        pushd ../mono
+        curl -LO https://dl.winehq.org/mono/sources/mono/mono-$MONO_VERSION.tar.xz
+        tar -xf mono-$MONO_VERSION.tar.xz
+        cd mono-$MONO_VERSION
+        ./configure --prefix=/opt/mono --disable-nls
+        make
+        sudo make install
+        echo "/opt/mono/bin" >> $GITHUB_PATH
+        /opt/mono/bin/mono --version
+        popd
+
+      # Setup .NET
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v4
       with:
@@ -30,30 +54,20 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
-    - name: Build Mono from source release
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install autoconf automake libtool pkg-config
-        export MONO_VERSION="6.14.1"
-        mkdir -p ../mono
-        pushd ../mono
-        curl -LO https://dl.winehq.org/mono/sources/mono/mono-$MONO_VERSION.tar.xz
-        tar -xf mono-$MONO_VERSION.tar.xz
-        cd mono-$MONO_VERSION
-        ./configure --prefix=/opt/mono --disable-nls
-        make
-        sudo make install
-        echo "/opt/mono/bin" >> $GITHUB_PATH
-        /opt/mono/bin/mono --version
-        popd
+
+      # Build & package
     - name: Build
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
+
+      # Upload package
     - uses: actions/upload-artifact@v4
       with:
         name: packages-${{ matrix.os }}
         path: Package/Release/Packages
+
+      # Tests
     - name: Test (net462)
       run: ./make.ps1 -frameworks net462 test-all
       shell: pwsh
