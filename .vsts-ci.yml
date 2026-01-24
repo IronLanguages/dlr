@@ -30,7 +30,7 @@ jobs:
   displayName: macOS
   timeoutInMinutes: 180
   pool:
-    vmImage: macOS-latest
+    vmImage: macOS-14
   steps:
   - template: Build/steps.yml
     parameters:
