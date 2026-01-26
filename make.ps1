@@ -4,8 +4,8 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net462','net6.0','net8.0','net9.0'),
-    [String] $platform = "x64",
+    [String[]] $frameworks=@('net462','net6.0','net8.0','net9.0','net10.0'),
+    [String] $platform = $null,  # auto-detect
     [switch] $runIgnored
 )
 
@@ -61,8 +61,12 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
     [System.Xml.XmlDocument]$doc = New-Object System.Xml.XmlDocument
 
 #   <RunSettings>
+#     <RunConfiguration>
+#       <TargetPlatform>x64</TargetPlatform> <!-- if defined -->
+#     </RunConfiguration>
 #     <TestRunParameters>
 #       <Parameter name="FRAMEWORK" value="net462" />
+#       <Parameter name="CONFIGURATION" value="Release" />
 #     </TestRunParameters>
 #   </RunSettings>
 
@@ -73,9 +77,11 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
 
     $runConfiguration = $doc.CreateElement("RunConfiguration")
     $runSettings.AppendChild($runConfiguration) | Out-Null
-    $targetPlatform = $doc.CreateElement("TargetPlatform")
-    $targetPlatform.InnerText = $platform
-    $runConfiguration.AppendChild($targetPlatform) | Out-Null
+    if ($platform) {
+        $targetPlatform = $doc.CreateElement("TargetPlatform")
+        $targetPlatform.InnerText = $platform
+        $runConfiguration.AppendChild($targetPlatform) | Out-Null
+    }
 
     $testRunParameters = $doc.CreateElement("TestRunParameters")
     $runSettings.AppendChild($testRunParameters) | Out-Null

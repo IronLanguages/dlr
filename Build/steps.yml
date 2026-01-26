@@ -22,10 +22,16 @@ steps:
     displayName: Grab Package Version
 
   - task: UseDotNet@2
-    displayName: Install .NET 6.0 runtime for testing
+    displayName: Install .NET 10.0 SDK for build
+    inputs:
+      packageType: 'sdk'
+      version: '10.0.x'
+
+  - task: UseDotNet@2
+    displayName: Install .NET 9.0 runtime for testing
     inputs:
       packageType: 'runtime'
-      version: '6.0.x'
+      version: '9.0.x'
 
   - task: UseDotNet@2
     displayName: Install .NET 8.0 runtime for testing
@@ -34,10 +40,10 @@ steps:
       version: '8.0.x'
 
   - task: UseDotNet@2
-    displayName: Install .NET 9.0 SDK for build
+    displayName: Install .NET 6.0 runtime for testing
     inputs:
-      packageType: 'sdk'
-      version: '9.0.x'
+      packageType: 'runtime'
+      version: '6.0.x'
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:
@@ -60,8 +66,8 @@ steps:
       targetType: inline
       script: |
         dotnet --info
-        try { msbuild -version } catch { }
-        try { mono --version } catch { }
+        try { msbuild -version } catch { echo "msbuild not found" }
+        try { mono --version } catch { echo "mono not found" }
 
   - powershell: ./make.ps1
     displayName: Build
