@@ -25,9 +25,9 @@ namespace Microsoft.Scripting.Interpreter {
         private Type _compiledDelegateType;
         private Delegate _compiled;
 #if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock _compileLock = new System.Threading.Lock();
+        private readonly System.Threading.Lock _compileLock = new();
 #else
-        private readonly object _compileLock = new object();
+        private readonly object _compileLock = new();
 #endif
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda) {

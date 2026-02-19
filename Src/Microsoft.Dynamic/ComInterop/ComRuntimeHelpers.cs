@@ -489,9 +489,9 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
 #if NET9_0_OR_GREATER
-        private static readonly System.Threading.Lock _lock = new System.Threading.Lock();
+        private static readonly System.Threading.Lock _lock = new();
 #else
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
 #endif
         private static ModuleBuilder _dynamicModule;
 

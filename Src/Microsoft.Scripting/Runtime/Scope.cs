@@ -26,9 +26,9 @@ namespace Microsoft.Scripting.Runtime {
     public sealed class Scope : IDynamicMetaObjectProvider {
         private ScopeExtension[] _extensions; // resizable
 #if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock _extensionsLock = new System.Threading.Lock();
+        private readonly System.Threading.Lock _extensionsLock = new();
 #else
-        private readonly object _extensionsLock = new object();
+        private readonly object _extensionsLock = new();
 #endif
         private readonly IDynamicMetaObjectProvider _storage;
 

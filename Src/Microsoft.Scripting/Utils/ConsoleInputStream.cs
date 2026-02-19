@@ -21,9 +21,9 @@ namespace Microsoft.Scripting.Utils {
 
         private readonly Stream _input;
 #if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock _lock = new System.Threading.Lock();
+        private readonly System.Threading.Lock _lock = new();
 #else
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 #endif
         private readonly byte[] _buffer = new byte[MinimalBufferSize];
         private int _bufferPos;

@@ -24,9 +24,9 @@ namespace Microsoft.Scripting.ComInterop {
         /// </summary>
         private Func<object[], object> _delegate;
 #if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock lockObject = new System.Threading.Lock();
+        private readonly System.Threading.Lock lockObject = new();
 #else
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new();
 #endif
 
         private readonly int _dispid;
