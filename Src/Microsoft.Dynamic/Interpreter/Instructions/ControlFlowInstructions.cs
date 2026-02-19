@@ -424,7 +424,11 @@ namespace Microsoft.Scripting.Interpreter {
 
     internal sealed class EnterLoopInstruction : Instruction {
         private readonly int _instructionIndex;
+#if NET9_0_OR_GREATER
+        private readonly Lock _compileLock = new Lock();
+#else
         private readonly object _compileLock = new object();
+#endif
         private Dictionary<ParameterExpression, LocalVariable> _variables;
         private Dictionary<ParameterExpression, LocalVariable> _closureVariables;
         private LoopExpression _loop;

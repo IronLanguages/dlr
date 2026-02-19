@@ -24,7 +24,11 @@ namespace Microsoft.Scripting.Interpreter {
         // Adaptive compilation support:
         private Type _compiledDelegateType;
         private Delegate _compiled;
+#if NET9_0_OR_GREATER
+        private readonly System.Threading.Lock _compileLock = new System.Threading.Lock();
+#else
         private readonly object _compileLock = new object();
+#endif
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda) {
             Assert.NotNull(lambda);

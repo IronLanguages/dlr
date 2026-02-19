@@ -13,7 +13,11 @@ namespace Microsoft.Scripting.Runtime {
         private static readonly IEqualityComparer<object> _comparer = new WrapperComparer();
         [MultiRuntimeAware]
         private static Dictionary<object, object> _hashtable = new Dictionary<object, object>(_comparer);
+#if NET9_0_OR_GREATER
+        private static readonly System.Threading.Lock _synchObject = new System.Threading.Lock();  // The one and only global lock instance.
+#else
         private static readonly Object _synchObject = new Object();  // The one and only global lock instance.
+#endif
         // We do not need to worry about duplicates that to using long for unique Id.
         // It takes more than 100 years to overflow long on year 2005 hardware.
         [MultiRuntimeAware]

@@ -18,7 +18,11 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         // prevents this object from transitions to an inconsistent state, doesn't sync output or input:
+#if NET9_0_OR_GREATER
+        private readonly System.Threading.Lock _mutex = new System.Threading.Lock();
+#else
         private readonly object _mutex = new object();
+#endif
 
         #region Proxies
 

@@ -26,7 +26,11 @@ namespace Microsoft.Scripting.Hosting {
     public sealed class ScriptRuntime : MarshalByRefObject {
         private readonly Dictionary<LanguageContext, ScriptEngine> _engines;
         private readonly InvariantContext _invariantContext;
+#if NET9_0_OR_GREATER
+        private readonly System.Threading.Lock _lock = new System.Threading.Lock();
+#else
         private readonly object _lock = new object();
+#endif
         private ScriptScope _globals;
         private Scope _scopeGlobals;
         private ScriptEngine _invariantEngine;
