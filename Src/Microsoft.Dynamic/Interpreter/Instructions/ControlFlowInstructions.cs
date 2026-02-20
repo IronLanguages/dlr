@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.Interpreter {
     /// the goto expression and the target label node pushed and not consumed yet. 
     /// A goto expression can jump into a node that evaluates arguments only if it carries 
     /// a value and jumps right after the first argument (the carried value will be used as the first argument). 
-    /// Goto can jump into an arbitrary child of a BlockExpression since the block doesn’t accumulate values 
+    /// Goto can jump into an arbitrary child of a BlockExpression since the block doesn't accumulate values 
     /// on evaluation stack as its child expressions are being evaluated.
     /// 
     /// Goto needs to execute any finally blocks on the way to the target label.
@@ -424,6 +424,7 @@ namespace Microsoft.Scripting.Interpreter {
 
     internal sealed class EnterLoopInstruction : Instruction {
         private readonly int _instructionIndex;
+        private readonly object _compileLock = new object();
         private Dictionary<ParameterExpression, LocalVariable> _variables;
         private Dictionary<ParameterExpression, LocalVariable> _closureVariables;
         private LoopExpression _loop;
@@ -473,7 +474,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             }
 
-            lock (this) {
+            lock (_compileLock) {
                 if (Compiled) {
                     return;
                 }
