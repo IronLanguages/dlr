@@ -20,11 +20,7 @@ namespace Microsoft.Scripting.Utils {
         private const int MinimalBufferSize = 0x1000; 
 
         private readonly Stream _input;
-#if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock _lock = new();
-#else
-        private readonly object _lock = new();
-#endif
+        private readonly Lock _lock = new();
         private readonly byte[] _buffer = new byte[MinimalBufferSize];
         private int _bufferPos;
         private int _bufferSize;

@@ -9,4 +9,12 @@
     <DefineConstants>$(Features);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
+  <!-- System.Threading.Lock was introduced in .NET 9.0; alias to System.Object on older targets -->
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))">
+    <Using Include="System.Threading.Lock" Alias="Lock" />
+  </ItemGroup>
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))">
+    <Using Include="System.Object" Alias="Lock" />
+  </ItemGroup>
+
 </Project>

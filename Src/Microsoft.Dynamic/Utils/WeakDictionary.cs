@@ -285,11 +285,7 @@ namespace Microsoft.Scripting.Utils {
 
     public sealed class HybridMapping<T> {
         private Dictionary<int, object> _dict = new Dictionary<int, object>();
-#if NET9_0_OR_GREATER
-        private readonly System.Threading.Lock _synchObject = new();
-#else
-        private readonly Object _synchObject = new();
-#endif
+        private readonly Lock _synchObject = new();
         private readonly int _offset;
         private int _current;
 
