@@ -488,7 +488,7 @@ namespace Microsoft.Scripting.ComInterop {
             Debug.Assert((ptr.ToInt64() - ptrToLocal.ToInt64()) < (16 * 1024));
         }
 
-        private static readonly object _lock = new object();
+        private static readonly Lock _lock = new();
         private static ModuleBuilder _dynamicModule;
 
         internal static ModuleBuilder DynamicModule {

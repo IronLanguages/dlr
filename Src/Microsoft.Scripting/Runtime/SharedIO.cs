@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         // prevents this object from transitions to an inconsistent state, doesn't sync output or input:
-        private readonly object _mutex = new object();
+        private readonly Lock _mutex = new();
 
         #region Proxies
 

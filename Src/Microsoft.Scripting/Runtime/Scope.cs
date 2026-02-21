@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     public sealed class Scope : IDynamicMetaObjectProvider {
         private ScopeExtension[] _extensions; // resizable
-        private readonly object _extensionsLock = new object();
+        private readonly Lock _extensionsLock = new();
         private readonly IDynamicMetaObjectProvider _storage;
 
         /// <summary>

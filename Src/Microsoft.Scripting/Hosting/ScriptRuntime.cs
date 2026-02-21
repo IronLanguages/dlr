@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Hosting {
     public sealed class ScriptRuntime : MarshalByRefObject {
         private readonly Dictionary<LanguageContext, ScriptEngine> _engines;
         private readonly InvariantContext _invariantContext;
-        private readonly object _lock = new object();
+        private readonly Lock _lock = new();
         private ScriptScope _globals;
         private Scope _scopeGlobals;
         private ScriptEngine _invariantEngine;

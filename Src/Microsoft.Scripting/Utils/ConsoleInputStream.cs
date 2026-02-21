@@ -20,7 +20,7 @@ namespace Microsoft.Scripting.Utils {
         private const int MinimalBufferSize = 0x1000; 
 
         private readonly Stream _input;
-        private readonly object _lock = new object();
+        private readonly Lock _lock = new();
         private readonly byte[] _buffer = new byte[MinimalBufferSize];
         private int _bufferPos;
         private int _bufferSize;

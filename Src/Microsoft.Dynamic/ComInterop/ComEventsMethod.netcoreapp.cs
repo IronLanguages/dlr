@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// we need to complement this design by using an explicit linked list data structure.
         /// </summary>
         private Func<object[], object> _delegate;
-        private object lockObject = new object();
+        private readonly Lock lockObject = new();
 
         private readonly int _dispid;
         private ComEventsMethod _next;

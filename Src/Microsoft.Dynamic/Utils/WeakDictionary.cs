@@ -285,7 +285,7 @@ namespace Microsoft.Scripting.Utils {
 
     public sealed class HybridMapping<T> {
         private Dictionary<int, object> _dict = new Dictionary<int, object>();
-        private readonly Object _synchObject = new Object();
+        private readonly Lock _synchObject = new();
         private readonly int _offset;
         private int _current;
 
