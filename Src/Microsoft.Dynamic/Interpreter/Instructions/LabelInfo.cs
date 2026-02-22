@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Interpreter {
         private object _definitions;
 
         // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+        private readonly List<LabelScopeInfo> _references = new();
 
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the

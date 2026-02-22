@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Interpreter {
     [DebuggerTypeProxy(typeof(InstructionList.DebugView))]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public sealed class InstructionList {
-        private readonly List<Instruction> _instructions = new List<Instruction>();
+        private readonly List<Instruction> _instructions = new();
         private List<object> _objects;
 
         private int _currentStackDepth;
@@ -221,8 +221,8 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
 #if STATS
-        private static Dictionary<string, int> _executedInstructions = new Dictionary<string, int>();
-        private static Dictionary<string, Dictionary<object, bool>> _instances = new Dictionary<string, Dictionary<object, bool>>();
+        private static Dictionary<string, int> _executedInstructions = new();
+        private static Dictionary<string, Dictionary<object, bool>> _instances = new();
 
         static InstructionList() {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler((_, __) => {
@@ -707,7 +707,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Fields and Methods
 
-        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
+        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new();
 
         public void EmitLoadField(FieldInfo field) {
             Emit(GetLoadField(field));

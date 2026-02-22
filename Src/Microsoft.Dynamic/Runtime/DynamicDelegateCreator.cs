@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Runtime {
         // The stub does only depend on the signature, it doesn't depend on the dynamic object.
         // So we can reuse these stubs among multiple dynamic object for which a delegate was created with the same signature.
         // 
-        private Publisher<DelegateSignatureInfo, DelegateInfo> _dynamicDelegateCache = new Publisher<DelegateSignatureInfo, DelegateInfo>();
+        private Publisher<DelegateSignatureInfo, DelegateInfo> _dynamicDelegateCache = new();
 
         public Delegate GetOrCreateDelegateForDynamicObject(object dynamicObject, Type delegateType, MethodInfo invoke) {
             var signatureInfo = new DelegateSignatureInfo(invoke);

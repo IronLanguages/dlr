@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -81,8 +81,8 @@ namespace Microsoft.Scripting.Runtime {
         class DynamicWriter : XamlObjectWriter {
             private readonly object _scope;
             private readonly DynamicOperations _operations;
-            private readonly Stack<bool> _nameStack = new Stack<bool>();
-            private HashSet<string> _names = new HashSet<string>();
+            private readonly Stack<bool> _nameStack = new();
+            private HashSet<string> _names = new();
 
             public DynamicWriter(object scope, DynamicOperations operations, XamlSchemaContext context, XamlObjectWriterSettings settings)
                 : base(context, settings) {

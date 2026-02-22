@@ -135,17 +135,17 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// A location that is valid but represents no location at all.
         /// </summary>
-        public static readonly SourceLocation None = new SourceLocation(0, 0xfeefee, 0, true);
+        public static readonly SourceLocation None = new(0, 0xfeefee, 0, true);
 
         /// <summary>
         /// An invalid location.
         /// </summary>
-        public static readonly SourceLocation Invalid = new SourceLocation(0, 0, 0, true);
+        public static readonly SourceLocation Invalid = new(0, 0, 0, true);
 
         /// <summary>
         /// A minimal valid location.
         /// </summary>
-        public static readonly SourceLocation MinValue = new SourceLocation(0, 1, 1);
+        public static readonly SourceLocation MinValue = new(0, 1, 1);
         
         /// <summary>
         /// Whether the location is a valid location.

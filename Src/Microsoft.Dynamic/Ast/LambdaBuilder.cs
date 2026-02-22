@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -28,9 +28,9 @@ namespace Microsoft.Scripting.Ast {
     /// removed, in favor of languages handling their own local scopes
     /// </summary>
     public class LambdaBuilder {
-        private readonly List<ParameterExpression> _locals = new List<ParameterExpression>();
-        private List<ParameterExpression> _params = new List<ParameterExpression>();
-        private readonly List<KeyValuePair<ParameterExpression, bool>> _visibleVars = new List<KeyValuePair<ParameterExpression, bool>>();
+        private readonly List<ParameterExpression> _locals = new();
+        private List<ParameterExpression> _params = new();
+        private readonly List<KeyValuePair<ParameterExpression, bool>> _visibleVars = new();
         private string _name;
         private Type _returnType;
         private Expression _body;

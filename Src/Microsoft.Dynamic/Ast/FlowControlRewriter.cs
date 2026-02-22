@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Ast {
 
             // Labels defined in this block
             // So we can figure out if we can just jump directly or if we need help
-            internal readonly HashSet<LabelTarget> LabelDefs = new HashSet<LabelTarget>();
+            internal readonly HashSet<LabelTarget> LabelDefs = new();
 
             // These two properties tell us what we need to emit in the flow control
             // (if anything)
@@ -96,8 +96,8 @@ namespace Microsoft.Scripting.Ast {
             }
         }
 
-        private readonly Dictionary<LabelTarget, LabelInfo> _labels = new Dictionary<LabelTarget, LabelInfo>();
-        private readonly Stack<BlockInfo> _blocks = new Stack<BlockInfo>();
+        private readonly Dictionary<LabelTarget, LabelInfo> _labels = new();
+        private readonly Stack<BlockInfo> _blocks = new();
         private ParameterExpression _flowVariable;
 
         // Rewriter entry point

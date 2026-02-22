@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Actions {
         private readonly ArgumentType _kind;
         private readonly string _name;
 
-        public static readonly Argument Simple = new Argument(ArgumentType.Simple, null);
+        public static readonly Argument Simple = new(ArgumentType.Simple, null);
 
         public ArgumentType Kind => _kind;
         public string Name => _name;

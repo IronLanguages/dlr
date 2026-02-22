@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -387,7 +387,7 @@ namespace Microsoft.Scripting.Actions {
             public readonly string Name;
             public readonly OverloadResolverFactory ResolutionFactory;
             public readonly bool IsNoThrow;
-            public readonly ConditionalBuilder Body = new ConditionalBuilder();
+            public readonly ConditionalBuilder Body = new();
             public readonly DynamicMetaObject ErrorSuggestion;
 
             public GetMemberInfo(string name, OverloadResolverFactory resolutionFactory, bool noThrow, DynamicMetaObject errorSuggestion) {

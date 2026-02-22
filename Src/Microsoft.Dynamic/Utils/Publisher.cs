@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
     /// once for each key.  
     /// </summary>
     public class Publisher<TKey, TValue> {
-        private readonly Dictionary<TKey, PublishInfo<TValue>> data = new Dictionary<TKey, PublishInfo<TValue>>();
+        private readonly Dictionary<TKey, PublishInfo<TValue>> data = new();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")] // TODO: fix
         public TValue GetOrCreateValue(TKey key, Func<TValue> create) {

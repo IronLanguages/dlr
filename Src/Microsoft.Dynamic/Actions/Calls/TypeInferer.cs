@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -344,8 +344,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// z would be a ConstructedParameterInferer.
         /// </summary>
         private class ArgumentInputs {
-            private readonly List<Type>/*!*/ _parameterTypes = new List<Type>();
-            private readonly List<DynamicMetaObject>/*!*/ _inputs = new List<DynamicMetaObject>();
+            private readonly List<Type>/*!*/ _parameterTypes = new();
+            private readonly List<DynamicMetaObject>/*!*/ _inputs = new();
             private readonly Type/*!*/ _genericParam;
 
             public ArgumentInputs(Type/*!*/ genericParam) {

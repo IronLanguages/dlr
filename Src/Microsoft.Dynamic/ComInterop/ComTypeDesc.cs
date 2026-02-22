@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.ComInterop {
         private ComMethodDesc _getItem;
         private ComMethodDesc _setItem;
         private Dictionary<string, ComEventDesc> _events;
-        private static readonly Dictionary<string, ComEventDesc> _EmptyEventsDict = new Dictionary<string, ComEventDesc>();
+        private static readonly Dictionary<string, ComEventDesc> _EmptyEventsDict = new();
 
         internal ComTypeDesc(ITypeInfo typeInfo, ComType memberType, ComTypeLibDesc typeLibDesc) : base(memberType) {
             if (typeInfo != null) {

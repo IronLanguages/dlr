@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -158,10 +158,10 @@ namespace HostingTest {
 
 
         // Add the tests here
-        public static TestPathType SpaceInPath = new TestPathType(
+        public static TestPathType SpaceInPath = new(
                                         "c:\\tmp\\lsdfja dfa  aslsl"
                                          );
-        public static TestPathType MiscPath = new TestPathType(
+        public static TestPathType MiscPath = new(
                                         Path.GetTempFileName(),
                                         true);
 
@@ -173,7 +173,7 @@ namespace HostingTest {
           //                                      Path.GetTempPath(),
 
 
-        public static TestPathType IllegalCharsInPath = new TestPathType(
+        public static TestPathType IllegalCharsInPath = new(
                                          "c:\\sldks----as#%&~!!!+");
 
 

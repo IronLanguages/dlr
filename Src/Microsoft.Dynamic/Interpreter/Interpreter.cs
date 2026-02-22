@@ -22,7 +22,7 @@ namespace Microsoft.Scripting.Interpreter {
     /// The core loop in the interpreter is the RunInstructions method.
     /// </summary>
     internal sealed class Interpreter {
-        internal static readonly object NoValue = new object();
+        internal static readonly object NoValue = new();
         internal const int RethrowOnReturn = Int32.MaxValue;
 
         // zero: sync compilation

@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal CallInstruction() { }
         
-        private static readonly Dictionary<MethodInfo, CallInstruction> _cache = new Dictionary<MethodInfo, CallInstruction>();
+        private static readonly Dictionary<MethodInfo, CallInstruction> _cache = new();
 
         /// <exception cref="SecurityException">Instruction can't be created due to insufficient privileges.</exception>
         public static CallInstruction Create(MethodInfo info) {

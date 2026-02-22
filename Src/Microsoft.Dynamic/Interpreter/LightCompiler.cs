@@ -81,7 +81,7 @@ namespace Microsoft.Scripting.Interpreter {
         public int Index;
         public string FileName;
         public bool IsClear;
-        private static readonly DebugInfoComparer _debugComparer = new DebugInfoComparer();
+        private static readonly DebugInfoComparer _debugComparer = new();
 
         private class DebugInfoComparer : IComparer<DebugInfo> {
             //We allow comparison between int and DebugInfo here
@@ -146,15 +146,15 @@ namespace Microsoft.Scripting.Interpreter {
         // zero: sync compilation
         private readonly int _compilationThreshold;
 
-        private readonly LocalVariables _locals = new LocalVariables();
+        private readonly LocalVariables _locals = new();
 
-        private readonly List<ExceptionHandler> _handlers = new List<ExceptionHandler>();
+        private readonly List<ExceptionHandler> _handlers = new();
         
-        private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
-        private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+        private readonly List<DebugInfo> _debugInfos = new();
+        private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new();
+        private LabelScopeInfo _labelBlock = new(null, LabelScopeKind.Lambda);
 
-        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
+        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new();
 
         // Set to true to force compiliation of this lambda.
         // This disables the interpreter for this lambda. We still need to

@@ -8,7 +8,7 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     public sealed class OperationFailed {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly OperationFailed Value = new OperationFailed();
+        public static readonly OperationFailed Value = new();
 
         private OperationFailed() {
         }

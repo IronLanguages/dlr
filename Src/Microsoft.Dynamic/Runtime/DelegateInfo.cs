@@ -22,9 +22,9 @@ namespace Microsoft.Scripting.Runtime {
         private const int TargetIndex = 0;
         private const int CallSiteIndex = 1;
         private const int ConvertSiteIndex = 2;
-        private static readonly object TargetPlaceHolder = new object();
-        private static readonly object CallSitePlaceHolder = new object();
-        private static readonly object ConvertSitePlaceHolder = new object();
+        private static readonly object TargetPlaceHolder = new();
+        private static readonly object CallSitePlaceHolder = new();
+        private static readonly object ConvertSitePlaceHolder = new();
 
         // to enable:
         // function x() { }
@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.Runtime {
         //
         // Note that the closure content depends on the signature of the delegate. So a single dynamic object
         // might need multiple closures if it is converted to delegates of different signatures.
-        private WeakDictionary<object, WeakReference> _closureMap = new WeakDictionary<object, WeakReference>();
+        private WeakDictionary<object, WeakReference> _closureMap = new();
         
         private readonly Type _returnType;
         private readonly Type[] _parameterTypes;

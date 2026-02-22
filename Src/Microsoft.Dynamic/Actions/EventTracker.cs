@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
         // Each pair in the list holds on the stub handler that was added to the event delegate chain and the callable 
         // object that is passed to +=/-= operators. 
         private WeakDictionary<object, NormalHandlerList> _handlerLists;
-        private static readonly object _staticTarget = new object();
+        private static readonly object _staticTarget = new();
 
         private readonly EventInfo _eventInfo;
         private MethodInfo _addMethod;
@@ -222,7 +222,7 @@ namespace Microsoft.Scripting.Actions {
             /// <summary>
             /// Storage for the handlers - a key value pair of the callable object and the delegate handler.
             /// </summary>
-            private readonly CopyOnWriteList<KeyValuePair<object, object>> _handlers = new CopyOnWriteList<KeyValuePair<object, object>>();
+            private readonly CopyOnWriteList<KeyValuePair<object, object>> _handlers = new();
 
             public override void AddHandler(object callableObject, Delegate handler) {
                 Assert.NotNull(handler);
@@ -254,7 +254,7 @@ namespace Microsoft.Scripting.Actions {
             /// delegate will stay alive and so will the callable object.  That means it's fine to have a weak reference
             /// to both of these objects.
             /// </summary>
-            private readonly CopyOnWriteList<KeyValuePair<WeakReference, WeakReference>> _handlers = new CopyOnWriteList<KeyValuePair<WeakReference, WeakReference>>();
+            private readonly CopyOnWriteList<KeyValuePair<WeakReference, WeakReference>> _handlers = new();
 
             public override void AddHandler(object callableObject, Delegate handler) {
                 Assert.NotNull(handler);

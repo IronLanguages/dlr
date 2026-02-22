@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.ComInterop {
         private ComEventSinksContainer() {
         }
 
-        private static readonly object _ComObjectEventSinksKey = new object();
+        private static readonly object _ComObjectEventSinksKey = new();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]

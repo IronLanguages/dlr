@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// Class managing the command history.
         /// </summary>
         class History {
-            protected List<string> _list = new List<string>();
+            protected List<string> _list = new();
             private int _current;
             private bool _increment;         // increment on Next()
 
@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// List of available options
         /// </summary>
         class SuperConsoleOptions {
-            private List<string> _list = new List<string>();
+            private List<string> _list = new();
             private int _current;
 
             public int Count {
@@ -160,7 +160,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// The console input buffer.
         /// </summary>
-        private StringBuilder _input = new StringBuilder();
+        private StringBuilder _input = new();
 
         /// <summary>
         /// Current position - index into the input buffer
@@ -180,12 +180,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// Command history
         /// </summary>
-        private History _history = new History();
+        private History _history = new();
 
         /// <summary>
         /// Tab options available in current context
         /// </summary>
-        private SuperConsoleOptions _options = new SuperConsoleOptions();
+        private SuperConsoleOptions _options = new();
 
         /// <summary>
         /// Cursor anchor - position of cursor when the routine was called

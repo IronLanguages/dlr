@@ -289,8 +289,8 @@ namespace Microsoft.Scripting.Interpreter {
 
     // no-op: we need this just to balance the stack depth.
     internal sealed class EnterExceptionHandlerInstruction : Instruction {
-        internal static readonly EnterExceptionHandlerInstruction Void = new EnterExceptionHandlerInstruction(false);
-        internal static readonly EnterExceptionHandlerInstruction NonVoid = new EnterExceptionHandlerInstruction(true);
+        internal static readonly EnterExceptionHandlerInstruction Void = new(false);
+        internal static readonly EnterExceptionHandlerInstruction NonVoid = new(true);
 
         // True if try-expression is non-void.
         private readonly bool _hasValue;
@@ -381,10 +381,10 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class ThrowInstruction : Instruction {
-        internal static readonly ThrowInstruction Throw = new ThrowInstruction(true, false);
-        internal static readonly ThrowInstruction VoidThrow = new ThrowInstruction(false, false);
-        internal static readonly ThrowInstruction Rethrow = new ThrowInstruction(true, true);
-        internal static readonly ThrowInstruction VoidRethrow = new ThrowInstruction(false, true);
+        internal static readonly ThrowInstruction Throw = new(true, false);
+        internal static readonly ThrowInstruction VoidThrow = new(false, false);
+        internal static readonly ThrowInstruction Rethrow = new(true, true);
+        internal static readonly ThrowInstruction VoidRethrow = new(false, true);
 
         private readonly bool _hasResult, _rethrow;
 
