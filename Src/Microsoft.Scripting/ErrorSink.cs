@@ -9,7 +9,7 @@ namespace Microsoft.Scripting {
 
     public class ErrorSink {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ErrorSink/*!*/ Default = new ErrorSink();
+        public static readonly ErrorSink/*!*/ Default = new();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly ErrorSink/*!*/ Null = new NullErrorSink();

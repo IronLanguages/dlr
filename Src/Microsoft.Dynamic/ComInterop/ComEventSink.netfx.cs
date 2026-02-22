@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.ComInterop {
         private ComTypes.IConnectionPoint _connectionPoint;
         private int _adviseCookie;
         private List<ComEventSinkMethod> _comEventSinkMethods;
-        private object _lockObject = new object(); // We cannot lock on ComEventSink since it causes a DoNotLockOnObjectsWithWeakIdentity warning
+        private object _lockObject = new(); // We cannot lock on ComEventSink since it causes a DoNotLockOnObjectsWithWeakIdentity warning
 
         #endregion
 

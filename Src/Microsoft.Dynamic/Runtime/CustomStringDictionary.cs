@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Runtime {
     public abstract class CustomStringDictionary : IDictionary, IDictionary<object, object> {
 
         private Dictionary<object, object> _data;
-        private static readonly object _nullObject = new object();
+        private static readonly object _nullObject = new();
 
         /// <summary>
         /// Gets a list of the extra keys that are cached by the the optimized implementation

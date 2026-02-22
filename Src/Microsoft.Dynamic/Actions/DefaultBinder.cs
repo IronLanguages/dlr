@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public partial class DefaultBinder : ActionBinder {
-        internal static readonly DefaultBinder Instance = new DefaultBinder();
+        internal static readonly DefaultBinder Instance = new();
 
         public override bool CanConvertFrom(Type fromType, Type toType, bool toNotNullable, NarrowingLevel level) {
             return toType.IsAssignableFrom(fromType);

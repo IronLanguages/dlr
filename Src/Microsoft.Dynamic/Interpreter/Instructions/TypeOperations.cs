@@ -125,7 +125,7 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     internal sealed class TypeEqualsInstruction : Instruction {
-        public static readonly TypeEqualsInstruction Instance = new TypeEqualsInstruction();
+        public static readonly TypeEqualsInstruction Instance = new();
 
         public override int ConsumedStack => 2;
         public override int ProducedStack => 1;

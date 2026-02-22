@@ -83,7 +83,7 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     public sealed class LocalVariables {
-        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
+        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new();
 
         private int _localCount, _maxLocalCount;
 

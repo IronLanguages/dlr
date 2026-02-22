@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private class GenericInterpretedBinder<T> where T : class {
-            public static readonly GenericInterpretedBinder<T>/*!*/ Instance = new GenericInterpretedBinder<T>();
+            public static readonly GenericInterpretedBinder<T>/*!*/ Instance = new();
             private readonly ReadOnlyCollection<ParameterExpression>/*!*/ _parameters;
             private readonly Expression/*!*/ _updateExpression;
 

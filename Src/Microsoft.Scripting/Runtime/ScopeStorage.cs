@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -23,7 +23,7 @@ namespace Microsoft.Scripting {
     /// objects for each possible casing.
     /// </remarks>
     public sealed class ScopeStorage : IDynamicMetaObjectProvider {
-        private readonly Dictionary<string, ScopeVariableIgnoreCase> _storage = new Dictionary<string, ScopeVariableIgnoreCase>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ScopeVariableIgnoreCase> _storage = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets the named value from the scope optionally ignoring case.
@@ -317,7 +317,7 @@ namespace Microsoft.Scripting {
     public sealed class ScopeVariable : IScopeVariable, IWeakReferencable {
         private object _value;
         private WeakReference _weakref;
-        private static readonly object _novalue = new object();
+        private static readonly object _novalue = new();
 
         internal ScopeVariable() {
             _value = _novalue;

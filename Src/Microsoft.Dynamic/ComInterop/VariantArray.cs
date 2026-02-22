@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.ComInterop {
     internal static class VariantArray {
         // Don't need a dictionary for this, it will have very few elements
         // (guarenteed less than 28, in practice 0-2)
-        private static readonly List<Type> _generatedTypes = new List<Type>(0);
+        private static readonly List<Type> _generatedTypes = new(0);
 
         internal static MemberExpression GetStructField(ParameterExpression variantArray, int field) {
             return Expression.Field(variantArray, "Element" + field);

@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Interpreter {
 
     public sealed class InterpretedFrame {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly InterpretedFrameThreadLocal CurrentFrame = new InterpretedFrameThreadLocal();
+        public static readonly InterpretedFrameThreadLocal CurrentFrame = new();
 
         internal readonly Interpreter Interpreter;
 

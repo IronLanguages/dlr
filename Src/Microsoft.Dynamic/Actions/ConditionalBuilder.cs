@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -19,9 +19,9 @@ namespace Microsoft.Scripting.Actions {
     /// branch must be added.
     /// </summary>
     class ConditionalBuilder {
-        private readonly List<Expression> _conditions = new List<Expression>();
-        private readonly List<Expression> _bodies = new List<Expression>();
-        private readonly List<ParameterExpression> _variables = new List<ParameterExpression>();
+        private readonly List<Expression> _conditions = new();
+        private readonly List<Expression> _bodies = new();
+        private readonly List<ParameterExpression> _variables = new();
         private Expression _body;
         private bool _isError;
         private BindingRestrictions _restrictions = BindingRestrictions.Empty;

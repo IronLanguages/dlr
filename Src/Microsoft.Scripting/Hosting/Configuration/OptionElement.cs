@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         private const string _Value = "value";
         private const string _Language = "language";
 
-        private static ConfigurationPropertyCollection _Properties = new ConfigurationPropertyCollection() {
+        private static ConfigurationPropertyCollection _Properties = new() {
             new ConfigurationProperty(_Option, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsKey),
             new ConfigurationProperty(_Value, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired),
             new ConfigurationProperty(_Language, typeof(string), string.Empty, ConfigurationPropertyOptions.IsKey),

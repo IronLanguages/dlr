@@ -9,7 +9,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
     public sealed class IfStatementBuilder {
-        private readonly List<IfStatementTest> _clauses = new List<IfStatementTest>();
+        private readonly List<IfStatementTest> _clauses = new();
 
         internal IfStatementBuilder() {
         }

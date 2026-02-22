@@ -129,6 +129,6 @@ namespace Microsoft.Scripting {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        protected static readonly ReadOnlyCollection<string> EmptyStringCollection = new ReadOnlyCollection<string>(ArrayUtils.EmptyStrings);
+        protected static readonly ReadOnlyCollection<string> EmptyStringCollection = new(ArrayUtils.EmptyStrings);
     }
 }

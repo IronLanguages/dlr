@@ -22,7 +22,7 @@ namespace Microsoft.Scripting.Actions {
         internal readonly object HierarchyLock;
 
 #if FEATURE_COM
-        private static readonly Dictionary<Guid, Type> _comTypeCache = new Dictionary<Guid, Type>();
+        private static readonly Dictionary<Guid, Type> _comTypeCache = new();
 #endif
 
         public TopNamespaceTracker(ScriptDomainManager manager)

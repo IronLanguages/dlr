@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Generation {
     // TODO: change to extension methods for ILGenerator
     public class ILGen {
         private readonly ILGenerator _ilg;
-        private readonly KeyedQueue<Type, LocalBuilder> _freeLocals = new KeyedQueue<Type, LocalBuilder>();
+        private readonly KeyedQueue<Type, LocalBuilder> _freeLocals = new();
 
         // TODO: remove Python dependency
         public ILGen(ILGenerator ilg) {

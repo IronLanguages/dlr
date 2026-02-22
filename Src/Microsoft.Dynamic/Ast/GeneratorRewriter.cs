@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -55,19 +55,19 @@ namespace Microsoft.Scripting.Ast {
         private readonly ParameterExpression _state;
 
         // The one return label, or more than one if we're in a finally
-        private readonly Stack<LabelTarget> _returnLabels = new Stack<LabelTarget>();
+        private readonly Stack<LabelTarget> _returnLabels = new();
         private ParameterExpression _gotoRouter;
         private bool _inTryWithFinally;
 
-        private readonly List<YieldMarker> _yields = new List<YieldMarker>();
+        private readonly List<YieldMarker> _yields = new();
 
         private List<int> _debugCookies;
 
-        private readonly HashSet<ParameterExpression> _vars = new HashSet<ParameterExpression>();
+        private readonly HashSet<ParameterExpression> _vars = new();
 
         // Possible optimization: reuse temps. Requires scoping them correctly,
         // and then storing them back in a free list
-        private readonly List<ParameterExpression> _temps = new List<ParameterExpression>();
+        private readonly List<ParameterExpression> _temps = new();
 
         // Variables used to support goto-with-value
         private Dictionary<LabelTarget, LabelInfo> _labelTemps;

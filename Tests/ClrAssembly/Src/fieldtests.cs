@@ -120,16 +120,16 @@ namespace Merlin.Testing.FieldTest.InitOnly {
         public static readonly EnumInt16 InitOnlyEnumField = EnumInt16.B;
         public static readonly string InitOnlyStringField = "ruby";
 
-        public static readonly DateTime InitOnlyDateTimeField = new DateTime(5);
+        public static readonly DateTime InitOnlyDateTimeField = new(5);
 
-        public static readonly SimpleStruct InitOnlySimpleStructField = new SimpleStruct(10);
-        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new SimpleGenericStruct<UInt16>(20);
+        public static readonly SimpleStruct InitOnlySimpleStructField = new(10);
+        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new(20);
 
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_NotNull = new SimpleStruct(30);
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_Null = null;
 
-        public static readonly SimpleClass InitOnlySimpleClassField = new SimpleClass(40);
-        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new SimpleGenericClass<String>("ironruby");
+        public static readonly SimpleClass InitOnlySimpleClassField = new(40);
+        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new("ironruby");
 
         public static readonly SimpleInterface InitOnlySimpleInterfaceField = new ClassImplementSimpleInterface(50);
     }
@@ -152,23 +152,23 @@ namespace Merlin.Testing.FieldTest.InitOnly {
         public static readonly EnumInt16 InitOnlyEnumField = EnumInt16.B;
         public static readonly string InitOnlyStringField = "ruby";
 
-        public static readonly DateTime InitOnlyDateTimeField = new DateTime(5);
+        public static readonly DateTime InitOnlyDateTimeField = new(5);
 
-        public static readonly SimpleStruct InitOnlySimpleStructField = new SimpleStruct(10);
-        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new SimpleGenericStruct<UInt16>(20);
+        public static readonly SimpleStruct InitOnlySimpleStructField = new(10);
+        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new(20);
 
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_NotNull = new SimpleStruct(30);
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_Null = null;
 
-        public static readonly SimpleClass InitOnlySimpleClassField = new SimpleClass(40);
-        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new SimpleGenericClass<String>("ironruby");
+        public static readonly SimpleClass InitOnlySimpleClassField = new(40);
+        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new("ironruby");
 
         public static readonly SimpleInterface InitOnlySimpleInterfaceField = new ClassImplementSimpleInterface(50);
 
         // with T
         public static readonly T InitOnlyTField = default(T);
-        public static readonly SimpleGenericClass<T> InitOnlyClassTField = new SimpleGenericClass<T>(default(T));
-        public static readonly SimpleGenericStruct<T> InitOnlyStructTField = new SimpleGenericStruct<T>(default(T));
+        public static readonly SimpleGenericClass<T> InitOnlyClassTField = new(default(T));
+        public static readonly SimpleGenericStruct<T> InitOnlyStructTField = new(default(T));
     }
 
     public class ClassWithInitOnlys {
@@ -190,16 +190,16 @@ namespace Merlin.Testing.FieldTest.InitOnly {
         public static readonly EnumInt16 InitOnlyEnumField = EnumInt16.B;
         public static readonly string InitOnlyStringField = "ruby";
 
-        public static readonly DateTime InitOnlyDateTimeField = new DateTime(5);
+        public static readonly DateTime InitOnlyDateTimeField = new(5);
 
-        public static readonly SimpleStruct InitOnlySimpleStructField = new SimpleStruct(10);
-        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new SimpleGenericStruct<UInt16>(20);
+        public static readonly SimpleStruct InitOnlySimpleStructField = new(10);
+        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new(20);
 
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_NotNull = new SimpleStruct(30);
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_Null = null;
 
-        public static readonly SimpleClass InitOnlySimpleClassField = new SimpleClass(40);
-        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new SimpleGenericClass<String>("ironruby");
+        public static readonly SimpleClass InitOnlySimpleClassField = new(40);
+        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new("ironruby");
 
         public static readonly SimpleInterface InitOnlySimpleInterfaceField = new ClassImplementSimpleInterface(50);
     }
@@ -222,23 +222,23 @@ namespace Merlin.Testing.FieldTest.InitOnly {
         public static readonly EnumInt16 InitOnlyEnumField = EnumInt16.B;
         public static readonly string InitOnlyStringField = "ruby";
 
-        public static readonly DateTime InitOnlyDateTimeField = new DateTime(5);
+        public static readonly DateTime InitOnlyDateTimeField = new(5);
 
-        public static readonly SimpleStruct InitOnlySimpleStructField = new SimpleStruct(10);
-        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new SimpleGenericStruct<UInt16>(20);
+        public static readonly SimpleStruct InitOnlySimpleStructField = new(10);
+        public static readonly SimpleGenericStruct<UInt16> InitOnlySimpleGenericStructField = new(20);
 
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_NotNull = new SimpleStruct(30);
         public static readonly Nullable<SimpleStruct> InitOnlyNullableStructField_Null = null;
 
-        public static readonly SimpleClass InitOnlySimpleClassField = new SimpleClass(40);
-        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new SimpleGenericClass<String>("ironruby");
+        public static readonly SimpleClass InitOnlySimpleClassField = new(40);
+        public static readonly SimpleGenericClass<String> InitOnlySimpleGenericClassField = new("ironruby");
 
         public static readonly SimpleInterface InitOnlySimpleInterfaceField = new ClassImplementSimpleInterface(50);
 
         // with T
         public static readonly T InitOnlyTField = default(T);
-        public static readonly SimpleGenericClass<T> InitOnlyClassTField = new SimpleGenericClass<T>(default(T));
-        public static readonly SimpleGenericStruct<T> InitOnlyStructTField = new SimpleGenericStruct<T>(default(T));
+        public static readonly SimpleGenericClass<T> InitOnlyClassTField = new(default(T));
+        public static readonly SimpleGenericStruct<T> InitOnlyStructTField = new(default(T));
     }
 
     public class DerivedClass : ClassWithInitOnlys { }

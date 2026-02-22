@@ -37,7 +37,7 @@ namespace Microsoft.Scripting.Interpreter {
         /// this first when resolving a variable in case a nested scope shadows
         /// one of our variable instances.
         /// </summary>
-        private readonly Stack<HashSet<ParameterExpression>> _shadowedVars = new Stack<HashSet<ParameterExpression>>();
+        private readonly Stack<HashSet<ParameterExpression>> _shadowedVars = new();
 
         private LightLambdaClosureVisitor(Dictionary<ParameterExpression, LocalVariable> closureVariables, ParameterExpression closureArray) {
             Assert.NotNull(closureVariables, closureArray);

@@ -15,8 +15,8 @@ namespace Microsoft.Scripting.Runtime {
     /// specific request.
     /// </summary>
     public static class ReflectionCache {
-        private static readonly Dictionary<MethodBaseCache, MethodGroup> _functions = new Dictionary<MethodBaseCache, MethodGroup>();
-        private static readonly Dictionary<Type, TypeTracker> _typeCache = new Dictionary<Type, TypeTracker>();
+        private static readonly Dictionary<MethodBaseCache, MethodGroup> _functions = new();
+        private static readonly Dictionary<Type, TypeTracker> _typeCache = new();
 
         public static MethodGroup GetMethodGroup(string name, MethodBase[] methods) {
             MethodGroup res = null;

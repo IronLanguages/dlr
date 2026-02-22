@@ -52,12 +52,12 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// A valid span that represents no location.
         /// </summary>
-        public static readonly SourceSpan None = new SourceSpan(SourceLocation.None, SourceLocation.None);
+        public static readonly SourceSpan None = new(SourceLocation.None, SourceLocation.None);
 
         /// <summary>
         /// An invalid span.
         /// </summary>
-        public static readonly SourceSpan Invalid = new SourceSpan(SourceLocation.Invalid, SourceLocation.Invalid);
+        public static readonly SourceSpan Invalid = new(SourceLocation.Invalid, SourceLocation.Invalid);
 
         /// <summary>
         /// Whether the locations in the span are valid.

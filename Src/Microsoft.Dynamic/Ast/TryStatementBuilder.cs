@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,7 +11,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
     public sealed class TryStatementBuilder {
-        private readonly List<CatchBlock> _catchBlocks = new List<CatchBlock>();
+        private readonly List<CatchBlock> _catchBlocks = new();
         private Expression _try;
         private Expression _finally, _fault;
         private bool _enableJumpsFromFinally;

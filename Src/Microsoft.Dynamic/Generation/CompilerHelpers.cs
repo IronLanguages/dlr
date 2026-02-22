@@ -713,9 +713,9 @@ namespace Microsoft.Scripting.Generation {
         /// Removes all live objects and places them in static fields of a type.
         /// </summary>
         private sealed class DebuggableCodeRewriter : DynamicExpressionVisitor {
-            private readonly Dictionary<object, FieldBuilder> _fields = new Dictionary<object, FieldBuilder>(ReferenceEqualityComparer<object>.Instance);
+            private readonly Dictionary<object, FieldBuilder> _fields = new(ReferenceEqualityComparer<object>.Instance);
             private readonly TypeBuilder _type;
-            private readonly HashSet<string> _methodNames = new HashSet<string>();
+            private readonly HashSet<string> _methodNames = new();
 
             internal DebuggableCodeRewriter(TypeBuilder type) {
                 _type = type;

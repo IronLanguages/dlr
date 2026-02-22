@@ -20,10 +20,10 @@ namespace Microsoft.Scripting.Actions {
     public class NamespaceTracker : MemberTracker, IMembersList, IEnumerable<KeyValuePair<string, object>> {
         // _dict contains all the currently loaded entries. However, there may be pending types that have
         // not yet been loaded in _typeNames
-        internal Dictionary<string, MemberTracker> _dict = new Dictionary<string, MemberTracker>();
+        internal Dictionary<string, MemberTracker> _dict = new();
 
-        internal readonly List<Assembly> _packageAssemblies = new List<Assembly>();
-        internal readonly Dictionary<Assembly, TypeNames> _typeNames = new Dictionary<Assembly, TypeNames>();
+        internal readonly List<Assembly> _packageAssemblies = new();
+        internal readonly Dictionary<Assembly, TypeNames> _typeNames = new();
 
         private readonly string _fullName; // null for the TopReflectedPackage
         private TopNamespaceTracker _topPackage;

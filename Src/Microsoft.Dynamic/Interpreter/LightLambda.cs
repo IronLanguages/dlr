@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Interpreter {
     public partial class LightLambda {
         private readonly StrongBox<object>[] _closure;
         private readonly Interpreter _interpreter;
-        private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new CacheDict<Type, Func<LightLambda, Delegate>>(100);
+        private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new(100);
 
         // Adaptive compilation support
         private readonly LightDelegateCreator _delegateCreator;

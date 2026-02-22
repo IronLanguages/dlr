@@ -12,7 +12,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Runtime {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")] // TODO: fix
     public sealed class ScriptDomainManager {
-        private List<Assembly> _loadedAssemblies = new List<Assembly>();
+        private List<Assembly> _loadedAssemblies = new();
 
         // last id assigned to a language context:
         private int _lastContextId;

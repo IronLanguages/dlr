@@ -16,7 +16,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting {
     public abstract class MutableTuple {
         public const int MaxSize = 128;
-        private static readonly Dictionary<Type, int> _sizeDict = new Dictionary<Type, int>();
+        private static readonly Dictionary<Type, int> _sizeDict = new();
 
         public abstract object GetValue(int index);
         public abstract void SetValue(int index, object value);

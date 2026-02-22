@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Actions {
             return tracker.Type;
         }
 
-        private static readonly Dictionary<Type, TypeTracker> _typeCache = new Dictionary<Type, TypeTracker>();
+        private static readonly Dictionary<Type, TypeTracker> _typeCache = new();
 
         public static TypeTracker GetTypeTracker(Type type) {
             TypeTracker res;

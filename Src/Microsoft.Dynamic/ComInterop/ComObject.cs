@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal object RuntimeCallableWrapper { get; }
 
-        private readonly static object _ComObjectInfoKey = new object();
+        private readonly static object _ComObjectInfoKey = new();
 
         /// <summary>
         /// Gets a <see cref="ComObject"/> that wraps the runtime-callable-wrapper, or creates one if none currently exists.

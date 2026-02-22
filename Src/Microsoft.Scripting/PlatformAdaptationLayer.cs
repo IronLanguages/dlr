@@ -35,7 +35,7 @@ namespace Microsoft.Scripting {
     [Serializable]
     public class PlatformAdaptationLayer {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly PlatformAdaptationLayer Default = new PlatformAdaptationLayer();
+        public static readonly PlatformAdaptationLayer Default = new();
 
         [Obsolete("This will be removed in the the future.")]
         public static readonly bool IsCompactFramework = false;

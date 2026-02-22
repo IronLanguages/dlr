@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         internal RemoteCommandDispatcher _remoteCommandDispatcher;
         private string _channelName = RemoteConsoleHost.GetChannelName();
         private IpcChannel _clientChannel;
-        private AutoResetEvent _remoteOutputReceived = new AutoResetEvent(false);
+        private AutoResetEvent _remoteOutputReceived = new(false);
         private ScriptScope _scriptScope;
 
         #region Private methods
