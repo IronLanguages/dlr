@@ -12,7 +12,7 @@
     <BuildSysDir>$(RootDir)\Build</BuildSysDir>
   </PropertyGroup>
 
-  <Import Project="$(BuildSysDir)\Tasks.Targets" />
+  <Import Project="$(BuildSysDir)\Tasks.targets" />
   <Import Project="$(RootDir)\CurrentVersion.props" />
 
   <PropertyGroup>
