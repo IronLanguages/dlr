@@ -1,0 +1,47 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Build.proj" />
+    <File Path="CurrentVersion.props" />
+    <File Path="Directory.Build.props" />
+    <File Path="LICENSE" />
+    <File Path="make.ps1" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Build/">
+    <File Path="Build/After.targets" />
+    <File Path="Build/net10.0.props" />
+    <File Path="Build/net462.props" />
+    <File Path="Build/net8.0.props" />
+    <File Path="Build/net9.0.props" />
+    <File Path="Build/netstandard2.0.props" />
+    <File Path="Build/Tasks.targets" />
+  </Folder>
+  <Folder Name="/Solution Items/CI/" />
+  <Folder Name="/Solution Items/CI/Azure/">
+    <File Path=".vsts-ci.yml" />
+    <File Path="Build/steps.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/CI/GitHub/">
+    <File Path=".github/workflows/main.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/Package/" />
+  <Folder Name="/Solution Items/Package/nuget/">
+    <File Path="Package/nuget/DynamicLanguageRuntime.nuspec" />
+    <File Path="Package/nuget/NuGet.Packaging.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/ClrAssembly/ClrAssembly.csproj">
+      <BuildDependency Project="Src/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
+    </Project>
+    <Project Path="Tests/Metadata/Metadata.csproj" />
+    <Project Path="Tests/Microsoft.Dynamic.Test/Microsoft.Dynamic.Test.csproj" />
+    <Project Path="Tests/Microsoft.Scripting.Test/Microsoft.Scripting.Test.csproj" />
+  </Folder>
+  <Project Path="Src/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
+  <Project Path="Src/Microsoft.Scripting.Metadata/Microsoft.Scripting.Metadata.csproj" />
+  <Project Path="Src/Microsoft.Scripting/Microsoft.Scripting.csproj" />
+</Solution>

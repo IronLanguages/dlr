@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
-    <Solution>$(RootDir)\Dlr.sln</Solution>
+    <Solution>$(RootDir)\Dlr.slnx</Solution>
 
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
