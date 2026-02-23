@@ -2,7 +2,7 @@
 [CmdletBinding()]
 Param(
     [Parameter(Position=1)]
-    [String] $target = "release",
+    [String] $target = "build",
     [String] $configuration = "Release",
     [String[]] $frameworks=@('net462','net8.0','net9.0','net10.0'),
     [String] $platform = $null,  # auto-detect
@@ -181,14 +181,20 @@ switch -wildcard ($target) {
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
     "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks $platform; break }
+    "test-debug"    { Test "all" "Debug" $frameworks $platform; break }
 
     # release targets
-    "restore"       { Main "RestoreReferences" "Release" }
     "release"       { Main "Build" "Release" }
-    "clean"         { Main "Clean" "Release" }
-    "stage"         { Main "Stage" "Release" }
-    "package"       { Main "Package" "Release" }
-    "test-*"        { Test $target.Substring(5) "Release" $frameworks $platform; break }
+
+    # general targets
+    "restore"       { Main "RestoreReferences" $configuration }
+    "build"         { Main "Build" $configuration }
+    "clean"         { Main "Clean" $configuration }
+    "stage"         { Main "Stage" $configuration }
+    "package"       { Main "Package" $configuration }
+    "test-*"        { Test $target.Substring(5) $configuration $frameworks $platform; break }
+    "test"          { Test "all" $configuration $frameworks $platform; break }
+
 
     default { Write-Error "No target '$target'" ; Exit -1 }
 }
