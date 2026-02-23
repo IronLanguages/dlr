@@ -140,9 +140,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         public TConsoleOptions ConsoleOptions {
             get {
-                if (_consoleOptions == null) {
-                    _consoleOptions = new TConsoleOptions();
-                }
+                _consoleOptions ??= new TConsoleOptions();
 
                 return _consoleOptions;
             }

@@ -44,17 +44,13 @@ namespace Microsoft.Scripting.Actions {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public MethodInfo GetCallableAddMethod() {
-            if (_addMethod == null) {
-                _addMethod = _eventInfo.GetAddMethod(true);
-            }
+            _addMethod ??= _eventInfo.GetAddMethod(true);
             return _addMethod;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public MethodInfo GetCallableRemoveMethod() {
-            if (_removeMethod == null) {
-                _removeMethod = _eventInfo.GetRemoveMethod(true);
-            }
+            _removeMethod ??= _eventInfo.GetRemoveMethod(true);
             return _removeMethod;
         }
 

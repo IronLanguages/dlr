@@ -293,9 +293,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private ParameterExpression AddTemp(ParameterExpression variable) {
-            if (_temps == null) {
-                _temps = new ReadOnlyCollectionBuilder<ParameterExpression>();
-            }
+            _temps ??= new ReadOnlyCollectionBuilder<ParameterExpression>();
 
             _temps.Add(variable);
             return variable;

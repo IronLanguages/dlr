@@ -100,9 +100,7 @@ namespace Microsoft.Scripting.Interpreter {
             VariableScope newScope;
             if (_variables.TryGetValue(variable, out VariableScope existing)) {
                 newScope = new VariableScope(result, start, existing);
-                if (existing.ChildScopes == null) {
-                    existing.ChildScopes = new List<VariableScope>();
-                }
+                existing.ChildScopes ??= new List<VariableScope>();
                 existing.ChildScopes.Add(newScope);
             } else {
                 newScope = new VariableScope(result, start, null);
@@ -198,9 +196,7 @@ namespace Microsoft.Scripting.Interpreter {
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; private set; }
 
         internal LocalVariable AddClosureVariable(ParameterExpression variable) {
-            if (ClosureVariables == null) {
-                ClosureVariables = new Dictionary<ParameterExpression, LocalVariable>();
-            }
+            ClosureVariables ??= new Dictionary<ParameterExpression, LocalVariable>();
             LocalVariable result = new LocalVariable(ClosureVariables.Count, true, false);
             ClosureVariables.Add(variable, result);
             return result;

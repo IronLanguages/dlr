@@ -72,9 +72,7 @@ namespace Microsoft.Scripting.Interpreter {
             Debug.Assert(((_targetIndex == UnknownIndex) == (_continuationStackDepth == UnknownDepth)));
 
             if (_targetIndex == UnknownIndex) {
-                if (_forwardBranchFixups == null) {
-                    _forwardBranchFixups = new List<int>();
-                }
+                _forwardBranchFixups ??= new List<int>();
                 _forwardBranchFixups.Add(branchIndex);
             } else {
                 FixupBranch(instructions, branchIndex);

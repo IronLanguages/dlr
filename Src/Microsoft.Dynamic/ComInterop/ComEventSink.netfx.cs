@@ -125,9 +125,7 @@ namespace Microsoft.Scripting.ComInterop {
                 ComEventSinkMethod sinkMethod = FindSinkMethod(name);
 
                 if (sinkMethod == null) {
-                    if (_comEventSinkMethods == null) {
-                        _comEventSinkMethods = new List<ComEventSinkMethod>();
-                    }
+                    _comEventSinkMethods ??= new List<ComEventSinkMethod>();
 
                     sinkMethod = new ComEventSinkMethod();
                     sinkMethod._name = name;

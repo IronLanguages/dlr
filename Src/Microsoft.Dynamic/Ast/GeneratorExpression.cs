@@ -59,9 +59,7 @@ namespace Microsoft.Scripting.Ast {
         public bool RewriteAssignments { get; }
 
         public override Expression Reduce() {
-            if (_reduced == null) {
-                _reduced = new GeneratorRewriter(this).Reduce();
-            }
+            _reduced ??= new GeneratorRewriter(this).Reduce();
             return _reduced;
         }
 

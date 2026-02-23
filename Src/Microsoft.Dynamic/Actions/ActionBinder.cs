@@ -122,9 +122,7 @@ namespace Microsoft.Scripting.Actions {
             List<Type> genTypes = null;
             foreach (Type t in type.GetDeclaredNestedTypes()) {
                 if (t.IsPublic && t.Name.StartsWith(genName, StringComparison.Ordinal)) {
-                    if (genTypes == null) {
-                        genTypes = new List<Type>();
-                    }
+                    genTypes ??= new List<Type>();
 
                     genTypes.Add(t);
                 }

@@ -826,9 +826,7 @@ namespace Microsoft.Scripting.Interpreter {
                 Debug.Assert(label != null);
             }
 
-            if (label == null) {
-                label = DefineLabel(node.Target);
-            }
+            label ??= DefineLabel(node.Target);
 
             if (node.DefaultValue != null) {
                 if (node.Target.Type == typeof(void)) {

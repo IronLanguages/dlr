@@ -527,9 +527,7 @@ namespace Microsoft.Scripting.Runtime {
                 List<SiteKey> toRemove = null;
                 foreach (SiteKey sk in _sites.Keys) {
                     if (sk.HitCount < (avgUse - RemoveThreshold)) {
-                        if (toRemove == null) {
-                            toRemove = new List<SiteKey>();
-                        }
+                        toRemove ??= new List<SiteKey>();
 
                         toRemove.Add(sk);
                         if (toRemove.Count > StopCleanupThreshold) {

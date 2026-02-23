@@ -327,9 +327,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             for (int i = 0; i < ArgBuilders.Count; i++) {
                 Expression next = ArgBuilders[i].UpdateFromReturn(Resolver, restrictedArgs);
                 if (next != null) {
-                    if (updates == null) {
-                        updates = new List<Expression>();
-                    }
+                    updates ??= new List<Expression>();
                     updates.Add(next);
                 }
             }
@@ -372,9 +370,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         // see if this has a temp that needs to be passed as the actual argument
                         Expression byref = ArgBuilders[i].ByRefArgument;
                         if (byref != null) {
-                            if (actualArgs == null) {
-                                actualArgs = new Expression[ArgBuilders.Count];
-                            }
+                            actualArgs ??= new Expression[ArgBuilders.Count];
                             actualArgs[i] = byref;
                         }
                     }

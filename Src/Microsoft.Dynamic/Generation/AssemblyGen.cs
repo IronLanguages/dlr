@@ -45,9 +45,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
 #if FEATURE_ASSEMBLYBUILDER_SAVE
-            if (outFileExtension == null) {
-                outFileExtension = ".dll";
-            }
+            outFileExtension ??= ".dll";
 
             if (outDir != null) {
                 try {

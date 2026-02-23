@@ -14,9 +14,7 @@ namespace Microsoft.Scripting.Metadata {
         private static Dictionary<Assembly, MetadataTables[]> _metadataCache;
 
         private static MetadataTables[] GetAsseblyMetadata(Assembly assembly) {
-            if (_metadataCache == null) {
-                _metadataCache = new Dictionary<Assembly, MetadataTables[]>();
-            }
+            _metadataCache ??= new Dictionary<Assembly, MetadataTables[]>();
 
             lock (_metadataCache) {
                 if (!_metadataCache.TryGetValue(assembly, out MetadataTables[] metadata)) {

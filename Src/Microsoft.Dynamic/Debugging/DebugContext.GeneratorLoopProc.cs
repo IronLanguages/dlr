@@ -13,8 +13,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
 
         internal static object DebugYieldValue {
             get {
-                if (_debugYieldValue == null)
-                    _debugYieldValue = new object();
+                _debugYieldValue ??= new object();
                 return _debugYieldValue; 
             }
         }

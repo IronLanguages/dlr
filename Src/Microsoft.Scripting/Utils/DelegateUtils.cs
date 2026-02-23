@@ -35,9 +35,7 @@ namespace Microsoft.Scripting.Utils {
                 Interlocked.CompareExchange(ref _assembly, newAssembly, null);
 
                 lock (_assembly) {
-                    if (_modBuilder == null) {
-                        _modBuilder = _assembly.DefineDynamicModule("DynamicDelegates");
-                    }
+                    _modBuilder ??= _assembly.DefineDynamicModule("DynamicDelegates");
                 }
             }
 

@@ -27,9 +27,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
-            if (_tmp == null) {
-                _tmp = resolver.GetTemporary(Type, "outParam");
-            }
+            _tmp ??= resolver.GetTemporary(Type, "outParam");
 
             return Expression.Block(Expression.Assign(_tmp, base.ToExpression(resolver, args, hasBeenUsed)), _tmp);
         }

@@ -1156,18 +1156,14 @@ namespace Microsoft.Scripting.Utils {
 
                 var mods = paramInfos[i].GetRequiredCustomModifiers();
                 if (mods.Length > 0) {
-                    if (parameterRequiredModifiers == null) {
-                        parameterRequiredModifiers = new Type[paramInfos.Length][];
-                    }
+                    parameterRequiredModifiers ??= new Type[paramInfos.Length][];
 
                     parameterRequiredModifiers[i] = mods;
                 }
 
                 mods = paramInfos[i].GetOptionalCustomModifiers();
                 if (mods.Length > 0) {
-                    if (parameterOptionalModifiers == null) {
-                        parameterOptionalModifiers = new Type[paramInfos.Length][];
-                    }
+                    parameterOptionalModifiers ??= new Type[paramInfos.Length][];
 
                     parameterOptionalModifiers[i] = mods;
                 }
@@ -1276,9 +1272,7 @@ namespace Microsoft.Scripting.Utils {
             useCache &= !assembly.IsDynamic;
 #endif
             if (useCache) {
-                if (_extensionMethodsCache == null) {
-                    _extensionMethodsCache = new Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>>();
-                }
+                _extensionMethodsCache ??= new Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>>();
 
                 lock (_extensionMethodsCache) {
                     if (_extensionMethodsCache.TryGetValue(assembly, out Dictionary<string, List<ExtensionMethodInfo>> existing)) {
@@ -1305,9 +1299,7 @@ namespace Microsoft.Scripting.Utils {
 
                 string ns = method.DeclaringType.Namespace ?? string.Empty;
 
-                if (result == null) {
-                    result = new Dictionary<string, List<ExtensionMethodInfo>>();
-                }
+                result ??= new Dictionary<string, List<ExtensionMethodInfo>>();
 
                 if (!result.TryGetValue(ns, out List<ExtensionMethodInfo> extensions)) {
                     result.Add(ns, extensions = new List<ExtensionMethodInfo>());
