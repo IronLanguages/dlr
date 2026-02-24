@@ -76,10 +76,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         internal MSAst.LambdaExpression Transform(MSAst.LambdaExpression lambda) {
-            if (_alias == null) {
-                _alias = lambda.Name;
-                _alias ??= "$lambda" + ++_lambdaId;
-            }
+            _alias ??= lambda.Name ?? "$lambda" + ++_lambdaId;
 
             // Create lambda builders
             _lambdaVars = new List<MSAst.ParameterExpression>();
