@@ -61,9 +61,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             BitArray specialParameters = _resolver.MapSpecialParameters(this);
 
-            if (_instanceBuilder == null) {
-                _instanceBuilder = new InstanceBuilder(-1);
-            }
+            _instanceBuilder ??= new InstanceBuilder(-1);
 
             foreach (var parameter in Overload.Parameters) {
                 if (!IsSpecialParameter(specialParameters, parameter.Position)) {

@@ -92,9 +92,7 @@ namespace Microsoft.Scripting.ComInterop {
             // try lifted conversion
             if (nnExprType != convertFrom || nnConvType != convertToType) {
                 method = FindConversionOperator(eMethods, nnExprType, nnConvType, implicitOnly);
-                if (method == null) {
-                    method = FindConversionOperator(cMethods, nnExprType, nnConvType, implicitOnly);
-                }
+                method ??= FindConversionOperator(cMethods, nnExprType, nnConvType, implicitOnly);
                 if (method != null) {
                     return method;
                 }

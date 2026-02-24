@@ -49,9 +49,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected LanguageContext Language {
             get {
                 // LanguageContext is not remotable, and this only works in the same AppDomain.
-                if (_language == null) {
-                    _language = HostingHelpers.GetLanguageContext(_engine);
-                }
+                _language ??= HostingHelpers.GetLanguageContext(_engine);
                 return _language;
             }
         }
@@ -61,9 +59,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected virtual string Logo { get { return null; } }
 
         protected virtual void Initialize() {
-            if (_commandDispatcher == null) {
-                _commandDispatcher = CreateCommandDispatcher();
-            }
+            _commandDispatcher ??= CreateCommandDispatcher();
         }
 
         protected virtual Scope CreateScope() {
@@ -204,9 +200,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         protected virtual int RunInteractiveLoop() {
-            if (_scope == null) {
-                _scope = _engine.CreateScope();
-            }
+            _scope ??= _engine.CreateScope();
 
 #if FEATURE_REMOTING
             string remoteRuntimeChannel = _options.RemoteRuntimeChannel;

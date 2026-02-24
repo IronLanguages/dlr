@@ -256,9 +256,7 @@ namespace Microsoft.Scripting.Actions {
                     existingTypeEntity = kvp.Value.UpdateTypeEntity((TypeTracker)existingTypeEntity, name);
                 }
 
-                if (existingTypeEntity == null) {
-                    existingTypeEntity = CheckForUnlistedType(name);
-                }
+                existingTypeEntity ??= CheckForUnlistedType(name);
 
                 if (existingTypeEntity != null) {
                     _dict[name] = existingTypeEntity;

@@ -105,9 +105,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         private ParameterExpression ParamVariantsVariable {
             get {
-                if (_paramVariants == null) {
-                    _paramVariants = Expression.Variable(VariantArray.GetStructType(_args.Length), "paramVariants");
-                }
+                _paramVariants ??= Expression.Variable(VariantArray.GetStructType(_args.Length), "paramVariants");
                 return _paramVariants;
             }
         }
@@ -126,9 +124,7 @@ namespace Microsoft.Scripting.ComInterop {
             // the assumption is that whoever matched it with ByRef arginfo took care of this.
             if (isByRef) {
                 // Null just means that null was supplied.
-                if (marshalType == null) {
-                    marshalType = mo.Expression.Type;
-                }
+                marshalType ??= mo.Expression.Type;
                 marshalType = marshalType.MakeByRefType();
             }
             return marshalType;

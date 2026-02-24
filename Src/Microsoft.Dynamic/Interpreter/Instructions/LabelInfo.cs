@@ -134,9 +134,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void EnsureLabel(LightCompiler compiler) {
-            if (_label == null) {
-                _label = compiler.Instructions.MakeLabel();
-            }
+            _label ??= compiler.Instructions.MakeLabel();
         }        
 
         private bool DefinedIn(LabelScopeInfo scope) {
@@ -268,9 +266,7 @@ namespace Microsoft.Scripting.Interpreter {
         internal void AddLabelInfo(LabelTarget target, LabelInfo info) {
             Debug.Assert(CanJumpInto);
 
-            if (Labels == null) {
-                Labels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
-            }
+            Labels ??= new HybridReferenceDictionary<LabelTarget, LabelInfo>();
 
             Labels[target] = info;
         }

@@ -76,13 +76,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         internal MSAst.LambdaExpression Transform(MSAst.LambdaExpression lambda) {
-            if (_alias == null) {
-                _alias = lambda.Name;
-
-                if (_alias == null) {
-                    _alias = "$lambda" + ++_lambdaId;
-                }
-            }
+            _alias ??= lambda.Name ?? "$lambda" + ++_lambdaId;
 
             // Create lambda builders
             _lambdaVars = new List<MSAst.ParameterExpression>();
@@ -394,8 +388,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         private MSAst.Expression TransformToGeneratorBody(MSAst.Expression body) {
-            if (_generatorLabelTarget == null)
-                _generatorLabelTarget = Ast.Label(typeof(object));
+            _generatorLabelTarget ??= Ast.Label(typeof(object));
 
             DebugInfoRewriter debugInfoToYieldRewriter = new DebugInfoRewriter(
                 _debugContext,

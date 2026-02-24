@@ -39,9 +39,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public override int Priority => 5;
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
-            if (_tmp == null) {
-                _tmp = resolver.GetTemporary(_elementType, "outParam");
-            }
+            _tmp ??= resolver.GetTemporary(_elementType, "outParam");
 
             Debug.Assert(!hasBeenUsed[Index]);
             hasBeenUsed[Index] = true;

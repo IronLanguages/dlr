@@ -85,9 +85,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public void AddHandler(int dispid, object func) {
             ComEventsMethod method = FindMethod(dispid);
-            if (method == null) {
-                method = AddMethod(dispid);
-            }
+            method ??= AddMethod(dispid);
             method.AddDelegate(new SplatCallSite(func).Invoke);
         }
 

@@ -168,9 +168,7 @@ namespace Microsoft.Scripting.Generation {
                 return false;
             }
 
-            if (_delegateTypes == null) {
-                _delegateTypes = new Dictionary<Type, Type>();
-            }
+            _delegateTypes ??= new Dictionary<Type, Type>();
 
             // TODO: should caching move to AssemblyGen?
             if (!_delegateTypes.TryGetValue(delegateType, out newDelegateType)) {

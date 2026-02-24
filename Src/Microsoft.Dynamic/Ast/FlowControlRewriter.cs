@@ -120,9 +120,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private void EnsureFlow(BlockInfo block) {
-            if (_flowVariable == null) {
-                _flowVariable = Expression.Variable(typeof(int), "$flow");
-            }
+            _flowVariable ??= Expression.Variable(typeof(int), "$flow");
             if (!block.HasFlow) {
                 block.FlowLabel = Expression.Label();
                 block.NeedFlowLabels = new HashSet<LabelTarget>();

@@ -47,9 +47,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public override Expression Reduce() {
-            if (_reduced == null) {
-                _reduced = new FlowControlRewriter().Reduce(_body);
-            }
+            _reduced ??= new FlowControlRewriter().Reduce(_body);
             return _reduced;
         }
 

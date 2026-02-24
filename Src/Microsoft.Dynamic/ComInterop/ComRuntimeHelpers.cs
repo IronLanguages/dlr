@@ -592,9 +592,7 @@ namespace Microsoft.Scripting.ComInterop {
             get {
                 if (_IDispatchInvokeNoResultImpl == null) {
                     lock (_IDispatchInvoke) {
-                        if (_IDispatchInvokeNoResultImpl == null) {
-                            _IDispatchInvokeNoResultImpl = Create_IDispatchInvoke(false);
-                        }
+                        _IDispatchInvokeNoResultImpl ??= Create_IDispatchInvoke(false);
                     }
                 }
                 return _IDispatchInvokeNoResultImpl;

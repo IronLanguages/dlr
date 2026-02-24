@@ -18,9 +18,7 @@ namespace Microsoft.Scripting.Generation {
         /// </summary>
         public ILGen TypeInitializer {
             get {
-                if (_initGen == null) {
-                    _initGen = new ILGen(TypeBuilder.DefineTypeInitializer().GetILGenerator());
-                }
+                _initGen ??= new ILGen(TypeBuilder.DefineTypeInitializer().GetILGenerator());
                 return _initGen;
             }
         }

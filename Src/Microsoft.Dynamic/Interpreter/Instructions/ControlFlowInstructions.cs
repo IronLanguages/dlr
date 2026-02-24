@@ -106,9 +106,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public override Instruction[] Cache {
             get {
-                if (_caches == null) {
-                    _caches = new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
-                }
+                _caches ??= new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
                 return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }

@@ -372,9 +372,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             _commandLine = CreateCommandLine();
 
-            if (_console == null) {
-                _console = CreateConsole(Engine, _commandLine, _consoleOptions);
-            }
+            _console ??= CreateConsole(Engine, _commandLine, _consoleOptions);
 
             int? exitCodeOverride = null;
 

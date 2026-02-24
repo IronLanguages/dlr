@@ -85,9 +85,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         internal ParameterExpression GetTemporary(Type type, string name) {
             Assert.NotNull(type);
 
-            if (_temps == null) {
-                _temps = new List<ParameterExpression>();
-            }
+            _temps ??= new List<ParameterExpression>();
 
             ParameterExpression res = Expression.Variable(type, name);
             _temps.Add(res);
@@ -294,9 +292,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     AddTarget(target);
                 }
                 
-                if (_paramsCandidates == null) {
-                    _paramsCandidates = new List<MethodCandidate>();
-                }
+                _paramsCandidates ??= new List<MethodCandidate>();
                 _paramsCandidates.Add(target);
             } else {
                 AddTarget(target);
@@ -487,9 +483,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private static void AddFailure(ref List<CallFailure> failures, CallFailure failure) {
-            if (failures == null) {
-                failures = new List<CallFailure>(1);
-            }
+            failures ??= new List<CallFailure>(1);
             failures.Add(failure);
         }
 

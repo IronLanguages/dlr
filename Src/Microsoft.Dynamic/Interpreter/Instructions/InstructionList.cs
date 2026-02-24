@@ -199,9 +199,7 @@ namespace Microsoft.Scripting.Interpreter {
         [Conditional("DEBUG")]
         public void SetDebugCookie(object cookie) {
 #if DEBUG
-            if (_debugCookies == null) {
-                _debugCookies = new List<KeyValuePair<int, object>>();
-            }
+            _debugCookies ??= new List<KeyValuePair<int, object>>();
 
             Debug.Assert(Count > 0);
             _debugCookies.Add(new KeyValuePair<int, object>(Count - 1, cookie));
@@ -310,9 +308,7 @@ namespace Microsoft.Scripting.Interpreter {
                 
                 if (value is int i) {
                     if (i >= PushIntMinCachedValue && i <= PushIntMaxCachedValue) {
-                        if (_ints == null) {
-                            _ints = new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
-                        }
+                        _ints ??= new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
                         i -= PushIntMinCachedValue;
                         Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(value)));
                         return;
@@ -322,9 +318,7 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (_objects == null) {
                 _objects = new List<object>();
-                if (_loadObjectCached == null) {
-                    _loadObjectCached = new Instruction[CachedObjectCount];
-                }
+                _loadObjectCached ??= new Instruction[CachedObjectCount];
             }
 
             if (_objects.Count < _loadObjectCached.Length) {
@@ -374,9 +368,7 @@ namespace Microsoft.Scripting.Interpreter {
         private static Instruction[] _parameter;
 
         public void EmitLoadLocal(int index) {
-            if (_loadLocal == null) {
-                _loadLocal = new Instruction[LocalInstrCacheSize];
-            }
+            _loadLocal ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _loadLocal.Length) {
                 Emit(_loadLocal[index] ?? (_loadLocal[index] = new LoadLocalInstruction(index)));
@@ -390,9 +382,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction LoadLocalBoxed(int index) {
-            if (_loadLocalBoxed == null) {
-                _loadLocalBoxed = new Instruction[LocalInstrCacheSize];
-            }
+            _loadLocalBoxed ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _loadLocalBoxed.Length) {
                 return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
@@ -402,9 +392,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitLoadLocalFromClosure(int index) {
-            if (_loadLocalFromClosure == null) {
-                _loadLocalFromClosure = new Instruction[LocalInstrCacheSize];
-            }
+            _loadLocalFromClosure ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _loadLocalFromClosure.Length) {
                 Emit(_loadLocalFromClosure[index] ?? (_loadLocalFromClosure[index] = new LoadLocalFromClosureInstruction(index)));
@@ -414,9 +402,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitLoadLocalFromClosureBoxed(int index) {
-            if (_loadLocalFromClosureBoxed == null) {
-                _loadLocalFromClosureBoxed = new Instruction[LocalInstrCacheSize];
-            }
+            _loadLocalFromClosureBoxed ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _loadLocalFromClosureBoxed.Length) {
                 Emit(_loadLocalFromClosureBoxed[index] ?? (_loadLocalFromClosureBoxed[index] = new LoadLocalFromClosureBoxedInstruction(index)));
@@ -426,9 +412,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitAssignLocal(int index) {
-            if (_assignLocal == null) {
-                _assignLocal = new Instruction[LocalInstrCacheSize];
-            }
+            _assignLocal ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _assignLocal.Length) {
                 Emit(_assignLocal[index] ?? (_assignLocal[index] = new AssignLocalInstruction(index)));
@@ -438,9 +422,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitStoreLocal(int index) {
-            if (_storeLocal == null) {
-                _storeLocal = new Instruction[LocalInstrCacheSize];
-            }
+            _storeLocal ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _storeLocal.Length) {
                 Emit(_storeLocal[index] ?? (_storeLocal[index] = new StoreLocalInstruction(index)));
@@ -454,9 +436,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction AssignLocalBoxed(int index) {
-            if (_assignLocalBoxed == null) {
-                _assignLocalBoxed = new Instruction[LocalInstrCacheSize];
-            }
+            _assignLocalBoxed ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _assignLocalBoxed.Length) {
                 return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
@@ -470,9 +450,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction StoreLocalBoxed(int index) {
-            if (_storeLocalBoxed == null) {
-                _storeLocalBoxed = new Instruction[LocalInstrCacheSize];
-            }
+            _storeLocalBoxed ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _storeLocalBoxed.Length) {
                 return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
@@ -482,9 +460,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitAssignLocalToClosure(int index) {
-            if (_assignLocalToClosure == null) {
-                _assignLocalToClosure = new Instruction[LocalInstrCacheSize];
-            }
+            _assignLocalToClosure ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _assignLocalToClosure.Length) {
                 Emit(_assignLocalToClosure[index] ?? (_assignLocalToClosure[index] = new AssignLocalToClosureInstruction(index)));
@@ -514,9 +490,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction Parameter(int index) {
-            if (_parameter == null) {
-                _parameter = new Instruction[LocalInstrCacheSize];
-            }
+            _parameter ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _parameter.Length) {
                 return _parameter[index] ?? (_parameter[index] = new InitializeLocalInstruction.Parameter(index));
@@ -526,9 +500,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction ParameterBox(int index) {
-            if (_parameterBox == null) {
-                _parameterBox = new Instruction[LocalInstrCacheSize];
-            }
+            _parameterBox ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _parameterBox.Length) {
                 return _parameterBox[index] ?? (_parameterBox[index] = new InitializeLocalInstruction.ParameterBox(index));
@@ -538,9 +510,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction InitReference(int index) {
-            if (_initReference == null) {
-                _initReference = new Instruction[LocalInstrCacheSize];
-            }
+            _initReference ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _initReference.Length) {
                 return _initReference[index] ?? (_initReference[index] = new InitializeLocalInstruction.Reference(index));
@@ -550,9 +520,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal static Instruction InitImmutableRefBox(int index) {
-            if (_initImmutableRefBox == null) {
-                _initImmutableRefBox = new Instruction[LocalInstrCacheSize];
-            }
+            _initImmutableRefBox ??= new Instruction[LocalInstrCacheSize];
 
             if (index < _initImmutableRefBox.Length) {
                 return _initImmutableRefBox[index] ?? (_initImmutableRefBox[index] = new InitializeLocalInstruction.ImmutableBox(index, null));
@@ -862,9 +830,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public BranchLabel MakeLabel() {
-            if (_labels == null) {
-                _labels = new List<BranchLabel>();
-            }
+            _labels ??= new List<BranchLabel>();
 
             var label = new BranchLabel();
             _labels.Add(label);
