@@ -157,10 +157,10 @@ namespace Microsoft.Scripting {
         }
 
         /// <summary>
-        /// This will take an assembly object which the user has loaded and return a new set of ScriptCode’s which have 
+        /// This will take an assembly object which the user has loaded and return a new set of ScriptCode's which have 
         /// been loaded into the provided ScriptDomainManager.  
         /// 
-        /// If the language associated with the ScriptCode’s has not already been loaded the DLR will load the 
+        /// If the language associated with the ScriptCode's has not already been loaded the DLR will load the 
         /// LanguageContext into the ScriptDomainManager based upon the saved LanguageContext type.  
         /// 
         /// If the LanguageContext or the version of the DLR the language was compiled against is unavailable a 
