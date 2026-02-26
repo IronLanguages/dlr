@@ -184,8 +184,7 @@ namespace Microsoft.Scripting.Runtime {
                 return;
             }
 
-            BoundMemberTracker bmt = value as BoundMemberTracker;
-            if (bmt == null) {
+            if (value is not BoundMemberTracker bmt) {
                 throw Error.ExpectedBoundEvent(CompilerHelpers.GetType(value).Name);
             }
             if (bmt.BoundTo.MemberType != TrackerTypes.Event) throw Error.ExpectedBoundEvent(bmt.BoundTo.MemberType.ToString());

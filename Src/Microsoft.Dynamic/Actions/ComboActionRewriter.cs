@@ -51,9 +51,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         protected override Expression VisitDynamic(DynamicExpression node) {
-            DynamicMetaObjectBinder metaBinder = node.Binder as DynamicMetaObjectBinder;
-
-            if (metaBinder == null) {
+            if (node.Binder is not DynamicMetaObjectBinder metaBinder) {
                 // don't rewrite non meta-binder nodes, we can't compose them
                 return node;
             }
@@ -77,9 +75,7 @@ namespace Microsoft.Scripting.Actions {
                     // attempt to combine the arguments...
                     Expression rewritten = Visit(e);
 
-                    ComboDynamicSiteExpression combo = rewritten as ComboDynamicSiteExpression;
-                    ConstantExpression ce;
-                    if (combo != null) {
+                    if (rewritten is ComboDynamicSiteExpression combo) {
                         // an action expression we can combine with our own expression
 
                         // remember how many actions we have so far - if any of our children consume
@@ -109,7 +105,7 @@ namespace Microsoft.Scripting.Actions {
                         }
 
                         myInfo.Add(ParameterMappingInfo.Action(actionCount++));
-                    } else if ((ce = rewritten as ConstantExpression) != null) {
+                    } else if (rewritten is ConstantExpression ce) {
                         // we can hoist the constant into the combo
                         myInfo.Add(ParameterMappingInfo.Fixed(ce));
                     } else if (IsSideEffectFree(rewritten)) {

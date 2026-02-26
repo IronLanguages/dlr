@@ -100,8 +100,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             public override bool Equals(object obj) {
-                MethodBaseCache other = obj as MethodBaseCache;
-                if (other == null || _members.Length != other._members.Length || other._name != _name) {
+                if (obj is not MethodBaseCache other || _members.Length != other._members.Length || other._name != _name) {
                     return false;
                 }
 

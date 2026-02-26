@@ -163,8 +163,7 @@ namespace Microsoft.Scripting.Actions {
 
                     case ArgumentType.List:
                         // TODO: lazy splat
-                        IList<object> list = arg.Value as IList<object>;
-                        if (list == null) {
+                        if (arg.Value is not IList<object> list) {
                             _invalidSplattee = arg;
                             return null;
                         }

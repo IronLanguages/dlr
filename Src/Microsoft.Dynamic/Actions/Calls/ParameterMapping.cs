@@ -301,8 +301,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     List<int> nameIndices = new List<int>();
 
                     foreach (MemberInfo mi in bindableMembers) {
-                        PropertyInfo pi = mi as PropertyInfo;
-                        var type = (pi != null) ? pi.PropertyType : ((FieldInfo)mi).FieldType;
+                        var type = mi is PropertyInfo pi ? pi.PropertyType : ((FieldInfo)mi).FieldType;
                         
                         _parameters.Add(new ParameterWrapper(null, type, mi.Name, ParameterBindingFlags.None));
                         nameIndices.Add(_argNames.IndexOf(mi.Name));

@@ -44,8 +44,7 @@ namespace Microsoft.Scripting.Ast {
         public virtual void AddInstructions(LightCompiler compiler) {
             Instruction instr = DynamicInstructionN.CreateUntypedInstruction(_binder, ArgumentCount);
             if (instr == null) {
-                var lightBinder = _binder as ILightCallSiteBinder;
-                if (lightBinder == null || !lightBinder.AcceptsArgumentArray) {
+                if (_binder is not ILightCallSiteBinder lightBinder || !lightBinder.AcceptsArgumentArray) {
                     compiler.Compile(Reduce());
                     return;
                 }

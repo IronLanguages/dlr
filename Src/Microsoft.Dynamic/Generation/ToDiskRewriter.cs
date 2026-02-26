@@ -227,8 +227,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private Expression RewriteCallSite(CallSite site) {
-            IExpressionSerializable serializer = site.Binder as IExpressionSerializable;
-            if (serializer == null) {
+            if (site.Binder is not IExpressionSerializable serializer) {
                 throw Error.GenNonSerializableBinder();
             }
 

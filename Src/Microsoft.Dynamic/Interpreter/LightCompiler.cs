@@ -438,8 +438,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileMemberAssignment(BinaryExpression node, bool asVoid) {
             var member = (MemberExpression)node.Left;
 
-            PropertyInfo pi = member.Member as PropertyInfo;
-            if (pi != null) {
+            if (member.Member is PropertyInfo pi) {
                 var method = pi.GetSetMethod(true);
                 Compile(member.Expression);
                 Compile(node.Right);
@@ -457,8 +456,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             }
 
-            FieldInfo fi = member.Member as FieldInfo;
-            if (fi != null) {
+            if (member.Member is FieldInfo fi) {
                 if (member.Expression != null) {
                     Compile(member.Expression);
                 }
@@ -1234,8 +1232,7 @@ namespace Microsoft.Scripting.Interpreter {
             var node = (MemberExpression)expr;
 
             var member = node.Member;
-            FieldInfo fi = member as FieldInfo;
-            if (fi != null) {
+            if (member is FieldInfo fi) {
                 if (fi.IsLiteral) {
                     Instructions.EmitLoad(fi.GetRawConstantValue(), fi.FieldType);
                 } else if (fi.IsStatic) {
@@ -1251,8 +1248,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             }
 
-            PropertyInfo pi = member as PropertyInfo;
-            if (pi != null) {
+            if (member is PropertyInfo pi) {
                 var method = pi.GetGetMethod(true);
                 if (node.Expression != null) {
                     Compile(node.Expression);

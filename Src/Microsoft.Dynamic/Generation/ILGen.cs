@@ -297,8 +297,7 @@ namespace Microsoft.Scripting.Generation {
         internal void Emit(OpCode opcode, MethodBase methodBase) {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
 
-            ConstructorInfo ctor = methodBase as ConstructorInfo;
-            if (ctor != null) {
+            if (methodBase is ConstructorInfo ctor) {
                 Emit(opcode, ctor);
             } else {
                 Emit(opcode, (MethodInfo)methodBase);
@@ -774,14 +773,12 @@ namespace Microsoft.Scripting.Generation {
             }
 
             // Check for a few more types that we support emitting as constants
-            Type t = value as Type;
-            if (t != null && ShouldLdtoken(t)) {
+            if (value is Type t && ShouldLdtoken(t)) {
                 EmitType(t);
                 return true;
             }
 
-            MethodBase mb = value as MethodBase;
-            if (mb != null && ShouldLdtoken(mb)) {
+            if (value is MethodBase mb && ShouldLdtoken(mb)) {
                 Emit(OpCodes.Ldtoken, mb);
                 Type dt = mb.DeclaringType;
                 if (dt != null && dt.IsGenericType) {

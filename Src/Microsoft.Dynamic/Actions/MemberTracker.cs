@@ -53,8 +53,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             public override bool Equals(object obj) {
-                MemberKey other = obj as MemberKey;
-                if (other == null) return false;
+                if (obj is not MemberKey other) return false;
 
                 return other.Member == Member &&
                     other.Extending == Extending;
@@ -98,29 +97,22 @@ namespace Microsoft.Scripting.Actions {
                     return res;
                 }
 
-                ConstructorInfo ctor;
-                EventInfo evnt;
-                FieldInfo field;
-                MethodInfo method;
-                Type type;
-                PropertyInfo property;
-
-                if ((method = member as MethodInfo) != null) {
+                if (member is MethodInfo method) {
                     if (extending != null) {
                         res = new ExtensionMethodTracker(method, member.IsDefined(typeof(StaticExtensionMethodAttribute), false), extending);
                     } else {
                         res = new MethodTracker(method);
                     }
-                } else if ((ctor = member as ConstructorInfo) != null) {
-                    res = new ConstructorTracker(ctor);
-                } else if ((field = member as FieldInfo) != null) {
-                    res = new FieldTracker(field);
-                } else if ((property = member as PropertyInfo) != null) {
-                    res = new ReflectedPropertyTracker(property);
-                } else if ((evnt = member as EventInfo) != null) {
-                    res = new EventTracker(evnt);
-                } else if ((type = member as Type) != null) {
-                    res = new NestedTypeTracker(type);
+                } else if (member is ConstructorInfo c) {
+                    res = new ConstructorTracker(c);
+                } else if (member is FieldInfo f) {
+                    res = new FieldTracker(f);
+                } else if (member is PropertyInfo p) {
+                    res = new ReflectedPropertyTracker(p);
+                } else if (member is EventInfo e) {
+                    res = new EventTracker(e);
+                } else if (member is Type t) {
+                    res = new NestedTypeTracker(t);
                 } else {
                     throw Error.UnknownMemberType(member);
                 }

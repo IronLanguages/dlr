@@ -137,8 +137,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             public override bool Equals(object obj) {
-                TypeList tl = obj as TypeList;
-                if (tl == null || _types.Length != tl._types.Length) return false;
+                if (obj is not TypeList tl || _types.Length != tl._types.Length) return false;
 
                 for (int i = 0; i < _types.Length; i++) {
                     if (_types[i] != tl._types[i]) return false;

@@ -43,9 +43,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             for (int i = 0; i < _indexesUsed.Length; i++) {
                 Expression value = args.GetObject(args.Length - _kwArgCount + _indexesUsed[i]).Expression;
                 
-                PropertyInfo pi;
-                FieldInfo fi;
-                if ((fi = _membersSet[i] as FieldInfo) != null) {
+                if (_membersSet[i] is FieldInfo fi) {
                     if (!fi.IsLiteral && !fi.IsInitOnly) {
                         sets.Add(
                             Expression.Assign(
@@ -66,7 +64,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                             )
                         );
                     }                        
-                } else if ((pi = _membersSet[i] as PropertyInfo) != null) {
+                } else if (_membersSet[i] is PropertyInfo pi) {
                     if (pi.GetSetMethod(_privateBinding) != null) {
                             sets.Add(
                                 Expression.Assign(

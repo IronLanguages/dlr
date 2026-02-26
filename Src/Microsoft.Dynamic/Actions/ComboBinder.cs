@@ -197,8 +197,7 @@ namespace Microsoft.Scripting.Actions {
         public bool IsConstant => _fixedInput != null;
 
         public override bool Equals(object obj) {
-            ParameterMappingInfo pmi = obj as ParameterMappingInfo;
-            if (pmi == null) return false;
+            if (obj is not ParameterMappingInfo pmi) return false;
 
             if (pmi.ParameterIndex == ParameterIndex && pmi.ActionIndex == ActionIndex) {
                 if (Constant != null) {
