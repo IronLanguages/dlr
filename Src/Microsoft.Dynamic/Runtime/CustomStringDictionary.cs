@@ -165,9 +165,8 @@ namespace Microsoft.Scripting.Runtime {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public object this[object key] {
             get {
-                string strKey = key as string;
                 object res;
-                if (strKey != null) {
+                if (key is string strKey) {
                     lock (this) {
                         if (TryGetExtraValue(strKey, out res) && !(res is Uninitialized)) return res;
 

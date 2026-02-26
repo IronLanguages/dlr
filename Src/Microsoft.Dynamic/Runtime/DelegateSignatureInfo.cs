@@ -30,9 +30,7 @@ namespace Microsoft.Scripting.Runtime {
         internal Type[] ParameterTypes { get; }
 
         public override bool Equals(object obj) {
-            DelegateSignatureInfo dsi = obj as DelegateSignatureInfo;
-
-            if (dsi == null ||
+            if (obj is not DelegateSignatureInfo dsi ||
                 dsi.ParameterTypes.Length != ParameterTypes.Length ||
                 dsi.ReturnType != ReturnType) {
                 return false;

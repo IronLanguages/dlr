@@ -108,29 +108,23 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private static bool MatchesFlags(MemberInfo member, BindingFlags flags) {
-            ConstructorInfo ctor;
-            MethodInfo method;
-            FieldInfo field;
-            EventInfo evnt;
-            PropertyInfo property;
-
-            if ((method = member as MethodInfo) != null) {
+            if (member is MethodInfo method) {
                 return MatchesFlags(method, flags);
             }
 
-            if ((field = member as FieldInfo) != null) {
+            if (member is FieldInfo field) {
                 return MatchesFlags(field, flags);
             }
 
-            if ((ctor = member as ConstructorInfo) != null) {
+            if (member is ConstructorInfo ctor) {
                 return MatchesFlags(ctor, flags);
             }
 
-            if ((evnt = member as EventInfo) != null) {
+            if (member is EventInfo evnt) {
                 return MatchesFlags(evnt, flags);
             }
 
-            if ((property = member as PropertyInfo) != null) {
+            if (member is PropertyInfo property) {
                 return MatchesFlags(property, flags);
             }
 
@@ -698,21 +692,18 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(nameDispenser, nameof(nameDispenser));
 
-            MethodInfo methodInfo = method as MethodInfo;
-            if (methodInfo != null) {
+            if (method is MethodInfo methodInfo) {
                 FormatTypeName(result, methodInfo.ReturnType, nameDispenser);
                 result.Append(' ');
             }
 
 #if FEATURE_REFEMIT && FEATURE_REFEMIT_FULL
-            MethodBuilder builder = method as MethodBuilder;
-            if (builder != null) {
+            if (method is MethodBuilder builder) {
                 result.Append(builder.Signature);
                 return result;
             }
 
-            ConstructorBuilder cb = method as ConstructorBuilder;
-            if (cb != null) {
+            if (method is ConstructorBuilder cb) {
                 result.Append(cb.Signature);
                 return result;
             }

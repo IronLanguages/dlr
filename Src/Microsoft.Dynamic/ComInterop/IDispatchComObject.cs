@@ -367,8 +367,7 @@ namespace Microsoft.Scripting.ComInterop {
             ComTypes.ITypeInfo classTypeInfo = null;
             Dictionary<string, ComEventDesc> events = null;
 
-            var cpc = RuntimeCallableWrapper as ComTypes.IConnectionPointContainer;
-            if (cpc == null) {
+            if (RuntimeCallableWrapper is not ComTypes.IConnectionPointContainer) {
                 // No ICPC - this object does not support events
                 events = ComTypeDesc.EmptyEvents;
             } else if ((classTypeInfo = GetCoClassTypeInfo(RuntimeCallableWrapper, typeInfo)) == null) {

@@ -283,8 +283,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 throw new InvalidOperationException("Cannot generate an expression for an overload w/o MethodBase");
             }
 
-            MethodInfo mi = mb as MethodInfo;
-            if (mi != null) {
+            if (mb is MethodInfo mi) {
                 Expression instance;
                 if (mi.IsStatic) {
                     instance = null;

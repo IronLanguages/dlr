@@ -98,10 +98,7 @@ namespace Microsoft.Scripting.Actions {
                 return newType;
             }
 
-            NestedTypeTracker existingType = existingTypeEntity as NestedTypeTracker;
-            TypeGroup existingTypeCollision = existingTypeEntity as TypeGroup;
-
-            if (existingType != null) {
+            if (existingTypeEntity is NestedTypeTracker existingType) {
                 int existingArity = GetGenericArity(existingType.Type);
                 int newArity = GetGenericArity(newType.Type);
 
@@ -112,7 +109,7 @@ namespace Microsoft.Scripting.Actions {
                 return new TypeGroup(existingType.Type, existingArity, newType.Type, newArity);
             }
 
-            return new TypeGroup(newType.Type, existingTypeCollision);
+            return new TypeGroup(newType.Type, existingTypeEntity as TypeGroup);
         }
 
         /// <summary> Gets the arity of generic parameters</summary>

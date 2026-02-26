@@ -174,8 +174,7 @@ namespace Microsoft.Scripting.Actions {
                     BindingRestrictions.GetInstanceRestriction(target.Expression, target.Value)
                 );
 
-                TypeGroup tg = target.Value as TypeGroup;
-                if (tg == null || tg.TryGetNonGenericType(out Type _)) {
+                if (target.Value is not TypeGroup tg || tg.TryGetNonGenericType(out Type _)) {
                     members = GetMember(MemberRequestKind.Get, ((TypeTracker)target.Value).Type, getMemInfo.Name);
                     if (members.Count > 0) {
                         // we have a member that's on the type associated w/ the tracker, return that...

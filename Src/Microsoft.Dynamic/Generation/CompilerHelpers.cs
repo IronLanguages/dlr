@@ -230,24 +230,20 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static MemberInfo TryGetVisibleMember(Type targetType, MemberInfo member) {
-            MethodInfo method;
-            PropertyInfo property;
-            EventInfo evnt;
-
             MethodInfo mi;
             MemberInfo visible = null;
 
-            if ((method = member as MethodInfo) != null) {
+            if (member is MethodInfo method) {
                 mi = TryGetCallableMethod(targetType, method);
                 if (CompilerHelpers.IsVisible(mi)) {
                     visible = mi;
                 }
-            } else if ((property = member as PropertyInfo) != null) {
+            } else if (member is PropertyInfo property) {
                 mi = TryGetCallableMethod(targetType, property.GetGetMethod() ?? property.GetSetMethod());
                 if (CompilerHelpers.IsVisible(mi)) {
                     visible = mi.DeclaringType.GetDeclaredProperty(property.Name);
                 }
-            } else if ((evnt = member as EventInfo) != null) {
+            } else if (member is EventInfo evnt) {
                 mi = TryGetCallableMethod(targetType, evnt.GetAddMethod() ?? evnt.GetRemoveMethod() ?? evnt.GetRaiseMethod());
                 if (CompilerHelpers.IsVisible(mi)) {
                     visible = mi.DeclaringType.GetDeclaredEvent(evnt.Name);
@@ -797,13 +793,11 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 
-            Type t = value as Type;
-            if (t != null && ILGen.ShouldLdtoken(t)) {
+            if (value is Type t && ILGen.ShouldLdtoken(t)) {
                 return true;
             }
 
-            MethodBase mb = value as MethodBase;
-            if (mb != null && ILGen.ShouldLdtoken(mb)) {
+            if (value is MethodBase mb && ILGen.ShouldLdtoken(mb)) {
                 return true;
             }
 

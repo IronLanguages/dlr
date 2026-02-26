@@ -73,8 +73,7 @@ namespace Microsoft.Scripting.ComInterop {
             ContractUtils.RequiresNotNull(msg, nameof(msg));
 
             //Only know how to handle method calls (property and fields accessors count as methods)
-            IMethodCallMessage methodCallMessage = msg as IMethodCallMessage;
-            if (methodCallMessage == null)
+            if (msg is not IMethodCallMessage methodCallMessage)
                 throw new NotSupportedException();
 
             // ComEventSink.InvokeMember is handled specially.

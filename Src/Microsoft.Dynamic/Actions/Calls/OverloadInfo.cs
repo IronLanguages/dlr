@@ -132,8 +132,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public override ParameterInfo ReturnParameter {
             get {
-                MethodInfo method = _method as MethodInfo;
-                return method != null ? method.ReturnParameter : null;
+                return _method is MethodInfo method ? method.ReturnParameter : null;
             }
         }
         

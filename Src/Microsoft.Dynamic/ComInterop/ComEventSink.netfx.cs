@@ -68,8 +68,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             Debug.Assert(_connectionPoint == null, "re-initializing event sink w/o unadvising from connection point");
 
-            ComTypes.IConnectionPointContainer cpc = rcw as ComTypes.IConnectionPointContainer;
-            if (cpc == null)
+            if (rcw is not ComTypes.IConnectionPointContainer cpc)
                 throw Error.COMObjectDoesNotSupportEvents();
 
             cpc.FindConnectionPoint(ref _sourceIid, out _connectionPoint);

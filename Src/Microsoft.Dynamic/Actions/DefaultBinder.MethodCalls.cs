@@ -184,9 +184,7 @@ namespace Microsoft.Scripting.Actions {
         /// argument is still an ICollection of object and that it has the same number of arguments.
         /// </summary>
         private static BindingRestrictions MakeParamsTest(DynamicMetaObject splattee, bool testTypes) {
-            IList<object> list = splattee.Value as IList<object>;
-
-            if (list == null) {
+            if (splattee.Value is not IList<object> list) {
                 if (splattee.Value == null) {
                     return BindingRestrictions.GetExpressionRestriction(Expression.Equal(splattee.Expression, AstUtils.Constant(null)));
                 }

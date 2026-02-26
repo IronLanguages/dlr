@@ -26,8 +26,7 @@ namespace Microsoft.Scripting.Runtime {
         public static object[] GetCombinedParameters(object[] initialArgs, object additionalArgs) {
             IList listArgs = additionalArgs as IList;
             if (listArgs == null) {
-                IEnumerable ie = additionalArgs as IEnumerable;
-                if (ie == null) {
+                if (additionalArgs is not IEnumerable ie) {
                     throw new InvalidOperationException("args must be iterable");
                 }
                 listArgs = new List<object>();
@@ -239,8 +238,7 @@ namespace Microsoft.Scripting.Runtime {
                 return;
             }
 
-            BoundMemberTracker bmt = value as BoundMemberTracker;
-            if (bmt == null) throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name);
+            if (value is not BoundMemberTracker bmt) throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name);
             if (bmt.BoundTo.MemberType != TrackerTypes.Event) throw new ArgumentTypeException("expected bound event, got " + bmt.BoundTo.MemberType.ToString());
 
             if (bmt.BoundTo != eventTracker) throw new ArgumentException(

@@ -115,8 +115,7 @@ namespace Microsoft.Scripting.Actions {
 
                 if (newType != null) {
                     object existingValue = _dict[normalizedTypeName];
-                    TypeTracker existingTypeEntity = existingValue as TypeTracker;
-                    if (existingTypeEntity == null) {
+                    if (existingValue is not TypeTracker existingTypeEntity) {
                         // Replace the existing namespace or module with the new type
                         Debug.Assert(existingValue is NamespaceTracker);
                         _dict[normalizedTypeName] = MemberTracker.FromMemberInfo(newType);

@@ -119,8 +119,7 @@ namespace Microsoft.Scripting {
                 List<CodeInfo> builders = langsWithBuilders[index].Value;
 
                 ilgen.EmitArray(typeof(string), builders.Count, (innerIndex) => {
-                    ICustomScriptCodeData data = builders[innerIndex].Code as ICustomScriptCodeData;
-                    if (data != null) {
+                    if (builders[innerIndex].Code is ICustomScriptCodeData data) {
                         ilgen.EmitString(data.GetCustomScriptCodeData());
                     } else {
                         ilgen.Emit(OpCodes.Ldnull);

@@ -525,9 +525,7 @@ namespace Microsoft.Scripting.Actions {
         private MethodInfo[] GetMethodsFromDefaults(IEnumerable<MemberInfo> defaults, IndexType op) {
             List<MethodInfo> methods = new List<MethodInfo>();
             foreach (MemberInfo mi in defaults) {
-                PropertyInfo pi = mi as PropertyInfo;
-
-                if (pi != null) {
+                if (mi is PropertyInfo pi) {
                     if (op == IndexType.Get) {
                         MethodInfo method = pi.GetGetMethod(PrivateBinding); 
                         if (method != null) methods.Add(method);
