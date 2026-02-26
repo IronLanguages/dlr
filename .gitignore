@@ -17,6 +17,7 @@ packages/*
 # Temporary VS files
 *.suo
 *.csproj.user
+*.vcxproj.user
 *.wixproj.user
 *.pidb
 
