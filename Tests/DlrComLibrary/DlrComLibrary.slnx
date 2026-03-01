@@ -1,15 +1,13 @@
 <Solution>
   <Configurations>
-    <Platform Name="Itanium" />
     <Platform Name="Win32" />
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="DlrComLibrary.vcxproj" />
-  <Project Path="DlrComLibraryPS.vcxproj">
+  <Project Path="DlrComLibrary.vcxproj" Id="36658253-c676-41e7-997f-018caf277ebb" />
+  <Project Path="DlrComLibraryPS.vcxproj" Id="6ecf7674-7549-455d-933b-dbbb7016f3e9">
     <Build Project="false" />
   </Project>
   <Project Path="Setup/Setup.vdproj" Type="Installer">
     <Build Solution="*|x64" />
-    <Build Solution="Release|Itanium" />
   </Project>
 </Solution>

@@ -1,0 +1,19 @@
+# Output directories
+Debug/
+Release/
+
+# MIDL compiler generated files
+*_i.h
+*_i.c
+*_p.c
+*_i.obj
+dlldata.c
+dlldata.obj
+*.tlb
+
+# Debug files
+*.pdb
+
+# Log files
+*.log
+*.tlog
