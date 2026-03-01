@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Ast {
 
         public virtual void AddInstructions(LightCompiler compiler) {
             Instruction instr = DynamicInstructionN.CreateUntypedInstruction(_binder, ArgumentCount);
-            if (instr == null) {
+            if (instr is null) {
                 if (_binder is not ILightCallSiteBinder lightBinder || !lightBinder.AcceptsArgumentArray) {
                     compiler.Compile(Reduce());
                     return;
@@ -533,18 +533,18 @@ namespace Microsoft.Scripting.Ast {
             for (int i = 0; i < _args.Count; i++) {
                 var newNode = visitor.Visit(_args[i]);
                 if (newNode != _args[i]) {
-                    if (newArgs == null) {
+                    if (newArgs is null) {
                         newArgs = new Expression[_args.Count];
                         for (int j = 0; j < i; j++) {
                             newArgs[j] = _args[j];
                         }
                     }
                     newArgs[i] = newNode;
-                } else if (newArgs != null) {
+                } else if (newArgs is not null) {
                     newArgs[i] = newNode;
                 }
             }
-            if (newArgs != null) {
+            if (newArgs is not null) {
                 return Rewrite(Binder, newArgs);
             }
             return this;

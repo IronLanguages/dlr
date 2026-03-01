@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 Assembly entryAssembly = Assembly.GetEntryAssembly();
                 
                 // Can be null if called from unmanaged code (VS integration scenario)
-                return entryAssembly != null ? entryAssembly.GetName().Name : "ConsoleHost";
+                return entryAssembly is not null ? entryAssembly.GetName().Name : "ConsoleHost";
             }
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
             if (!setup.LanguageSetups.Any(s => s.TypeName == provider)) {
                 var languageSetup = CreateLanguageSetup();
-                if (languageSetup != null) {
+                if (languageSetup is not null) {
                     setup.LanguageSetups.Add(languageSetup);
                 }
             }
@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         private string GetLanguageProvider(ScriptRuntimeSetup setup) {
             var providerType = Provider;
-            if (providerType != null) {
+            if (providerType is not null) {
                 return providerType.AssemblyQualifiedName;
             }
             
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 return Options.LanguageProvider;
             }
 
-            if (Options.RunFile != null) {
+            if (Options.RunFile is not null) {
                 string ext = Path.GetExtension(Options.RunFile);
                 foreach (var lang in setup.LanguageSetups) {
                     if (lang.FileExtensions.Any(e => DlrConfiguration.FileExtensionComparer.Equals(e, ext))) {
@@ -169,7 +169,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     languageSetup = language;
                 }
             }
-            if (languageSetup == null) {
+            if (languageSetup is null) {
                 // the language doesn't have a setup -> create a default one:
                 languageSetup = new LanguageSetup(Provider.AssemblyQualifiedName, Provider.Name);
                 runtimeSetup.LanguageSetups.Add(languageSetup);
@@ -179,7 +179,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             InsertSearchPaths(runtimeSetup.Options, Options.SourceUnitSearchPaths);
 
             _consoleOptions = ParseOptions(Options.IgnoredArgs.ToArray(), runtimeSetup, languageSetup);
-            if (_consoleOptions == null) {
+            if (_consoleOptions is null) {
                 return _exitCode = 1;
             }
 
@@ -214,7 +214,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         private static void InsertSearchPaths(IDictionary<string, object> options, ICollection<string> paths) {
-            if (options != null && paths != null && paths.Count > 0) {
+            if (options is not null && paths is not null && paths.Count > 0) {
                 var existingPaths = new List<string>(LanguageOptions.GetSearchPathsOption(options) ?? (IEnumerable<string>)ArrayUtils.EmptyStrings);
                 existingPaths.InsertRange(0, paths);
                 options["SearchPaths"] = existingPaths;
@@ -253,25 +253,25 @@ namespace Microsoft.Scripting.Hosting.Shell {
             CreateOptionsParser().GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
 
             // only display language specific options if one or more optinos exists.
-            if (commandLine != null || options != null || environmentVariables != null || comments != null) {
-                if (commandLine != null) {
+            if (commandLine is not null || options is not null || environmentVariables is not null || comments is not null) {
+                if (commandLine is not null) {
                     output.AppendLine(commandLine);
                     output.AppendLine();
                 }
 
-                if (options != null) {
+                if (options is not null) {
                     output.AppendLine("Options:");
                     ArrayUtils.PrintTable(output, options);
                     output.AppendLine();
                 }
 
-                if (environmentVariables != null) {
+                if (environmentVariables is not null) {
                     output.AppendLine("Environment variables:");
                     ArrayUtils.PrintTable(output, environmentVariables);
                     output.AppendLine();
                 }
 
-                if (comments != null) {
+                if (comments is not null) {
                     output.Append(comments);
                     output.AppendLine();
                 }
@@ -298,7 +298,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected virtual void ExecuteInternal() {
-            Debug.Assert(_engine != null);
+            Debug.Assert(_engine is not null);
 
             if (_consoleOptions.PrintVersion) {
                 PrintVersion();
@@ -329,7 +329,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         private void SetEnvironment() {
-            Debug.Assert(Options.EnvironmentVars != null);
+            Debug.Assert(Options.EnvironmentVars is not null);
 
             foreach (string env in Options.EnvironmentVars) {
                 if (!String.IsNullOrEmpty(env)) {
@@ -341,7 +341,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private int RunFile() {
-            Debug.Assert(_engine != null);
+            Debug.Assert(_engine is not null);
 
             int result = 0;
             try {
@@ -368,7 +368,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         private int RunCommandLine() {
-            Debug.Assert(_engine != null);
+            Debug.Assert(_engine is not null);
 
             _commandLine = CreateCommandLine();
 
@@ -400,7 +400,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #endif
             }
 
-            if (exitCodeOverride == null) {
+            if (exitCodeOverride is null) {
                 return _commandLine.ExitCode;
             }
 
@@ -421,7 +421,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
         private static string GetRuntime() {
             Type mono = typeof(object).Assembly.GetType("Mono.Runtime");
-            return mono != null ?
+            return mono is not null ?
                 (string)mono.GetMethod("GetDisplayName", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null)
                 : String.Format(CultureInfo.InvariantCulture, ".NET {0}", Environment.Version);
         }
@@ -435,10 +435,10 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected static void PrintException(TextWriter output, Exception e) {
-            Debug.Assert(output != null);
+            Debug.Assert(output is not null);
             ContractUtils.RequiresNotNull(e, nameof(e));
 
-            while (e != null) {
+            while (e is not null) {
                 output.WriteLine(e);
                 e = e.InnerException;
             }

@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Ast {
             // Collect temps that don't have to be closed over
             var innerTemps = new ReadOnlyCollectionBuilder<ParameterExpression>(1 + (_labelTemps?.Count ?? 0));
             innerTemps.Add(_gotoRouter);
-            if (_labelTemps != null) {
+            if (_labelTemps is not null) {
                 foreach (LabelInfo info in _labelTemps.Values) {
                     innerTemps.Add(info.Temp);
                 }
@@ -134,7 +134,7 @@ namespace Microsoft.Scripting.Ast {
             // after constants have already been rewritten.  Instead we create a NewArrayExpression node
             // which initializes the array with contents from _debugCookies
             Expression debugCookiesArray = null;
-            if (_debugCookies != null) {
+            if (_debugCookies is not null) {
                 Expression[] debugCookies = new Expression[_debugCookies.Count];
                 for(int i=0; i < _debugCookies.Count; i++)
                     debugCookies[i] = AstUtils.Constant(_debugCookies[i]);
@@ -149,7 +149,7 @@ namespace Microsoft.Scripting.Ast {
                 typeof(ScriptingRuntimeHelpers),
                 "MakeGenerator",
                 new[] { _generator.Target.Type },
-                (debugCookiesArray != null)
+                (debugCookiesArray is not null)
                     ? new[] { body, debugCookiesArray }
                     : new[] { body }
             );
@@ -159,7 +159,7 @@ namespace Microsoft.Scripting.Ast {
             YieldMarker result = new YieldMarker(_yields.Count + 1);
             _yields.Add(result);
             if (node.YieldMarker != -1) {
-                if (_debugCookies == null) {
+                if (_debugCookies is null) {
                     _debugCookies = new List<int>(1);
                     _debugCookies.Add(Int32.MaxValue);
                 }
@@ -276,7 +276,7 @@ namespace Microsoft.Scripting.Ast {
             int startYields = _yields.Count;
 
             bool savedInTryWithFinally = _inTryWithFinally;
-            if (node.Finally != null || node.Fault != null) {
+            if (node.Finally is not null || node.Fault is not null) {
                 _inTryWithFinally = true;
             }
             Expression @try = Visit(node.Body);
@@ -307,7 +307,7 @@ namespace Microsoft.Scripting.Ast {
                 return Expression.MakeTry(null, @try, @finally, fault, handlers);
             }
 
-            if (fault != null && finallyYields != catchYields) {
+            if (fault is not null && finallyYields != catchYields) {
                 // No one needs this yet, and it's not clear how we should get back to
                 // the fault
                 throw new NotSupportedException("yield in fault block is not supported");
@@ -351,7 +351,7 @@ namespace Microsoft.Scripting.Ast {
                     // We need to ensure that filters can access the exception
                     // variable
                     Expression filter = c.Filter;
-                    if (filter != null && c.Variable != null) {
+                    if (filter is not null && c.Variable is not null) {
                         filter = Expression.Block(new[] { c.Variable }, Expression.Assign(c.Variable, exceptionVar), filter);
                     }
 
@@ -370,7 +370,7 @@ namespace Microsoft.Scripting.Ast {
                     // We need to rewrite rethrows into "throw deferredVar"
                     var catchBody = new RethrowRewriter { Exception = deferredVar }.Visit(c.Body);
 
-                    // if (deferredVar != null) {
+                    // if (deferredVar is not null) {
                     //     ... catch body ...
                     // }
                     block.Add(
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Ast {
                 // finally {
                 //  if (_finallyReturnVar) goto finallyReturn;
                 //   ...
-                //   if (saved != null) throw saved;
+                //   if (saved is not null) throw saved;
                 //   finallyReturn:
                 // }
                 // if (_finallyReturnVar) goto _return;
@@ -447,7 +447,7 @@ namespace Microsoft.Scripting.Ast {
                 );
 
                 @finally = null;
-            } else if (@finally != null) {
+            } else if (@finally is not null) {
                 // try or catch had a yield, modify finally so we can skip over it
                 @finally = Expression.Block(
                     MakeSkipFinallyBlock(finallyReturn),
@@ -457,7 +457,7 @@ namespace Microsoft.Scripting.Ast {
             }
 
             // Make the outer try, if needed
-            if (handlers.Count > 0 || @finally != null || fault != null) {
+            if (handlers.Count > 0 || @finally is not null || fault is not null) {
                 @try = Expression.MakeTry(null, @try, @finally, fault, handlers);
             }
 
@@ -468,7 +468,7 @@ namespace Microsoft.Scripting.Ast {
             internal ParameterExpression Exception;
 
             protected override Expression VisitUnary(UnaryExpression node) {
-                if (node.NodeType == ExpressionType.Throw && node.Operand == null) {
+                if (node.NodeType == ExpressionType.Throw && node.Operand is null) {
                     return Expression.Throw(Exception, node.Type);
                 }
                 return base.VisitUnary(node);
@@ -549,7 +549,7 @@ namespace Microsoft.Scripting.Ast {
             var value = Visit(node.Value);
 
             var block = new ReadOnlyCollectionBuilder<Expression>();
-            if (value == null) {
+            if (value is null) {
                 // Yield break
                 block.Add(Expression.Assign(_state, AstUtils.Constant(Finished)));
                 if (_inTryWithFinally) {
@@ -662,7 +662,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private Expression ToTemp(ReadOnlyCollectionBuilder<Expression> block, Expression e) {
-            Debug.Assert(e != null);
+            Debug.Assert(e is not null);
             if (IsConstant(e)) {
                 return e;
             }
@@ -690,7 +690,7 @@ namespace Microsoft.Scripting.Ast {
             Func<Expression, ReadOnlyCollection<Expression>, Expression> factory) {
 
             int yields = _yields.Count;
-            Expression newExpr = expr != null ? Visit(expr) : null;
+            Expression newExpr = expr is not null ? Visit(expr) : null;
 
             // TODO(opt): If we tracked the last argument that contains yield we wouldn't need to spill the rest of the arguments into locals.
             ReadOnlyCollection<Expression> newArgs = Visit(arguments);
@@ -705,7 +705,7 @@ namespace Microsoft.Scripting.Ast {
 
             var block = new ReadOnlyCollectionBuilder<Expression>(newArgs.Count + 1);
 
-            if (newExpr != null) {
+            if (newExpr is not null) {
                 newExpr = ToTemp(block, newExpr);
             }
 
@@ -787,14 +787,14 @@ namespace Microsoft.Scripting.Ast {
                     switch (left.NodeType) {
                         case ExpressionType.MemberAccess:
                             var member = (MemberExpression)node.Left;
-                            if (member.Expression != null) {
+                            if (member.Expression is not null) {
                                 left = member.Update(ToTemp(block, member.Expression));
                             }
                             break;
 
                         case ExpressionType.Index:
                             var index = (IndexExpression)node.Left;
-                            left = index.Update((index.Object != null ? ToTemp(block, index.Object) : null), ToTemp(block, index.Arguments));
+                            left = index.Update((index.Object is not null ? ToTemp(block, index.Object) : null), ToTemp(block, index.Arguments));
                             break;
 
                         case ExpressionType.Parameter:

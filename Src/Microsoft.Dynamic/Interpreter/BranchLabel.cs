@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Interpreter {
             _continuationStackDepth = instructions.CurrentContinuationsDepth;
             _targetIndex = instructions.Count;
 
-            if (_forwardBranchFixups != null) {
+            if (_forwardBranchFixups is not null) {
                 foreach (var branchIndex in _forwardBranchFixups) {
                     FixupBranch(instructions, branchIndex);
                 }

@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.Actions {
         /// can inherit and override this value to customize whether or not private binding
         /// is available.
         /// </summary>
-        public virtual bool PrivateBinding => _manager != null && _manager.Configuration.PrivateBinding;
+        public virtual bool PrivateBinding => _manager is not null && _manager.Configuration.PrivateBinding;
 
         protected ActionBinder() {
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Scripting.Actions {
         /// Converts an object at runtime into the specified type.
         /// </summary>
         public virtual object Convert(object obj, Type toType) {
-            if (obj == null) {
+            if (obj is null) {
                 if (!toType.IsValueType) {
                     return null;
                 }
@@ -128,7 +128,7 @@ namespace Microsoft.Scripting.Actions {
                 }
             }
 
-            if (genTypes != null) {
+            if (genTypes is not null) {
                 List<MemberTracker> mt = new List<MemberTracker>(members);
                 foreach (Type t in genTypes) {
                     mt.Add(MemberTracker.FromMemberInfo(t));
@@ -329,7 +329,7 @@ namespace Microsoft.Scripting.Actions {
             foreach (Type ext in extTypes) {
                 foreach (MemberInfo mi in ext.GetDeclaredMembers(name).WithBindingFlags(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)) {
                     MemberInfo newMember = mi;
-                    if (PrivateBinding || (newMember = CompilerHelpers.TryGetVisibleMember(ext, mi)) != null) {
+                    if (PrivateBinding || (newMember = CompilerHelpers.TryGetVisibleMember(ext, mi)) is not null) {
                         if (IncludeExtensionMember(newMember)) {
                             if (ext != declaringType) {
                                 members.Add(MemberTracker.FromMemberInfo(newMember, declaringType));
@@ -345,7 +345,7 @@ namespace Microsoft.Scripting.Actions {
                 MethodInfo setter = GetExtensionOperator(ext, "Set" + name);
                 MethodInfo deleter = GetExtensionOperator(ext, "Delete" + name);
 
-                if (getter != null || setter != null || deleter != null) {
+                if (getter is not null || setter is not null || deleter is not null) {
                     members.Add(new ExtensionPropertyTracker(name, getter, setter, deleter, declaringType));
                 }
             }

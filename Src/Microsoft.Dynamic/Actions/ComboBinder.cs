@@ -194,21 +194,21 @@ namespace Microsoft.Scripting.Actions {
 
         public bool IsAction => _actionIndex != -1;
 
-        public bool IsConstant => _fixedInput != null;
+        public bool IsConstant => _fixedInput is not null;
 
         public override bool Equals(object obj) {
             if (obj is not ParameterMappingInfo pmi) return false;
 
             if (pmi.ParameterIndex == ParameterIndex && pmi.ActionIndex == ActionIndex) {
-                if (Constant != null) {
-                    if (pmi.Constant == null) {
+                if (Constant is not null) {
+                    if (pmi.Constant is null) {
                         return false;
                     }
 
                     return Constant.Value == pmi.Constant.Value;
                 }
 
-                return pmi.Constant == null;
+                return pmi.Constant is null;
             }
 
             return false;
@@ -216,7 +216,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override int GetHashCode() {
             int res = ParameterIndex.GetHashCode() ^ ActionIndex.GetHashCode();
-            if (Constant?.Value != null) {
+            if (Constant?.Value is not null) {
                 res ^= Constant.Value.GetHashCode();
             }
             return res;
@@ -232,7 +232,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             object value = Constant.Value;
-            return value == null ? "(null)" : value.ToString();
+            return value is null ? "(null)" : value.ToString();
         }
     }
 

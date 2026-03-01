@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Generation {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         internal static Type MakeDelegate(Type[] types) {
-            Debug.Assert(types != null && types.Length > 0);
+            Debug.Assert(types is not null && types.Length > 0);
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>

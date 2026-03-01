@@ -201,7 +201,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.Requires(type.IsArray, nameof(type));
             ContractUtils.Requires(type.GetArrayRank() == 1, nameof(type));
-            ContractUtils.Requires(ParamsArray == null, nameof(type), "Already have parameter array");
+            ContractUtils.Requires(ParamsArray is null, nameof(type), "Already have parameter array");
 
             return ParamsArray = Parameter(type, name);
         }
@@ -276,7 +276,7 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         /// <returns>New LambdaExpression instance.</returns>
         public LambdaExpression MakeLambda() {
-            ContractUtils.Requires(ParamsArray == null, "Paramarray lambdas require explicit delegate type");
+            ContractUtils.Requires(ParamsArray is null, "Paramarray lambdas require explicit delegate type");
             Validate();
 
             LambdaExpression lambda = Expression.Lambda(
@@ -321,7 +321,7 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         /// <param name="delegateType"></param>
         private void EnsureSignature(Type delegateType) {
-            System.Diagnostics.Debug.Assert(_params != null, "must have parameter list here");
+            System.Diagnostics.Debug.Assert(_params is not null, "must have parameter list here");
 
             //paramMapping is the dictionary where we record how we want to map parameters
             //the key is the parameter, the value is the expression it should be redirected to
@@ -337,7 +337,7 @@ namespace Microsoft.Scripting.Ast {
             ParameterInfo[] delegateParams = delegateType.GetMethod("Invoke").GetParameters();
 
             bool delegateHasParamarray = delegateParams.Length > 0 && delegateParams[delegateParams.Length - 1].IsDefined(typeof(ParamArrayAttribute), false);
-            bool lambdaHasParamarray = ParamsArray != null;
+            bool lambdaHasParamarray = ParamsArray is not null;
 
             if (lambdaHasParamarray && !delegateHasParamarray) {
                 throw new ArgumentException("paramarray lambdas must have paramarray delegate type");
@@ -464,7 +464,7 @@ namespace Microsoft.Scripting.Ast {
 
             for (int i = 0; i < _visibleVars.Count; i++) {
                 ParameterExpression p = _visibleVars[i].Key;
-                if (p != null && paramMapping.TryGetValue(p, out ParameterExpression v)) {
+                if (p is not null && paramMapping.TryGetValue(p, out ParameterExpression v)) {
                     _visibleVars[i] = new KeyValuePair<ParameterExpression, bool>(v, _visibleVars[i].Value);
                 }
             }
@@ -478,17 +478,17 @@ namespace Microsoft.Scripting.Ast {
             if (_completed) {
                 throw new InvalidOperationException("The builder is closed");
             }
-            if (_returnType == null) {
+            if (_returnType is null) {
                 throw new InvalidOperationException("Return type is missing");
             }
-            if (_name == null) {
+            if (_name is null) {
                 throw new InvalidOperationException("Name is missing");
             }
-            if (_body == null) {
+            if (_body is null) {
                 throw new InvalidOperationException("Body is missing");
             }
 
-            if (ParamsArray != null &&
+            if (ParamsArray is not null &&
                 (_params.Count == 0 || _params[_params.Count -1] != ParamsArray)) {
                 throw new InvalidOperationException("The params array parameter is not last in the parameter list");
             }
@@ -502,7 +502,7 @@ namespace Microsoft.Scripting.Ast {
             Expression body = _body;
             
             // wrap a scope if needed
-            if (_locals != null && _locals.Count > 0) {
+            if (_locals is not null && _locals.Count > 0) {
                 body = Expression.Block(new ReadOnlyCollection<ParameterExpression>(_locals.ToArray()), body);
             }
 
@@ -564,7 +564,7 @@ namespace Microsoft.Scripting.Runtime {
         /// ArrayUtils.ShiftLeft assumes.
         /// </summary>
         public static T[] ShiftParamsArray<T>(T[] array, int count) {
-            if (array != null && array.Length > count) {
+            if (array is not null && array.Length > count) {
                 return ArrayUtils.ShiftLeft(array, count);
             }
 

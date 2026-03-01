@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.ComInterop {
         private static readonly Dictionary<string, ComEventDesc> _EmptyEventsDict = new();
 
         internal ComTypeDesc(ITypeInfo typeInfo, ComType memberType, ComTypeLibDesc typeLibDesc) : base(memberType) {
-            if (typeInfo != null) {
+            if (typeInfo is not null) {
                 ComRuntimeHelpers.GetInfoFromType(typeInfo, out _typeName, out _documentation);
             }
             TypeLib = typeLibDesc;
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.ComInterop {
                     }
                 }
 
-                if (_events != null && _events.Count > 0) {
+                if (_events is not null && _events.Count > 0) {
                     foreach (string name in _events.Keys) {
                         if (!names.ContainsKey(name)) {
                             names.Add(name, null);

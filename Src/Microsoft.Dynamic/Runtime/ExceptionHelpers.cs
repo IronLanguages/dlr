@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Runtime {
 
         private static bool TryGetAssociatedStackTraces(Exception e, out List<StackTrace> traces) {
             traces = e.Data[prevStackTraces] as List<StackTrace>;
-            return traces != null;
+            return traces is not null;
         }        
 #else
         public static Exception UpdateForRethrow(Exception rethrow) {

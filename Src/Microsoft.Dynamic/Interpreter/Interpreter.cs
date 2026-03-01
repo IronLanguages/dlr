@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal int ClosureSize {
             get {
-                if (ClosureVariables == null) {
+                if (ClosureVariables is null) {
                     return 0;
                 }
                 return ClosureVariables.Count;
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Interpreter {
             frame.SaveTraceToException(exception);
             frame.InstructionIndex += GotoHandler(frame, exception, out ExceptionHandler handler);
 
-            if (handler == null || handler.IsFault) {
+            if (handler is null || handler.IsFault) {
                 // run finally/fault blocks:
                 Run(frame);
 
@@ -171,12 +171,12 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal static void AbortThreadIfRequested(InterpretedFrame frame, int targetLabelIndex) {
             var abortHandler = frame.CurrentAbortHandler;
-            if (abortHandler != null && !abortHandler.IsInside(frame.Interpreter._labels[targetLabelIndex].Index)) {
+            if (abortHandler is not null && !abortHandler.IsInside(frame.Interpreter._labels[targetLabelIndex].Index)) {
                 frame.CurrentAbortHandler = null;
 
                 var currentThread = Thread.CurrentThread;
                 if ((currentThread.ThreadState & System.Threading.ThreadState.AbortRequested) != 0) {
-                    Debug.Assert(_anyAbortException != null);
+                    Debug.Assert(_anyAbortException is not null);
 
 #pragma warning disable SYSLIB0006 // Type or member is obsolete
 #if FEATURE_EXCEPTION_STATE
@@ -217,7 +217,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler) {
             handler = GetBestHandler(frame.InstructionIndex, exception.GetType());
-            if (handler == null) {
+            if (handler is null) {
                 return frame.Goto(ReturnAndRethrowLabelIndex, NoValue);
             }
 

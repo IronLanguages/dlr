@@ -203,7 +203,7 @@ namespace Microsoft.Scripting.Actions {
 
             DynamicMetaObject propSelf = self;
             // if lookup failed try the strong-box type if available.
-            if (members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(targetType) && propSelf != null) {
+            if (members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(targetType) && propSelf is not null) {
                 // properties/fields need the direct value, methods hold onto the strong box.
                 propSelf = new DynamicMetaObject(
                     Expression.Field(AstUtils.Convert(propSelf.Expression, targetType), targetType.GetInheritedFields("Value").First()),
@@ -232,13 +232,13 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private void MakeBodyHelper(GetMemberInfo getMemInfo, DynamicMetaObject self, DynamicMetaObject propSelf, Type targetType, MemberGroup members) {
-            if (self != null) {
+            if (self is not null) {
                 MakeOperatorGetMemberBody(getMemInfo, propSelf, targetType, "GetCustomMember");
             }
 
             TrackerTypes memberType = GetMemberType(members, out Expression error);
 
-            if (error == null) {
+            if (error is null) {
                 MakeSuccessfulMemberAccess(getMemInfo, self, propSelf, targetType, members, memberType);
             } else {
                 getMemInfo.Body.FinishError(getMemInfo.ErrorSuggestion?.Expression ?? error);
@@ -264,7 +264,7 @@ namespace Microsoft.Scripting.Actions {
                     break;
                 case TrackerTypes.All:
                     // no members were found
-                    if (self != null) {
+                    if (self is not null) {
                         MakeOperatorGetMemberBody(getMemInfo, propSelf, selfType, "GetBoundMember");
                     }
 
@@ -312,13 +312,13 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private void MakeGenericBodyWorker(GetMemberInfo getMemInfo, Type instanceType, MemberTracker tracker, DynamicMetaObject instance) {
-            if (instance != null) {
+            if (instance is not null) {
                 tracker = tracker.BindToInstance(instance);
             }
 
             DynamicMetaObject val = tracker.GetValue(getMemInfo.ResolutionFactory, this, instanceType);
 
-            if (val != null) {
+            if (val is not null) {
                 getMemInfo.Body.FinishCondition(val);
             } else {
                 ErrorInfo ei = tracker.GetError(this, instanceType);
@@ -333,7 +333,7 @@ namespace Microsoft.Scripting.Actions {
         /// <summary> if a member-injector is defined-on or registered-for this type call it </summary>
         private void MakeOperatorGetMemberBody(GetMemberInfo getMemInfo, DynamicMetaObject instance, Type instanceType, string name) {
             MethodInfo getMem = GetMethod(instanceType, name);
-            if (getMem != null) {
+            if (getMem is not null) {
                 ParameterExpression tmp = Expression.Variable(typeof(object), "getVal");
                 getMemInfo.Body.AddVariable(tmp);
 
@@ -364,7 +364,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private void MakeMissingMemberRuleForGet(GetMemberInfo getMemInfo, DynamicMetaObject self, Type type) {
-            if (getMemInfo.ErrorSuggestion != null) {
+            if (getMemInfo.ErrorSuggestion is not null) {
                 getMemInfo.Body.FinishError(getMemInfo.ErrorSuggestion.Expression);
             } else if (getMemInfo.IsNoThrow) {
                 getMemInfo.Body.FinishError(MakeOperationFailed());

@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Actions {
         /// to create ErrorInfo objects.
         /// </summary>
         private ErrorInfo(Expression value, ErrorInfoKind kind) {
-            Debug.Assert(value != null);
+            Debug.Assert(value is not null);
 
             Expression = value;
             Kind = kind;

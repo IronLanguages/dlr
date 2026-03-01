@@ -366,7 +366,7 @@ namespace Microsoft.Scripting.ComInterop {
         private VariantBuilder GetVariantBuilder(Type argumentType) {
             //argumentType is coming from MarshalType, null means the dynamic object holds
             //a null value and not byref
-            if (argumentType == null) {
+            if (argumentType is null) {
                 return new VariantBuilder(VarEnum.VT_EMPTY, new NullArgBuilder());
             }
 

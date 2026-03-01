@@ -52,7 +52,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             processInfo.RedirectStandardInput = true;
 
             CustomizeRemoteRuntimeStartInfo(processInfo);
-            Debug.Assert(processInfo.FileName != null);
+            Debug.Assert(processInfo.FileName is not null);
             return processInfo;
         }
 
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             T result = (T)Activator.GetObject(typeof(T), "ipc://" + _channelName + "/" + uri);
 
             // Ensure that the remote object is responsive by calling a virtual method (which will be executed remotely)
-            Debug.Assert(result.ToString() != null);
+            Debug.Assert(result.ToString() is not null);
 
             return result;
         }
@@ -111,7 +111,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2109:ReviewVisibleEventHandlers")]
         protected virtual void OnRemoteRuntimeExited(object sender, EventArgs args) {
             Debug.Assert(((Process)sender).HasExited);
-            Debug.Assert(sender == _remoteRuntimeProcess || _remoteRuntimeProcess == null);
+            Debug.Assert(sender == _remoteRuntimeProcess || _remoteRuntimeProcess is null);
 
             EventHandler remoteRuntimeExited = RemoteRuntimeExited;
             remoteRuntimeExited?.Invoke(sender, args);
@@ -149,7 +149,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         #endregion
 
         public override void Terminate(int exitCode) {
-            if (CommandLine == null) {
+            if (CommandLine is null) {
                 // Terminate may be called during startup when CommandLine has not been initialized.
                 // We could fix this by initializing CommandLine before starting the remote runtime process
                 return;
@@ -224,12 +224,12 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
             _remoteOutputReceived.Close();
 
-            if (_clientChannel != null) {
+            if (_clientChannel is not null) {
                 ChannelServices.UnregisterChannel(_clientChannel);
                 _clientChannel = null;
             }
 
-            if (_remoteRuntimeProcess != null) {
+            if (_remoteRuntimeProcess is not null) {
                 _remoteRuntimeProcess.Exited -= OnRemoteRuntimeExited;
 
                 // Closing stdin is a signal to the remote runtime to exit the process.

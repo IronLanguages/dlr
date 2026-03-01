@@ -12,24 +12,24 @@ namespace Microsoft.Scripting.Utils {
     internal static class Assert {
         [Conditional("DEBUG")]
         public static void NotNull(object var) {
-            Debug.Assert(var != null);
+            Debug.Assert(var is not null);
         }
 
         [Conditional("DEBUG")]
         public static void NotNull(object var1, object var2) {
-            Debug.Assert(var1 != null && var2 != null);
+            Debug.Assert(var1 is not null && var2 is not null);
         }
 
         [Conditional("DEBUG")]
         public static void NotNull(object var1, object var2, object var3) {
-            Debug.Assert(var1 != null && var2 != null && var3 != null);
+            Debug.Assert(var1 is not null && var2 is not null && var3 is not null);
         }
 
         [Conditional("DEBUG")]
         public static void NotNullItems<T>(IEnumerable<T> items) where T : class {
-            Debug.Assert(items != null);
+            Debug.Assert(items is not null);
             foreach (object item in items) {
-                Debug.Assert(item != null);
+                Debug.Assert(item is not null);
             }
         }
 

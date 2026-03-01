@@ -33,7 +33,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public static ComEventsMethod Find(ComEventsMethod methods, int dispid) {
-            while (methods != null && methods._dispid != dispid) {
+            while (methods is not null && methods._dispid != dispid) {
                 methods = methods._next;
             }
 
@@ -46,19 +46,19 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public static ComEventsMethod Remove(ComEventsMethod methods, ComEventsMethod method) {
-            Debug.Assert(methods != null, "removing method from empty methods collection");
-            Debug.Assert(method != null, "specify method is null");
+            Debug.Assert(methods is not null, "removing method from empty methods collection");
+            Debug.Assert(method is not null, "specify method is null");
 
             if (methods == method) {
                 return methods._next;
             } else {
                 ComEventsMethod current = methods;
 
-                while (current != null && current._next != method) {
+                while (current is not null && current._next != method) {
                     current = current._next;
                 }
 
-                if (current != null) {
+                if (current is not null) {
                     current._next = method._next;
                 }
 

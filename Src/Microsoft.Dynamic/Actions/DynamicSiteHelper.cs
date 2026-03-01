@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Actions {
 
         // TODO: remove in favor of Expression.GetDelegateType
         public static Type MakeCallSiteDelegate(params Type[] types) {
-            Debug.Assert(types != null);
+            Debug.Assert(types is not null);
             return MakeDelegate(types.AddFirst(typeof(CallSite)));
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Actions {
             } else {
                 result = GetFuncType(types);
             }
-            Debug.Assert(result != null);
+            Debug.Assert(result is not null);
             return result;
         }
 
@@ -140,7 +140,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private static Type MakeCustomDelegate(Type[] types) {
-            if (_DelegateTypes == null) {
+            if (_DelegateTypes is null) {
                 Interlocked.CompareExchange(
                     ref _DelegateTypes,
                     new Dictionary<ICollection<Type>, Type>(ListEqualityComparer<Type>.Instance),
@@ -159,7 +159,7 @@ namespace Microsoft.Scripting.Actions {
                 found = _DelegateTypes.TryGetValue(types, out type);
             }
 
-            if (!found && type != null) {
+            if (!found && type is not null) {
                 return type;
             }
 
@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.Actions {
             // LOCK to insert new delegate into the cache. If we already have one (racing threads), use the one from the cache
             //
             lock (_DelegateTypes) {
-                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict != null) {
+                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict is not null) {
                     type = conflict;
                 } else {
                     _DelegateTypes[types] = type;
@@ -203,9 +203,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             //Filters out methods in Microsoft.Scripting namespaces.
-            if (mb.DeclaringType != null && 
-                mb.DeclaringType.Namespace != null &&
-                mb.DeclaringType.Namespace.StartsWith("Microsoft.Scripting", StringComparison.Ordinal)) {
+            if (mb.DeclaringType?.Namespace?.StartsWith("Microsoft.Scripting", StringComparison.Ordinal) == true) {
                 return true;
             }
 

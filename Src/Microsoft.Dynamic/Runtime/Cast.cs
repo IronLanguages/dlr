@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Explicitly casts the object to a given type (and returns it as object)
         /// </summary>
         public static object Explicit(object o, Type to) {
-            if (o == null) {
+            if (o is null) {
                 // Null objects can be only cast to Nullable<T> or any reference type
                 if (to.IsValueType) {
                     if (to.IsGenericType && to.GetGenericTypeDefinition() == NullableType) {
@@ -53,7 +53,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private static object ExplicitCastToValueType(object o, Type to) {
-            Debug.Assert(o != null);
+            Debug.Assert(o is not null);
             Debug.Assert(to.IsValueType);
 
             if (to == Int32Type) return ScriptingRuntimeHelpers.Int32ToObject(ExplicitCastToInt32(o));

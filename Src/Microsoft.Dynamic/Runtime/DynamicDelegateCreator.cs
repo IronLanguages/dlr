@@ -47,15 +47,12 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             if (callableObject is IDynamicMetaObjectProvider dynamicObject) {
-
-                MethodInfo invoke;
-
-                if (!typeof(Delegate).IsAssignableFrom(delegateType) || (invoke = delegateType.GetMethod("Invoke")) == null) {
+                if (!typeof(Delegate).IsAssignableFrom(delegateType) || delegateType.GetMethod("Invoke") is not MethodInfo invoke) {
                     throw ScriptingRuntimeHelpers.SimpleTypeError("A specific delegate type is required.");
                 }
 
                 result = GetOrCreateDelegateForDynamicObject(callableObject, delegateType, invoke);
-                if (result != null) {
+                if (result is not null) {
                     return result;
                 }
             }

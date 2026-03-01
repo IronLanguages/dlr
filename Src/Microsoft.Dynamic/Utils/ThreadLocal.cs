@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         /// <summary>
-        /// Gets the current value if its not == null or calls the provided function
+        /// Gets the current value if it is not null or calls the provided function
         /// to create a new value.
         /// </summary>
         public T GetOrCreate(Func<T> func) {
@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Utils {
 
             StorageInfo si = GetStorageInfo();
             T res = si.Value;
-            if (res == null) {
+            if (res is null) {
                 si.Value = res = func();
             }
 
@@ -103,10 +103,10 @@ namespace Microsoft.Scripting.Utils {
             int threadId = GetCurrentThreadId();
 
             // fast path if we already have a value in the array
-            if (curStorage != null && curStorage.Length > threadId) {
+            if (curStorage is not null && curStorage.Length > threadId) {
                 StorageInfo res = curStorage[threadId];
 
-                if (res != null && (_refCounted || res.Thread == Thread.CurrentThread)) {
+                if (res is not null && (_refCounted || res.Thread == Thread.CurrentThread)) {
                     return res;
                 }
             }
@@ -153,13 +153,13 @@ namespace Microsoft.Scripting.Utils {
                 }
 
                 // check and make sure we have a space in the array for our value
-                if (curStorage == null) {
+                if (curStorage is null) {
                     curStorage = new StorageInfo[threadId + 1];
                 } else if (curStorage.Length <= threadId) {
                     StorageInfo[] newStorage = new StorageInfo[threadId + 1];
                     for (int i = 0; i < curStorage.Length; i++) {
                         // leave out the threads that have exited
-                        if (curStorage[i] != null && curStorage[i].Thread.IsAlive) {
+                        if (curStorage[i] is not null && curStorage[i].Thread.IsAlive) {
                             newStorage[i] = curStorage[i];
                         }
                     }
@@ -168,7 +168,7 @@ namespace Microsoft.Scripting.Utils {
 
                 // create our StorageInfo in the array, the empty check ensures we're only here
                 // when we need to create.
-                Debug.Assert(curStorage[threadId] == null || curStorage[threadId].Thread != Thread.CurrentThread);
+                Debug.Assert(curStorage[threadId] is null || curStorage[threadId].Thread != Thread.CurrentThread);
 
                 return curStorage[threadId] = newInfo;
             } finally {

@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public Argument(ArgumentType kind, string name) {
-            ContractUtils.Requires((kind == ArgumentType.Named) ^ (name == null), nameof(kind));
+            ContractUtils.Requires((kind == ArgumentType.Named) ^ (name is null), nameof(kind));
             _kind = kind;
             _name = name;
         }
@@ -48,13 +48,13 @@ namespace Microsoft.Scripting.Actions {
         public static bool operator !=(Argument left, Argument right) => !left.Equals(right);
 
         public override int GetHashCode() {
-            return (_name != null) ? _name.GetHashCode() ^ (int)_kind : (int)_kind;
+            return (_name is not null) ? _name.GetHashCode() ^ (int)_kind : (int)_kind;
         }
 
         public bool IsSimple => Equals(Simple);
 
         public override string ToString() {
-            return _name == null ? _kind.ToString() : _kind.ToString() + ":" + _name;
+            return _name is null ? _kind.ToString() : _kind.ToString() + ":" + _name;
         }
 
         internal Expression CreateExpression() {

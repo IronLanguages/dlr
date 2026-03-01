@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Utils {
         public bool TryGetValue(TKey key, out TValue value) {
             if (_dict.TryGetValue(key, out KeyInfo storedValue)) {
                 LinkedListNode<TKey> node = storedValue.List;
-                if (node.Previous != null) {
+                if (node.Previous is not null) {
                     // move us to the head of the list...
                     _list.Remove(node);
                     _list.AddFirst(node);

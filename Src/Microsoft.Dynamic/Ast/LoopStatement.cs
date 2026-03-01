@@ -35,9 +35,9 @@ namespace Microsoft.Scripting.Ast {
 
         public static LoopExpression Loop(Expression test, Expression increment, Expression body, Expression @else, LabelTarget @break, LabelTarget @continue) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (test != null) {
+            if (test is not null) {
                 ContractUtils.Requires(test.Type == typeof(bool), nameof(test), "Test must be boolean");
-                if (@break == null) {
+                if (@break is null) {
                     @break = Expression.Label();
                 }
             }
@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Ast {
             // If there is no test, 'else' will never execute and gets simply thrown away.
             return Expression.Loop(
                 Expression.Block(
-                    test != null
+                    test is not null
                         ? (Expression)Expression.Condition(
                             test,
                             Utils.Empty(),
@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Ast {
                         )
                         : Empty(),
                     body,
-                    @continue != null ? (Expression)Expression.Label(@continue) : Empty(),
+                    @continue is not null ? (Expression)Expression.Label(@continue) : Empty(),
                     increment ?? Empty()
                 ),
                 @break,

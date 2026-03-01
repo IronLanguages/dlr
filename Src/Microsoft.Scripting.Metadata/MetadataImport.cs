@@ -177,7 +177,7 @@ namespace Microsoft.Scripting.Metadata {
 
         private void ReadCOR20Header() {
             MemoryBlock memBlock = DirectoryToMemoryBlock(_optionalHeaderDirectoryEntries.COR20HeaderTableDirectory);
-            if (memBlock == null || memBlock.Length < _optionalHeaderDirectoryEntries.COR20HeaderTableDirectory.Size) {
+            if (memBlock is null || memBlock.Length < _optionalHeaderDirectoryEntries.COR20HeaderTableDirectory.Size) {
                 throw new BadImageFormatException();
             }
 
@@ -257,7 +257,7 @@ namespace Microsoft.Scripting.Metadata {
 
                 switch (streamHeader.Name) {
                     case COR20Constants.StringStreamName:
-                        if (_stringStream != null) {
+                        if (_stringStream is not null) {
                             throw new BadImageFormatException();
                         }
                         // the first and the last byte of the heap must be zero:
@@ -268,21 +268,21 @@ namespace Microsoft.Scripting.Metadata {
                         break;
 
                     case COR20Constants.BlobStreamName:
-                        if (_blobStream != null) {
+                        if (_blobStream is not null) {
                             throw new BadImageFormatException();
                         }
                         _blobStream = block;
                         break;
 
                     case COR20Constants.GUIDStreamName:
-                        if (_guidStream != null) {
+                        if (_guidStream is not null) {
                             throw new BadImageFormatException();
                         }
                         _guidStream = block;
                         break;
 
                     case COR20Constants.UserStringStreamName:
-                        if (_userStringStream != null) {
+                        if (_userStringStream is not null) {
                             throw new BadImageFormatException();
                         }
                         _userStringStream = block;
@@ -310,7 +310,7 @@ namespace Microsoft.Scripting.Metadata {
             }
 
             // mandatory streams:
-            if (_stringStream == null || _guidStream == null || _metadataStreamKind == MetadataStreamKind.Illegal) {
+            if (_stringStream is null || _guidStream is null || _metadataStreamKind == MetadataStreamKind.Illegal) {
                 throw new BadImageFormatException();
             }
         }
@@ -319,7 +319,7 @@ namespace Microsoft.Scripting.Metadata {
             ReadCOR20Header();
 
             MemoryBlock metadataRoot = DirectoryToMemoryBlock(_cor20Header.MetaDataDirectory);
-            if (metadataRoot == null || metadataRoot.Length < _cor20Header.MetaDataDirectory.Size) {
+            if (metadataRoot is null || metadataRoot.Length < _cor20Header.MetaDataDirectory.Size) {
                 throw new BadImageFormatException();
             }
 
@@ -749,7 +749,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal int GetBlobDataOffset(uint blob, out int size) {
-            if (_blobStream == null || blob >= _blobStream.Length) {
+            if (_blobStream is null || blob >= _blobStream.Length) {
                 throw new BadImageFormatException();
             }
 
@@ -1052,7 +1052,7 @@ namespace Microsoft.Scripting.Metadata {
             }
             switch (tableIndex) {
                 case (int)MetadataTokenType.String >> 24: return token.Rid < _stringStream.Length;
-                case (int)MetadataTokenType.Name >> 24: return _userStringStream != null && token.Rid < _userStringStream.Length;
+                case (int)MetadataTokenType.Name >> 24: return _userStringStream is not null && token.Rid < _userStringStream.Length;
             }
             return false;
         }
@@ -1127,11 +1127,11 @@ namespace Microsoft.Scripting.Metadata {
 
             output.WriteLine();
             output.WriteLine("StringStream:            +{0:X8}", _stringStream.Pointer - _image.Pointer);
-            output.WriteLine("BlobStream:              +{0:X8}", _blobStream != null ? (_blobStream.Pointer - _image.Pointer) : 0);
+            output.WriteLine("BlobStream:              +{0:X8}", _blobStream is not null ? (_blobStream.Pointer - _image.Pointer) : 0);
             output.WriteLine("GUIDStream:              +{0:X8}", _guidStream.Pointer - _image.Pointer);
-            output.WriteLine("UserStringStream:        +{0:X8}", _userStringStream != null ? (_userStringStream.Pointer - _image.Pointer) : 0);
+            output.WriteLine("UserStringStream:        +{0:X8}", _userStringStream is not null ? (_userStringStream.Pointer - _image.Pointer) : 0);
             output.WriteLine("MetadataTableStream:     +{0:X8}", _metadataTableStream.Pointer - _image.Pointer);
-            //output.WriteLine("ResourceMemoryReader:    +{0:X8}", _resourceMemoryBlock != null ? (_resourceMemoryBlock.Pointer - _image.Pointer) : 0);
+            //output.WriteLine("ResourceMemoryReader:    +{0:X8}", _resourceMemoryBlock is not null ? (_resourceMemoryBlock.Pointer - _image.Pointer) : 0);
             
             output.WriteLine();
             output.WriteLine("Misc:");

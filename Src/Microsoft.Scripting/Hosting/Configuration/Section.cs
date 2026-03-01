@@ -95,11 +95,11 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         }
 
         internal static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream configFileStream) {
-            var config = configFileStream != null
+            var config = configFileStream is not null
                 ? LoadFromFile(configFileStream)
                 : System.Configuration.ConfigurationManager.GetSection(SectionName) as Section;
 
-            if (config == null) {
+            if (config is null) {
                 return;
             }
 

@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Ast {
         public TryStatementBuilder Catch(Type type, Expression body) {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (_finally != null) {
+            if (_finally is not null) {
                 throw Error.FinallyAlreadyDefined();
             }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(holder, nameof(holder));
             ContractUtils.RequiresNotNull(body, nameof(body));
 
-            if (_finally != null) {
+            if (_finally is not null) {
                 throw Error.FinallyAlreadyDefined();
             }
 
@@ -107,11 +107,11 @@ namespace Microsoft.Scripting.Ast {
 
         public TryStatementBuilder Finally(Expression body) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (_finally != null) {
+            if (_finally is not null) {
                 throw Error.FinallyAlreadyDefined();
             }
 
-            if (_fault != null) {
+            if (_fault is not null) {
                 throw Error.CannotHaveFaultAndFinally();
             }
 
@@ -132,11 +132,11 @@ namespace Microsoft.Scripting.Ast {
         public TryStatementBuilder Fault(params Expression[] body) {
             ContractUtils.RequiresNotNullItems(body, nameof(body));
 
-            if (_finally != null) {
+            if (_finally is not null) {
                 throw Error.CannotHaveFaultAndFinally();
             }
 
-            if (_fault != null) {
+            if (_fault is not null) {
                 throw Error.FaultAlreadyDefined();
             }
 
@@ -167,7 +167,7 @@ namespace Microsoft.Scripting.Ast {
             var handlers = new List<CatchBlock>(_catchBlocks);
             for (int i = 0, n = handlers.Count; i < n ; i++) {
                 CatchBlock handler = handlers[i];
-                if (handler.Filter != null) {
+                if (handler.Filter is not null) {
                     handlers[i] = Expression.MakeCatchBlock(
                         handler.Test,
                         handler.Variable,
@@ -181,7 +181,7 @@ namespace Microsoft.Scripting.Ast {
                 }
             }
 
-            if (_fault != null) {
+            if (_fault is not null) {
                 ContractUtils.Requires(handlers.Count == 0, "fault cannot be used with catch or finally clauses");
                 handlers.Add(Expression.Catch(typeof(Exception), Expression.Block(_fault, Expression.Rethrow(_try.Type))));
             }

@@ -31,8 +31,8 @@ namespace Microsoft.Scripting.Hosting {
         private ObjectOperations _operations;
 
         internal ScriptEngine(ScriptRuntime runtime, LanguageContext context) {
-            Debug.Assert(runtime != null);
-            Debug.Assert(context != null);
+            Debug.Assert(runtime is not null);
+            Debug.Assert(context is not null);
 
             Runtime = runtime;
             LanguageContext = context;
@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ObjectOperations Operations {
             get {
-                if (_operations == null) {
+                if (_operations is null) {
                     Interlocked.CompareExchange(ref _operations, CreateOperations(), null);
                 }
 
@@ -263,7 +263,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptScope GetScope(string path) {
             ContractUtils.RequiresNotNull(path, nameof(path));
             Scope scope = LanguageContext.GetScope(path);
-            return (scope != null) ? new ScriptScope(this, scope) : null;
+            return (scope is not null) ? new ScriptScope(this, scope) : null;
         }
 
         #endregion
@@ -512,17 +512,17 @@ namespace Microsoft.Scripting.Hosting {
         public TService GetService<TService>(params object[] args) where TService : class {
             if (typeof(TService) == typeof(TokenCategorizer)) {
                 TokenizerService service = LanguageContext.GetService<TokenizerService>(ArrayUtils.Insert((object)LanguageContext, args));
-                return (service != null) ? (TService)(object)new TokenCategorizer(service) : null;
+                return (service is not null) ? (TService)(object)new TokenCategorizer(service) : null;
             }
 
             if (typeof(TService) == typeof(ExceptionOperations)) {
                 ExceptionOperations service = LanguageContext.GetService<ExceptionOperations>();
-                return (service != null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(LanguageContext);
+                return (service is not null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(LanguageContext);
             }
 
             if (typeof(TService) == typeof(DocumentationOperations)) {
                 DocumentationProvider service = LanguageContext.GetService<DocumentationProvider>(args);
-                return (service != null) ? (TService)(object)new DocumentationOperations(service) : null;
+                return (service is not null) ? (TService)(object)new DocumentationOperations(service) : null;
             }
 
             return LanguageContext.GetService<TService>(args);
@@ -541,13 +541,13 @@ namespace Microsoft.Scripting.Hosting {
         /// </remarks>
         public LanguageSetup Setup {
             get {
-                if (_config == null) {
+                if (_config is null) {
                     // The user shouldn't be able to get a hold of the invariant engine
                     Debug.Assert(!(LanguageContext is InvariantContext));
 
                     // Find the matching language configuration
                     LanguageConfiguration config = Runtime.Manager.Configuration.GetLanguageConfig(LanguageContext);
-                    Debug.Assert(config != null);
+                    Debug.Assert(config is not null);
 
                     foreach (var language in Runtime.Setup.LanguageSetups) {
                         if (config.ProviderName == new AssemblyQualifiedTypeName(language.TypeName)) {

@@ -53,7 +53,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
-            if (getter == null || getter.ContainsGenericParameters) {
+            if (getter is null || getter.ContainsGenericParameters) {
                 // no usable getter
                 return null;
             }
@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Actions {
         public override ErrorInfo GetError(ActionBinder binder, Type instanceType) {
             MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
 
-            if (getter == null) {
+            if (getter is null) {
                 return binder.MakeMissingMemberErrorInfo(DeclaringType, Name);
             }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.Actions {
         #region Internal expression builders
 
         protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
-            if (instance != null && IsStatic) {
+            if (instance is not null && IsStatic) {
                 return null;
             }
 
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             MethodInfo getter = GetGetMethod(true);
-            if (getter == null || getter.ContainsGenericParameters) {
+            if (getter is null || getter.ContainsGenericParameters) {
                 // no usable getter
                 return null;
             }
@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.Actions {
         public override ErrorInfo GetBoundError(ActionBinder binder, DynamicMetaObject instance, Type instanceType) {
             MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
 
-            if (getter == null) {
+            if (getter is null) {
                 return binder.MakeMissingMemberErrorInfo(DeclaringType, Name);
             }
 
@@ -140,7 +140,7 @@ namespace Microsoft.Scripting.Actions {
 
         private MethodInfo ResolveGetter(Type instanceType, bool privateBinding) {
             MethodInfo getter = GetGetMethod(true);
-            if (getter != null) {
+            if (getter is not null) {
                 getter = CompilerHelpers.TryGetCallableMethod(instanceType, getter);
                 if (privateBinding || CompilerHelpers.IsVisible(getter)) {
                     return getter;

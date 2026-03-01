@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
         public RemoteConsoleCommandLine(ScriptScope scope, RemoteCommandDispatcher remoteCommandDispatcher, AutoResetEvent remoteOutputReceived) {
             _remoteConsoleCommandDispatcher = new RemoteConsoleCommandDispatcher(remoteCommandDispatcher, remoteOutputReceived);
-            Debug.Assert(scope != null);
+            Debug.Assert(scope is not null);
             ScriptScope = scope;
         }
 

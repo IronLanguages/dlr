@@ -185,7 +185,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private static BindingRestrictions MakeParamsTest(DynamicMetaObject splattee, bool testTypes) {
             if (splattee.Value is not IList<object> list) {
-                if (splattee.Value == null) {
+                if (splattee.Value is null) {
                     return BindingRestrictions.GetExpressionRestriction(Expression.Equal(splattee.Expression, AstUtils.Constant(null)));
                 }
 
@@ -248,9 +248,7 @@ namespace Microsoft.Scripting.Actions {
                     throw ScriptingRuntimeHelpers.SimpleTypeError(
                         $"expected string for dictionary argument, got {dictEnum.Entry.Key}");
                 }
-                if (types != null) {
-                    types[index] = CompilerHelpers.GetType(dictEnum.Entry.Value);
-                }
+                types?[index] = CompilerHelpers.GetType(dictEnum.Entry.Value);
                 index++;
             }
 

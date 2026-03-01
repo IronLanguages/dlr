@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Ast {
             internal bool InFinally;
             // Does this block need flow control?
             internal bool HasFlow {
-                get { return FlowLabel != null; }
+                get { return FlowLabel is not null; }
             }
 
             // Labels defined in this block
@@ -105,11 +105,11 @@ namespace Microsoft.Scripting.Ast {
             _blocks.Push(new BlockInfo());
             node = Visit(node);
 
-            if (_flowVariable != null) {
+            if (_flowVariable is not null) {
                 var vars = new List<ParameterExpression>();
                 vars.Add(_flowVariable);
                 foreach (var info in _labels.Values) {
-                    if (info.Variable != null) {
+                    if (info.Variable is not null) {
                         vars.Add(info.Variable);
                     }
                 }
@@ -164,7 +164,7 @@ namespace Microsoft.Scripting.Ast {
             block.InFinally = false;
 
             LabelTarget finallyEnd = block.FlowLabel;
-            if (finallyEnd != null) {
+            if (finallyEnd is not null) {
                 // Make a new target, which will be emitted after the try
                 block.FlowLabel = Expression.Label();
             }
@@ -196,7 +196,7 @@ namespace Microsoft.Scripting.Ast {
             //      saved = all;
             //  } finally {
             //      finally_body
-            //      if (saved != null) {
+            //      if (saved is not null) {
             //          throw saved;
             //      }
             //  }
@@ -215,7 +215,7 @@ namespace Microsoft.Scripting.Ast {
 
             var saved = Expression.Variable(typeof(Exception), "$exception");
             var all = Expression.Variable(typeof(Exception), "e");
-            if (@finally != null) {
+            if (@finally is not null) {
                 handlers = new[] {
                     Expression.Catch(
                         all,
@@ -234,14 +234,14 @@ namespace Microsoft.Scripting.Ast {
                     )
                 );
 
-                if (finallyEnd != null) {
+                if (finallyEnd is not null) {
                     @finally = Expression.Label(finallyEnd, @finally);
                 }
             } else {
-                Debug.Assert(fault != null);
+                Debug.Assert(fault is not null);
 
                 fault = Expression.Block(fault, Expression.Throw(all));
-                if (finallyEnd != null) {
+                if (finallyEnd is not null) {
                     fault = Expression.Label(finallyEnd, fault);
                 }
                 handlers = new[] { Expression.Catch(all, fault) };
@@ -300,7 +300,7 @@ namespace Microsoft.Scripting.Ast {
                     var assignFlow = Expression.Assign(_flowVariable, AstUtils.Constant(info.FlowState));
                     var gotoFlow = Expression.Goto(block.FlowLabel, node.Type);
                     Expression value;
-                    if (info.Variable == null) {
+                    if (info.Variable is null) {
                         value = node.Value ?? Utils.Empty();
                     } else {
                         value = Expression.Assign(info.Variable, node.Value);
@@ -352,7 +352,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         protected override LabelTarget VisitLabelTarget(LabelTarget node) {
-            if (node != null) {
+            if (node is not null) {
                 EnsureLabelInfo(node);
                 _blocks.Peek().LabelDefs.Add(node);
             }

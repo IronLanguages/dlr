@@ -94,7 +94,7 @@ namespace Microsoft.Scripting.Actions {
                                     newInfo.Add(ParameterMappingInfo.Action(info.ActionIndex + baseActionCount));
                                     actionCount++;
                                 } else {
-                                    Debug.Assert(info.Constant != null);
+                                    Debug.Assert(info.Constant is not null);
 
                                     // constants can just flow through
                                     newInfo.Add(info);
@@ -142,12 +142,12 @@ namespace Microsoft.Scripting.Actions {
             }
 
             if (rewritten is BinaryExpression be) {
-                if (be.Method == null && IsSideEffectFree(be.Left) && IsSideEffectFree(be.Right)) {
+                if (be.Method is null && IsSideEffectFree(be.Left) && IsSideEffectFree(be.Right)) {
                     return true;
                 }
             }
 
-            if (rewritten is MethodCallExpression mc && mc.Method != null) {
+            if (rewritten is MethodCallExpression mc && mc.Method is not null) {
                 return mc.Method.IsDefined(typeof(NoSideEffectsAttribute), false);
             }
 

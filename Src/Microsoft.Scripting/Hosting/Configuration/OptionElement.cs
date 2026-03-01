@@ -53,7 +53,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             public override bool Equals(object obj) => Equals(obj as Key);
 
             public bool Equals(Key other) =>
-                other != null &&
+                other is not null &&
                 DlrConfiguration.OptionNameComparer.Equals(Option, other.Option) &&
                 DlrConfiguration.LanguageNameComparer.Equals(Language, other.Language);
 

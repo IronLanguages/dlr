@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private AssemblyGen GetOrCreateAssembly(bool emitSymbols, ref AssemblyGen assembly) {
-            if (assembly == null) {
+            if (assembly is null) {
                 string suffix = (emitSymbols) ? ".debug" : "";
                 suffix += ".scripting";
                 Interlocked.CompareExchange(ref assembly, CreateNewAssembly(suffix, emitSymbols), null);
@@ -79,7 +79,7 @@ namespace Microsoft.Scripting.Generation {
 
 #if OBSOLETE
         internal string GetMethodILDumpFile(MethodBase method) {
-            string fullName = ((method.DeclaringType != null) ? method.DeclaringType.Name + "." : "") + method.Name;
+            string fullName = ((method.DeclaringType is not null) ? method.DeclaringType.Name + "." : "") + method.Name;
 
             if (fullName.Length > 100) {
                 fullName = fullName.Substring(0, 100);
@@ -120,17 +120,17 @@ namespace Microsoft.Scripting.Generation {
             Type assemblyGen = core.GetType(typeof(Expression).Namespace + ".Compiler.AssemblyGen");
             //The type may not exist.
             string[] coreAssemblyLocations = null;
-            if (assemblyGen != null) {
+            if (assemblyGen is not null) {
                 MethodInfo saveAssemblies = assemblyGen.GetMethod("SaveAssembliesToDisk", BindingFlags.NonPublic | BindingFlags.Static);
                 //The method may not exist.
-                if (saveAssemblies != null) {
+                if (saveAssemblies is not null) {
                     coreAssemblyLocations = (string[])saveAssemblies.Invoke(null, null);
                 }
             }
 
             string[] outerAssemblyLocations = Shared.SaveAssemblies();
 
-            if (coreAssemblyLocations != null) {
+            if (coreAssemblyLocations is not null) {
                 foreach (var file in coreAssemblyLocations) {
                     AssemblyGen.PeVerifyAssemblyFile(file);
                 }
@@ -150,17 +150,17 @@ namespace Microsoft.Scripting.Generation {
             List<string> assemlyLocations = new List<string>();
 
             // first save all assemblies to disk:
-            if (_assembly != null) {
+            if (_assembly is not null) {
                 string assemblyLocation = _assembly.SaveAssembly();
-                if (assemblyLocation != null) {
+                if (assemblyLocation is not null) {
                     assemlyLocations.Add(assemblyLocation);
                 }
                 _assembly = null;
             }
 
-            if (_debugAssembly != null) {
+            if (_debugAssembly is not null) {
                 string debugAssemblyLocation = _debugAssembly.SaveAssembly();
-                if (debugAssemblyLocation != null) {
+                if (debugAssemblyLocation is not null) {
                     assemlyLocations.Add(debugAssemblyLocation);
                 }
                 _debugAssembly = null;
@@ -202,8 +202,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public bool IsSnippetsAssembly(Assembly asm) {
-            return (_assembly != null && asm == _assembly.AssemblyBuilder) ||
-                   (_debugAssembly != null && asm == _debugAssembly.AssemblyBuilder);
+            return (_assembly is not null && asm == _assembly.AssemblyBuilder) ||
+                   (_debugAssembly is not null && asm == _debugAssembly.AssemblyBuilder);
         }
 
 #endif

@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.ComInterop {
             ComTypeDesc ctd = _comTypeDesc;
             string typeName = null;
 
-            if (ctd != null) {
+            if (ctd is not null) {
                 typeName = ctd.TypeName;
             }
 
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal bool TryGetGetItem(out ComMethodDesc value) {
             ComMethodDesc methodDesc = _comTypeDesc.GetItem;
-            if (methodDesc != null) {
+            if (methodDesc is not null) {
                 value = methodDesc;
                 return true;
             }
@@ -179,7 +179,7 @@ namespace Microsoft.Scripting.ComInterop {
             ComMethodDesc methodDesc = _comTypeDesc.GetItem;
 
             // Without type information, we really don't know whether or not we have a property getter.
-            if (methodDesc == null) {
+            if (methodDesc is null) {
                 string name = "[PROPERTYGET, DISPID(0)]";
 
                 _comTypeDesc.EnsureGetItem(new ComMethodDesc(name, ComDispIds.DISPID_VALUE, ComTypes.INVOKEKIND.INVOKE_PROPERTYGET));
@@ -192,7 +192,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal bool TryGetSetItem(out ComMethodDesc value) {
             ComMethodDesc methodDesc = _comTypeDesc.SetItem;
-            if (methodDesc != null) {
+            if (methodDesc is not null) {
                 value = methodDesc;
                 return true;
             }
@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.ComInterop {
             ComMethodDesc methodDesc = _comTypeDesc.SetItem;
 
             // Without type information, we really don't know whether or not we have a property setter.
-            if (methodDesc == null) {
+            if (methodDesc is null) {
                 string name = "[PROPERTYPUT, DISPID(0)]";
 
                 _comTypeDesc.EnsureSetItem(new ComMethodDesc(name, ComDispIds.DISPID_VALUE, ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT));
@@ -292,7 +292,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             var members = new List<KeyValuePair<string, object>>();
             foreach (string name in names) {
-                if (name == null) {
+                if (name is null) {
                     continue;
                 }
 
@@ -340,23 +340,23 @@ namespace Microsoft.Scripting.ComInterop {
         private void EnsureScanDefinedEvents() {
             // _comTypeDesc.Events is null if we have not yet attempted
             // to scan the object for events.
-            if (_comTypeDesc?.Events != null) {
+            if (_comTypeDesc?.Events is not null) {
                 return;
             }
 
             // check type info in the type descriptions cache
             ComTypes.ITypeInfo typeInfo = ComRuntimeHelpers.GetITypeInfoFromIDispatch(_dispatchObject, true);
-            if (typeInfo == null) {
+            if (typeInfo is null) {
                 _comTypeDesc = ComTypeDesc.CreateEmptyTypeDesc();
                 return;
             }
 
             ComTypes.TYPEATTR typeAttr = ComRuntimeHelpers.GetTypeAttrForTypeInfo(typeInfo);
 
-            if (_comTypeDesc == null) {
+            if (_comTypeDesc is null) {
                 lock (_CacheComTypeDesc) {
                     if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) &&
-                        _comTypeDesc.Events != null) {
+                        _comTypeDesc.Events is not null) {
                         return;
                     }
                 }
@@ -370,7 +370,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (RuntimeCallableWrapper is not ComTypes.IConnectionPointContainer) {
                 // No ICPC - this object does not support events
                 events = ComTypeDesc.EmptyEvents;
-            } else if ((classTypeInfo = GetCoClassTypeInfo(RuntimeCallableWrapper, typeInfo)) == null) {
+            } else if ((classTypeInfo = GetCoClassTypeInfo(RuntimeCallableWrapper, typeInfo)) is null) {
                 // no class info found - this object may support events
                 // but we could not discover those
                 events = ComTypeDesc.EmptyEvents;
@@ -444,7 +444,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private static ComTypes.ITypeInfo GetCoClassTypeInfo(object rcw, ComTypes.ITypeInfo typeInfo) {
-            Debug.Assert(typeInfo != null);
+            Debug.Assert(typeInfo is not null);
 
             if (rcw is IProvideClassInfo provideClassInfo) {
                 IntPtr typeInfoPtr = IntPtr.Zero;
@@ -468,7 +468,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             ComTypeLibDesc typeLibDesc = ComTypeLibDesc.GetFromTypeLib(typeLib);
             ComTypeClassDesc coclassDesc = typeLibDesc.GetCoClassForInterface(typeName);
-            if (coclassDesc == null) {
+            if (coclassDesc is null) {
                 return null;
             }
 
@@ -478,22 +478,22 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private void EnsureScanDefinedMethods() {
-            if (_comTypeDesc?.Funcs != null) {
+            if (_comTypeDesc?.Funcs is not null) {
                 return;
             }
 
             ComTypes.ITypeInfo typeInfo = ComRuntimeHelpers.GetITypeInfoFromIDispatch(_dispatchObject, true);
-            if (typeInfo == null) {
+            if (typeInfo is null) {
                 _comTypeDesc = ComTypeDesc.CreateEmptyTypeDesc();
                 return;
             }
 
             ComTypes.TYPEATTR typeAttr = ComRuntimeHelpers.GetTypeAttrForTypeInfo(typeInfo);
 
-            if (_comTypeDesc == null) {
+            if (_comTypeDesc is null) {
                 lock (_CacheComTypeDesc) {
                     if (_CacheComTypeDesc.TryGetValue(typeAttr.guid, out _comTypeDesc) &&
-                        _comTypeDesc.Funcs != null) {
+                        _comTypeDesc.Funcs is not null) {
                         return;
                     }
                 }
@@ -526,7 +526,7 @@ namespace Microsoft.Scripting.ComInterop {
 
                         // for the special dispId == 0, we need to store
                         // the method descriptor for the Do(SetItem) binder. 
-                        if (method.DispId == ComDispIds.DISPID_VALUE && setItem == null) {
+                        if (method.DispId == ComDispIds.DISPID_VALUE && setItem is null) {
                             setItem = method;
                         }
                         continue;
@@ -535,7 +535,7 @@ namespace Microsoft.Scripting.ComInterop {
                         putrefs.Add(name, method);
                         // for the special dispId == 0, we need to store
                         // the method descriptor for the Do(SetItem) binder. 
-                        if (method.DispId == ComDispIds.DISPID_VALUE && setItem == null) {
+                        if (method.DispId == ComDispIds.DISPID_VALUE && setItem is null) {
                             setItem = method;
                         }
                         continue;

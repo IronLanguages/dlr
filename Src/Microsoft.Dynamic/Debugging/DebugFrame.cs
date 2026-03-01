@@ -65,12 +65,12 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 ScopeData scopeData = CurrentScopeData;
                 VariableInfo[] variables;
-                if (_thrownException == null) {
+                if (_thrownException is null) {
                     variables = scopeData.VarInfos;
                 } else {
                     variables = scopeData.VarInfosWithException;
                 }
-                if (variables == null) {
+                if (variables is null) {
                     List<VariableInfo> visibleInfos = new List<VariableInfo>();
 
                     // Add parameters
@@ -93,7 +93,7 @@ namespace Microsoft.Scripting.Debugging {
                     scopeData.VarInfos = visibleInfos.ToArray();
                     scopeData.VarInfosWithException = visibleInfosWithException.ToArray();
 
-                    variables = _thrownException == null ? scopeData.VarInfos : scopeData.VarInfosWithException;
+                    variables = _thrownException is null ? scopeData.VarInfos : scopeData.VarInfosWithException;
                 }
 
                 return variables;
@@ -124,17 +124,17 @@ namespace Microsoft.Scripting.Debugging {
                     throw new InvalidOperationException(ErrorStrings.JumpNotAllowedInNonLeafFrames);
                 }
 
-                bool needsGenerator = (value != CurrentLocationCookie || _thrownException != null);
+                bool needsGenerator = (value != CurrentLocationCookie || _thrownException is not null);
 
                 // Remap to a generator if we're changing to a different location or if there's a thrown exception
-                if (_generator == null && needsGenerator) {
+                if (_generator is null && needsGenerator) {
                     RemapToGenerator(_funcInfo.Version);
-                    Debug.Assert(_generator != null);
+                    Debug.Assert(_generator is not null);
                 }
 
                 // change location only if really needed
                 if (value != CurrentLocationCookie) {
-                    Debug.Assert(_generator != null);
+                    Debug.Assert(_generator is not null);
                     _generator.YieldMarkerLocation = value;
                 }
 
@@ -166,10 +166,10 @@ namespace Microsoft.Scripting.Debugging {
         internal Exception ThrownException {
             get { return _thrownException; }
             set {
-                if (_thrownException != null && value == null) {
+                if (_thrownException is not null && value is null) {
                     _thrownException = null;
                     GetLocalsScope().Remove(_exceptionVariableSymbol);
-                } else if (value != null && !GetLocalsScope().ContainsKey(_exceptionVariableSymbol)) {
+                } else if (value is not null && !GetLocalsScope().ContainsKey(_exceptionVariableSymbol)) {
                     _thrownException = value;
                     GetLocalsScope()[_exceptionVariableSymbol] = _thrownException;
                 }
@@ -201,8 +201,8 @@ namespace Microsoft.Scripting.Debugging {
 
         internal int CurrentLocationCookie {
             get {
-                Debug.Assert(_generator != null || _liftedLocals is IDebugRuntimeVariables);
-                return (_generator == null ? ((IDebugRuntimeVariables)_liftedLocals).DebugMarker : 
+                Debug.Assert(_generator is not null || _liftedLocals is IDebugRuntimeVariables);
+                return (_generator is null ? ((IDebugRuntimeVariables)_liftedLocals).DebugMarker : 
                     (_generator.YieldMarkerLocation != Int32.MaxValue ? _generator.YieldMarkerLocation : _lastKnownGeneratorYieldMarker));
             }
         }
@@ -216,14 +216,14 @@ namespace Microsoft.Scripting.Debugging {
         /// // This method is called from the generator to update the frame with generator's locals
         /// </summary>
         internal void ReplaceLiftedLocals(IRuntimeVariables liftedLocals) {
-            Debug.Assert(_liftedLocals == null || liftedLocals.Count >= _liftedLocals.Count);
+            Debug.Assert(_liftedLocals is null || liftedLocals.Count >= _liftedLocals.Count);
 
             IRuntimeVariables oldLiftecLocals = _liftedLocals;
 
             // Replace the list of IStrongBoxes with the new list
             _liftedLocals = liftedLocals;
 
-            if (oldLiftecLocals != null) {
+            if (oldLiftecLocals is not null) {
                 for (int i = 0; i < oldLiftecLocals.Count; i++) {
                     if (!_funcInfo.Variables[i].IsParameter && i < _liftedLocals.Count)
                         _liftedLocals[i] = oldLiftecLocals[i];
@@ -239,11 +239,11 @@ namespace Microsoft.Scripting.Debugging {
         /// </summary>
         /// <param name="version">Int32.MaxValue to map to latest version</param>
         internal void RemapToGenerator(int version) {
-            Debug.Assert(_generator == null || _funcInfo.Version != version);
+            Debug.Assert(_generator is null || _funcInfo.Version != version);
 
             // Try to find the target FunctionInfo for the specified version
             FunctionInfo targetFuncInfo = GetFunctionInfo(version);
-            if (targetFuncInfo == null) {
+            if (targetFuncInfo is null) {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, ErrorStrings.InvalidFunctionVersion, version));
             }
 
@@ -257,8 +257,8 @@ namespace Microsoft.Scripting.Debugging {
         internal IDictionary<object, object> GetLocalsScope() {
             ScopeData scopeData = CurrentScopeData;
             IDictionary<object, object> scope = scopeData.Scope;
-            if (scope == null) {
-                Debug.Assert(_liftedLocals != null);
+            if (scope is null) {
+                Debug.Assert(_liftedLocals is not null);
 
                 List<string> visibleSymbols = new List<string>();
                 List<VariableInfo> visibleLocals = new List<VariableInfo>();
@@ -323,7 +323,7 @@ namespace Microsoft.Scripting.Debugging {
 
             FunctionInfo funcInfo = _funcInfo;
             FunctionInfo lastFuncInfo = null;
-            while (funcInfo != null) {
+            while (funcInfo is not null) {
                 if (funcInfo.Version == version) {
                     return funcInfo;
                 }
@@ -347,7 +347,7 @@ namespace Microsoft.Scripting.Debugging {
         private ScopeData CurrentScopeData {
             get {
                 IList<VariableInfo> scopedVars = CurrentLocationCookie < _funcInfo.VariableScopeMap.Length ? _funcInfo.VariableScopeMap[CurrentLocationCookie] : null;
-                if (scopedVars == null) {
+                if (scopedVars is null) {
                     Debug.Assert(false, "DebugMarker doesn't match any scope");
 
                     // We use null as a key into the tuple that holds variables for "invalid" locations
@@ -366,7 +366,7 @@ namespace Microsoft.Scripting.Debugging {
         private IList<VariableInfo> LocalsInCurrentScope {
             get {
                 IList<VariableInfo> locals = CurrentLocationCookie < _funcInfo.VariableScopeMap.Length ? _funcInfo.VariableScopeMap[CurrentLocationCookie] : null;
-                if (locals == null) {
+                if (locals is null) {
                     Debug.Assert(false, "DebugMarker doesn't match any scope");
                     locals = _funcInfo.VariableScopeMap[0];
                 }

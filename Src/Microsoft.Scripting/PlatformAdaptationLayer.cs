@@ -286,7 +286,7 @@ namespace Microsoft.Scripting {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         public virtual void SetEnvironmentVariable(string key, string value) {
 #if FEATURE_PROCESS
-            if (value != null && value.Length == 0) {
+            if (value is not null && value.Length == 0) {
                 SetEmptyEnvironmentVariable(key);
             } else {
                 Environment.SetEnvironmentVariable(key, value);

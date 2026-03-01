@@ -123,7 +123,7 @@ namespace Microsoft.Scripting.Actions {
         private DynamicMetaObject TryOneConversion(ConversionResultKind kind, Type toType, Type type, Type fromType, string methodName, bool isImplicit, BindingRestrictions restrictions, DynamicMetaObject arg) {
             MemberGroup conversions = GetMember(MemberRequestKind.Convert, fromType, methodName);
             DynamicMetaObject res = TryUserDefinedConversion(kind, toType, type, conversions, isImplicit, restrictions, arg);
-            if (res != null) {
+            if (res is not null) {
                 return res;
             }
 
@@ -489,7 +489,7 @@ namespace Microsoft.Scripting.Actions {
                     fromType = curType.GetGenericArguments()[0];
                 }
                 curType = curType.BaseType;
-            } while (curType != null);
+            } while (curType is not null);
             return fromType;
         }
 

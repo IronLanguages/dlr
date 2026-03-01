@@ -129,7 +129,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static int CountOf<T>(IList<T> list, T item) where T : IEquatable<T> {
-            if (list == null) return 0;
+            if (list is null) return 0;
 
             int result = 0;
             for (int i = 0; i < list.Count; i++) {

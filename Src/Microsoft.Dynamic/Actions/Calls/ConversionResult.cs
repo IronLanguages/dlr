@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public string GetArgumentTypeName(ActionBinder binder) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
-            return (_arg != null) ? binder.GetObjectTypeName(_arg) : binder.GetTypeName(ArgType);
+            return (_arg is not null) ? binder.GetObjectTypeName(_arg) : binder.GetTypeName(ArgType);
         }
     }
 }

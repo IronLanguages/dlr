@@ -24,21 +24,11 @@ namespace Microsoft.Scripting.Runtime {
         /// Helper function to combine an object array with a sequence of additional parameters that has been splatted for a function call.
         /// </summary>
         public static object[] GetCombinedParameters(object[] initialArgs, object additionalArgs) {
-            IList listArgs = additionalArgs as IList;
-            if (listArgs == null) {
-                if (additionalArgs is not IEnumerable ie) {
-                    throw new InvalidOperationException("args must be iterable");
-                }
-                listArgs = new List<object>();
-                foreach (object o in ie) {
-                    listArgs.Add(o);
-                }
-            }
-
-            object[] res = new object[initialArgs.Length + listArgs.Count];
-            Array.Copy(initialArgs, res, initialArgs.Length);
-            listArgs.CopyTo(res, initialArgs.Length);
-            return res;
+            return additionalArgs switch {
+                IList listArgs => [..initialArgs, ..listArgs],
+                IEnumerable ie => [..initialArgs, ..ie],
+                _ => throw new InvalidOperationException("args must be iterable")
+            };
         }
 
         public static Dictionary<TKey, TValue> MakeDictionary<TKey, TValue>(string[] names, object[] values) {
@@ -195,7 +185,7 @@ namespace Microsoft.Scripting.Runtime {
                     return false;
                 }
 
-                if (types != null) {
+                if (types is not null) {
                     if (CompilerHelpers.GetType(dict[name]) != types[i]) {
                         return false;
                     }

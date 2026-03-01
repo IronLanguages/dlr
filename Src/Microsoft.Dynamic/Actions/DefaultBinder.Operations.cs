@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Actions {
             BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
 
             DocumentationAttribute attr = target.LimitType.GetCustomAttribute<DocumentationAttribute>();
-            string documentation = (attr != null) ? attr.Documentation : string.Empty;
+            string documentation = (attr is not null) ? attr.Documentation : string.Empty;
 
             return new DynamicMetaObject(
                 AstUtils.Constant(documentation),
@@ -234,7 +234,7 @@ namespace Microsoft.Scripting.Actions {
         private DynamicMetaObject TryInvertedComparison(OperatorInfo info, OverloadResolverFactory resolverFactory, DynamicMetaObject target, DynamicMetaObject[] args) {
             ExpressionType revOp = GetInvertedOperator(info.Operator);
             OperatorInfo revInfo = OperatorInfo.GetOperatorInfo(revOp);
-            Debug.Assert(revInfo != null);
+            Debug.Assert(revInfo is not null);
 
             // try the 1st type's opposite function result negated 
             MethodBase[] targets = GetApplicableMembers(target.GetLimitType(), revInfo);
@@ -414,7 +414,7 @@ namespace Microsoft.Scripting.Actions {
         private static DynamicMetaObject MakeCallSignatureResult(MethodBase[] methods, DynamicMetaObject target) {
             List<string> arrres = new List<string>();
 
-            if (methods != null) {
+            if (methods is not null) {
                 foreach (MethodBase mb in methods) {
                     StringBuilder res = new StringBuilder();
                     string comma = "";
@@ -528,10 +528,10 @@ namespace Microsoft.Scripting.Actions {
                 if (mi is PropertyInfo pi) {
                     if (op == IndexType.Get) {
                         MethodInfo method = pi.GetGetMethod(PrivateBinding); 
-                        if (method != null) methods.Add(method);
+                        if (method is not null) methods.Add(method);
                     } else if (op == IndexType.Set) {
                         MethodInfo method = pi.GetSetMethod(PrivateBinding);
-                        if (method != null) methods.Add(method);
+                        if (method is not null) methods.Add(method);
                     }
                 }
             }
@@ -609,7 +609,7 @@ namespace Microsoft.Scripting.Actions {
             Assert.NotNull(t, info);
 
             MemberGroup members = GetMember(MemberRequestKind.Operation, t, info.Name);
-            if (members.Count == 0 && info.AlternateName != null) {
+            if (members.Count == 0 && info.AlternateName is not null) {
                 members = GetMember(MemberRequestKind.Operation, t, info.AlternateName);
             }
 

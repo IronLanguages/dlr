@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Generation {
         internal bool IsDebuggable {
             get {
 #if FEATURE_PDBEMIT
-                Debug.Assert(_isDebuggable == (_myModule.GetSymWriter() != null));
+                Debug.Assert(_isDebuggable == (_myModule.GetSymWriter() is not null));
 #endif
                 return _isDebuggable;
             }
@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Generation {
 #if FEATURE_ASSEMBLYBUILDER_SAVE
             outFileExtension ??= ".dll";
 
-            if (outDir != null) {
+            if (outDir is not null) {
                 try {
                     outDir = Path.GetFullPath(outDir);
                 } catch (Exception) {
@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Generation {
 #endif
             };
 
-            if (attrs != null) {
+            if (attrs is not null) {
                 foreach(var attr in attrs) {
                     if (!(attr.Value is string a) || string.IsNullOrWhiteSpace(a)) {
                         continue;
@@ -93,13 +93,13 @@ namespace Microsoft.Scripting.Generation {
                             break;
                     }
 
-                    if(ctor != null) {
+                    if(ctor is not null) {
                         attributes.Add(new CustomAttributeBuilder(ctor, new object[] { a }));
                     }
                 }                
             }
 
-            if (outDir != null) {
+            if (outDir is not null) {
                 _myAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave, outDir, false, attributes);
                 _myModule = _myAssembly.DefineDynamicModule(name.Name, _outFileName, isDebuggable);
             } else {
@@ -162,7 +162,7 @@ namespace Microsoft.Scripting.Generation {
             string outDir = Path.GetDirectoryName(fileLocation);
             string outFileName = Path.GetFileName(fileLocation);
             string peverifyPath = FindPeverify();
-            if (peverifyPath == null) {
+            if (peverifyPath is null) {
                 Debug.WriteLine("PEVerify not available");
                 return;
             }
@@ -194,7 +194,7 @@ namespace Microsoft.Scripting.Generation {
                 // copy any DLLs or EXEs created by the process during the run...
                 CopyFilesCreatedSinceStart(Path.GetTempPath(), Environment.CurrentDirectory, outFileName);
                 CopyDirectory(Path.GetTempPath(), pythonPath);
-                if (Snippets.Shared.SnippetsDirectory != null && Snippets.Shared.SnippetsDirectory != Path.GetTempPath()) {
+                if (Snippets.Shared.SnippetsDirectory is not null && Snippets.Shared.SnippetsDirectory != Path.GetTempPath()) {
                     CopyFilesCreatedSinceStart(Path.GetTempPath(), Snippets.Shared.SnippetsDirectory, outFileName);
                 }
 
@@ -232,7 +232,7 @@ namespace Microsoft.Scripting.Generation {
                     strOut ?? "");
             }
 
-            if (verifyFile != null) {
+            if (verifyFile is not null) {
                 File.Delete(verifyFile);
             }
 #endif

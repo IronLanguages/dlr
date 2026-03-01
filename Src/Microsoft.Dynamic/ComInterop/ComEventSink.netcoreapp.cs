@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.ComInterop {
         public static ComEventSink FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
             List<ComEventSink> comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
 
-            if (comEventSinks == null) {
+            if (comEventSinks is null) {
                 return null;
             }
 
@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.ComInterop {
                     }
                 }
 
-                if (comEventSink == null && createIfNotFound) {
+                if (comEventSink is null && createIfNotFound) {
                     comEventSink = new ComEventSink(rcw, sourceIid);
                     comEventSinks.Add(comEventSink);
                 }
@@ -91,7 +91,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public void RemoveHandler(int dispid, object func) {
             ComEventsMethod sinkEntry = FindMethod(dispid);
-            if (sinkEntry == null) {
+            if (sinkEntry is null) {
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.ComInterop {
             IntPtr puArgErr) {
 
             ComEventsMethod method = FindMethod(dispIdMember);
-            if (method == null) {
+            if (method is null) {
                 return ComHresults.DISP_E_MEMBERNOTFOUND;
             }
 
@@ -255,7 +255,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private void Advise(object rcw) {
-            Debug.Assert(_connectionPoint == null, "comevent sink is already advised");
+            Debug.Assert(_connectionPoint is null, "comevent sink is already advised");
 
             IConnectionPointContainer cpc = (IConnectionPointContainer)rcw;
             cpc.FindConnectionPoint(ref _iidSourceItf, out IConnectionPoint cp);
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public void Dispose() {
-            if (_connectionPoint == null) {
+            if (_connectionPoint is null) {
                 return;
             }
 

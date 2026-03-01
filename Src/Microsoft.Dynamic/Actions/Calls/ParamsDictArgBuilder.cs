@@ -114,7 +114,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 func = BinderOps.MakeDictionary<object, object>;
             }
 
-            if (func == null) {
+            if (func is null) {
                 throw BadDictionaryType(dictType);
             }
 
