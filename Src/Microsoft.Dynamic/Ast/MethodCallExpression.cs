@@ -33,14 +33,14 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         public static MethodCallExpression SimpleCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
             ContractUtils.RequiresNotNull(method, nameof(method));
-            ContractUtils.Requires(instance != null ^ method.IsStatic, nameof(instance));
+            ContractUtils.Requires(instance is not null ^ method.IsStatic, nameof(instance));
             ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
 
             ParameterInfo[] parameters = method.GetParameters();
 
             ContractUtils.Requires(arguments.Length == parameters.Length, nameof(arguments), "Incorrect number of arguments");
 
-            if (instance != null) {
+            if (instance is not null) {
                 instance = Convert(instance, method.DeclaringType);
             }
 
@@ -62,15 +62,15 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private static Expression[] ArgumentConvertHelper(Expression[] arguments, ParameterInfo[] parameters) {
-            Debug.Assert(arguments != null);
-            Debug.Assert(arguments != null);
+            Debug.Assert(arguments is not null);
+            Debug.Assert(arguments is not null);
 
             Expression[] clone = null;
             for (int arg = 0; arg < arguments.Length; arg++) {
                 Expression argument = arguments[arg];
                 if (!CompatibleParameterTypes(parameters[arg].ParameterType, argument.Type)) {
                     // Clone the arguments array if needed
-                    if (clone == null) {
+                    if (clone is null) {
                         clone = new Expression[arguments.Length];
                         // Copy the expressions into the clone
                         for (int i = 0; i < arg; i++) {
@@ -81,7 +81,7 @@ namespace Microsoft.Scripting.Ast {
                     argument = ArgumentConvertHelper(argument, parameters[arg].ParameterType);
                 }
 
-                if (clone != null) {
+                if (clone is not null) {
                     clone[arg] = argument;
                 }
             }
@@ -126,12 +126,12 @@ namespace Microsoft.Scripting.Ast {
         public static Expression ComplexCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
-            ContractUtils.Requires(instance != null ^ method.IsStatic, nameof(instance));
+            ContractUtils.Requires(instance is not null ^ method.IsStatic, nameof(instance));
 
             ParameterInfo[] parameters = method.GetParameters();
             bool hasParamArray = parameters.Length > 0 && parameters[parameters.Length - 1].IsParamArray();
 
-            if (instance != null) {
+            if (instance is not null) {
                 instance = Convert(instance, method.DeclaringType);
             }
 
@@ -181,16 +181,14 @@ namespace Microsoft.Scripting.Ast {
                 argument = ArgumentConvertHelper(argument, parameter.ParameterType);
 
                 // Do we need to make array clone?
-                if (clone == null && !(current < arguments.Length && (object)argument == (object)arguments[current])) {
+                if (clone is null && !(current < arguments.Length && (object)argument == (object)arguments[current])) {
                     clone = new Expression[parameters.Length];
                     for (int i = 0; i < current; i++) {
                         clone[i] = arguments[i];
                     }
                 }
 
-                if (clone != null) {
-                    clone[current] = argument;
-                }
+                clone?[current] = argument;
 
                 // Next parameter
                 current++;

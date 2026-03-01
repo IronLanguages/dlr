@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Actions {
         /// Adds the non-conditional terminating node.
         /// </summary>
         public void FinishCondition(Expression body) {
-            if (_body != null) throw new InvalidOperationException();
+            if (_body is not null) throw new InvalidOperationException();
 
             for (int i = _bodies.Count - 1; i >= 0; i--) {
                 Type t = _bodies[i].Type;
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Actions {
         /// must have been called.
         /// </summary>
         public DynamicMetaObject GetMetaObject(params DynamicMetaObject[] types) {
-            if (_body == null) {
+            if (_body is null) {
                 throw new InvalidOperationException("FinishCondition should have been called");
             }
 

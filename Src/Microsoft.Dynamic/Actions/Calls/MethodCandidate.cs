@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public bool HasParamsArray => ParamsArrayIndex != -1;
 
-        public bool HasParamsDictionary => _paramsDict != null;
+        public bool HasParamsDictionary => _paramsDict is not null;
 
         public ActionBinder Binder => Resolver.Binder;
 
@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (_paramsDict != null) {
+            if (_paramsDict is not null) {
                 var flags = (Overload.ProhibitsNullItems(_paramsDict.ParameterInfo.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
                             (_paramsDict.IsHidden ? ParameterBindingFlags.IsHidden : 0);
 
@@ -262,7 +262,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             List<Type> res = new List<Type>(ArgBuilders.Count);
             for (int i = 0; i < ArgBuilders.Count; i++) {
                 Type t = ArgBuilders[i].Type;
-                if (t != null) {
+                if (t is not null) {
                     res.Add(t);
                 }
             }
@@ -279,7 +279,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             MethodBase mb = Overload.ReflectionInfo;
 
             // TODO: make MakeExpression virtual on OverloadInfo?
-            if (mb == null) {
+            if (mb is null) {
                 throw new InvalidOperationException("Cannot generate an expression for an overload w/o MethodBase");
             }
 
@@ -288,9 +288,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if (mi.IsStatic) {
                     instance = null;
                 } else {
-                    Debug.Assert(mi != null);
+                    Debug.Assert(mi is not null);
                     instance = _instanceBuilder.ToExpression(ref mi, Resolver, restrictedArgs, usageMarkers);
-                    Debug.Assert(instance != null, "Can't skip instance expression");
+                    Debug.Assert(instance is not null, "Can't skip instance expression");
                 }
 
                 if (CompilerHelpers.IsVisible(mi)) {
@@ -299,7 +299,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     call = Expression.Call(
                         typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeMethod)),
                         AstUtils.Constant(mi),
-                        instance != null ? AstUtils.Convert(instance, typeof(object)) : AstUtils.Constant(null),
+                        instance is not null ? AstUtils.Convert(instance, typeof(object)) : AstUtils.Constant(null),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
                     );
                 }
@@ -316,7 +316,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (spilledArgs != null) {
+            if (spilledArgs is not null) {
                 call = Expression.Block(spilledArgs.AddLast(call));
             }
 
@@ -325,13 +325,13 @@ namespace Microsoft.Scripting.Actions.Calls {
             List<Expression> updates = null;
             for (int i = 0; i < ArgBuilders.Count; i++) {
                 Expression next = ArgBuilders[i].UpdateFromReturn(Resolver, restrictedArgs);
-                if (next != null) {
+                if (next is not null) {
                     updates ??= new List<Expression>();
                     updates.Add(next);
                 }
             }
 
-            if (updates != null) {
+            if (updates is not null) {
                 if (ret.Type != typeof(void)) {
                     ParameterExpression temp = Expression.Variable(ret.Type, "$ret");
                     updates.Insert(0, Expression.Assign(temp, ret));
@@ -343,7 +343,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (Resolver.Temps != null) {
+            if (Resolver.Temps is not null) {
                 ret = Expression.Block(Resolver.Temps, ret);
             }
 
@@ -368,7 +368,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                         // see if this has a temp that needs to be passed as the actual argument
                         Expression byref = ArgBuilders[i].ByRefArgument;
-                        if (byref != null) {
+                        if (byref is not null) {
                             actualArgs ??= new Expression[ArgBuilders.Count];
                             actualArgs[i] = byref;
                         }
@@ -376,9 +376,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (actualArgs != null) {
+            if (actualArgs is not null) {
                 for (int i = 0; i < args.Length; i++) {
-                    if (args[i] != null && actualArgs[i] == null) {
+                    if (args[i] is not null && actualArgs[i] is null) {
                         actualArgs[i] = Resolver.GetTemporary(args[i].Type, null);
                         args[i] = Expression.Assign(actualArgs[i], args[i]);
                     }
@@ -395,14 +395,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         private static Expression[] RemoveNulls(Expression[] args) {
             int newLength = args.Length;
             for (int i = 0; i < args.Length; i++) {
-                if (args[i] == null) {
+                if (args[i] is null) {
                     newLength--;
                 }
             }
 
             var result = new Expression[newLength];
             for (int i = 0, j = 0; i < args.Length; i++) {
-                if (args[i] != null) {
+                if (args[i] is not null) {
                     result[j++] = args[i];
                 }
             }

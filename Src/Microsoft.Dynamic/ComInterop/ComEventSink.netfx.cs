@@ -66,13 +66,13 @@ namespace Microsoft.Scripting.ComInterop {
             _sourceIid = sourceIid;
             _adviseCookie = -1;
 
-            Debug.Assert(_connectionPoint == null, "re-initializing event sink w/o unadvising from connection point");
+            Debug.Assert(_connectionPoint is null, "re-initializing event sink w/o unadvising from connection point");
 
             if (rcw is not ComTypes.IConnectionPointContainer cpc)
                 throw Error.COMObjectDoesNotSupportEvents();
 
             cpc.FindConnectionPoint(ref _sourceIid, out _connectionPoint);
-            if (_connectionPoint == null)
+            if (_connectionPoint is null)
                 throw Error.COMObjectDoesNotSupportSourceInterface();
 
             // Read the comments for ComEventSinkProxy about why we need it
@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.ComInterop {
         public static ComEventSink FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
             List<ComEventSink> comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
 
-            if (comEventSinks == null) {
+            if (comEventSinks is null) {
                 return null;
             }
 
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.ComInterop {
                     }
                 }
 
-                if (comEventSink == null && createIfNotFound) {
+                if (comEventSink is null && createIfNotFound) {
                     comEventSink = new ComEventSink(rcw, sourceIid);
                     comEventSinks.Add(comEventSink);
                 }
@@ -123,7 +123,7 @@ namespace Microsoft.Scripting.ComInterop {
             lock (_lockObject) {
                 ComEventSinkMethod sinkMethod = FindSinkMethod(name);
 
-                if (sinkMethod == null) {
+                if (sinkMethod is null) {
                     _comEventSinkMethods ??= new List<ComEventSinkMethod>();
 
                     sinkMethod = new ComEventSinkMethod();
@@ -142,7 +142,7 @@ namespace Microsoft.Scripting.ComInterop {
             lock (_lockObject) {
 
                 ComEventSinkMethod sinkEntry = FindSinkMethod(name);
-                if (sinkEntry == null){
+                if (sinkEntry is null){
                     return;
                 }
 
@@ -161,7 +161,7 @@ namespace Microsoft.Scripting.ComInterop {
 
                 // If the delegates chain is empty - we can remove 
                 // corresponding ComEvenSinkEntry
-                if (sinkEntry._handlers == null)
+                if (sinkEntry._handlers is null)
                     _comEventSinkMethods.Remove(sinkEntry);
 
                 // We can Unadvise from the ConnectionPoint if no more sink entries
@@ -263,7 +263,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private void DisposeAll() {
-            if (_connectionPoint == null) {
+            if (_connectionPoint is null) {
                 return;
             }
 
@@ -296,7 +296,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private ComEventSinkMethod FindSinkMethod(string name) {
-            if (_comEventSinkMethods == null)
+            if (_comEventSinkMethods is null)
                 return null;
 
             ComEventSinkMethod site = _comEventSinkMethods.Find(element => element._name == name);

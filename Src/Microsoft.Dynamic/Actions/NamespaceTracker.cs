@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Actions {
         private string GetFullChildName(string childName) {
             Assert.NotNull(childName);
             Debug.Assert(childName.IndexOf('.') == -1); // This is the simple name, not the full name
-            if (_fullName == null) {
+            if (_fullName is null) {
                 return childName;
             }
 
@@ -93,7 +93,7 @@ namespace Microsoft.Scripting.Actions {
             Assert.NotNull(assem, fullTypeName);
             Type type = assem.GetType(fullTypeName);
             // We should ignore nested types. They will be loaded when the containing type is loaded
-            Debug.Assert(type == null || !type.IsNested());
+            Debug.Assert(type is null || !type.IsNested());
             return type;
         }
 
@@ -113,7 +113,7 @@ namespace Microsoft.Scripting.Actions {
                 // A similarly named type, namespace, or module already exists.
                 Type newType = LoadType(assem, GetFullChildName(typeName));
 
-                if (newType != null) {
+                if (newType is not null) {
                     object existingValue = _dict[normalizedTypeName];
                     if (existingValue is not TypeTracker existingTypeEntity) {
                         // Replace the existing namespace or module with the new type
@@ -179,7 +179,7 @@ namespace Microsoft.Scripting.Actions {
             // lock is held when this is called
             Assert.NotNull(assem);
 
-            if (fullNamespace == null) {
+            if (fullNamespace is null) {
                 // null is the top-level namespace
                 return this;
             }
@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.Actions {
             string fullTypeName = GetFullChildName(nameString);
             foreach (Assembly assem in _packageAssemblies) {
                 Type type = assem.GetType(fullTypeName);
-                if (type == null || type.IsNested()) {
+                if (type is null || type.IsNested()) {
                     continue;
                 }
 
@@ -257,7 +257,7 @@ namespace Microsoft.Scripting.Actions {
 
                 existingTypeEntity ??= CheckForUnlistedType(name);
 
-                if (existingTypeEntity != null) {
+                if (existingTypeEntity is not null) {
                     _dict[name] = existingTypeEntity;
                     value = existingTypeEntity;
                     return true;
@@ -378,7 +378,7 @@ namespace Microsoft.Scripting.Actions {
                 // Look for a non-generic type
                 if (_simpleTypeNames.Contains(normalizedTypeName)) {
                     Type newType = LoadType(_assembly, GetFullChildName(normalizedTypeName));
-                    if (newType != null) {
+                    if (newType is not null) {
                         existingTypeEntity = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
                     }
                 }
@@ -387,7 +387,7 @@ namespace Microsoft.Scripting.Actions {
                 if (_genericTypeNames.TryGetValue(normalizedTypeName, out List<string> actualNames)) {
                     foreach (string actualName in actualNames) {
                         Type newType = LoadType(_assembly, GetFullChildName(actualName));
-                        if (newType != null) {
+                        if (newType is not null) {
                             existingTypeEntity = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
                         }
                     }
@@ -413,7 +413,7 @@ namespace Microsoft.Scripting.Actions {
 
             string GetFullChildName(string childName) {
                 Debug.Assert(childName.IndexOf('.') == -1); // This is the simple name, not the full name
-                if (_fullNamespace == null) {
+                if (_fullNamespace is null) {
                     return childName;
                 }
 

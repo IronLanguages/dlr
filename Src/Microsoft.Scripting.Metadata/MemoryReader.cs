@@ -14,7 +14,7 @@ namespace Microsoft.Scripting.Metadata {
         private int _position;
 
         public MemoryReader(MemoryBlock block) {
-            if (block == null) {
+            if (block is null) {
                 throw new ArgumentNullException(nameof(block));
             }
             _block = block;

@@ -142,7 +142,7 @@ namespace Microsoft.Scripting.Metadata {
         internal readonly MetadataTables m_tables;
         
         internal MetadataRecord(MetadataToken token, MetadataTables tables) {
-            Contract.Assert(tables != null);
+            Contract.Assert(tables is not null);
             m_token = token;
             m_tables = tables;
         }
@@ -257,7 +257,7 @@ namespace Microsoft.Scripting.Metadata {
         /// </summary>
         /// <exception cref="SecurityException">The path is not accessible in partial trust.</exception>
         public string Path {
-            get { return (Module != null) ? Module.Assembly.Location : m_path; }
+            get { return (Module is not null) ? Module.Assembly.Location : m_path; }
         }
 
         public ModuleDef ModuleDef {

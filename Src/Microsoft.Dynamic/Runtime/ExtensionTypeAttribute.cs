@@ -16,10 +16,10 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="extends">The type which is being extended</param>
         /// <param name="extensionType">The type which provides the extension members.</param>
         public ExtensionTypeAttribute(Type extends, Type extensionType) {
-            if (extends == null) {
+            if (extends is null) {
                 throw new ArgumentNullException(nameof(extends));
             }
-            if (extensionType != null && !extensionType.IsPublic && !extensionType.IsNestedPublic) {
+            if (extensionType is not null && !extensionType.IsPublic && !extensionType.IsNestedPublic) {
                 throw Error.ExtensionMustBePublic(extensionType.FullName);
             }
 

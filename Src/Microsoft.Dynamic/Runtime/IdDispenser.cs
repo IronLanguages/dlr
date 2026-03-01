@@ -31,7 +31,7 @@ namespace Microsoft.Scripting.Runtime {
         public static object GetObject(long id) {
             lock (_synchObject) {
                 foreach (Wrapper w in _hashtable.Keys) {
-                    if (w.Target != null) {
+                    if (w.Target is not null) {
                         if (w.Id == id) return w.Target;
                     }
                 }
@@ -43,7 +43,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Gets a unique ID for an object
         /// </summary>
         public static long GetId(object o) {
-            if (o == null)
+            if (o is null)
                 return 0;
 
             lock (_synchObject) {
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Runtime {
             int emptyCount = 0;
 
             foreach (Wrapper w in _hashtable.Keys) {
-                if (w.Target != null)
+                if (w.Target is not null)
                     liveCount++;
                 else
                     emptyCount++;
@@ -99,7 +99,7 @@ namespace Microsoft.Scripting.Runtime {
                 Dictionary<object, object> newtable = new Dictionary<object, object>(liveCount + liveCount / 4, _comparer);
 
                 foreach (Wrapper w in _hashtable.Keys) {
-                    if (w.Target != null)
+                    if (w.Target is not null)
                         newtable[w] = w;
                 }
 
@@ -118,7 +118,7 @@ namespace Microsoft.Scripting.Runtime {
                 // CF throws doesn't support long weak references (NotSuportedException is thrown)
                 _weakReference = new WeakReference(obj, true);
 
-                _hashCode = (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
+                _hashCode = (obj is null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
                 Id = uniqueId;
             }
 
@@ -153,7 +153,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             private static int GetHashCodeWorker(object o) {
-                if (o == null) return 0;
+                if (o is null) return 0;
                 return ReferenceEqualityComparer<object>.Instance.GetHashCode(o);
             }
         }

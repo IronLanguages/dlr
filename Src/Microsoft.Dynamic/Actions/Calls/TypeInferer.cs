@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             Debug.Assert(target.IsGenericMethod && target.ContainsGenericParameters);
 
             List<DynamicMetaObject/*!*/> args = GetAllArguments(candidate, actualArgs);
-            if (args == null) {
+            if (args is null) {
                 return null;
             }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
 
                 Type bestType = inps.GetBestType(candidate.Method.Resolver, binding, restrictions);
-                if (bestType == null) {
+                if (bestType is null) {
                     // we conflict with possible constraints
                     noMethod = true;
                     break;
@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             if (!noMethod) {
                 // finally build a new MethodCandidate for the generic method
                 genArgs = GetGenericArgumentsForInferedMethod(target, binding);
-                if (genArgs == null) {
+                if (genArgs is null) {
                     // not all types we're inferred
                     return null;
                 }
@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 List<ParameterWrapper> newWrappers = CreateNewWrappers(candidate.Method, newMethod, target);
 
                 List<ArgBuilder> argBuilders = CreateNewArgBuilders(candidate.Method, newMethod);
-                if (argBuilders == null) {
+                if (argBuilders is null) {
                     // one or more arg builders don't support type inference
                     return null;
                 }
@@ -108,10 +108,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (ArgBuilder oldArgBuilder in candidate.ArgBuilders) {
                 var pi = oldArgBuilder.ParameterInfo;
 
-                if (pi != null && (pi.ParameterType.IsGenericParameter || pi.ParameterType.ContainsGenericParameters)) {
+                if (pi is not null && (pi.ParameterType.IsGenericParameter || pi.ParameterType.ContainsGenericParameters)) {
                     ArgBuilder replacement = oldArgBuilder.Clone(newOverload.Parameters[pi.Position]);
 
-                    if (replacement == null) {
+                    if (replacement is null) {
                         return null;
                     }
                     argBuilders.Add(replacement);
@@ -131,7 +131,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 ParameterWrapper oldWrap = candidate.GetParameter(i);
                 ParameterInfo pi = null;
                 Type newType = oldWrap.Type;
-                if (oldWrap.ParameterInfo != null) {
+                if (oldWrap.ParameterInfo is not null) {
                     pi = newOverload.Parameters[oldWrap.ParameterInfo.Position];
                     ParameterInfo oldParam = oldOverload.Parameters[oldWrap.ParameterInfo.Position];
 
@@ -365,12 +365,12 @@ namespace Microsoft.Scripting.Actions.Calls {
                 for (int i = 0; i < _parameterTypes.Count; i++) {
                     Type nextType = GetInferedType(resolver, _genericParam, _parameterTypes[i], _inputs[i], binding, restrictions);
 
-                    if (nextType == null) {
+                    if (nextType is null) {
                         // no mapping available
                         return null;
                     }
 
-                    if (curType == null || curType.IsAssignableFrom(nextType)) {
+                    if (curType is null || curType.IsAssignableFrom(nextType)) {
                         curType = nextType;
                     } else if (!nextType.IsAssignableFrom(curType)) {
                         // inconsistent constraint.
@@ -402,7 +402,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 // see if we have an invokable object which can be used to infer into this delegate
                 if (input is IInferableInvokable invokeInfer) {
                     InferenceResult inference = invokeInfer.GetInferredType(parameterType, genericParameter);
-                    if (inference != null) {
+                    if (inference is not null) {
                         if (inference.Restrictions != BindingRestrictions.Empty) {
                             restrictions[input] = inference.Restrictions;
                         }
@@ -436,7 +436,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             Debug.Assert(genericParameter.IsGenericParameter);
 
             if (parameterType.IsGenericParameter) {
-                if (inputType != null) {
+                if (inputType is not null) {
                     binding[genericParameter] = inputType;
                     if (ConstraintsViolated(inputType, genericParameter, binding)) {
                         return null;
@@ -524,7 +524,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             bool result = ReflectionUtils.BindGenericParameters(openType, closedType, (parameter, type) => {
                 if (parameter == genericParameter) {
-                    if (m != null) {
+                    if (m is not null) {
                         return m == type;
                     }
 

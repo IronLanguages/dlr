@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
             // $TODO: only return the threads that are in break mode
             get {
                 foreach (var thread in _thread.Values)
-                    if (thread != null && thread.FrameCount > 0)
+                    if (thread is not null && thread.FrameCount > 0)
                         yield return thread;
             }
         }
@@ -207,9 +207,9 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
 
         internal DebugThread GetCurrentThread() {
             DebugThread thread = _cachedThread;
-            if (thread == null || !thread.IsCurrentThread) {
+            if (thread is null || !thread.IsCurrentThread) {
                 thread = _thread.Value;
-                if (thread == null) {
+                if (thread is null) {
                     thread = _threadFactory.CreateDebugThread(this);
                     _thread.Value = thread;
                 }

@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         public string[] GetExtensionsArray() => Split(Extensions);
 
         private static string[] Split(string str) =>
-            str != null
+            str is not null
                 ? str.Split(new[] {';', ','}, StringSplitOptions.RemoveEmptyEntries)
                 : ArrayUtils.EmptyStrings;
     }

@@ -88,8 +88,7 @@ namespace Microsoft.Scripting.Utils {
         /// If the collection is already an array of R the original collection is returned.
         /// </summary>
         public static TResult[] ToArray<TElement, TResult>(ICollection<TElement> list, Func<TElement, TResult> convertor) {
-            TResult[] res = list as TResult[];
-            if (res == null) {
+            if (list is not TResult[] res) {
                 res = new TResult[list.Count];
                 int i = 0;
                 foreach (TElement obj in list) {
@@ -113,7 +112,7 @@ namespace Microsoft.Scripting.Utils {
             if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsAfter));
             if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsBefore));
 
-            if (elements == null) {
+            if (elements is null) {
                 return new T[reservedSlotsBefore + reservedSlotsAfter];
             }
 
@@ -231,7 +230,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void SwapLastTwo<T>(T[] array) {
-            Debug.Assert(array != null && array.Length >= 2);
+            Debug.Assert(array is not null && array.Length >= 2);
 
             T temp = array[array.Length - 1];
             array[array.Length - 1] = array[array.Length - 2];

@@ -295,12 +295,12 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public void EmitLoad(object value, Type type) {
-            if (value == null) {
+            if (value is null) {
                 Emit(_null ?? (_null = new LoadObjectInstruction(null)));
                 return;
             }
 
-            if (type == null || type.IsValueType) {
+            if (type is null || type.IsValueType) {
                 if (value is bool b) {
                     EmitLoad(b);
                     return;
@@ -316,7 +316,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            if (_objects == null) {
+            if (_objects is null) {
                 _objects = new List<object>();
                 _loadObjectCached ??= new Instruction[CachedObjectCount];
             }
@@ -345,7 +345,7 @@ namespace Microsoft.Scripting.Interpreter {
         internal void SwitchToBoxed(int index, int instructionIndex) {
             if (_instructions[instructionIndex] is IBoxableInstruction instruction) {
                 var newInstruction = instruction.BoxIfIndexMatches(index);
-                if (newInstruction != null) {
+                if (newInstruction is not null) {
                     _instructions[instructionIndex] = newInstruction;
                 }
             }
@@ -476,7 +476,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         public void EmitInitializeLocal(int index, Type type) {
             object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
-            if (value != null) {
+            if (value is not null) {
                 Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
             } else if (type.IsValueType) {
                 Emit(new InitializeLocalInstruction.MutableValue(index, type));
@@ -796,7 +796,7 @@ namespace Microsoft.Scripting.Interpreter {
                     }
 
                     Type instructionType = DynamicInstructionN.GetDynamicInstructionType(delegateType);
-                    if (instructionType == null) {
+                    if (instructionType is null) {
                         return new DynamicInstructionN(delegateType, CallSite.Create(delegateType, binder));
                     }
 

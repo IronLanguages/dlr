@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         }
 
         internal object GeneratorLoopProc(DebugFrame frame, out bool moveNext) {
-            Debug.Assert(frame.Generator != null);
+            Debug.Assert(frame.Generator is not null);
 
             moveNext = true;
             bool skipTraceEvent = true;
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
                     }
 
                     // Rethrow if the exception is not cancelled
-                    if (frame.ThrownException != null)
+                    if (frame.ThrownException is not null)
                         throw;
 
                     skipTraceEvent = true;

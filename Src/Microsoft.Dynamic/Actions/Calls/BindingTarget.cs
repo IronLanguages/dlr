@@ -83,11 +83,11 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Throws InvalidOperationException if the binding failed.
         /// </summary>
         public Expression MakeExpression() {
-            if (MethodCandidate == null) {
+            if (MethodCandidate is null) {
                 throw new InvalidOperationException("An expression cannot be produced because the method binding was unsuccessful.");
             }
 
-            if (RestrictedArguments == null) {
+            if (RestrictedArguments is null) {
                 throw new InvalidOperationException("An expression cannot be produced because the method binding was done with Expressions, not MetaObject's");
             }
 

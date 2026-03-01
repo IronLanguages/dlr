@@ -597,7 +597,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
             ConstructorInfo ci = type.GetConstructor(paramTypes);
-            ContractUtils.Requires(ci != null, nameof(type), Strings.TypeDoesNotHaveConstructorForTheSignature);
+            ContractUtils.Requires(ci is not null, nameof(type), Strings.TypeDoesNotHaveConstructorForTheSignature);
             EmitNew(ci);
         }
 
@@ -616,7 +616,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
             MethodInfo mi = type.GetMethod(name);
-            ContractUtils.Requires(mi != null, nameof(type), Strings.TypeDoesNotHaveMethodForName);
+            ContractUtils.Requires(mi is not null, nameof(type), Strings.TypeDoesNotHaveMethodForName);
 
             EmitCall(mi);
         }
@@ -627,7 +627,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
             MethodInfo mi = type.GetMethod(name, paramTypes);
-            ContractUtils.Requires(mi != null, nameof(type), Strings.TypeDoesNotHaveMethodForNameSignature);
+            ContractUtils.Requires(mi is not null, nameof(type), Strings.TypeDoesNotHaveMethodForNameSignature);
 
             EmitCall(mi);
         }
@@ -759,7 +759,7 @@ namespace Microsoft.Scripting.Generation {
         // Note: we support emitting a lot more things as IL constants than
         // Linq does
         internal bool TryEmitConstant(object value, Type type) {
-            if (value == null) {
+            if (value is null) {
                 // Smarter than the Linq implementation which uses the initobj
                 // pattern for all value types (works, but requires a local and
                 // more IL)
@@ -781,7 +781,7 @@ namespace Microsoft.Scripting.Generation {
             if (value is MethodBase mb && ShouldLdtoken(mb)) {
                 Emit(OpCodes.Ldtoken, mb);
                 Type dt = mb.DeclaringType;
-                if (dt != null && dt.IsGenericType) {
+                if (dt is not null && dt.IsGenericType) {
                     Emit(OpCodes.Ldtoken, dt);
                     EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
                 } else {
@@ -814,7 +814,7 @@ namespace Microsoft.Scripting.Generation {
             }
 
             Type dt = mb.DeclaringType;
-            return dt == null || ShouldLdtoken(dt);
+            return dt is null || ShouldLdtoken(dt);
         }
 
         //CONFORMING
@@ -1615,7 +1615,7 @@ namespace Microsoft.Scripting.Generation {
         #region LocalTemps
 
         internal LocalBuilder GetLocal(Type type) {
-            Debug.Assert(type != null);
+            Debug.Assert(type is not null);
 
             if (_freeLocals.TryDequeue(type, out LocalBuilder local)) {
                 Debug.Assert(type == local.LocalType);
@@ -1627,7 +1627,7 @@ namespace Microsoft.Scripting.Generation {
 
         // TODO: make "local" a ref param and null it out
         internal void FreeLocal(LocalBuilder local) {
-            if (local != null) {
+            if (local is not null) {
                 _freeLocals.Enqueue(local.LocalType, local);
             }
         }

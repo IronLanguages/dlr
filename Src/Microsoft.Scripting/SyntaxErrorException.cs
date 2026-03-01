@@ -36,7 +36,7 @@ namespace Microsoft.Scripting {
             _span = span;
             _severity = severity;
             _errorCode = errorCode;
-            if (sourceUnit != null) {
+            if (sourceUnit is not null) {
                 _sourcePath = sourceUnit.Path;
                 try {
                     _sourceCode = sourceUnit.GetCode();

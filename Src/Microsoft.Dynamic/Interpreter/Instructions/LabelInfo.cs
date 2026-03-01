@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.Interpreter {
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (LabelScopeInfo j = block; j != null; j = j.Parent) {
+            for (LabelScopeInfo j = block; j is not null; j = j.Parent) {
                 if (j.ContainsTarget(_node)) {
                     throw new InvalidOperationException($"Label target already defined: {_node.Name}");
                 }
@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private void ValidateJump(LabelScopeInfo reference) {
             // look for a simple jump out
-            for (LabelScopeInfo j = reference; j != null; j = j.Parent) {
+            for (LabelScopeInfo j = reference; j is not null; j = j.Parent) {
                 if (DefinedIn(j)) {
                     // found it, jump is valid!
                     return;
@@ -148,7 +148,7 @@ namespace Microsoft.Scripting.Interpreter {
             return false;
         }
 
-        private bool HasDefinitions => _definitions != null;
+        private bool HasDefinitions => _definitions is not null;
 
         private LabelScopeInfo FirstDefinition() {
             if (_definitions is LabelScopeInfo scope) {
@@ -158,7 +158,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void AddDefinition(LabelScopeInfo scope) {
-            if (_definitions == null) {
+            if (_definitions is null) {
                 _definitions = scope;
             } else {
                 if(!(_definitions is HashSet<LabelScopeInfo> set)) {
@@ -176,10 +176,10 @@ namespace Microsoft.Scripting.Interpreter {
                 return first;
             }
             var set = new HashSet<T>(cmp);
-            for (T t = first; t != null; t = parent(t)) {
+            for (T t = first; t is not null; t = parent(t)) {
                 set.Add(t);
             }
-            for (T t = second; t != null; t = parent(t)) {
+            for (T t = second; t is not null; t = parent(t)) {
                 if (set.Contains(t)) {
                     return t;
                 }
@@ -247,7 +247,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal bool ContainsTarget(LabelTarget target) {
-            if (Labels == null) {
+            if (Labels is null) {
                 return false;
             }
 
@@ -255,7 +255,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal bool TryGetLabelInfo(LabelTarget target, out LabelInfo info) {
-            if (Labels == null) {
+            if (Labels is null) {
                 info = null;
                 return false;
             }

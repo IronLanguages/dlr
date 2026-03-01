@@ -15,7 +15,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         /// <param name="returnType">the type the ReturnBuilder will leave on the stack</param>
         public ReturnBuilder(Type returnType) {
-            Debug.Assert(returnType != null);
+            Debug.Assert(returnType is not null);
 
             ReturnType = returnType;
         }

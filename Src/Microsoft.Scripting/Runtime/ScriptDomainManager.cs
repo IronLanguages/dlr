@@ -20,11 +20,7 @@ namespace Microsoft.Scripting.Runtime {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public PlatformAdaptationLayer Platform {
             get {
-                PlatformAdaptationLayer result = Host.PlatformAdaptationLayer;
-                if (result == null) {
-                    throw new InvalidImplementationException();
-                }
-                return result;
+                return Host.PlatformAdaptationLayer ?? throw new InvalidImplementationException();
             }
         }
 

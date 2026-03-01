@@ -27,13 +27,13 @@ namespace Microsoft.Scripting.Actions {
         public override bool IsStatic => IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true));
 
         public override MethodInfo GetGetMethod() {
-            if (_getter != null && _getter.IsPrivate) return null;
+            if (_getter is not null && _getter.IsPrivate) return null;
 
             return _getter;
         }
 
         public override MethodInfo GetSetMethod() {
-            if (_setter != null && _setter.IsPrivate) return null;
+            if (_setter is not null && _setter.IsPrivate) return null;
 
             return _setter;
         }
@@ -51,7 +51,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override MethodInfo GetDeleteMethod() {
-            if (_deleter != null && _deleter.IsPrivate) return null;
+            if (_deleter is not null && _deleter.IsPrivate) return null;
 
             return _deleter;
         }
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override Type PropertyType {
             get {
-                if (_getter != null) return _getter.ReturnType;
+                if (_getter is not null) return _getter.ReturnType;
 
                 ParameterInfo[] pis = _setter.GetParameters();
                 return pis[pis.Length - 1].ParameterType;

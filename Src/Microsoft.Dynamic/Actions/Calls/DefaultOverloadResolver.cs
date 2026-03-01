@@ -210,7 +210,7 @@ namespace Microsoft.Scripting.Actions {
                 DictionaryEntry de = dictEnum.Entry;
 
                 string strKey = de.Key is string s ? s : de.Key is Extensible<string> es ? es.Value : null;
-                if (strKey != null) {
+                if (strKey is not null) {
                     splattedNames.Add(strKey);
                     splattedArgs.Add(
                         DynamicMetaObject.Create(
@@ -240,7 +240,7 @@ namespace Microsoft.Scripting.Actions {
         #endregion
 
         public override ErrorInfo MakeInvalidParametersError(BindingTarget target) {
-            if (target.Result == BindingResult.InvalidArguments && _invalidSplattee != null) {
+            if (target.Result == BindingResult.InvalidArguments && _invalidSplattee is not null) {
                 return MakeInvalidSplatteeError(target);
             }
             return base.MakeInvalidParametersError(target);

@@ -151,7 +151,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             Debug.Assert(Thread.CurrentThread != _consoleThread);
 
             lock (_accessLock) {
-                if (_remoteConsoleHost == null) {
+                if (_remoteConsoleHost is null) {
                     return null;
                 }
 
@@ -171,7 +171,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             Debug.Assert(Thread.CurrentThread != _consoleThread);
 
             lock (_accessLock) {
-                if (_remoteConsoleHost == null) {
+                if (_remoteConsoleHost is null) {
                     return;
                 }
 
@@ -187,7 +187,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             Debug.Assert(Thread.CurrentThread != _consoleThread);
 
             lock (_accessLock) {
-                if (_remoteConsoleHost == null) {
+                if (_remoteConsoleHost is null) {
                     return;
                 }
 

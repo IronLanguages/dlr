@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public void Add(IEnumerable<TExpression> expressions) {
-            if (expressions != null) {
+            if (expressions is not null) {
                 foreach (var expression in expressions) {
                     Add(expression);
                 }
@@ -46,7 +46,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public void Add(TExpression item) {
-            if (item == null) {
+            if (item is null) {
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace Microsoft.Scripting.Ast {
                     break;
 
                 default:
-                    Debug.Assert(_expressions != null);
+                    Debug.Assert(_expressions is not null);
                     _expressions.Add(item);
                     break;
             }
@@ -90,7 +90,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public IEnumerator<TExpression>/*!*/ GetEnumerator() {
-            if (_expressions != null) {
+            if (_expressions is not null) {
                 return _expressions.GetEnumerator();
             }
 
@@ -138,7 +138,7 @@ namespace Microsoft.Scripting.Ast {
 
                 case 1:
                     // we have no specialized subclass for instance method call expression with 1 arg:
-                    return instance != null ? 
+                    return instance is not null ? 
                         Expression.Call(instance, method, new AstExpressions { Expression0 }) : 
                         Expression.Call(method, Expression0);
 
@@ -150,7 +150,7 @@ namespace Microsoft.Scripting.Ast {
 
                 case 4:
                     // we have no specialized subclass for instance method call expression with 4 args:
-                    return instance != null ?
+                    return instance is not null ?
                         Expression.Call(instance, method, new AstExpressions { Expression0, Expression1, Expression2, Expression3 }) :
                         Expression.Call(method, Expression0, Expression1, Expression2, Expression3);
 

@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
         /// already a ReadOnlyCollection{T}, in which case we just return it.
         /// </summary>
         internal static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> enumerable) {
-            if (enumerable == null) {
+            if (enumerable is null) {
                 return EmptyReadOnlyCollection<T>.Instance;
             }
 

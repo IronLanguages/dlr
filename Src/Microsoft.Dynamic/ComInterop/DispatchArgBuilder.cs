@@ -39,7 +39,7 @@ namespace Microsoft.Scripting.ComInterop {
         internal override Expression MarshalToRef(Expression parameter) {
             parameter = Marshal(parameter);
 
-            // parameter == null ? IntPtr.Zero : Marshal.GetIDispatchForObject(parameter);
+            // parameter is null ? IntPtr.Zero : Marshal.GetIDispatchForObject(parameter);
             return Expression.Condition(
                 Expression.Equal(parameter, Expression.Constant(null)),
                 Expression.Constant(IntPtr.Zero),

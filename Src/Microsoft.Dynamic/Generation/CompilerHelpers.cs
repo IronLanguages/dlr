@@ -124,7 +124,7 @@ namespace Microsoft.Scripting.Generation {
         /// result of Object.GetType
         /// </summary>
         public static Type GetType(object obj) {
-            if (obj == null) {
+            if (obj is null) {
                 return typeof(DynamicNull);
             }
 
@@ -174,7 +174,7 @@ namespace Microsoft.Scripting.Generation {
         /// Returns the original method if the method if a public version cannot be found.
         /// </summary>
         public static MethodInfo TryGetCallableMethod(Type targetType, MethodInfo method) {
-            if (method.DeclaringType == null || method.DeclaringType.IsVisible) {
+            if (method.DeclaringType is null || method.DeclaringType.IsVisible) {
                 return method;
             }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Scripting.Generation {
                     InterfaceMapping mapping = targetType.GetInterfaceMap(iface);
                     for (int i = 0; i < mapping.TargetMethods.Length; i++) {
                         MethodInfo targetMethod = mapping.TargetMethods[i];
-                        if (targetMethod != null && targetMethod.MethodHandle == method.MethodHandle) {
+                        if (targetMethod is not null && targetMethod.MethodHandle == method.MethodHandle) {
                             return mapping.InterfaceMethods[i];
                         }
                     }
@@ -223,7 +223,7 @@ namespace Microsoft.Scripting.Generation {
         public static IEnumerable<MemberInfo> FilterNonVisibleMembersIterator(Type targetType, IEnumerable<MemberInfo> members) {
             foreach (var member in members) {
                 MemberInfo visible = TryGetVisibleMember(targetType, member);
-                if (visible != null) {
+                if (visible is not null) {
                     yield return visible;
                 }
             }
@@ -250,6 +250,7 @@ namespace Microsoft.Scripting.Generation {
                 }
             }
 
+
             // all others can't be exposed out this way
             return visible;
         }
@@ -260,12 +261,12 @@ namespace Microsoft.Scripting.Generation {
         /// causes direct comparisons to be false even if they are the same member.
         /// </summary>
         public static bool MemberEquals(this MemberInfo self, MemberInfo other) {
-            if ((self == null) != (other == null)) {
+            if ((self is null) != (other is null)) {
                 // one null, the other isn't.
                 return false;
             }
 
-            if (self == null) {
+            if (self is null) {
                 // both null
                 return true;
             }
@@ -297,11 +298,11 @@ namespace Microsoft.Scripting.Generation {
         }
 
         public static bool IsVisible(MethodBase info) {
-            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.IsVisible);
+            return info.IsPublic && (info.DeclaringType is null || info.DeclaringType.IsVisible);
         }
 
         public static bool IsVisible(FieldInfo info) {
-            return info.IsPublic && (info.DeclaringType == null || info.DeclaringType.IsVisible);
+            return info.IsPublic && (info.DeclaringType is null || info.DeclaringType.IsVisible);
         }
 
         public static bool IsProtected(this MethodBase info) {
@@ -397,7 +398,7 @@ namespace Microsoft.Scripting.Generation {
 
         private static MethodInfo GetConverter(Type type, Type fromType, Type toType, string opMethodName) {
             foreach (MethodInfo mi in type.GetInheritedMembers(opMethodName).WithBindingFlags(BindingFlags.Public | BindingFlags.Static)) {
-                if ((mi.DeclaringType == null || mi.DeclaringType.IsVisible) && mi.IsPublic &&
+                if ((mi.DeclaringType is null || mi.DeclaringType.IsVisible) && mi.IsPublic &&
                     mi.ReturnType == toType && mi.GetParameters()[0].ParameterType.IsAssignableFrom(fromType)) {
                     return mi;
                 }
@@ -416,7 +417,7 @@ namespace Microsoft.Scripting.Generation {
                     return true;
                 }
                 curType = curType.BaseType;
-            } while (curType != null);
+            } while (curType is not null);
 
             return false;
         }
@@ -473,7 +474,7 @@ namespace Microsoft.Scripting.Generation {
 
         public static bool TryApplyTypeConverter(object value, Type toType, out object result) {
 #if FEATURE_TYPECONVERTER
-            if (value != null && TryGetTypeConverter(
+            if (value is not null && TryGetTypeConverter(
                     value.GetType(),
                     toType,
                     out TypeConverter converter)) {
@@ -505,7 +506,7 @@ namespace Microsoft.Scripting.Generation {
                     converter = null;
                 }
 
-                if (converter != null && converter.CanConvertFrom(fromType)) {
+                if (converter is not null && converter.CanConvertFrom(fromType)) {
                     return true;
                 }
             }
@@ -633,7 +634,7 @@ namespace Microsoft.Scripting.Generation {
 #if FEATURE_PDBEMIT
             if (emitDebugSymbols) {
                 var module = method.Module as ModuleBuilder;
-                ContractUtils.Requires(module != null, nameof(method), "MethodBuilder does not have a valid ModuleBuilder");
+                ContractUtils.Requires(module is not null, nameof(method), "MethodBuilder does not have a valid ModuleBuilder");
                 lambda.CompileToMethod(method, DebugInfoGenerator.CreatePdbGenerator());
                 return;
             }
@@ -789,7 +790,7 @@ namespace Microsoft.Scripting.Generation {
 #if FEATURE_LCG
         // Matches ILGen.TryEmitConstant
         public static bool CanEmitConstant(object value, Type type) {
-            if (value == null || CanEmitILConstant(type)) {
+            if (value is null || CanEmitILConstant(type)) {
                 return true;
             }
 

@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.Debugging {
 
         private static ModuleBuilder GetModule() {
             lock (_DelegateCtorSignature) {
-                if (_moduleBuilder == null) {
+                if (_moduleBuilder is null) {
                     AssemblyBuilder assemblyBuilder = ReflectionUtils.DefineDynamicAssembly(
                         new AssemblyName("Snippets.Microsoft.Scripting.Debugging"), AssemblyBuilderAccess.Run);
                     

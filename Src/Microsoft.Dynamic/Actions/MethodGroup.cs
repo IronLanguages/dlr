@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.Actions {
 
             // check for cached method first...
             MethodGroup mg;
-            if (_boundGenerics != null) {
+            if (_boundGenerics is not null) {
                 lock (_boundGenerics) {
                     if (_boundGenerics.TryGetValue(tl, out mg)) {
                         return mg;
@@ -120,7 +120,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private void EnsureBoundGenericDict() {
-            if (_boundGenerics == null) {
+            if (_boundGenerics is null) {
                 Interlocked.CompareExchange<Dictionary<TypeList, MethodGroup>>(
                     ref _boundGenerics,
                     new Dictionary<TypeList, MethodGroup>(1),
@@ -132,7 +132,7 @@ namespace Microsoft.Scripting.Actions {
             private Type[] _types;
 
             public TypeList(Type[] types) {
-                Debug.Assert(types != null);
+                Debug.Assert(types is not null);
                 _types = types;
             }
 

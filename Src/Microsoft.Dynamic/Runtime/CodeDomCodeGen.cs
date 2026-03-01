@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Runtime {
         public SourceUnit GenerateCode(CodeMemberMethod codeDom, LanguageContext context, string path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(codeDom, nameof(codeDom));
             ContractUtils.RequiresNotNull(context, nameof(context));
-            ContractUtils.Requires(path == null || path.Length > 0, nameof(path));
+            ContractUtils.Requires(path is null || path.Length > 0, nameof(path));
 
             // Convert the CodeDom to source code
             Writer?.Close();
@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Runtime {
 
         protected void WriteStatement(CodeStatement s) {
             // Save statement source location
-            if (s.LinePragma != null) {
+            if (s.LinePragma is not null) {
                 Writer.MapLocation(s.LinePragma);
             }
 
@@ -101,7 +101,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         protected void WriteCallExpression(CodeMethodInvokeExpression m) {
-            if (m.Method.TargetObject != null) {
+            if (m.Method.TargetObject is not null) {
                 WriteExpression(m.Method.TargetObject);
                 Writer.Write(".");
             }

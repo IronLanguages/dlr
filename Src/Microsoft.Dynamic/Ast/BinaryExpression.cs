@@ -13,7 +13,7 @@ namespace Microsoft.Scripting.Ast {
 
         /// <summary>
         /// Null coalescing expression
-        /// {result} ::= ((tmp = {_left}) == null) ? {right} : tmp
+        /// {result} ::= ((tmp = {_left}) is null) ? {right} : tmp
         /// '??' operator in C#.
         /// </summary>
         public static Expression Coalesce(Expression left, Expression right, out ParameterExpression temp) {
@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.Ast {
             temp = Expression.Variable(left.Type, "tmp_left");
 
             Expression condition;
-            if (isTrue != null) {
+            if (isTrue is not null) {
                 ContractUtils.Requires(isTrue.ReturnType == typeof(bool), nameof(isTrue), "Predicate must return bool.");
                 ParameterInfo[] parameters = isTrue.GetParameters();
                 ContractUtils.Requires(parameters.Length == 1, nameof(isTrue), "Predicate must take one parameter.");

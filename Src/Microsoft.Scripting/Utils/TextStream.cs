@@ -24,11 +24,11 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public sealed override bool CanWrite {
-            get { return Writer != null; }
+            get { return Writer is not null; }
         }
 
         public sealed override bool CanRead {
-            get { return Reader != null; }
+            get { return Reader is not null; }
         }
 
         public sealed override void Flush() {

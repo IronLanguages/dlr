@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public void Read(int offset, byte[] result) {
-            if (result == null) {
+            if (result is null) {
                 throw new ArgumentNullException(nameof(result));
             }
             if (offset < 0 || offset > _length - result.Length) {

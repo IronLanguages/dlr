@@ -40,9 +40,9 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal Interpreter Interpreter { get; }
 
-        private bool HasClosure => Interpreter != null && Interpreter.ClosureSize > 0;
+        private bool HasClosure => Interpreter is not null && Interpreter.ClosureSize > 0;
 
-        internal bool HasCompiled => _compiled != null;
+        internal bool HasCompiled => _compiled is not null;
 
         /// <summary>
         /// true if the compiled delegate has the same type as the lambda;
@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal Delegate CreateDelegate(StrongBox<object>[] closure) {
-            if (_compiled != null) {
+            if (_compiled is not null) {
                 // If the delegate type we want is not a Func/Action, we can't
                 // use the compiled code directly. So instead just fall through
                 // and create an interpreted LightLambda, which will pick up
@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            if (Interpreter == null) {
+            if (Interpreter is null) {
                 // We can't interpret, so force a compile
                 Compile(null);
                 Delegate compiled = CreateCompiledDelegate(closure);
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Interpreter {
         /// Used by LightLambda to get the compiled delegate.
         /// </summary>
         internal Delegate CreateCompiledDelegate(StrongBox<object>[] closure) {
-            Debug.Assert(HasClosure == (closure != null));
+            Debug.Assert(HasClosure == (closure is not null));
 
             if (HasClosure) {
                 // We need to apply the closure to get the actual delegate.
@@ -111,13 +111,13 @@ namespace Microsoft.Scripting.Interpreter {
         /// interpreting.
         /// </summary>
         internal void Compile(object state) {
-            if (_compiled != null) {
+            if (_compiled is not null) {
                 return;
             }
 
             // Compilation is expensive, we only want to do it once.
             lock (_compileLock) {
-                if (_compiled != null) {
+                if (_compiled is not null) {
                     return;
                 }
 
@@ -128,7 +128,7 @@ namespace Microsoft.Scripting.Interpreter {
                 // Action<...> so it can be called from the LightLambda.Run
                 // methods.
                 LambdaExpression lambda = (_lambda as LambdaExpression) ?? (LambdaExpression)((LightLambdaExpression)_lambda).Reduce();
-                if (Interpreter != null) {
+                if (Interpreter is not null) {
                     _compiledDelegateType = GetFuncOrAction(lambda);
                     lambda = Expression.Lambda(_compiledDelegateType, lambda.Body, lambda.Name, lambda.Parameters);
                 }

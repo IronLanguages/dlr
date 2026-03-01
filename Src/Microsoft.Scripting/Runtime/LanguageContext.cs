@@ -83,11 +83,11 @@ namespace Microsoft.Scripting.Runtime {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
             ScopeExtension extension = scope.GetExtension(ContextId);
 
-            if (extension != null)
+            if (extension is not null)
                 return extension;
 
             extension = CreateScopeExtension(scope);
-            if (extension == null) {
+            if (extension is null) {
                 throw Error.MustReturnScopeExtension();
             }
 
@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.Runtime {
 
             object returnValue = program.Execute();
 
-            if (returnValue == null) {
+            if (returnValue is null) {
                 return 0;
             }
 
@@ -375,7 +375,7 @@ namespace Microsoft.Scripting.Runtime {
                     );
                 }
 
-                if (errorSuggestion != null) {
+                if (errorSuggestion is not null) {
                     return errorSuggestion;
                 }
 
@@ -418,7 +418,7 @@ namespace Microsoft.Scripting.Runtime {
                         ),
                         typeof(object)
                     ),
-                    self.Value == null ?
+                    self.Value is null ?
                         BindingRestrictions.GetExpressionRestriction(Expression.Equal(self.Expression, Expression.Constant(null))) :
                         BindingRestrictions.GetTypeRestriction(self.Expression, self.Value.GetType())
                 );
@@ -525,7 +525,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public DynamicOperations Operations {
             get {
-                if (_operations == null) {
+                if (_operations is null) {
                     Interlocked.CompareExchange(ref _operations, new DynamicOperations(this), null);
                 }
 
@@ -569,7 +569,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="obj">Object to format.</param>
         /// <returns>A string representation of object.</returns>
         public virtual string FormatObject(DynamicOperations operations, object obj) {
-            return obj == null ? "null" : obj.ToString();
+            return obj is null ? "null" : obj.ToString();
         }
 
         public virtual void GetExceptionMessage(Exception exception, out string message, out string errorTypeName) {

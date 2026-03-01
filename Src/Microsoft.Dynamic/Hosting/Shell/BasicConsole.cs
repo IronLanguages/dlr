@@ -61,7 +61,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e) {
                 // Dispatch the registered handler
                 ConsoleCancelEventHandler handler = ConsoleCancelEventHandler;
-                if (handler != null) {
+                if (handler is not null) {
                     ConsoleCancelEventHandler(sender, e);
                 }
             };
@@ -155,14 +155,14 @@ namespace Microsoft.Scripting.Hosting.Shell {
             Write("".PadLeft(autoIndentSize), Style.Prompt);
 
             string res = Console.In.ReadLine();
-            if (res == null) {
+            if (res is null) {
                 // we have a race - the Ctrl-C event is delivered
                 // after ReadLine returns.  We need to wait for a little
                 // bit to see which one we got.  This will cause a slight
                 // delay when shutting down the process via ctrl-z, but it's
                 // not really perceptible.  In the ctrl-C case we will return
                 // as soon as the event is signaled.
-                if (CtrlCEvent != null && CtrlCEvent.WaitOne(100, false)) {
+                if (CtrlCEvent is not null && CtrlCEvent.WaitOne(100, false)) {
                     // received ctrl-C
                     return "";
                 }

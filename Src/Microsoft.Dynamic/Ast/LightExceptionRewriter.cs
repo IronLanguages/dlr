@@ -139,11 +139,11 @@ namespace Microsoft.Scripting.Ast {
         }
 
         protected override Expression VisitTry(TryExpression node) {
-            if (node.Fault != null) {
+            if (node.Fault is not null) {
                 throw new NotSupportedException();
             }
 
-            if (node.Handlers != null && node.Handlers.Count > 0) {
+            if (node.Handlers is not null && node.Handlers.Count > 0) {
                 return RewriteTryCatch(node);
             }
 
@@ -219,7 +219,7 @@ namespace Microsoft.Scripting.Ast {
 
                 ParameterExpression oldRethrow = _rethrow;
                 try {
-                    if (handler.Variable == null) {
+                    if (handler.Variable is null) {
                         ParameterExpression rethrow = _rethrow = Expression.Parameter(handler.Test, "$exception");
                         handlers[i] = Expression.Catch(
                             rethrow,
@@ -279,7 +279,7 @@ namespace Microsoft.Scripting.Ast {
             // )
             //
             // ehLabel:
-            //  if ((e = GetLightException(_lastValue) as Exception)) != null) {
+            //  if ((e = GetLightException(_lastValue) as Exception)) is not null) {
             //      handler;
             //  } else {
             //      // unhandled exception, propagate up, either:
@@ -314,7 +314,7 @@ namespace Microsoft.Scripting.Ast {
             );
 
             // if we have a finally wrap the whole thing up now.
-            if (node.Finally != null) {
+            if (node.Finally is not null) {
                 body = RewriteTryFinally(body, node.Finally);
             }
 
@@ -338,7 +338,7 @@ namespace Microsoft.Scripting.Ast {
                     Expression.Constant(null)
                 );
 
-                if (handlers[i].Filter != null) {
+                if (handlers[i].Filter is not null) {
                     throw new NotSupportedException("filters for light exceptions");
                     // we could do this but the emulation wouldn't be perfect when filters
                     // run in relation to finallys
@@ -370,7 +370,7 @@ namespace Microsoft.Scripting.Ast {
                     expr, 
                     retType, 
                     _currentHandler ?? _returnLabel, 
-                    _currentHandler == null ? _lastValue : null
+                    _currentHandler is null ? _lastValue : null
                 );
             }
            
@@ -426,14 +426,14 @@ namespace Microsoft.Scripting.Ast {
                 // true - an exception occured
                 compiler.Instructions.EmitBranchFalse(endOfTrue);
                 
-                if (_lastValue != null) {
+                if (_lastValue is not null) {
                     compiler.CompileParameterExpression(_lastValue);
                 }
 
                 compiler.Instructions.EmitGoto(
                     compiler.GetBranchLabel(_target),
                     _retType != typeof(void),
-                    _lastValue != null && _lastValue.Type != typeof(void)
+                    _lastValue is not null && _lastValue.Type != typeof(void)
                 );
                 compiler.Instructions.EmitBranch(endOfFalse, false, true);
 
@@ -447,7 +447,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private Expression PropagateException(Type retType) {
-            if (_currentHandler == null) {
+            if (_currentHandler is null) {
                 // no eh blocks, we propagate the value up
                 return Expression.Goto(_returnLabel, _lastValue, retType);
             }

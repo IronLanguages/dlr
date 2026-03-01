@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         public ScriptScope ScriptScope { get; }
 
         public object Execute(CompiledCode compiledCode, ScriptScope scope) {
-            Debug.Assert(_executingThread == null);
+            Debug.Assert(_executingThread is null);
             _executingThread = Thread.CurrentThread;
 
             try {
@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         /// <returns>true if a Thread.Abort was actually called. false if there is no active call to Execute</returns>
         public bool AbortCommand() {
             Thread executingThread = _executingThread;
-            if (executingThread == null) {
+            if (executingThread is null) {
                 return false;
             }
 

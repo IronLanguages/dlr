@@ -53,7 +53,7 @@ namespace Microsoft.Scripting.Generation {
 
                 var body = node.Body;
 
-                if (_constants != null) {
+                if (_constants is not null) {
                     // Rewrite the constants, they can contain embedded
                     // CodeContextExpressions
                     for (int i = 0; i < _constants.Count; i++) {
@@ -202,7 +202,7 @@ namespace Microsoft.Scripting.Generation {
 #if FEATURE_REFEMIT_FULL
             var module = delegateType.Module as ModuleBuilder;
 
-            if (module == null) {
+            if (module is null) {
                 if (delegateType.Module.GetType() == typeof(ModuleBuilder).Assembly.GetType("System.Reflection.Emit.InternalModuleBuilder")) {
                     if ((bool)delegateType.Module.GetType().InvokeMember("IsTransientInternal", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, delegateType.Module, null)) {
                         return true;
@@ -249,7 +249,7 @@ namespace Microsoft.Scripting.Generation {
         private void EnsureConstantPool() {
             // add the initialization code that we'll generate later into the outermost
             // lambda and then return an index into the array we'll be creating.
-            if (_constantPool == null) {
+            if (_constantPool is null) {
                 _constantPool = Expression.Variable(typeof(object[]), "$constantPool");
                 _constants = new List<Expression>();
                 _constantCache = new Dictionary<object, Expression>();

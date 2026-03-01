@@ -22,12 +22,12 @@ namespace Microsoft.Scripting.ComInterop {
         internal CallSite<Func<CallSite, object, object[], object>> _site;
 
         internal SplatCallSite(object callable) {
-            Debug.Assert(callable != null);
+            Debug.Assert(callable is not null);
             _callable = callable;
         }
 
         internal object Invoke(object[] args) {
-            Debug.Assert(args != null);
+            Debug.Assert(args is not null);
 
             // If it is a delegate, just let DynamicInvoke do the binding.
             if (_callable is Delegate d) {

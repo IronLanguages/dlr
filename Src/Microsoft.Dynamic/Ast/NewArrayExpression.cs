@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Ast {
                 ContractUtils.RequiresNotNull(initializer, nameof(initializers));
 
                 if (!TypeUtils.AreReferenceAssignable(type, initializer.Type)) {
-                    if (clone == null) {
+                    if (clone is null) {
                         clone = new Expression[initializerList.Count];
                         for (int j = 0; j < i; j++) {
                             clone[j] = initializerList[j];
@@ -40,12 +40,10 @@ namespace Microsoft.Scripting.Ast {
                     }
 
                 }
-                if (clone != null) {
-                    clone[i] = initializer;
-                }
+                clone?[i] = initializer;
             }
 
-            if (clone != null) {
+            if (clone is not null) {
                 initializerList = new ReadOnlyCollection<Expression>(clone);
             }
 

@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Debugging {
         public static TracePipeline CreateInstance(DebugContext debugContext) {
             ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
 
-            if (debugContext.DebugCallback != null)
+            if (debugContext.DebugCallback is not null)
                 throw new InvalidOperationException(ErrorStrings.DebugContextAlreadyConnectedToTracePipeline);
 
             return new TracePipeline(debugContext);
@@ -52,7 +52,7 @@ namespace Microsoft.Scripting.Debugging {
 
             // Find the thread object.  We also check if the current thread is in FrameExit traceback.
             DebugFrame traceFrame = _traceFrame.Value;
-            if (traceFrame == null) {
+            if (traceFrame is null) {
                 return false;
             }
 
@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Debugging {
         void IDebugCallback.OnDebugEvent(TraceEventKind kind, DebugThread thread, FunctionInfo functionInfo, int sequencePointIndex, int stackDepth, object payload) {
             ITraceCallback traceCallback = _traceCallback;
 
-            if (traceCallback != null) {
+            if (traceCallback is not null) {
                 // $TODO: what if the callback throws an exception? should we swallow it?
                 var curThread = _traceFrame.Value;
                 try {
@@ -121,7 +121,7 @@ namespace Microsoft.Scripting.Debugging {
 
         private int GetSequencePointIndexForSourceSpan(string sourceFile, in SourceSpan sourceSpan, DebugFrame frame) {
             DebugSourceFile debugSourceFile = _debugContext.Lookup(sourceFile);
-            if (debugSourceFile == null) {
+            if (debugSourceFile is null) {
                 return Int32.MaxValue;
             }
 

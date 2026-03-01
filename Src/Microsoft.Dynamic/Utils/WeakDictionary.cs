@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Utils {
 
         public TValue GetOrCreateValue(TKey key) {
             if (!TryGetValue(key, out TValue value)) {
-                if (valueConstructor == null) {
+                if (valueConstructor is null) {
                     throw new InvalidOperationException($"{typeof(TValue).Name} does not have a default constructor.");
                 }
             
@@ -146,7 +146,7 @@ namespace Microsoft.Scripting.Utils {
             int emptyCount = 0;
 
             foreach (WeakObject w in dict.Keys) {
-                if (w.Target != null)
+                if (w.Target is not null)
                     liveCount++;
                 else
                     emptyCount++;
@@ -159,7 +159,7 @@ namespace Microsoft.Scripting.Utils {
                 foreach (WeakObject w in dict.Keys) {
                     object target = w.Target;
 
-                    if (target != null)
+                    if (target is not null)
                         newtable[w] = dict[w];
 
                     GC.KeepAlive(target);
@@ -240,7 +240,7 @@ namespace Microsoft.Scripting.Utils {
 
         public WeakObject(object obj) {
             weakReference = new WeakReference(obj, true);
-            hashCode = (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
+            hashCode = (obj is null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
         }
 
         public object Target {
@@ -255,7 +255,7 @@ namespace Microsoft.Scripting.Utils {
 
         public override bool Equals(object obj) {
             object target = weakReference.Target;
-            if (target == null) {
+            if (target is null) {
                 return false;
             }
 
@@ -279,7 +279,7 @@ namespace Microsoft.Scripting.Utils {
             if (obj is WeakObject wobj)
                 return wobj.GetHashCode();
 
-            return (obj == null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
+            return (obj is null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
         }
     }
 
@@ -372,7 +372,7 @@ namespace Microsoft.Scripting.Utils {
                     switch (kv.Value) {
                         case WeakObject weakObject:
                             object target = weakObject.Target;
-                            if (target != null && target.Equals(value))
+                            if (target is not null && target.Equals(value))
                                 return kv.Key;
                             break;
                         case T t:
