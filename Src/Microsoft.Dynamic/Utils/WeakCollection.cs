@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Utils {
         public IEnumerator<T> GetEnumerator() {
             for (int i = 0; i < _size; i++) {
                 T light = (T)_items[i].Target;
-                if (light != null) {
+                if (light is not null) {
                     yield return light;
                 }
             }

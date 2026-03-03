@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Utils {
                 MonitorUtils.Enter(data, ref lockTaken);
 
                 if (data.TryGetValue(key, out PublishInfo<TValue> pubValue)) {
-                    if (pubValue.Value == null && pubValue.Exception == null) {
+                    if (pubValue.Value is null && pubValue.Exception is null) {
                         pubValue.PrepareForWait();
                         MonitorUtils.Exit(data, ref lockTaken);
 
@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.Utils {
                         }
                     }
 
-                    if (pubValue.Exception != null) throw new Exception("Error", pubValue.Exception);
+                    if (pubValue.Exception is not null) throw new Exception("Error", pubValue.Exception);
 
                     return pubValue.Value;
                 }
@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Utils {
                 try {
                     try {
                         ret = create();
-                        Debug.Assert(ret != null, "Can't publish a null value");
+                        Debug.Assert(ret is not null, "Can't publish a null value");
                     } finally {
                         MonitorUtils.Enter(data, ref lockTaken);
                     }
@@ -109,9 +109,9 @@ namespace Microsoft.Scripting.Utils {
             }
 
             public void PrepareForWait() {
-                if (_waitEvent == null) {
+                if (_waitEvent is null) {
                     ManualResetEvent mre = new ManualResetEvent(false);
-                    if (Interlocked.CompareExchange<ManualResetEvent>(ref _waitEvent, mre, null) != null) {
+                    if (Interlocked.CompareExchange<ManualResetEvent>(ref _waitEvent, mre, null) is not null) {
                         mre.Dispose();
                     }
                 }

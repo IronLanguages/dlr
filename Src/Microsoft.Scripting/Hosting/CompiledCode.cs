@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         public ScriptScope DefaultScope {
             get {
-                if (_defaultScope == null) {
+                if (_defaultScope is null) {
                     Interlocked.CompareExchange(ref _defaultScope, new ScriptScope(Engine, ScriptCode.CreateScope()), null);
                 }
                 return _defaultScope; 

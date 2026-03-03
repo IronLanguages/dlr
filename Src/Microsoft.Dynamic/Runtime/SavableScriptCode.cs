@@ -171,7 +171,7 @@ namespace Microsoft.Scripting {
 
             // get the type which has our cached code...
             Type t = assembly.GetType("DLRCachedCode");
-            if (t == null) {
+            if (t is null) {
                 return Array.Empty<ScriptCode>();
             }
 

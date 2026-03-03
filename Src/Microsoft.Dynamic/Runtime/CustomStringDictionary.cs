@@ -49,7 +49,7 @@ namespace Microsoft.Scripting.Runtime {
         protected internal abstract bool TryGetExtraValue(string key, out object value);
 
         private void InitializeData() {
-            Debug.Assert(_data == null);
+            Debug.Assert(_data is null);
 
             _data = new Dictionary<object, object>();
         }
@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Runtime {
         void IDictionary<object, object>.Add(object key, object value) {
             if (key is string strKey) {
                 lock (this) {
-                    if (_data == null) InitializeData();
+                    if (_data is null) InitializeData();
                     if (TrySetExtraValue(strKey, value))
                         return;
                     _data.Add(strKey, value);
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private void AddObjectKey(object key, object value) {
-            if (_data == null) {
+            if (_data is null) {
                 InitializeData();
             }
             _data[key] = value;
@@ -78,7 +78,7 @@ namespace Microsoft.Scripting.Runtime {
 
         bool IDictionary<object, object>.ContainsKey(object key) {
             lock (this) {
-                if (_data == null) {
+                if (_data is null) {
                     return false;
                 }
                 object dummy;
@@ -90,7 +90,7 @@ namespace Microsoft.Scripting.Runtime {
             get {
                 List<object> res = new List<object>();
                 lock (this) {
-                    if (_data != null) {
+                    if (_data is not null) {
                         res.AddRange(_data.Keys);
                     }
                 }
@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Runtime {
                 lock (this) {
                     if (TrySetExtraValue(strKey, Uninitialized.Instance)) return true;
 
-                    if (_data == null) return false;
+                    if (_data is null) return false;
                     return _data.Remove(strKey);
                 }
             }
@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.Runtime {
                 lock (this) {
                     if (TryGetExtraValue(strKey, out value) && value != Uninitialized.Instance) return true;
 
-                    if (_data == null) return false;
+                    if (_data is null) return false;
                     return _data.TryGetValue(strKey, out value);
                 }
             }
@@ -136,7 +136,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private bool TryGetObjectValue(object key, out object value) {
-            if (_data == null) {
+            if (_data is null) {
                 value = null;
                 return false;
             }
@@ -147,7 +147,7 @@ namespace Microsoft.Scripting.Runtime {
             get {
                 List<object> res = new List<object>();
                 lock (this) {
-                    if (_data != null) {
+                    if (_data is not null) {
                         res.AddRange(_data.Values);
                     }
                 }
@@ -170,7 +170,7 @@ namespace Microsoft.Scripting.Runtime {
                     lock (this) {
                         if (TryGetExtraValue(strKey, out res) && !(res is Uninitialized)) return res;
 
-                        if (_data == null) {
+                        if (_data is null) {
                             throw new KeyNotFoundException(strKey);
                         }
 
@@ -188,7 +188,7 @@ namespace Microsoft.Scripting.Runtime {
                     lock (this) {
                         if (TrySetExtraValue(strKey, value)) return;
 
-                        if (_data == null) InitializeData();
+                        if (_data is null) InitializeData();
                         _data[strKey] = value;
                     }
                 } else {
@@ -256,7 +256,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             lock (this) {
-                return _data != null && _data.Remove(strKey);
+                return _data is not null && _data.Remove(strKey);
             }
         }
 
@@ -265,7 +265,7 @@ namespace Microsoft.Scripting.Runtime {
         #region IEnumerable<KeyValuePair<object,object>> Members
 
         IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator() {
-            if (_data != null) {
+            if (_data is not null) {
                 foreach (KeyValuePair<object, object> o in _data) {
                     yield return o;
                 }
@@ -313,7 +313,7 @@ namespace Microsoft.Scripting.Runtime {
 
             enums.Add(new ExtraKeyEnumerator(this));
 
-            if (_data != null) enums.Add(((IDictionary)_data).GetEnumerator());
+            if (_data is not null) enums.Add(((IDictionary)_data).GetEnumerator());
 
             return new DictionaryUnionEnumerator(enums);
         }
@@ -357,9 +357,9 @@ namespace Microsoft.Scripting.Runtime {
             foreach (KeyValuePair<object, object> o in ths) {
                 if (!oth.TryGetValue(o.Key, out object res))
                     return false;
-                    if (res != null) {
+                    if (res is not null) {
                         if (!res.Equals(o.Value)) return false;
-                    } else if (o.Value != null) {
+                    } else if (o.Value is not null) {
                         if (!o.Value.Equals(res)) return false;
                     } // else both null and are equal
             }
@@ -382,7 +382,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static object NullToObj(object o) {
-            if (o == null) return _nullObject;
+            if (o is null) return _nullObject;
             return o;
         }
 

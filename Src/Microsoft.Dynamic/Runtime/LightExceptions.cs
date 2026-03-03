@@ -195,7 +195,7 @@ namespace Microsoft.Scripting.Runtime {
             public readonly Exception Exception;
 
             public LightException(Exception exception) {
-                Debug.Assert(exception != null);
+                Debug.Assert(exception is not null);
 
                 Exception = exception;
             }

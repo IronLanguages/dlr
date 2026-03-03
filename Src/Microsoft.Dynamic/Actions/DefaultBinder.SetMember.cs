@@ -156,7 +156,7 @@ namespace Microsoft.Scripting.Actions {
             MemberGroup members = GetMember(MemberRequestKind.Set, type, memInfo.Name);
 
             // if lookup failed try the strong-box type if available.
-            if (self != null && members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(type)) {
+            if (self is not null && members.Count == 0 && typeof(IStrongBox).IsAssignableFrom(type)) {
                 self = new DynamicMetaObject(Expression.Field(AstUtils.Convert(self.Expression, type), type.GetInheritedFields("Value").First()), BindingRestrictions.Empty, ((IStrongBox)self.Value).Value);
                 type = type.GetGenericArguments()[0];
 
@@ -164,7 +164,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             TrackerTypes memberTypes = GetMemberType(members, out Expression error);
-            if (error == null) {
+            if (error is null) {
                 switch (memberTypes) {
                     case TrackerTypes.Method:
                     case TrackerTypes.TypeGroup:
@@ -207,13 +207,13 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private void MakeGenericBody(SetOrDeleteMemberInfo memInfo, DynamicMetaObject instance, DynamicMetaObject target, Type instanceType, MemberTracker tracker, DynamicMetaObject errorSuggestion) {
-            if (instance != null) {
+            if (instance is not null) {
                 tracker = tracker.BindToInstance(instance);
             }
 
             DynamicMetaObject val = tracker.SetValue(memInfo.ResolutionFactory, this, instanceType, target, errorSuggestion);
 
-            if (val != null) {
+            if (val is not null) {
                 memInfo.Body.FinishCondition(val);
             } else {
                 memInfo.Body.FinishError(
@@ -228,13 +228,13 @@ namespace Microsoft.Scripting.Actions {
             MethodInfo setter = info.GetSetMethod(true);
 
             // Allow access to protected getters TODO: this should go, it supports IronPython semantics.
-            if (setter != null && !setter.IsPublic && !setter.IsProtected()) {
+            if (setter is not null && !setter.IsPublic && !setter.IsProtected()) {
                 if (!PrivateBinding) {
                     setter = null;
                 }
             }
 
-            if (setter != null) {
+            if (setter is not null) {
                 // TODO (tomat): this used to use setter.ReflectedType, is it still correct?
                 setter = CompilerHelpers.TryGetCallableMethod(targetType, setter);
 
@@ -243,8 +243,8 @@ namespace Microsoft.Scripting.Actions {
                 }
             }
 
-            if (setter != null) {
-                if (info.IsStatic != (instance == null)) {
+            if (setter is not null) {
+                if (info.IsStatic != (instance is null)) {
                     memInfo.Body.FinishError(
                         errorSuggestion ?? MakeError(
                             MakeStaticPropertyInstanceAccessError(
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Actions {
                         MakeGenericPropertyExpression(memInfo)
                     );
                 } else if (setter.IsPublic && !setter.DeclaringType.IsValueType) {
-                    if (instance == null) {
+                    if (instance is null) {
                         memInfo.Body.FinishCondition(
                             Expression.Block(
                                 AstUtils.SimpleCallHelper(
@@ -298,7 +298,7 @@ namespace Microsoft.Scripting.Actions {
                             Expression.Call(
                                 AstUtils.Constant(((ReflectedPropertyTracker)info).Property), // TODO: Private binding on extension properties
                                 typeof(PropertyInfo).GetMethod(nameof(PropertyInfo.SetValue), new Type[] { typeof(object), typeof(object), typeof(object[]) }),
-                                instance == null ? AstUtils.Constant(null) : AstUtils.Convert(instance.Expression, typeof(object)),
+                                instance is null ? AstUtils.Constant(null) : AstUtils.Convert(instance.Expression, typeof(object)),
                                 AstUtils.Convert(
                                     ConvertExpression(
                                         target.Expression,
@@ -327,7 +327,7 @@ namespace Microsoft.Scripting.Actions {
             FieldTracker field = (FieldTracker)fields[0];
 
             // TODO: Tmp variable for target
-            if (instance != null && field.DeclaringType.IsGenericType && field.DeclaringType.GetGenericTypeDefinition() == typeof(StrongBox<>)) {
+            if (instance is not null && field.DeclaringType.IsGenericType && field.DeclaringType.GetGenericTypeDefinition() == typeof(StrongBox<>)) {
                 // work around a CLR bug where we can't access generic fields from dynamic methods.
                 Type[] generic = field.DeclaringType.GetGenericArguments();
                 memInfo.Body.FinishCondition(
@@ -364,7 +364,7 @@ namespace Microsoft.Scripting.Actions {
                     )
                 );
             } else if (field.IsPublic && field.DeclaringType.IsVisible) {
-                if (!field.IsStatic && instance == null) {
+                if (!field.IsStatic && instance is null) {
                     memInfo.Body.FinishError(
                         Expression.Throw(
                             Expression.New(
@@ -392,7 +392,7 @@ namespace Microsoft.Scripting.Actions {
                     );
                 }
             } else {
-                Debug.Assert(field.IsStatic || instance != null);
+                Debug.Assert(field.IsStatic || instance is not null);
 
                 memInfo.Body.FinishCondition(
                     MakeReturnValue(
@@ -429,9 +429,9 @@ namespace Microsoft.Scripting.Actions {
 
         /// <summary> if a member-injector is defined-on or registered-for this type call it </summary>
         private bool MakeOperatorSetMemberBody(SetOrDeleteMemberInfo memInfo, DynamicMetaObject self, DynamicMetaObject target, Type type, string name) {
-            if (self != null) {
+            if (self is not null) {
                 MethodInfo setMem = GetMethod(type, name);
-                if (setMem != null) {
+                if (setMem is not null) {
                     ParameterExpression tmp = Expression.Variable(target.Expression.Type, "setValue");
                     memInfo.Body.AddVariable(tmp);
 

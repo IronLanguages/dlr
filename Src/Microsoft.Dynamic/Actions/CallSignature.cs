@@ -33,11 +33,11 @@ namespace Microsoft.Scripting.Actions {
         /// <summary>
         /// All arguments are unnamed and matched by position. 
         /// </summary>
-        public bool IsSimple => _infos == null;
+        public bool IsSimple => _infos is null;
 
         public int ArgumentCount {
             get {
-                Debug.Assert(_infos == null || _infos.Length == _argumentCount);
+                Debug.Assert(_infos is null || _infos.Length == _argumentCount);
                 return _argumentCount; 
             }
         }
@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Actions {
         public CallSignature(params Argument[] infos) {
             bool simple = true;
 
-            if (infos != null) {
+            if (infos is not null) {
                 _argumentCount = infos.Length;
                 for (int i = 0; i < infos.Length; i++) {
                     if (infos[i].Kind != ArgumentType.Simple) {
@@ -76,7 +76,7 @@ namespace Microsoft.Scripting.Actions {
         public CallSignature(params ArgumentType[] kinds) {
             bool simple = true;
 
-            if (kinds != null) {
+            if (kinds is not null) {
                 _argumentCount = kinds.Length;
                 for (int i = 0; i < kinds.Length; i++) {
                     if (kinds[i] != ArgumentType.Simple) {
@@ -103,11 +103,11 @@ namespace Microsoft.Scripting.Actions {
         #region IEquatable<CallSignature> Members
 
         public bool Equals(CallSignature other) {
-            if (_infos == null) {
-                return other._infos == null && other._argumentCount == _argumentCount;
+            if (_infos is null) {
+                return other._infos is null && other._argumentCount == _argumentCount;
             }
 
-            if (other._infos == null) {
+            if (other._infos is null) {
                 return false;
             }
 
@@ -132,7 +132,7 @@ namespace Microsoft.Scripting.Actions {
         public static bool operator !=(CallSignature left, CallSignature right) => !left.Equals(right);
 
         public override string ToString() {
-            if (_infos == null) {
+            if (_infos is null) {
                 return "Simple";
             }
             
@@ -149,7 +149,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override int GetHashCode() {
             int h = 6551;
-            if (_infos != null) {
+            if (_infos is not null) {
                 foreach (Argument info in _infos) {
                     h ^= (h << 5) ^ info.GetHashCode();
                 }
@@ -162,7 +162,7 @@ namespace Microsoft.Scripting.Actions {
         #region Helpers
 
         public Argument[] GetArgumentInfos() {
-            return (_infos != null) ? ArrayUtils.Copy(_infos) : CompilerHelpers.MakeRepeatedArray(Argument.Simple, _argumentCount);
+            return (_infos is not null) ? ArrayUtils.Copy(_infos) : CompilerHelpers.MakeRepeatedArray(Argument.Simple, _argumentCount);
         }
 
         public CallSignature InsertArgument(Argument info) {
@@ -198,7 +198,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public int IndexOf(ArgumentType kind) {
-            if (_infos == null) {
+            if (_infos is null) {
                 return (kind == ArgumentType.Simple && _argumentCount > 0) ? 0 : -1;
             }
 
@@ -230,7 +230,7 @@ namespace Microsoft.Scripting.Actions {
         /// True if the OldCallAction includes an ArgumentInfo of ArgumentKind.Dictionary or ArgumentKind.Named.
         /// </summary>
         public bool HasKeywordArgument() {
-            if (_infos != null) {
+            if (_infos is not null) {
                 foreach (Argument info in _infos) {
                     if (info.Kind == ArgumentType.Dictionary || info.Kind == ArgumentType.Named) {
                         return true;
@@ -257,7 +257,7 @@ namespace Microsoft.Scripting.Actions {
         public int GetProvidedPositionalArgumentCount() {
             int result = _argumentCount;
 
-            if (_infos != null) {
+            if (_infos is not null) {
                 for (int i = 0; i < _infos.Length; i++) {
                     ArgumentType kind = _infos[i].Kind;
 
@@ -271,13 +271,13 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public string[] GetArgumentNames() {
-            if (_infos == null) {
+            if (_infos is null) {
                 return ArrayUtils.EmptyStrings;
             }
 
             List<string> result = new List<string>();
             foreach (Argument info in _infos) {
-                if (info.Name != null) {
+                if (info.Name is not null) {
                     result.Add(info.Name);
                 }
             }
@@ -286,7 +286,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public Expression CreateExpression() {
-            if (_infos == null) {
+            if (_infos is null) {
                 return Expression.New(
                     typeof(CallSignature).GetConstructor(new Type[] { typeof(int) }),
                     AstUtils.Constant(ArgumentCount)

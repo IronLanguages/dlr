@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
         /// already a ReadOnlyCollection{T}, in which case we just return it.
         /// </summary>
         internal static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> enumerable) {
-            if (enumerable == null) {
+            if (enumerable is null) {
                 return EmptyReadOnlyCollection<T>.Instance;
             }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static T[] RemoveAt<T>(this T[] array, int indexToRemove) {
-            Debug.Assert(array != null);
+            Debug.Assert(array is not null);
             Debug.Assert(indexToRemove >= 0 && indexToRemove < array.Length);
 
             T[] result = new T[array.Length - 1];

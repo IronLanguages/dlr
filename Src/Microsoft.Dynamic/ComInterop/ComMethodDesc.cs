@@ -38,7 +38,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             string[] rgNames = new string[1 + funcDesc.cParams];
             typeInfo.GetNames(_memid, rgNames, rgNames.Length, out int cNames);
-            if (IsPropertyPut && rgNames[rgNames.Length - 1] == null) {
+            if (IsPropertyPut && rgNames[rgNames.Length - 1] is null) {
                 rgNames[rgNames.Length - 1] = "value";
                 cNames++;
             }
@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public string Name {
             get {
-                Debug.Assert(_name != null);
+                Debug.Assert(_name is not null);
                 return _name;
             }
         }

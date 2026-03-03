@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.Utils {
         public IEnumerable<T> GetMembers(Type type, string name = null, bool inherited = false) {
             var membersByName = GetMembers(type);
 
-            if (name == null) {
+            if (name is null) {
                 var allMembers = membersByName.Values.SelectMany(memberList => memberList);
                 if (inherited) {
                     return allMembers;

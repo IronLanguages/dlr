@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private void EnsureBoxes() {
-            if (_boxes == null) {
+            if (_boxes is null) {
                 int count = _symbols.Length;
                 Dictionary<string, int> boxes = new Dictionary<string, int>(count);
                 for (int i = 0; i < count; i++) {

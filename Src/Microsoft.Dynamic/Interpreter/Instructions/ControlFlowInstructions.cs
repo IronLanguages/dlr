@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Interpreter {
             _offset = offset;
 
             var cache = Cache;
-            if (cache != null && offset >= 0 && offset < cache.Length) {
+            if (cache is not null && offset >= 0 && offset < cache.Length) {
                 return cache[offset] ?? (cache[offset] = this);
             }
 
@@ -93,7 +93,7 @@ namespace Microsoft.Scripting.Interpreter {
         public override int Run(InterpretedFrame frame) {
             Debug.Assert(_offset != Unknown);
 
-            if (frame.Peek() != null) {
+            if (frame.Peek() is not null) {
                 return _offset;
             }
 
@@ -465,7 +465,7 @@ namespace Microsoft.Scripting.Interpreter {
             return 1;
         }
 
-        private bool Compiled => _loop == null;
+        private bool Compiled => _loop is null;
 
         private void Compile(object frameObj) {
             if (Compiled) {

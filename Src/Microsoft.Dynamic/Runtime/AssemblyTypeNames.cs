@@ -29,8 +29,8 @@ namespace Microsoft.Scripting.Runtime {
 
         public override int GetHashCode() {
             int hash = 13 << 20;
-            if (Namespace != null) hash ^= Namespace.GetHashCode();
-            if (Name != null) hash ^= Name.GetHashCode();
+            if (Namespace is not null) hash ^= Namespace.GetHashCode();
+            if (Name is not null) hash ^= Name.GetHashCode();
             return hash;
         }
 

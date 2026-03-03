@@ -47,9 +47,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private DlrMainCallTarget EnsureTarget(LambdaExpression code) {
-            if (_target == null) {
+            if (_target is null) {
                 var lambda = code as Expression<DlrMainCallTarget>;
-                if (lambda == null) {
+                if (lambda is null) {
                     // If language APIs produced the wrong delegate type,
                     // rewrite the lambda with the correct type
                     lambda = Expression.Lambda<DlrMainCallTarget>(code.Body, code.Name, code.Parameters);

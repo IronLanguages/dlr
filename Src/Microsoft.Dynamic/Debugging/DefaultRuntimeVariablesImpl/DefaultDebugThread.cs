@@ -46,7 +46,7 @@ namespace Microsoft.Scripting.Debugging {
         internal override bool TryGetLeafFrame(ref DebugFrame frame) {
             if (_frames.Count > 0) {
                 frame = _frames[_frames.Count - 1].Frame;
-                return frame != null;
+                return frame is not null;
             }
 
             frame = null;
@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Debugging {
             if (leafIndex >= 0) {
                 stackDepth = leafIndex;
                 DebugFrame leafFrame = _frames[leafIndex].Frame;
-                if (leafFrame != null) {
+                if (leafFrame is not null) {
                     Debug.Assert(leafIndex == leafFrame.StackDepth);
                     return leafFrame.FunctionInfo;
                 }
@@ -91,9 +91,9 @@ namespace Microsoft.Scripting.Debugging {
             DebugFrame frame = null;
             if (index >= 0) {
                 frame = _frames[index].Frame;
-                if (frame == null) {
+                if (frame is null) {
                     IDebugRuntimeVariables runtimeVariables = _frames[index].RuntimeVariables as IDebugRuntimeVariables;
-                    Debug.Assert(runtimeVariables != null);
+                    Debug.Assert(runtimeVariables is not null);
                     frame = new DebugFrame(this, runtimeVariables.FunctionInfo, runtimeVariables, index);
                     _frames[index] = new FrameRuntimeVariablesPair(null, frame);
                 }

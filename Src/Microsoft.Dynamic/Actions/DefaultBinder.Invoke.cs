@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Actions {
 
             TargetInfo targetInfo = GetTargetInfo(target, args);
 
-            if (targetInfo != null) {
+            if (targetInfo is not null) {
                 // we're calling a well-known MethodBase
                 DynamicMetaObject res = MakeMetaMethodCall(signature, resolverFactory, targetInfo);
                 if (res.Expression.Type.IsValueType) {
@@ -86,13 +86,13 @@ namespace Microsoft.Scripting.Actions {
 
         private DynamicMetaObject MakeMetaMethodCall(CallSignature signature, OverloadResolverFactory resolverFactory, TargetInfo targetInfo) {
             BindingRestrictions restrictions = BindingRestrictions.Combine(targetInfo.Arguments).Merge(targetInfo.Restrictions);
-            if (targetInfo.Instance != null) {
+            if (targetInfo.Instance is not null) {
                 restrictions = targetInfo.Instance.Restrictions.Merge(restrictions);
             }
 
             DynamicMetaObject[] args;
             CallTypes callType;
-            if (targetInfo.Instance != null) {
+            if (targetInfo.Instance is not null) {
                 args = ArrayUtils.Insert(targetInfo.Instance, targetInfo.Arguments);
                 callType = CallTypes.ImplicitInstance;
             } else {
@@ -131,7 +131,7 @@ namespace Microsoft.Scripting.Actions {
         /// Binds to the methods in a method group.
         /// </summary>
         private static TargetInfo TryGetMethodGroupTargets(DynamicMetaObject target, DynamicMetaObject[] args, MethodGroup mthgrp) {
-            if (mthgrp == null)
+            if (mthgrp is null)
                 return null;
 
             List<MethodBase> foundTargets = new List<MethodBase>();
@@ -148,7 +148,7 @@ namespace Microsoft.Scripting.Actions {
         /// TODO: We should really only have either MemberGroup or MethodGroup, not both.
         /// </summary>
         private static TargetInfo TryGetMemberGroupTargets(DynamicMetaObject target, DynamicMetaObject[] args, MemberGroup mg) {
-            if (mg == null)
+            if (mg is null)
                 return null;
 
             List<MethodInfo> foundTargets = new List<MethodInfo>();
@@ -167,8 +167,8 @@ namespace Microsoft.Scripting.Actions {
         /// based upon the object instance type.
         /// </summary>
         private TargetInfo TryGetBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, BoundMemberTracker bmt) {
-            if (bmt != null) {
-                Debug.Assert(bmt.Instance == null); // should be null for trackers that leak to user code
+            if (bmt is not null) {
+                Debug.Assert(bmt.Instance is null); // should be null for trackers that leak to user code
 
                 MethodBase[] targets;
 
@@ -216,7 +216,7 @@ namespace Microsoft.Scripting.Actions {
         /// Binds to the Invoke method on a delegate if this is a delegate type.
         /// </summary>
         private static TargetInfo TryGetDelegateTargets(DynamicMetaObject target, DynamicMetaObject[] args, Delegate d) {
-            if (d != null) {
+            if (d is not null) {
                 return new TargetInfo(target, args, d.GetType().GetMethod("Invoke"));
             }
             return null;

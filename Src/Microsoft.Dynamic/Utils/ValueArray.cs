@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Utils {
         #region IEquatable<ValueArray<T>> Members
 
         public bool Equals(ValueArray<T> other) {
-            if (other == null) return false;
+            if (other is null) return false;
             return _array.ValueEquals(other._array);
         }
 

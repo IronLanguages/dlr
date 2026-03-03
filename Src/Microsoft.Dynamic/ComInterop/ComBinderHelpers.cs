@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.ComInterop {
     internal static class ComBinderHelpers {
 
         internal static bool PreferPut(Type type, bool holdsNull) {
-            Debug.Assert(type != null);
+            Debug.Assert(type is not null);
 
             if (type.IsValueType || type.IsArray) return true;
 
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.ComInterop {
         // this helper prepares arguments for COM binding by transforming ByVal StongBox arguments
         // into ByRef expressions that represent the argument's Value fields.
         internal static bool[] ProcessArgumentsForCom(ref DynamicMetaObject[] args) {
-            Debug.Assert(args != null);
+            Debug.Assert(args is not null);
 
             DynamicMetaObject[] newArgs = new DynamicMetaObject[args.Length];
             bool[] isByRefArg = new bool[args.Length];
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal static BindingRestrictions GetTypeRestrictionForDynamicMetaObject(DynamicMetaObject obj) {
-            if (obj.Value == null && obj.HasValue) {
+            if (obj.Value is null && obj.HasValue) {
                 //If the meta object holds a null value, create an instance restriction for checking null
                 return BindingRestrictions.GetInstanceRestriction(obj.Expression, null);
             }

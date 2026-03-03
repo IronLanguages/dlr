@@ -12,7 +12,7 @@ namespace Microsoft.Scripting.Utils {
         public static void RequiresNotNull(object value, string paramName) {
             Assert.NotEmpty(paramName);
 
-            if (value == null) {
+            if (value is null) {
                 throw new ArgumentNullException(paramName);
             }
         }
@@ -83,7 +83,7 @@ namespace Microsoft.Scripting.Utils {
             RequiresNotNull(array, arrayName);
 
             for (int i = 0; i < array.Count; i++) {
-                if (array[i] == null) {
+                if (array[i] is null) {
                     throw ExceptionUtils.MakeArgumentItemNullException(i, arrayName);
                 }
             }
@@ -98,7 +98,7 @@ namespace Microsoft.Scripting.Utils {
 
             int i = 0;
             foreach (var item in collection) {
-                if (item == null) {
+                if (item is null) {
                     throw ExceptionUtils.MakeArgumentItemNullException(i, collectionName);
                 }
                 i++;

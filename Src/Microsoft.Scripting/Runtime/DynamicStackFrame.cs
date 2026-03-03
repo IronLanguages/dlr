@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public override string ToString() {
             return
-                $"{_funcName ?? "<function unknown>"} in {_filename ?? "<filename unknown>"}:{_lineNo}, {(_method != null ? _method.ToString() : "<method unknown>")}";
+                $"{_funcName ?? "<function unknown>"} in {_filename ?? "<filename unknown>"}:{_lineNo}, {(_method is not null ? _method.ToString() : "<method unknown>")}";
         }
     }
 }

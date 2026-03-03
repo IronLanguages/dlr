@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args) {
             var result = TryBindGetMember(binder.Name);
-            if (result != null) {
+            if (result is not null) {
                 return binder.FallbackInvoke(result, args, null);
             }
 

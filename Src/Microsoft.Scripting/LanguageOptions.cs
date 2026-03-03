@@ -86,7 +86,7 @@ namespace Microsoft.Scripting {
         }
 
         public static T GetOption<T>(IDictionary<string, object> options, string name, T defaultValue) {
-            if (options != null && options.TryGetValue(name, out object value)) {
+            if (options is not null && options.TryGetValue(name, out object value)) {
                 if (value is T variable) {
                     return variable;
                 }
@@ -100,14 +100,14 @@ namespace Microsoft.Scripting {
         /// Reaturns a read-only copy of the option's value.
         /// </summary>
         public static ReadOnlyCollection<string> GetStringCollectionOption(IDictionary<string, object> options, string name, params char[] separators) {
-            if (options == null || !options.TryGetValue(name, out object value)) {
+            if (options is null || !options.TryGetValue(name, out object value)) {
                 return null;
             }
 
             // a collection:
             if (value is ICollection<string> collection) {
                 foreach (var item in collection) {
-                    if (item == null) {
+                    if (item is null) {
                         throw new ArgumentException(
                             $"Invalid value for option {name}: collection shouldn't containt null items");
                     }
@@ -117,7 +117,7 @@ namespace Microsoft.Scripting {
             }
 
             // a string:
-            if (value is string strValue && separators != null && separators.Length > 0) {
+            if (value is string strValue && separators is not null && separators.Length > 0) {
                 return new ReadOnlyCollection<string>(strValue.Split(separators, StringSplitOptions.RemoveEmptyEntries));
             }
 

@@ -68,7 +68,7 @@ namespace Microsoft.Scripting.Ast {
                                 int cacheIndex = unchecked(x + 2);
                                 if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
                                     ConstantExpression res;
-                                    if ((res = IntCache[cacheIndex]) == null) {
+                                    if ((res = IntCache[cacheIndex]) is null) {
                                         IntCache[cacheIndex] = res = Constant(x, typeof(int));
                                     }
                                     return res;

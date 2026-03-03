@@ -15,7 +15,7 @@ namespace Microsoft.Scripting.Generation {
         private static Dictionary<ICollection<Type>, Type> _DelegateTypes;
 
         private static Type MakeCustomDelegate(Type[] types) {
-            if (_DelegateTypes == null) {
+            if (_DelegateTypes is null) {
                 Interlocked.CompareExchange(
                     ref _DelegateTypes,
                     new Dictionary<ICollection<Type>, Type>(ListEqualityComparer<Type>.Instance),
@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Generation {
                 found = _DelegateTypes.TryGetValue(types, out type);
             }
 
-            if (!found && type != null) {
+            if (!found && type is not null) {
                 return type;
             }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.Generation {
             // LOCK to insert new delegate into the cache. If we already have one (racing threads), use the one from the cache
             //
             lock (_DelegateTypes) {
-                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict != null) {
+                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict is not null) {
                     type = conflict;
                 } else {
                     _DelegateTypes[types] = type;

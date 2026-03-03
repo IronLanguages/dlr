@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public static List<KeyValuePair<Module, int>> GetVisibleExtensionMethods(Assembly assembly) {
-            if (assembly == null) {
+            if (assembly is null) {
                 throw new ArgumentNullException(nameof(assembly));
             }
 

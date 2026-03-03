@@ -26,12 +26,12 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal override Expression Marshal(Expression parameter) {
-            Debug.Assert(parameter != null);
+            Debug.Assert(parameter is not null);
             return Helpers.Convert(parameter, _parameterType);
         }
 
         internal override Expression UnmarshalFromRef(Expression newValue) {
-            Debug.Assert(newValue != null && newValue.Type.IsAssignableFrom(_parameterType));
+            Debug.Assert(newValue is not null && newValue.Type.IsAssignableFrom(_parameterType));
 
             return base.UnmarshalFromRef(newValue);
         }

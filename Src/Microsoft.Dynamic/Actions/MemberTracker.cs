@@ -46,7 +46,7 @@ namespace Microsoft.Scripting.Actions {
 
             public override int GetHashCode() {
                 int res = Member.GetHashCode();
-                if (Extending != null) {
+                if (Extending is not null) {
                     res ^= Extending.GetHashCode();
                 }
                 return res;
@@ -97,25 +97,17 @@ namespace Microsoft.Scripting.Actions {
                     return res;
                 }
 
-                if (member is MethodInfo method) {
-                    if (extending != null) {
-                        res = new ExtensionMethodTracker(method, member.IsDefined(typeof(StaticExtensionMethodAttribute), false), extending);
-                    } else {
-                        res = new MethodTracker(method);
-                    }
-                } else if (member is ConstructorInfo c) {
-                    res = new ConstructorTracker(c);
-                } else if (member is FieldInfo f) {
-                    res = new FieldTracker(f);
-                } else if (member is PropertyInfo p) {
-                    res = new ReflectedPropertyTracker(p);
-                } else if (member is EventInfo e) {
-                    res = new EventTracker(e);
-                } else if (member is Type t) {
-                    res = new NestedTypeTracker(t);
-                } else {
-                    throw Error.UnknownMemberType(member);
-                }
+                res = member switch {
+                    MethodInfo method => extending is not null
+                        ? new ExtensionMethodTracker(method, member.IsDefined(typeof(StaticExtensionMethodAttribute), false), extending)
+                        : new MethodTracker(method),
+                    ConstructorInfo ctor => new ConstructorTracker(ctor),
+                    FieldInfo field => new FieldTracker(field),
+                    PropertyInfo property => new ReflectedPropertyTracker(property),
+                    EventInfo evnt => new EventTracker(evnt),
+                    Type type => new NestedTypeTracker(type),
+                    _ => throw Error.UnknownMemberType(member)
+                };
 
                 _trackers[key] = res;
                 return res;

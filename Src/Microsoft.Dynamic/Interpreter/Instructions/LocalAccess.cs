@@ -22,7 +22,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects) {
-            return cookie == null ? 
+            return cookie is null ? 
                 InstructionName + "(" + _index + ")" : 
                 InstructionName + "(" + cookie + ": " + _index + ")";
         }

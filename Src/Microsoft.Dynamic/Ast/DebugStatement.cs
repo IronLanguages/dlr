@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Ast {
 #endif
 
         public static Expression AddDebugInfo(Expression expression, SymbolDocumentInfo document, SourceLocation start, SourceLocation end) {
-            if (document == null || !start.IsValid || !end.IsValid) {
+            if (document is null || !start.IsValid || !end.IsValid) {
                 return expression;
             }
             return AddDebugInfo(expression, document, start.Line, start.Column, end.Line, end.Column);
@@ -52,7 +52,7 @@ namespace Microsoft.Scripting.Ast {
 
         //The following method does not check the validaity of the span
         public static Expression AddDebugInfo(Expression expression, SymbolDocumentInfo document, int startLine, int startColumn, int endLine, int endColumn) {
-            if (expression == null) {
+            if (expression is null) {
                 throw new System.ArgumentNullException(nameof(expression));
             }
 

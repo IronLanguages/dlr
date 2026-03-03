@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _flags = flags;
 
             // params arrays & dictionaries don't allow assignment by keyword
-            Name = (IsParamsArray || IsParamsDict || name == null) ? "<unknown>" : name;
+            Name = (IsParamsArray || IsParamsDict || name is null) ? "<unknown>" : name;
         }
 
         public ParameterWrapper Clone(string name) {
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public bool IsHidden => (_flags & ParameterBindingFlags.IsHidden) != 0;
 
-        public bool IsByRef => ParameterInfo != null && ParameterInfo.ParameterType.IsByRef;
+        public bool IsByRef => ParameterInfo is not null && ParameterInfo.ParameterType.IsByRef;
 
         /// <summary>
         /// True if the wrapper represents a params-array parameter (false for parameters created by expansion of a params-array).

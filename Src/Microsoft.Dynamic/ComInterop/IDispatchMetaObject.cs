@@ -167,7 +167,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         private DynamicMetaObject TryPropertyPut(SetMemberBinder binder, DynamicMetaObject value) {
-            bool holdsNull = value.Value == null && value.HasValue;
+            bool holdsNull = value.Value is null && value.HasValue;
             if (_self.TryGetPropertySetter(binder.Name, out ComMethodDesc method, value.LimitType, holdsNull) ||
                 _self.TryGetPropertySetterExplicit(binder.Name, out method, value.LimitType, holdsNull)) {
                 BindingRestrictions restrictions = IDispatchRestriction();

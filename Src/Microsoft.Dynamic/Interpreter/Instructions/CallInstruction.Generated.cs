@@ -83,7 +83,7 @@ namespace Microsoft.Scripting.Interpreter {
         /// </summary>
         private static CallInstruction FastCreate(MethodInfo target, ParameterInfo[] pi) {
             Type t = TryGetParameterOrReturnType(target, pi, 0);
-            if (t == null) {
+            if (t is null) {
                 return new ActionCallInstruction(target);
             }
 
@@ -117,7 +117,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private static CallInstruction FastCreate<T0>(MethodInfo target, ParameterInfo[] pi) {
             Type t = TryGetParameterOrReturnType(target, pi, 1);
-            if (t == null) {
+            if (t is null) {
                 if (target.ReturnType == typeof(void)) {
                     return new ActionCallInstruction<T0>(target);
                 }
@@ -154,7 +154,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private static CallInstruction FastCreate<T0, T1>(MethodInfo target, ParameterInfo[] pi) {
             Type t = TryGetParameterOrReturnType(target, pi, 2);
-            if (t == null) {
+            if (t is null) {
                 if (target.ReturnType == typeof(void)) {
                     return new ActionCallInstruction<T0, T1>(target);
                 }
@@ -422,7 +422,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0) {
-            _target(arg0 != null ? (T0)arg0 : default(T0));
+            _target(arg0 is not null ? (T0)arg0 : default(T0));
             return null;
         }
 
@@ -447,7 +447,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1));
             return null;
         }
 
@@ -472,7 +472,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2));
             return null;
         }
 
@@ -497,7 +497,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3));
             return null;
         }
 
@@ -522,7 +522,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4));
             return null;
         }
 
@@ -547,7 +547,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5));
             return null;
         }
 
@@ -572,7 +572,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6));
             return null;
         }
 
@@ -597,7 +597,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6), arg7 != null ? (T7)arg7 : default(T7));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6), arg7 is not null ? (T7)arg7 : default(T7));
             return null;
         }
 
@@ -622,7 +622,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8) {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6), arg7 != null ? (T7)arg7 : default(T7), arg8 != null ? (T8)arg8 : default(T8));
+            _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6), arg7 is not null ? (T7)arg7 : default(T7), arg8 is not null ? (T8)arg8 : default(T8));
             return null;
         }
 
@@ -671,7 +671,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -695,7 +695,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -719,7 +719,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -743,7 +743,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -767,7 +767,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -791,7 +791,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -815,7 +815,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -839,7 +839,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6), arg7 != null ? (T7)arg7 : default(T7));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6), arg7 is not null ? (T7)arg7 : default(T7));
         }
 
         public override int Run(InterpretedFrame frame) {
@@ -863,7 +863,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8) {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1), arg2 != null ? (T2)arg2 : default(T2), arg3 != null ? (T3)arg3 : default(T3), arg4 != null ? (T4)arg4 : default(T4), arg5 != null ? (T5)arg5 : default(T5), arg6 != null ? (T6)arg6 : default(T6), arg7 != null ? (T7)arg7 : default(T7), arg8 != null ? (T8)arg8 : default(T8));
+            return _target(arg0 is not null ? (T0)arg0 : default(T0), arg1 is not null ? (T1)arg1 : default(T1), arg2 is not null ? (T2)arg2 : default(T2), arg3 is not null ? (T3)arg3 : default(T3), arg4 is not null ? (T4)arg4 : default(T4), arg5 is not null ? (T5)arg5 : default(T5), arg6 is not null ? (T6)arg6 : default(T6), arg7 is not null ? (T7)arg7 : default(T7), arg8 is not null ? (T8)arg8 : default(T8));
         }
 
         public override int Run(InterpretedFrame frame) {

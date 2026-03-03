@@ -29,40 +29,40 @@ namespace Microsoft.Scripting.Utils {
         public static readonly BindingFlags AllMembers = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
         public static bool IsPublic(this PropertyInfo property) {
-            return property.GetGetMethod(nonPublic: false) != null
-                || property.GetSetMethod(nonPublic: false) != null;
+            return property.GetGetMethod(nonPublic: false) is not null
+                || property.GetSetMethod(nonPublic: false) is not null;
         }
 
         public static bool IsStatic(this PropertyInfo property) {
             var getter = property.GetGetMethod(nonPublic: true);
             var setter = property.GetSetMethod(nonPublic: true);
 
-            return getter != null && getter.IsStatic
-                || setter != null && setter.IsStatic;
+            return getter is not null && getter.IsStatic
+                || setter is not null && setter.IsStatic;
         }
 
         public static bool IsStatic(this EventInfo evnt) {
             var add = evnt.GetAddMethod(nonPublic: true);
             var remove = evnt.GetRemoveMethod(nonPublic: true);
 
-            return add != null && add.IsStatic
-                || remove != null && remove.IsStatic;
+            return add is not null && add.IsStatic
+                || remove is not null && remove.IsStatic;
         }
 
         public static bool IsPrivate(this PropertyInfo property) {
             var getter = property.GetGetMethod(nonPublic: true);
             var setter = property.GetSetMethod(nonPublic: true);
 
-            return (getter == null || getter.IsPrivate)
-                && (setter == null || setter.IsPrivate);
+            return (getter is null || getter.IsPrivate)
+                && (setter is null || setter.IsPrivate);
         }
 
         public static bool IsPrivate(this EventInfo evnt) {
             var add = evnt.GetAddMethod(nonPublic: true);
             var remove = evnt.GetRemoveMethod(nonPublic: true);
 
-            return (add == null || add.IsPrivate)
-                && (remove == null || remove.IsPrivate);
+            return (add is null || add.IsPrivate)
+                && (remove is null || remove.IsPrivate);
         }
 
         private static bool MatchesFlags(ConstructorInfo member, BindingFlags flags) {
@@ -94,8 +94,8 @@ namespace Microsoft.Scripting.Utils {
             var remove = member.GetRemoveMethod();
             var raise = member.GetRaiseMethod();
 
-            bool isPublic = add != null && add.IsPublic || remove != null && remove.IsPublic || raise != null && raise.IsPublic;
-            bool isStatic = add != null && add.IsStatic || remove != null && remove.IsStatic || raise != null && raise.IsStatic;
+            bool isPublic = add is not null && add.IsPublic || remove is not null && remove.IsPublic || raise is not null && raise.IsPublic;
+            bool isStatic = add is not null && add.IsStatic || remove is not null && remove.IsStatic || raise is not null && raise.IsStatic;
 
             return
                 ((isPublic ? BindingFlags.Public : BindingFlags.NonPublic) & flags) != 0 &&
@@ -108,27 +108,14 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private static bool MatchesFlags(MemberInfo member, BindingFlags flags) {
-            if (member is MethodInfo method) {
-                return MatchesFlags(method, flags);
-            }
-
-            if (member is FieldInfo field) {
-                return MatchesFlags(field, flags);
-            }
-
-            if (member is ConstructorInfo ctor) {
-                return MatchesFlags(ctor, flags);
-            }
-
-            if (member is EventInfo evnt) {
-                return MatchesFlags(evnt, flags);
-            }
-
-            if (member is PropertyInfo property) {
-                return MatchesFlags(property, flags);
-            }
-
-            return MatchesFlags((TypeInfo)member, flags);
+            return member switch {
+                MethodInfo method => MatchesFlags(method, flags),
+                FieldInfo field => MatchesFlags(field, flags),
+                ConstructorInfo ctor => MatchesFlags(ctor, flags),
+                EventInfo evnt => MatchesFlags(evnt, flags),
+                PropertyInfo property => MatchesFlags(property, flags),
+                _ => MatchesFlags((TypeInfo)member, flags)
+            };
         }
 
         private static IEnumerable<T> WithBindingFlags<T>(this IEnumerable<T> members, Func<T, BindingFlags, bool> matchFlags, BindingFlags flags)
@@ -165,31 +152,31 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static MemberInfo WithBindingFlags(this MemberInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static MethodInfo WithBindingFlags(this MethodInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static ConstructorInfo WithBindingFlags(this ConstructorInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static FieldInfo WithBindingFlags(this FieldInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static PropertyInfo WithBindingFlags(this PropertyInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static EventInfo WithBindingFlags(this EventInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         public static TypeInfo WithBindingFlags(this TypeInfo member, BindingFlags flags) {
-            return member != null && MatchesFlags(member, flags) ? member : null;
+            return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
         #endregion
@@ -261,7 +248,7 @@ namespace Microsoft.Scripting.Utils {
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
             foreach (var ancestor in type.Ancestors()) {
                 foreach (var declaredMethod in ancestor.GetDeclaredMethods(name)) {
-                    if (declaredMethod != null && IncludeMethod(declaredMethod, type, baseDefinitions, flattenHierarchy)) {
+                    if (declaredMethod is not null && IncludeMethod(declaredMethod, type, baseDefinitions, flattenHierarchy)) {
                         yield return declaredMethod;
                     }
                 }
@@ -289,9 +276,9 @@ namespace Microsoft.Scripting.Utils {
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
             foreach (var ancestor in type.Ancestors()) {
-                if (name != null) {
+                if (name is not null) {
                     var declaredProperty = ancestor.GetDeclaredProperty(name);
-                    if (declaredProperty != null && IncludeProperty(declaredProperty, type, baseDefinitions, flattenHierarchy)) {
+                    if (declaredProperty is not null && IncludeProperty(declaredProperty, type, baseDefinitions, flattenHierarchy)) {
                         yield return declaredProperty;
                     }
                 } else {
@@ -317,15 +304,15 @@ namespace Microsoft.Scripting.Utils {
             var setter = member.GetSetMethod(nonPublic: true);
 
             MethodInfo virtualAccessor;
-            if (getter != null && getter.IsVirtual) {
+            if (getter is not null && getter.IsVirtual) {
                 virtualAccessor = getter;
-            } else if (setter != null && setter.IsVirtual) {
+            } else if (setter is not null && setter.IsVirtual) {
                 virtualAccessor = setter;
             } else {
                 virtualAccessor = null;
             }
 
-            if (virtualAccessor != null) {
+            if (virtualAccessor is not null) {
                 if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor))) {
                     return true;
                 }
@@ -345,9 +332,9 @@ namespace Microsoft.Scripting.Utils {
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
             foreach (var ancestor in type.Ancestors()) {
-                if (name != null) {
+                if (name is not null) {
                     var declaredEvent = ancestor.GetDeclaredEvent(name);
-                    if (declaredEvent != null && IncludeEvent(declaredEvent, type, baseDefinitions, flattenHierarchy)) {
+                    if (declaredEvent is not null && IncludeEvent(declaredEvent, type, baseDefinitions, flattenHierarchy)) {
                         yield return declaredEvent;
                     }
                 } else {
@@ -367,15 +354,15 @@ namespace Microsoft.Scripting.Utils {
             // TOOD: fire method?
 
             MethodInfo virtualAccessor;
-            if (add != null && add.IsVirtual) {
+            if (add is not null && add.IsVirtual) {
                 virtualAccessor = add;
-            } else if (remove != null && remove.IsVirtual) {
+            } else if (remove is not null && remove.IsVirtual) {
                 virtualAccessor = remove;
             } else {
                 virtualAccessor = null;
             }
 
-            if (virtualAccessor != null) {
+            if (virtualAccessor is not null) {
                 if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor))) {
                     return true;
                 }
@@ -394,9 +381,9 @@ namespace Microsoft.Scripting.Utils {
             }
 
             foreach (var ancestor in type.Ancestors()) {
-                if (name != null) {
+                if (name is not null) {
                     var declaredField = ancestor.GetDeclaredField(name);
-                    if (declaredField != null && IncludeField(declaredField, type, flattenHierarchy)) {
+                    if (declaredField is not null && IncludeField(declaredField, type, flattenHierarchy)) {
                         yield return declaredField;
                     }
                 } else {
@@ -428,14 +415,14 @@ namespace Microsoft.Scripting.Utils {
                 type.GetInheritedEvents(name, flattenHierarchy).Cast<EventInfo, MemberInfo>().Concat(
                 type.GetInheritedFields(name, flattenHierarchy).Cast<FieldInfo, MemberInfo>())));
 
-            if (name == null) {
+            if (name is null) {
                 return result.Concat<MemberInfo>(
                     type.GetDeclaredConstructors().Cast<ConstructorInfo, MemberInfo>().Concat(
                     type.GetDeclaredNestedTypes().Cast<TypeInfo, MemberInfo>()));
             }
 
             var nestedType = type.GetDeclaredNestedType(name);
-            return (nestedType != null) ? result.Concat(new[] { nestedType }) : result;
+            return (nestedType is not null) ? result.Concat(new[] { nestedType }) : result;
         }
 
         #endregion
@@ -447,7 +434,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name = null) {
-            if (name == null) {
+            if (name is null) {
                 return type.GetMethods(BindingFlags.DeclaredOnly | AllMembers);
             }
 
@@ -459,7 +446,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static PropertyInfo GetDeclaredProperty(this Type type, string name) {
-            Debug.Assert(name != null);
+            Debug.Assert(name is not null);
             return type.GetProperty(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
@@ -468,7 +455,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static EventInfo GetDeclaredEvent(this Type type, string name) {
-            Debug.Assert(name != null);
+            Debug.Assert(name is not null);
             return type.GetEvent(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
@@ -477,7 +464,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static FieldInfo GetDeclaredField(this Type type, string name) {
-            Debug.Assert(name != null);
+            Debug.Assert(name is not null);
             return type.GetField(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
@@ -486,12 +473,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static TypeInfo GetDeclaredNestedType(this Type type, string name) {
-            Debug.Assert(name != null);
+            Debug.Assert(name is not null);
             return type.GetNestedType(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
         public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string name = null) {
-            if (name == null) {
+            if (name is null) {
                 return type.GetMembers(BindingFlags.DeclaredOnly | AllMembers);
             }
 
@@ -624,7 +611,7 @@ namespace Microsoft.Scripting.Utils {
         /// Converts a boxed enum value to the underlying integer value.
         /// </summary>
         public static object UnwrapEnumValue(object value) {
-            if (value == null) {
+            if (value is null) {
                 throw new ArgumentNullException(nameof(value));
             }
 
@@ -858,7 +845,7 @@ namespace Microsoft.Scripting.Utils {
             ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
 
             MethodInfo invokeMethod = delegateType.GetMethod("Invoke");
-            ContractUtils.Requires(invokeMethod != null, nameof(delegateType), Strings.InvalidDelegate);
+            ContractUtils.Requires(invokeMethod is not null, nameof(delegateType), Strings.InvalidDelegate);
 
             parameterInfos = invokeMethod.GetParameters();
             returnInfo = invokeMethod.ReturnParameter;
@@ -1022,7 +1009,7 @@ namespace Microsoft.Scripting.Utils {
             do {
                 yield return type;
                 type = type.BaseType;
-            } while (type != null);
+            } while (type is not null);
         }
 
         /// <summary>
@@ -1030,7 +1017,7 @@ namespace Microsoft.Scripting.Utils {
         /// and not its parents.
         /// </summary>
         public static List<Type> GetDeclaredInterfaces(Type type) {
-            IEnumerable<Type> baseInterfaces = (type.BaseType != null) ? type.BaseType.GetInterfaces() : EmptyTypes;
+            IEnumerable<Type> baseInterfaces = (type.BaseType is not null) ? type.BaseType.GetInterfaces() : EmptyTypes;
             List<Type> interfaces = new List<Type>();
             foreach (Type iface in type.GetInterfaces()) {
                 if (!baseInterfaces.Contains(iface)) {
@@ -1050,7 +1037,7 @@ namespace Microsoft.Scripting.Utils {
                 }
 
                 foreach (var type in moduleTypes) {
-                    if (type != null) {
+                    if (type is not null) {
                         yield return type;
                     }
                 }
@@ -1063,7 +1050,7 @@ namespace Microsoft.Scripting.Utils {
         private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", Array.Empty<Type>());
 
         internal static Type[] GetForwardedTypes(this Assembly assembly) {
-            if (GetForwardedTypesMethodInfo != null) {
+            if (GetForwardedTypesMethodInfo is not null) {
                 // just in case we're running on .NET Core 2.1...
                 try {
                     return GetForwardedTypesMethodInfo.Invoke(assembly, null) as Type[] ?? Array.Empty<Type>();
@@ -1274,7 +1261,7 @@ namespace Microsoft.Scripting.Utils {
 
             Dictionary<string, List<ExtensionMethodInfo>> result = null;
             foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
-                if (method.DeclaringType == null || method.DeclaringType.IsGenericTypeDefinition) {
+                if (method.DeclaringType is null || method.DeclaringType.IsGenericTypeDefinition) {
                     continue;
                 }
 
@@ -1311,7 +1298,7 @@ namespace Microsoft.Scripting.Utils {
         // TODO: GetVisibleExtensionMethods(Hashset<string> namespaces, Type type, string methodName) : IEnumerable<MethodInfo> {}
 
         private static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> EnumerateExtensionMethods(Dictionary<string, List<ExtensionMethodInfo>> dict) {
-            if (dict != null) {
+            if (dict is not null) {
                 foreach (var entry in dict) {
                     yield return new KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>(entry.Key, new ReadOnlyCollection<ExtensionMethodInfo>(entry.Value));
                 }
@@ -1397,7 +1384,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) != 0 &&
-                (!closedType.IsValueType && closedType.GetConstructor(EmptyTypes) == null)) {
+                (!closedType.IsValueType && closedType.GetConstructor(EmptyTypes) is null)) {
                 // reference type w/o a default constructor to type constrianed as new()
                 return true;
             }
@@ -1406,7 +1393,7 @@ namespace Microsoft.Scripting.Utils {
             for (int i = 0; i < constraints.Length; i++) {
                 Type instantiation = InstantiateConstraint(constraints[i], binding);
 
-                if (instantiation == null) {
+                if (instantiation is null) {
                     if (ignoreUnboundParameters) {
                         continue;
                     }
@@ -1435,7 +1422,7 @@ namespace Microsoft.Scripting.Utils {
 
             Type[] args = constraint.GetGenericArguments();
             for (int i = 0; i < args.Length; i++) {
-                if ((args[i] = InstantiateConstraint(args[i], binding)) == null) {
+                if ((args[i] = InstantiateConstraint(args[i], binding)) is null) {
                     return null;
                 }
             }
@@ -1506,7 +1493,7 @@ namespace Microsoft.Scripting.Utils {
             // We make such methods available on all types. 
             // If they are not called with arguments that satisfy the constraint the overload resolver might fail.
             //
-            return ReflectionUtils.BindGenericParameters(_extendedType, type, true) != null;
+            return ReflectionUtils.BindGenericParameters(_extendedType, type, true) is not null;
         }
     }
 }

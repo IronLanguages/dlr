@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Utils {
             if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsAfter));
             if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsBefore));
 
-            if (elements == null) {
+            if (elements is null) {
                 return new T[reservedSlotsBefore + reservedSlotsAfter];
             }
 
@@ -194,7 +194,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void SwapLastTwo<T>(T[] array) {
-            Debug.Assert(array != null && array.Length >= 2);
+            Debug.Assert(array is not null && array.Length >= 2);
 
             T temp = array[array.Length - 1];
             array[array.Length - 1] = array[array.Length - 2];
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Utils {
         /// </summary>
         public static T[] ToArray<T>(ICollection<T> list) {
             T[] res = list as T[];
-            if (res == null) {
+            if (res is null) {
                 res = new T[list.Count];
                 int i = 0;
                 foreach (T obj in list) {

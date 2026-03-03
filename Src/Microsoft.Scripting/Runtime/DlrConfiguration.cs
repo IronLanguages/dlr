@@ -35,13 +35,13 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <exception cref="InvalidImplementationException">The language context's implementation failed to instantiate.</exception>
         internal LanguageContext LoadLanguageContext(ScriptDomainManager domainManager, out bool alreadyLoaded) {
-            if (_context == null) {
+            if (_context is null) {
 
                 // Let assembly load errors bubble out
                 var assembly = domainManager.Platform.LoadAssembly(ProviderName.AssemblyName.FullName);
 
                 Type type = assembly.GetType(ProviderName.TypeName);
-                if (type == null) {
+                if (type is null) {
                     throw new InvalidOperationException(
                         String.Format(
                             "Failed to load language '{0}': assembly '{1}' does not contain type '{2}'",
@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Runtime {
                     throw new InvalidImplementationException(Strings.InvalidCtorImplementation(type, e.Message), e);
                 }
 
-                alreadyLoaded = Interlocked.CompareExchange(ref _context, context, null) != null;
+                alreadyLoaded = Interlocked.CompareExchange(ref _context, context, null) is not null;
             } else {
                 alreadyLoaded = true;
             }

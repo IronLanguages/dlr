@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Runtime {
         ///otherwise, returns self.LimitType
         /// </summary>
         public static Type GetLimitType(this DynamicMetaObject self) {
-            if (self.Value == null && self.HasValue) {
+            if (self.Value is null && self.HasValue) {
                 return typeof(DynamicNull);
             }
             return self.LimitType;
@@ -98,7 +98,7 @@ namespace Microsoft.Scripting.Runtime {
         ///otherwise, returns self.RuntimeType
         /// </summary>
         public static Type GetRuntimeType(this DynamicMetaObject self) {
-            if (self.Value == null && self.HasValue) {
+            if (self.Value is null && self.HasValue) {
                 return typeof(DynamicNull);
             }
             return self.RuntimeType;

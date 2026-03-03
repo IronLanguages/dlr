@@ -32,14 +32,14 @@ namespace Microsoft.Scripting {
 
         private string DebugString => Path ?? "<anonymous>";
 
-        public bool HasPath => Path != null;
+        public bool HasPath => Path is not null;
 
         public SourceCodeKind Kind { get; }
 
         public SymbolDocumentInfo Document {
             get {
                 // _path is valid to be null. In that case we cannot create a valid SymbolDocumentInfo.
-                return Path == null ? null : Expression.SymbolDocument(Path, _language.LanguageGuid, _language.VendorGuid);
+                return Path is null ? null : Expression.SymbolDocument(Path, _language.LanguageGuid, _language.VendorGuid);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Microsoft.Scripting {
                 reader.SeekLine(start);
                 while (count > 0) {
                     string line = reader.ReadLine();
-                    if (line == null) break;
+                    if (line is null) break;
                     result.Add(line);
                     count--;
                 }
@@ -129,7 +129,7 @@ namespace Microsoft.Scripting {
         }
 
         public int MapLine(int line) {
-            if (_lineMap != null) {
+            if (_lineMap is not null) {
                 int match = BinarySearch(_lineMap, line);
                 int delta = line - _lineMap[match].Key;
                 line = _lineMap[match].Value + delta;
@@ -143,7 +143,7 @@ namespace Microsoft.Scripting {
 
         public bool HasLineMapping {
             get {
-                return _lineMap != null;
+                return _lineMap is not null;
             }
         }
 
@@ -214,7 +214,7 @@ namespace Microsoft.Scripting {
 
             ScriptCode compiledCode = Compile(_language.GetCompilerOptions(scope), errorSink);
 
-            if (compiledCode == null) {
+            if (compiledCode is null) {
                 throw new SyntaxErrorException();
             }
 
@@ -249,7 +249,7 @@ namespace Microsoft.Scripting {
         #endregion
 
         public void SetLineMapping(KeyValuePair<int, int>[] lineMap) {
-            _lineMap = (lineMap == null || lineMap.Length == 0) ? null : lineMap;
+            _lineMap = (lineMap is null || lineMap.Length == 0) ? null : lineMap;
         }
     }
 }

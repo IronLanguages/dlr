@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Hosting {
         public string FormatException(ObjectHandle exception) {
             ContractUtils.RequiresNotNull(exception, nameof(exception));
             var exceptionObj = exception.Unwrap() as Exception;
-            ContractUtils.Requires(exceptionObj != null, nameof(exception), "ObjectHandle must be to Exception object");
+            ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
             return _context.FormatException(exceptionObj);
         }
@@ -52,7 +52,7 @@ namespace Microsoft.Scripting.Hosting {
         public void GetExceptionMessage(ObjectHandle exception, out string message, out string errorTypeName) {
             ContractUtils.RequiresNotNull(exception, nameof(exception));
             var exceptionObj = exception.Unwrap() as Exception;
-            ContractUtils.Requires(exceptionObj != null, nameof(exception), "ObjectHandle must be to Exception object");
+            ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
             _context.GetExceptionMessage(exceptionObj, out message, out errorTypeName);
         }
@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Hosting {
         public IList<DynamicStackFrame> GetStackFrames(ObjectHandle exception) {
             ContractUtils.RequiresNotNull(exception, nameof(exception));
             var exceptionObj = exception.Unwrap() as Exception;
-            ContractUtils.Requires(exceptionObj != null, nameof(exception), "ObjectHandle must be to Exception object");
+            ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
             return _context.GetStackFrames(exceptionObj);
         }

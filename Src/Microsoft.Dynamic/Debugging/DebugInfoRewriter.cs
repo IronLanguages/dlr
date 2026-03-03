@@ -161,7 +161,7 @@ namespace Microsoft.Scripting.Debugging {
 
             // If the TryStatement has any Catch blocks we need to insert the exception
             // event as a first statement so that we can be notified of first-chance exceptions.
-            if (node.Handlers != null && node.Handlers.Count > 0) {
+            if (node.Handlers is not null && node.Handlers.Count > 0) {
                 newHandlers = new List<CatchBlock>();
 
                 foreach (var catchBlock in node.Handlers) {
@@ -213,7 +213,7 @@ namespace Microsoft.Scripting.Debugging {
                 }
             }
 
-            if (!_transformToGenerator && node.Finally != null) {
+            if (!_transformToGenerator && node.Finally is not null) {
                 // Prevent the user finally block from running if the frame is currently remapping to generator
                 newFinally = AstUtils.If(
                     Ast.Not(
@@ -226,13 +226,13 @@ namespace Microsoft.Scripting.Debugging {
                 );
             }
 
-            if (newHandlers != null || newFinally != null) {
+            if (newHandlers is not null || newFinally is not null) {
                 node = Ast.MakeTry(
                     node.Type,
                     node.Body,
                     newFinally ?? node.Finally,
                     node.Fault,
-                    newHandlers != null ? (IEnumerable<CatchBlock>)newHandlers : node.Handlers
+                    newHandlers is not null ? (IEnumerable<CatchBlock>)newHandlers : node.Handlers
                 );
             }
 
@@ -309,14 +309,14 @@ namespace Microsoft.Scripting.Debugging {
         //  2. It inserts push-frame expression before call expression.  This is done on 2nd tree-walk, and
         //     only if there are no unconditional func. calls.
         internal MSAst.Expression VisitCall(MSAst.Expression node) {
-            if (_lambdaInfo.OptimizeForLeafFrames && (_lambdaInfo.CompilerSupport == null || _lambdaInfo.CompilerSupport.IsCallToDebuggableLambda(node))) {
+            if (_lambdaInfo.OptimizeForLeafFrames && (_lambdaInfo.CompilerSupport is null || _lambdaInfo.CompilerSupport.IsCallToDebuggableLambda(node))) {
                 // If we're inside a conditional block record the fact that we have uncodintional function calls
                 if (!_insideConditionalBlock) {
                     _hasUnconditionalFunctionCalls = true;
                 }
 
                 // Insert the push-frame expression
-                if (!_transformToGenerator && _pushFrame != null) {
+                if (!_transformToGenerator && _pushFrame is not null) {
                     return Ast.Block(_pushFrame, node);
                 }
             }
@@ -325,7 +325,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         protected override MSAst.Expression VisitParameter(MSAst.ParameterExpression node) {
-            if (_replacedLocals == null) {
+            if (_replacedLocals is null) {
                 return base.VisitParameter(node);
             }
 
@@ -341,7 +341,7 @@ namespace Microsoft.Scripting.Debugging {
                 MSAst.Expression transformedExpression;
 
                 // Verify that DebugInfoExpression has valid SymbolDocumentInfo
-                if (node.Document == null) {
+                if (node.Document is null) {
                     throw new InvalidOperationException(
                         string.Format(
                             CultureInfo.CurrentCulture,
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Debugging {
                         )
                     );
                 } else {
-                    Debug.Assert(_generatorLabelTarget != null);
+                    Debug.Assert(_generatorLabelTarget is not null);
 
                     transformedExpression = Ast.Block(
                         AstUtils.YieldReturn(

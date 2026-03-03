@@ -90,7 +90,7 @@ namespace Microsoft.Scripting.Runtime {
 
             Reader = reader;
 
-            if (_buffer == null || _buffer.Length < initialCapacity) {
+            if (_buffer is null || _buffer.Length < initialCapacity) {
                 _buffer = new char[initialCapacity];
             }
 
@@ -417,7 +417,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Resizes an array to a speficied new size and copies a portion of the original array into its beginning.
         /// </summary>
         private static void ResizeInternal(ref char[] array, int newSize, int start, int count) {
-            Debug.Assert(array != null && newSize > 0 && count >= 0 && newSize >= count && start >= 0);
+            Debug.Assert(array is not null && newSize > 0 && count >= 0 && newSize >= count && start >= 0);
 
             char[] result = (newSize != array.Length) ? new char[newSize] : array;
 

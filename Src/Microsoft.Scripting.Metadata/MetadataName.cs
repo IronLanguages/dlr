@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Metadata {
 
         public bool IsEmpty {
             get {
-                bool result = m_data == null || *m_data == 0;
+                bool result = m_data is null || *m_data == 0;
                 GC.KeepAlive(m_keepAlive);
                 return result;
             }
@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // safe
         public bool Equals(byte[] bytes, int start, int count) {
-            if (bytes == null) {
+            if (bytes is null) {
                 throw new ArgumentNullException(nameof(bytes));
             }
             if (start < 0) {
@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Metadata {
         // SECURITY: The method is actually not safe. We must make sure that this object is not leaked to partially-trusted code.
         [SecuritySafeCritical]
         public override string ToString() {
-            if (m_data == null) {
+            if (m_data is null) {
                 return string.Empty;
             }
 
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // safe
         internal string ToString(int byteCount) {
-            if (m_data == null) {
+            if (m_data is null) {
                 Contract.Assert(byteCount == 0);
                 return string.Empty;
             }
@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // safe
         internal int GetHashCode(int start, int count) {
-            int result = GetByteHashCode((m_data != null) ? m_data + start : null, count);
+            int result = GetByteHashCode((m_data is not null) ? m_data + start : null, count);
             GC.KeepAlive(m_keepAlive);
             return result;
         }
@@ -145,7 +145,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // safe
         internal MetadataName GetSuffix(int start) {
-            return (m_data != null) ? new MetadataName(m_data + start, m_keepAlive) : Empty;
+            return (m_data is not null) ? new MetadataName(m_data + start, m_keepAlive) : Empty;
         }
 
         // safe
@@ -164,14 +164,14 @@ namespace Microsoft.Scripting.Metadata {
 
         // safe
         internal int LastIndexOf(byte b, int start, int count) {
-            if (m_data == null) return -1;
+            if (m_data is null) return -1;
             byte* ptr = FindPrevious(m_data + start, m_data + start - count + 1, b);
             GC.KeepAlive(m_keepAlive);
-            return ptr != null ? (int)(ptr - m_data) : -1;
+            return ptr is not null ? (int)(ptr - m_data) : -1;
         }
 
         internal static int GetLength(byte* bytes) {
-            if (bytes == null) {
+            if (bytes is null) {
                 return 0;
             }
             byte* ptr = bytes;
@@ -182,7 +182,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal static int IndexOf(byte* bytes, byte b) {
-            if (bytes == null) {
+            if (bytes is null) {
                 return -1;
             }
             byte* ptr = bytes;
@@ -196,7 +196,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal static int IndexOf(byte* bytes, byte b, int start, int count) {
-            if (bytes == null) {
+            if (bytes is null) {
                 return -1;
             }
 
@@ -213,7 +213,7 @@ namespace Microsoft.Scripting.Metadata {
         }
         
         internal static byte* FindPrevious(byte* start, byte* last, byte b) {
-            Contract.Assert(start != null && last != null);
+            Contract.Assert(start is not null && last is not null);
             byte* ptr = start - 1;
             while (true) {
                 if (ptr < last) {
@@ -231,7 +231,7 @@ namespace Microsoft.Scripting.Metadata {
             int hash2 = hash1;
 
             unchecked {
-                if (bytes != null) {
+                if (bytes is not null) {
                     int c;
                     byte* s = bytes;
                     while ((c = s[0]) != 0) {
@@ -249,13 +249,13 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal static int GetByteHashCode(byte* bytes, int count) {
-            Contract.Assert(bytes != null || count == 0);
+            Contract.Assert(bytes is not null || count == 0);
 
             int hash1 = 5381;
             int hash2 = hash1;
 
             unchecked {
-                if (bytes != null) {
+                if (bytes is not null) {
                     byte* last = bytes + count - 1;
                     byte* s = bytes;
                     while (s < last) {
@@ -275,10 +275,10 @@ namespace Microsoft.Scripting.Metadata {
             if (p == q) {
                 return true;
             }
-            if (p == null) {
+            if (p is null) {
                 return *q == 0;
             }
-            if (q == null) {
+            if (q is null) {
                 return *p == 0;
             }
 
@@ -295,7 +295,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         internal static bool Equals(byte* p, byte* q, int qCount) {
-            if (p == null) {
+            if (p is null) {
                 return qCount == 0;
             }
 

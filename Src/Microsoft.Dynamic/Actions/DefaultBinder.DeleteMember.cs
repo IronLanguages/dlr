@@ -53,12 +53,12 @@ namespace Microsoft.Scripting.Actions {
 
             delInfo.Body.Restrictions = restrictions;
 
-            if (self == null || !MakeOperatorDeleteMemberBody(delInfo, self, type, "DeleteMember")) {
+            if (self is null || !MakeOperatorDeleteMemberBody(delInfo, self, type, "DeleteMember")) {
                 MemberGroup group = GetMember(MemberRequestKind.Delete, type, delInfo.Name);
                 if (group.Count != 0) {
                     if (group[0].MemberType == TrackerTypes.Property) {
                         MethodInfo del = ((PropertyTracker)group[0]).GetDeleteMethod(PrivateBinding);
-                        if (del != null) {
+                        if (del is not null) {
                             MakePropertyDeleteStatement(delInfo, self, del);
                             return delInfo.Body.GetMetaObject(target);
                         }
@@ -85,7 +85,7 @@ namespace Microsoft.Scripting.Actions {
 
         private void MakePropertyDeleteStatement(SetOrDeleteMemberInfo delInfo, DynamicMetaObject instance, MethodInfo delete) {
             delInfo.Body.FinishCondition(
-                instance == null ? 
+                instance is null ? 
                     MakeCallExpression(delInfo.ResolutionFactory, delete) :
                     MakeCallExpression(delInfo.ResolutionFactory, delete, instance)
             );
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Actions {
         private bool MakeOperatorDeleteMemberBody(SetOrDeleteMemberInfo delInfo, DynamicMetaObject instance, Type type, string name) {
             MethodInfo delMem = GetMethod(type, name);
 
-            if (delMem != null) {
+            if (delMem is not null) {
                 DynamicMetaObject call = MakeCallExpression(delInfo.ResolutionFactory, delMem, instance, new DynamicMetaObject(AstUtils.Constant(delInfo.Name), BindingRestrictions.Empty, delInfo.Name));
 
                 if (delMem.ReturnType == typeof(bool)) {

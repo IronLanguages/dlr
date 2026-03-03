@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal static bool IsImplicitlyConvertible(Type source, Type destination, bool considerUserDefined) {
             return IsImplicitlyConvertible(source, destination) ||
-                (considerUserDefined && GetUserDefinedCoercionMethod(source, destination, true) != null);
+                (considerUserDefined && GetUserDefinedCoercionMethod(source, destination, true) is not null);
         }
 
         //CONFORMING
@@ -81,19 +81,19 @@ namespace Microsoft.Scripting.ComInterop {
             // try exact match on types
             MethodInfo[] eMethods = nnExprType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             MethodInfo method = FindConversionOperator(eMethods, convertFrom, convertToType, implicitOnly);
-            if (method != null) {
+            if (method is not null) {
                 return method;
             }
             MethodInfo[] cMethods = nnConvType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method = FindConversionOperator(cMethods, convertFrom, convertToType, implicitOnly);
-            if (method != null) {
+            if (method is not null) {
                 return method;
             }
             // try lifted conversion
             if (nnExprType != convertFrom || nnConvType != convertToType) {
                 method = FindConversionOperator(eMethods, nnExprType, nnConvType, implicitOnly);
                 method ??= FindConversionOperator(cMethods, nnExprType, nnConvType, implicitOnly);
-                if (method != null) {
+                if (method is not null) {
                     return method;
                 }
             }

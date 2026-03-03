@@ -43,13 +43,13 @@ namespace Microsoft.Scripting.ComInterop {
             // Marshal.Get/SetComObjectData has a LinkDemand for UnmanagedCode which will turn into
             // a full demand. We could avoid this by making this method SecurityCritical
             object data = Marshal.GetComObjectData(rcw, _ComObjectInfoKey);
-            if (data != null) {
+            if (data is not null) {
                 return (ComObject)data;
             }
 
             lock (_ComObjectInfoKey) {
                 data = Marshal.GetComObjectData(rcw, _ComObjectInfoKey);
-                if (data != null) {
+                if (data is not null) {
                     return (ComObject)data;
                 }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // Expression that unwraps ComObject
         internal static MemberExpression RcwFromComObject(Expression comObject) {
-            Debug.Assert(comObject != null && (typeof(ComObject).IsAssignableFrom(comObject.Type) || comObject.Type == typeof(object)), "must be ComObject");
+            Debug.Assert(comObject is not null && (typeof(ComObject).IsAssignableFrom(comObject.Type) || comObject.Type == typeof(object)), "must be ComObject");
 
             return Expression.Property(
                 Helpers.Convert(comObject, typeof(ComObject)),

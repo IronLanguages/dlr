@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             ContractUtils.RequiresNotNullItems(methods, nameof(methods));
             ContractUtils.Requires(minLevel <= maxLevel);
 
-            if (_candidateSets != null) {
+            if (_candidateSets is not null) {
                 throw new InvalidOperationException("Overload resolver cannot be reused.");
             }
 
@@ -134,13 +134,13 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             // step 2:
             _actualArguments = CreateActualArguments(namedArgs, _argNames, preSplatLimit, postSplatLimit);
-            if (_actualArguments == null) {
+            if (_actualArguments is null) {
                 return new BindingTarget(methodName, BindingResult.InvalidArguments);
             }
 
             // steps 3, 4:
             var candidateSet = GetCandidateSet();
-            if (candidateSet != null && !candidateSet.IsParamsDictionaryOnly()) {
+            if (candidateSet is not null && !candidateSet.IsParamsDictionaryOnly()) {
                 return MakeBindingTarget(candidateSet);
             }
 
@@ -219,8 +219,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private void BuildCandidateSets(IEnumerable<OverloadInfo> methods) {
-            Debug.Assert(_candidateSets == null);
-            Debug.Assert(_argNames != null);
+            Debug.Assert(_candidateSets is null);
+            Debug.Assert(_argNames is not null);
 
             _candidateSets = new Dictionary<int, CandidateSet>();
 
@@ -230,13 +230,13 @@ namespace Microsoft.Scripting.Actions.Calls {
                 AddBasicMethodTargets(method);
             }
             
-            if (_paramsCandidates != null) {
+            if (_paramsCandidates is not null) {
                 // For all the methods that take a params array, create MethodCandidates that clash with the 
                 // other overloads of the method
                 foreach (MethodCandidate candidate in _paramsCandidates) {
                     foreach (int count in _candidateSets.Keys) {
                         MethodCandidate target = candidate.MakeParamsExtended(count, _argNames);
-                        if (target != null) {
+                        if (target is not null) {
                             AddTarget(target);
                         }
                     }
@@ -245,14 +245,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private CandidateSet GetCandidateSet() {
-            Debug.Assert(_candidateSets != null && _actualArguments != null);
+            Debug.Assert(_candidateSets is not null && _actualArguments is not null);
 
             // Use precomputed set if arguments are fully expanded and we have one:
             if (_actualArguments.CollapsedCount == 0 && _candidateSets.TryGetValue(_actualArguments.Count, out CandidateSet result)) {
                 return result;
             }
 
-            if (_paramsCandidates != null) {
+            if (_paramsCandidates is not null) {
                 // Build a new target set specific to the number of arguments we have:
                 result = BuildExpandedTargetSet(_actualArguments.Count);
                 if (result.Candidates.Count > 0) {
@@ -265,10 +265,10 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private CandidateSet BuildExpandedTargetSet(int count) {
             var set = new CandidateSet(count);
-            if (_paramsCandidates != null) {
+            if (_paramsCandidates is not null) {
                 foreach (MethodCandidate maker in _paramsCandidates) {
                     MethodCandidate target = maker.MakeParamsExtended(count, _argNames);
-                    if (target != null) {
+                    if (target is not null) {
                         set.Add(target);
                     }
                 }
@@ -313,7 +313,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             // TODO: We reduce out/ref parameters only for the main overload.
             // We should rather treat all out params as optional (either a StrongBox is provided or not).
             var byRefReducedCandidate = mapping.CreateByRefReducedCandidate();
-            if (byRefReducedCandidate != null) {
+            if (byRefReducedCandidate is not null) {
                 AddSimpleTarget(byRefReducedCandidate);
             }
 
@@ -329,7 +329,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region Step 2: Actual Arguments
 
         public ActualArguments GetActualArguments() {
-            if (_actualArguments == null) {
+            if (_actualArguments is null) {
                 throw new InvalidOperationException("Actual arguments have not been built yet.");
             }
             return _actualArguments; 
@@ -388,19 +388,19 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
 
                 var bestCandidate = SelectBestCandidate(applicable, level);
-                if (bestCandidate != null) {
+                if (bestCandidate is not null) {
                     return MakeSuccessfulBindingTarget(bestCandidate, potential, level, targetSet);
                 } 
 
                 return MakeAmbiguousBindingTarget(applicable);
             }
 
-            if (failures == null) {
+            if (failures is null) {
                 // this can happen if there is no callable method:
                 return new BindingTarget(_methodName, BindingResult.NoCallableMethod);
             }
 
-            if (nameBindingFailures != null) {
+            if (nameBindingFailures is not null) {
                 failures.AddRange(nameBindingFailures);
             }
             return MakeFailedBindingTarget(failures.ToArray());
@@ -449,7 +449,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     }
 
                     MethodCandidate newCandidate = TypeInferer.InferGenericMethod(candidate, _actualArguments);
-                    if (newCandidate != null) {
+                    if (newCandidate is not null) {
                         if (TryConvertArguments(newCandidate, candidate.ArgumentBinding, level, out CallFailure callFailure)) {
                             result.Add(new ApplicableCandidate(newCandidate, candidate.ArgumentBinding));
                         } else {
@@ -515,7 +515,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             // There must be at least one expanded parameter preceding splat index (see MethodBinder.GetSplatLimits):
             ParameterWrapper parameter = candidate.GetParameter(_actualArguments.SplatIndex - 1);
-            Debug.Assert(parameter.ParameterInfo != null && candidate.Overload.IsParamArray(parameter.ParameterInfo.Position));
+            Debug.Assert(parameter.ParameterInfo is not null && candidate.Overload.IsParamArray(parameter.ParameterInfo.Position));
 
             for (int i = 0; i < _actualArguments.CollapsedCount; i++) {
                 object value = GetCollapsedArgumentValue(i);
@@ -550,7 +550,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     restrictedArgs[i] = arg;
                 }
 
-                if (selectedCandidate.Method.Restrictions != null && selectedCandidate.Method.Restrictions.TryGetValue(
+                if (selectedCandidate.Method.Restrictions is not null && selectedCandidate.Method.Restrictions.TryGetValue(
                         arg,
                         out BindingRestrictions additionalRestrictions)) {
                     hasAdditionalRestrictions = true;
@@ -614,7 +614,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     continue;
                 }
 
-                if (seenParametersType == null) {
+                if (seenParametersType is null) {
                     seenParametersType = parameterType;
                 } else if (seenParametersType != parameterType) {
                     return true;
@@ -933,12 +933,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region Step 5: Results, Errors
         
         private int[] GetExpectedArgCounts() {
-            if (_candidateSets.Count == 0 && _paramsCandidates == null) {
+            if (_candidateSets.Count == 0 && _paramsCandidates is null) {
                 return EmptyArray<int>.Instance;
             }
 
             int minParamsArray = Int32.MaxValue;
-            if (_paramsCandidates != null) {
+            if (_paramsCandidates is not null) {
                 foreach (var candidate in _paramsCandidates) {
                     if (candidate.HasParamsArray) {
                         minParamsArray = System.Math.Min(minParamsArray, candidate.GetVisibleParameterCount() - 1);
@@ -1120,9 +1120,9 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         // Get minimal number of arguments that must precede/follow splat mark in actual arguments.
         private void GetSplatLimits(out int preSplatLimit, out int postSplatLimit) {
-            Debug.Assert(_candidateSets != null);
+            Debug.Assert(_candidateSets is not null);
 
-            if (_paramsCandidates != null) {
+            if (_paramsCandidates is not null) {
                 int preCount = -1;
                 int postCount = -1;
 
@@ -1201,7 +1201,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public override string ToString() {
-            if (_candidateSets != null) {
+            if (_candidateSets is not null) {
                 string res = string.Empty;
                 foreach (CandidateSet set in _candidateSets.Values) {
                     res += set + Environment.NewLine;

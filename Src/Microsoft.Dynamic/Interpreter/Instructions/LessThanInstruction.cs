@@ -29,7 +29,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((sbyte)left < (sbyte)right);
@@ -46,7 +46,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((short)left < (short)right);
@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((char)left < (char)right);
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((int)left < (int)right);
@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((long)left < (long)right);
@@ -114,7 +114,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((byte)left < (byte)right);
@@ -131,7 +131,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((ushort)left < (ushort)right);
@@ -148,7 +148,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((uint)left < (uint)right);
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((ulong)left < (ulong)right);
@@ -182,7 +182,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((float)left < (float)right);
@@ -199,7 +199,7 @@ namespace Microsoft.Scripting.Interpreter {
             public override int Run(InterpretedFrame frame) {
                 object right = frame.Pop();
                 object left = frame.Pop();
-                if (left == null || right == null) {
+                if (left is null || right is null) {
                     frame.Push(_nullValue);
                 } else {
                     frame.Push((double)left < (double)right);

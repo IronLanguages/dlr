@@ -539,7 +539,7 @@ namespace Microsoft.Scripting.Runtime {
 
                 }
 
-                if (toRemove != null) {
+                if (toRemove is not null) {
                     foreach (SiteKey sk in toRemove) {
                         _sites.Remove(sk);
                     }
@@ -571,8 +571,8 @@ namespace Microsoft.Scripting.Runtime {
             public CallSite Site;
 
             public SiteKey(Type siteType, CallSiteBinder siteBinder) {
-                Debug.Assert(siteType != null);
-                Debug.Assert(siteBinder != null);
+                Debug.Assert(siteType is not null);
+                Debug.Assert(siteBinder is not null);
 
                 SiteBinder = siteBinder;
                 _siteType = siteType;
@@ -587,7 +587,7 @@ namespace Microsoft.Scripting.Runtime {
             #region IEquatable<SiteKey> Members
 
             public bool Equals(SiteKey other) {
-                if (other == null) return false;
+                if (other is null) return false;
 
                 return other.SiteBinder.Equals(SiteBinder) &&
                     other._siteType == _siteType;

@@ -40,7 +40,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             public override bool Equals(object obj) =>
-                obj != null && obj.Equals(_binder);
+                obj is not null && obj.Equals(_binder);
 
             public override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel) {
                 Expression binding = _binder.Bind(args, parameters, returnLabel);

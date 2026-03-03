@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Interpreter {
             Index == other.Index && Parameter == other.Parameter;
 
         public override int GetHashCode() {
-            if (Parameter == null) {
+            if (Parameter is null) {
                 return 0;
             }
             return Parameter.GetHashCode() ^ Index.GetHashCode();
@@ -113,7 +113,7 @@ namespace Microsoft.Scripting.Interpreter {
         public void UndefineLocal(LocalDefinition definition, int end) {
             var scope = _variables[definition.Parameter];
             scope.Stop = end;
-            if (scope.Parent != null) {
+            if (scope.Parent is not null) {
                 _variables[definition.Parameter] = scope.Parent;
             } else {
                 _variables.Remove(definition.Parameter);
@@ -131,7 +131,7 @@ namespace Microsoft.Scripting.Interpreter {
                 
             int curChild = 0;
             for (int i = scope.Start; i < scope.Stop && i < instructions.Count; i++) {
-                if (scope.ChildScopes != null && scope.ChildScopes[curChild].Start == i) {
+                if (scope.ChildScopes is not null && scope.ChildScopes[curChild].Start == i) {
                     // skip boxing in the child scope
                     var child = scope.ChildScopes[curChild];
                     i = child.Stop;
@@ -163,7 +163,7 @@ namespace Microsoft.Scripting.Interpreter {
                 local = scope.Variable;
                 return true;
             }
-            if (ClosureVariables != null && ClosureVariables.TryGetValue(var, out local)) {
+            if (ClosureVariables is not null && ClosureVariables.TryGetValue(var, out local)) {
                 return true;
             }
 

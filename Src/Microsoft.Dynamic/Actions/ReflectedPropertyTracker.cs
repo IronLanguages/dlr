@@ -51,7 +51,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override MethodInfo GetDeleteMethod(bool privateMembers) {
             MethodInfo res = _propInfo.DeclaringType.GetMethod("Delete" + _propInfo.Name, (privateMembers ? BindingFlags.NonPublic : 0) | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
-            if (res != null && res.IsSpecialName && res.IsDefined(typeof(PropertyMethodAttribute), true)) {
+            if (res is not null && res.IsSpecialName && res.IsDefined(typeof(PropertyMethodAttribute), true)) {
                 return res;
             }
 

@@ -79,7 +79,7 @@ namespace Microsoft.Scripting.Runtime {
 
             object[] closure;
             lock (_closureMap) {
-                if (!_closureMap.TryGetValue(dynamicObject, out WeakReference weakClosure) || (closure = (object[])weakClosure.Target) == null) {
+                if (!_closureMap.TryGetValue(dynamicObject, out WeakReference weakClosure) || (closure = (object[])weakClosure.Target) is null) {
 
                     closure = new[] { TargetPlaceHolder, CallSitePlaceHolder, ConvertSitePlaceHolder };
                     _closureMap[dynamicObject] = new WeakReference(closure);
@@ -158,7 +158,7 @@ namespace Microsoft.Scripting.Runtime {
             for (int i = 0; i < _parameterTypes.Length; i++) {
                 if (_parameterTypes[i].IsByRef) {
                     ReturnFixer rf = ReturnFixer.EmitArgument(cg, i + 1, _parameterTypes[i]);
-                    if (rf != null) fixers.Add(rf);
+                    if (rf is not null) fixers.Add(rf);
                 } else {
                     cg.EmitLoadArg(i + 1);
                 }
@@ -252,7 +252,7 @@ namespace Microsoft.Scripting.Runtime {
 
             Type convertSiteType;
             CallSite convertSite;
-            if (convertBinder != null) {
+            if (convertBinder is not null) {
                 convertSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(typeof(object), returnType), convertBinder);
                 convertSiteType = convertSite.GetType();
             } else {
@@ -309,7 +309,7 @@ namespace Microsoft.Scripting.Runtime {
                 args
             );
 
-            if (convertBinder != null) {
+            if (convertBinder is not null) {
                 convertSiteVar = Expression.Parameter(convertSiteType, "convertSite");
 
                 invocation = Expression.Invoke(
@@ -326,7 +326,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             locals.Add(invokeSiteVar);
-            if (convertSiteVar != null) {
+            if (convertSiteVar is not null) {
                 locals.Add(convertSiteVar);
             }
 

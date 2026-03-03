@@ -634,7 +634,7 @@ namespace Microsoft.Scripting.ComInterop {
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
                 VariantType = VarEnum.VT_BSTR;
-                if (value != null) {
+                if (value is not null) {
                     Marshal.GetNativeVariantForObject(value, UnsafeMethods.ConvertVariantByrefToPtr(ref this));
                 }
             }
@@ -658,7 +658,7 @@ namespace Microsoft.Scripting.ComInterop {
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
                 VariantType = VarEnum.VT_UNKNOWN;
-                if (value != null) {
+                if (value is not null) {
                     _typeUnion._unionTypes._unknown = Marshal.GetIUnknownForObject(value);
                 }
             }
@@ -682,7 +682,7 @@ namespace Microsoft.Scripting.ComInterop {
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
                 VariantType = VarEnum.VT_DISPATCH;
-                if (value != null) {
+                if (value is not null) {
                     _typeUnion._unionTypes._unknown = GetIDispatchForObject(value);
                 }
             }
@@ -719,7 +719,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             set {
                 Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
-                if (value != null) {
+                if (value is not null) {
                     UnsafeMethods.InitVariantForObject(value, ref this);
                 }
             }
@@ -849,7 +849,7 @@ namespace Microsoft.Scripting.ComInterop {
         unsafe internal void CopyFromIndirect(object value) {
             VarEnum vt = (VarEnum)(((int)VariantType) & ~((int)VarEnum.VT_BYREF));
 
-            if (value == null) {
+            if (value is null) {
                 if (vt == VarEnum.VT_DISPATCH || vt == VarEnum.VT_UNKNOWN || vt == VarEnum.VT_BSTR) {
                     *(IntPtr*)_typeUnion._unionTypes._byref = IntPtr.Zero;
                 }

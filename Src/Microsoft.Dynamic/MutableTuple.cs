@@ -190,7 +190,7 @@ namespace Microsoft.Scripting {
 
             foreach (int curIndex in GetAccessPath(size, index)) {
                 PropertyInfo pi = tupleType.GetInheritedProperties("Item" + String.Format("{0:D3}", curIndex)).First();
-                Debug.Assert(pi != null);
+                Debug.Assert(pi is not null);
                 yield return pi;
                 tupleType = pi.PropertyType;
             }
@@ -266,7 +266,7 @@ namespace Microsoft.Scripting {
         }
 
         private static MutableTuple CreateTupleInstance(Type tupleType, int start, int end, object[] args) {
-            if (args == null) return (MutableTuple)Activator.CreateInstance(tupleType);
+            if (args is null) return (MutableTuple)Activator.CreateInstance(tupleType);
             
             object[] realArgs = new object[tupleType.GetGenericArguments().Length];
             Array.Copy(args, start, realArgs, 0, end - start);
@@ -277,7 +277,7 @@ namespace Microsoft.Scripting {
             int size = end - start;
 
             Type type = GetTupleType(size);
-            if (type != null) {
+            if (type is not null) {
                 Type[] typeArr = new Type[type.GetGenericArguments().Length];
                 int index = 0;
                 for (int i = start; i < end; i++) {
@@ -296,7 +296,7 @@ namespace Microsoft.Scripting {
             }
 
             type = MutableTuple.GetTupleType(size);
-            Debug.Assert(type != null);
+            Debug.Assert(type is not null);
             Type[] nestedTypes = new Type[type.GetGenericArguments().Length];
             for (int i = 0; i < size; i++) {
 
@@ -333,7 +333,7 @@ namespace Microsoft.Scripting {
 
         internal static Expression CreateNew(Type tupleType, int start, int end, Expression[] values) {
             int size = end - start;
-            Debug.Assert(tupleType != null);
+            Debug.Assert(tupleType is not null);
             Debug.Assert(tupleType.IsSubclassOf(typeof(MutableTuple)));
 
             Expression[] newValues;

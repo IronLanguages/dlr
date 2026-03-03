@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Metadata {
             int nextRid = m_currentRid + 1;
 
             if (nextRid >= m_endRid) {
-                if (m_tables == null) {
+                if (m_tables is null) {
                     throw new ObjectDisposedException("MetadataTableEnumerator");
                 }
                 return false;

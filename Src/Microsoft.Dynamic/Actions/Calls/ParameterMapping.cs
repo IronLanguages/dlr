@@ -77,11 +77,11 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private bool IsSpecialParameter(BitArray specialParameters, int infoIndex) {
-            return specialParameters != null && infoIndex < specialParameters.Length && specialParameters[infoIndex];
+            return specialParameters is not null && infoIndex < specialParameters.Length && specialParameters[infoIndex];
         }
 
         public void AddInstanceBuilder(InstanceBuilder builder) {
-            ContractUtils.Requires(_instanceBuilder == null);
+            ContractUtils.Requires(_instanceBuilder is null);
             ContractUtils.Requires(builder.HasValue);
             _instanceBuilder = builder;
             ArgIndex += builder.ConsumedArgumentCount;
@@ -159,7 +159,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Maps out parameters to return args and ref parameters to ones that don't accept StrongBox.
         /// </summary>
         private void MapParameterReduceByRef(ParameterInfo pi) {
-            Debug.Assert(_returnArgs != null);
+            Debug.Assert(_returnArgs is not null);
 
             // TODO:
             // Is this reduction necessary? What if 
@@ -253,7 +253,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 // once for b (default present, emit) and then a (no default, skip again).  W/o skipping we'd generate the same
                 // method multiple times.  This also happens w/ non-contigious default values, e.g. foo(a, b=3, c) where we don't want
                 // to generate a default candidate for just c which matches the normal method.
-                if (_defaultArguments[_defaultArguments.Count - defaultsUsed] != null) {
+                if (_defaultArguments[_defaultArguments.Count - defaultsUsed] is not null) {
                     yield return CreateDefaultCandidate(defaultsUsed);
                 }
             }
@@ -267,7 +267,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 int readIndex = _defaultArguments.Count - defaultsUsed + curDefault;
                 int writeIndex = defaultArgBuilders.Count - defaultsUsed + curDefault;
 
-                if (_defaultArguments[readIndex] != null) {
+                if (_defaultArguments[readIndex] is not null) {
                     defaultArgBuilders[writeIndex] = _defaultArguments[readIndex];
                 } else {
                     necessaryParams.Add(_parameters[_parameters.Count - defaultsUsed + curDefault]);
@@ -290,7 +290,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region ReturnBuilder, Member Assigned Arguments
 
         private ReturnBuilder MakeReturnBuilder(BitArray specialParameters) {
-            ReturnBuilder returnBuilder = (_returnArgs != null) ?
+            ReturnBuilder returnBuilder = (_returnArgs is not null) ?
                 new ByRefReturnBuilder(_returnArgs) :
                 new ReturnBuilder(Overload.ReturnType);
             
@@ -326,7 +326,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             foreach (string name in unusedNames) {
                 Type curType = returnType;
                 MemberInfo[] mis = curType.GetInheritedMembers(name).ToArray();
-                while (mis.Length != 1 && curType != null) {
+                while (mis.Length != 1 && curType is not null) {
                     // see if we have a single member defined as the closest level
                     mis = curType.GetDeclaredMembers(name).WithBindingFlags(BindingFlags.Public | BindingFlags.Instance).ToArray();
 

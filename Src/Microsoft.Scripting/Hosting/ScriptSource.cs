@@ -88,9 +88,9 @@ namespace Microsoft.Scripting.Hosting {
 
         private CompiledCode CompileInternal(CompilerOptions compilerOptions, ErrorListener errorListener) {
             ErrorSink errorSink = new ErrorListenerProxySink(this, errorListener);
-            ScriptCode code = compilerOptions != null ? SourceUnit.Compile(compilerOptions, errorSink) : SourceUnit.Compile(errorSink);
+            ScriptCode code = compilerOptions is not null ? SourceUnit.Compile(compilerOptions, errorSink) : SourceUnit.Compile(errorSink);
 
-            return (code != null) ? new CompiledCode(Engine, code) : null;
+            return (code is not null) ? new CompiledCode(Engine, code) : null;
         }
 
         /// <summary>

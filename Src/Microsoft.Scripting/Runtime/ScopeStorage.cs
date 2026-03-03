@@ -396,7 +396,7 @@ namespace Microsoft.Scripting {
                     return true;
                 }
 
-                if (_overflow == null)
+                if (_overflow is null)
                     return false;
 
                 lock (_overflow) {
@@ -420,7 +420,7 @@ namespace Microsoft.Scripting {
                 value = objValue;
                 return true;
             }
-            if (_overflow != null) {
+            if (_overflow is not null) {
                 lock (_overflow) {
                     foreach (var entry in _overflow) {
                         if (entry.Value.TryGetValue(out objValue)) {
@@ -446,7 +446,7 @@ namespace Microsoft.Scripting {
         /// </summary>
         public bool DeleteValue() {
             bool res = _firstVariable.DeleteValue();
-            if (_overflow != null) {
+            if (_overflow is not null) {
                 lock (_overflow) {
                     foreach (var entry in _overflow) {
                         res = entry.Value.DeleteValue() || res;
@@ -473,7 +473,7 @@ namespace Microsoft.Scripting {
                 list.Add(_firstCasing);
             }
 
-            if (_overflow == null)
+            if (_overflow is null)
                 return;
 
             lock (_overflow) {
@@ -490,7 +490,7 @@ namespace Microsoft.Scripting {
                 list.Add(new KeyValuePair<string, object>(_firstCasing, value));
             }
 
-            if (_overflow == null)
+            if (_overflow is null)
                 return;
 
             lock (_overflow) {
@@ -503,7 +503,7 @@ namespace Microsoft.Scripting {
         }
 
         private ScopeVariable GetStorageSlow(string name) {
-            if (_overflow == null) {
+            if (_overflow is null) {
                 Interlocked.CompareExchange(ref _overflow, new Dictionary<string, ScopeVariable>(), null);
             }
 

@@ -91,10 +91,10 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="newType">The new type(s) to add to the merged list</param>
         /// <returns>The merged list.  Could be a TypeTracker or TypeGroup</returns>
         public static TypeTracker UpdateTypeEntity(TypeTracker existingTypeEntity, TypeTracker newType) {
-            Debug.Assert(newType != null);
-            Debug.Assert(existingTypeEntity == null || (existingTypeEntity is NestedTypeTracker) || (existingTypeEntity is TypeGroup));
+            Debug.Assert(newType is not null);
+            Debug.Assert(existingTypeEntity is null || (existingTypeEntity is NestedTypeTracker) || (existingTypeEntity is TypeGroup));
 
-            if (existingTypeEntity == null) {
+            if (existingTypeEntity is null) {
                 return newType;
             }
 

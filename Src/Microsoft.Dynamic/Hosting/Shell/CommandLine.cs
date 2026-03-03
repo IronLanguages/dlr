@@ -36,7 +36,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// </summary>
         protected Scope Scope { 
             get {
-                if (_scope == null) {
+                if (_scope is null) {
                     return null;
                 }
                 return HostingHelpers.GetScope(_scope); 
@@ -122,9 +122,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected virtual int Run() {
             int result;
 
-            if (_options.Command != null) {
+            if (_options.Command is not null) {
                 result = RunCommand(_options.Command);
-            } else if (_options.FileName != null) {
+            } else if (_options.FileName is not null) {
                 result = RunFile(_options.FileName);
             } else {
                 return RunInteractive();
@@ -175,7 +175,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected void PrintLogo() {
-            if (Logo != null) {
+            if (Logo is not null) {
                 _console.Write(Logo, Style.Out);
             }
         }
@@ -204,7 +204,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 
 #if FEATURE_REMOTING
             string remoteRuntimeChannel = _options.RemoteRuntimeChannel;
-            if (remoteRuntimeChannel != null) {
+            if (remoteRuntimeChannel is not null) {
                 // Publish the ScriptScope so that the host can use it
                 Remote.RemoteRuntimeServer.StartServer(remoteRuntimeChannel, _scope);
                 return 0;
@@ -235,7 +235,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                     res = TryInteractiveAction();
                 }
 
-            } while (res == null);
+            } while (res is null);
 
             return res.Value;
         }
@@ -245,7 +245,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if !FEATURE_EXCEPTION_STATE
                 return true;
 #else
-                if ((tae.ExceptionState as KeyboardInterruptException) == null) {
+                if ((tae.ExceptionState as KeyboardInterruptException) is null) {
                     return true;
                 }
 #endif
@@ -358,7 +358,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 string line = ReadLine(autoIndentSize);
                 continueInteraction = true;
 
-                if (line == null || (_terminatingExitCode != null)) {
+                if (line is null || (_terminatingExitCode is not null)) {
                     continueInteraction = false;
                     return null;
                 }

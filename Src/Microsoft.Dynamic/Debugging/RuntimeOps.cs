@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Debugging {
 
         [Obsolete("do not call this method", true)]
         public static void OnTraceEvent(DebugThread thread, int debugMarker, Exception exception) {
-            thread.DebugContext.DispatchDebugEvent(thread, debugMarker, exception != null ? TraceEventKind.Exception : TraceEventKind.TracePoint, exception);
+            thread.DebugContext.DispatchDebugEvent(thread, debugMarker, exception is not null ? TraceEventKind.Exception : TraceEventKind.TracePoint, exception);
         }
 
         [Obsolete("do not call this method", true)]
@@ -63,8 +63,8 @@ namespace Microsoft.Scripting.Debugging {
 
         [Obsolete("do not call this method", true)]
         public static int GetCurrentSequencePointForGeneratorFrame(DebugFrame frame) {
-            Debug.Assert(frame != null);
-            Debug.Assert(frame.Generator != null);
+            Debug.Assert(frame is not null);
+            Debug.Assert(frame.Generator is not null);
 
             return frame.CurrentLocationCookie;
         }
@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.Debugging {
         [Obsolete("do not call this method", true)]
         public static int GetCurrentSequencePointForLeafGeneratorFrame(DebugThread thread) {
             DebugFrame frame = thread.GetLeafFrame();
-            Debug.Assert(frame.Generator != null);
+            Debug.Assert(frame.Generator is not null);
 
             return frame.CurrentLocationCookie;
         }

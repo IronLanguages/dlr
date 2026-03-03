@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Gets an option as a strongly typed value.
         /// </summary>
         public T GetOption<T>(string name, T defaultValue) {
-            if (Options != null && Options.TryGetValue(name, out object value)) {
+            if (Options is not null && Options.TryGetValue(name, out object value)) {
                 if (value is T variable) {
                     return variable;
                 }

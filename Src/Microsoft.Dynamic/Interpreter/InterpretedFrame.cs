@@ -122,7 +122,7 @@ namespace Microsoft.Scripting.Interpreter {
 
                 // mono sets the method to null for dynamic methods
                 // IsInterpretedFrame doesn't allow null methods
-                if(method == null) {
+                if(method is null) {
                     continue;
                 }
 
@@ -144,11 +144,11 @@ namespace Microsoft.Scripting.Interpreter {
             do {
                 yield return new InterpretedFrameInfo(frame.Name, frame.GetDebugInfo(frame.InstructionIndex));
                 frame = frame.Parent;
-            } while (frame != null);
+            } while (frame is not null);
         }
 
         internal void SaveTraceToException(Exception exception) {
-            if (exception.GetData(typeof(InterpretedFrameInfo)) == null) {
+            if (exception.GetData(typeof(InterpretedFrameInfo)) is null) {
                 exception.SetData(typeof(InterpretedFrameInfo), new List<InterpretedFrameInfo>(GetStackTraceDebugInfo()).ToArray());
             }
         }
@@ -165,7 +165,7 @@ namespace Microsoft.Scripting.Interpreter {
                 do {
                     trace.Add(frame.Name);
                     frame = frame.Parent;
-                } while (frame != null);
+                } while (frame is not null);
                 return trace.ToArray();
             }
         }

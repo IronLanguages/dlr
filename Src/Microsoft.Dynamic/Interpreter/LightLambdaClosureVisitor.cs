@@ -94,12 +94,12 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         protected override CatchBlock VisitCatchBlock(CatchBlock node) {
-            if (node.Variable != null) {
+            if (node.Variable is not null) {
                 _shadowedVars.Push(new HashSet<ParameterExpression>(new[] { node.Variable }));
             }
             Expression b = Visit(node.Body);
             Expression f = Visit(node.Filter);
-            if (node.Variable != null) {
+            if (node.Variable is not null) {
                 _shadowedVars.Pop();
             }
             if (b == node.Body && f == node.Filter) {
@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.Interpreter {
             var indexes = new int[count];
             for (int i = 0; i < count; i++) {
                 Expression box = GetClosureItem(node.Variables[i], false);
-                if (box == null) {
+                if (box is null) {
                     indexes[i] = vars.Count;
                     vars.Add(node.Variables[i]);
                 } else {
@@ -147,7 +147,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         protected override Expression VisitParameter(ParameterExpression node) {
             Expression closureItem = GetClosureItem(node, true);
-            if (closureItem == null) {
+            if (closureItem is null) {
                 return node;
             }
             // Convert can go away if we switch to strongly typed StrongBox
@@ -160,7 +160,7 @@ namespace Microsoft.Scripting.Interpreter {
 
                 var variable = (ParameterExpression)node.Left;
                 Expression closureItem = GetClosureItem(variable, true);
-                if (closureItem != null) {
+                if (closureItem is not null) {
                     // We need to convert to object to store the value in the box.
                     return Expression.Block(
                         new[] { variable },

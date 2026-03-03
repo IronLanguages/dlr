@@ -14,13 +14,13 @@ using Microsoft.Scripting.Runtime;
 namespace Microsoft.Scripting.Utils {
     public static class TypeUtils {
         public static bool IsNested(this Type t) {
-            return t.DeclaringType != null;
+            return t.DeclaringType is not null;
         }
 
         internal static Type GetNonNullableType(this Type type) => IsNullableType(type) ? type.GetGenericArguments()[0] : type;
 
         internal static Type GetNullableType(this Type type) {
-            Debug.Assert(type != null, "type cannot be null");
+            Debug.Assert(type is not null, "type cannot be null");
             if (type.IsValueType && !IsNullableType(type)) {
                 return typeof(Nullable<>).MakeGenericType(type);
             }
@@ -343,9 +343,9 @@ namespace Microsoft.Scripting.Utils {
         // we can't use System.Runtime.InteropServices.Marshal.IsComObject(obj) since it doesn't work in partial trust
         public static bool IsComObject(object obj) {
 #if NETCOREAPP || NETSTANDARD
-            return obj != null && Marshal.IsComObject(obj);
+            return obj is not null && Marshal.IsComObject(obj);
 #else
-            return obj != null && IsComObjectType(obj.GetType());
+            return obj is not null && IsComObjectType(obj.GetType());
 #endif
         }
 #else

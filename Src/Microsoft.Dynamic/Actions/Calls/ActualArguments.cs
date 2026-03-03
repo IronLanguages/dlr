@@ -124,16 +124,16 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            Debug.Assert(duppedPositionals == null || (duppedNames != null && duppedNames.Count == duppedPositionals.Count));
+            Debug.Assert(duppedPositionals is null || (duppedNames is not null && duppedNames.Count == duppedPositionals.Count));
 
             binding = new ArgumentBinding(positionalArgCount, permutation);
 
-            if (unboundNames != null) {
+            if (unboundNames is not null) {
                 failure = new CallFailure(method, unboundNames.ToArray());
                 return false;
             }
 
-            if (duppedNames != null) {
+            if (duppedNames is not null) {
                 failure = new CallFailure(method, duppedNames.ToArray(), duppedPositionals?.ToArray());
                 return false;
             }

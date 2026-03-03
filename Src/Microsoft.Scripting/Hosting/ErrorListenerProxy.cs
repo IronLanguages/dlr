@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public override void Add(SourceUnit sourceUnit, string message, SourceSpan span, int errorCode, Severity severity) {
-            if (_listener != null) {
+            if (_listener is not null) {
 
                 ScriptSource scriptSource;
                 if (sourceUnit != _source.SourceUnit) {

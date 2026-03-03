@@ -14,7 +14,7 @@ namespace Microsoft.Scripting.Interpreter {
         private static Dictionary<Type, InstructionFactory> _factories;
 
         internal static InstructionFactory GetFactory(Type type) {
-            if (_factories == null) {
+            if (_factories is null) {
                 _factories = new Dictionary<Type, InstructionFactory>() {
                     { typeof(object), InstructionFactory<object>.Factory },
                     { typeof(bool), InstructionFactory<bool>.Factory },

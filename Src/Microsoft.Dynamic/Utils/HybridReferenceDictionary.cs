@@ -29,13 +29,13 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public bool TryGetValue(TKey key, out TValue value) {
-            Debug.Assert(key != null);
+            Debug.Assert(key is not null);
 
-            if (_dict != null) {
+            if (_dict is not null) {
                 return _dict.TryGetValue(key, out value);
             }
 
-            if (_keysAndValues != null) {
+            if (_keysAndValues is not null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         value = _keysAndValues[i].Value;
@@ -49,13 +49,13 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public bool Remove(TKey key) {
-            Debug.Assert(key != null);
+            Debug.Assert(key is not null);
 
-            if (_dict != null) {
+            if (_dict is not null) {
                 return _dict.Remove(key);
             }
 
-            if (_keysAndValues != null) {
+            if (_keysAndValues is not null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         _keysAndValues[i] = new KeyValuePair<TKey, TValue>();
@@ -69,13 +69,13 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public bool ContainsKey(TKey key) {
-            Debug.Assert(key != null);
+            Debug.Assert(key is not null);
 
-            if (_dict != null) {
+            if (_dict is not null) {
                 return _dict.ContainsKey(key);
             }
 
-            if (_keysAndValues != null) {
+            if (_keysAndValues is not null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
                     if (_keysAndValues[i].Key == key) {
                         return true;
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Utils {
 
         public int Count {
             get {
-                if (_dict != null) {
+                if (_dict is not null) {
                     return _dict.Count;
                 }
                 return _count;
@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
-            if (_dict != null) {
+            if (_dict is not null) {
                 return _dict.GetEnumerator();
             }
 
@@ -105,9 +105,9 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private IEnumerator<KeyValuePair<TKey, TValue>> GetEnumeratorWorker() {
-            if (_keysAndValues != null) {
+            if (_keysAndValues is not null) {
                 for (int i = 0; i < _keysAndValues.Length; i++) {
-                    if (_keysAndValues[i].Key != null) {
+                    if (_keysAndValues[i].Key is not null) {
                         yield return _keysAndValues[i];
                     }
                 }
@@ -116,7 +116,7 @@ namespace Microsoft.Scripting.Utils {
 
         public TValue this[TKey key] {
             get {
-                Debug.Assert(key != null);
+                Debug.Assert(key is not null);
 
                 if (TryGetValue(key, out TValue res)) {
                     return res;
@@ -125,13 +125,13 @@ namespace Microsoft.Scripting.Utils {
                 throw new KeyNotFoundException();
             }
             set {
-                Debug.Assert(key != null);
+                Debug.Assert(key is not null);
 
-                if (_dict != null) {
+                if (_dict is not null) {
                     _dict[key] = value;
                 } else {
                     int index;
-                    if (_keysAndValues != null) {
+                    if (_keysAndValues is not null) {
                         index = -1;
                         for (int i = 0; i < _keysAndValues.Length; i++) {
                             if (_keysAndValues[i].Key == key) {
@@ -139,7 +139,7 @@ namespace Microsoft.Scripting.Utils {
                                 return;
                             }
 
-                            if (_keysAndValues[i].Key == null) {
+                            if (_keysAndValues[i].Key is null) {
                                 index = i;
                             }
                         }

@@ -43,10 +43,7 @@ namespace Microsoft.Scripting.Hosting {
 
         public ScriptRuntime Runtime {
             get {
-                if (_runtime == null) {
-                    throw new InvalidOperationException("Host not initialized");
-                }
-                return _runtime;
+                return _runtime ?? throw new InvalidOperationException("Host not initialized");
             }
         }
 

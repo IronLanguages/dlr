@@ -52,7 +52,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         /// <param name="remoteRuntimeChannelName">The IPC channel that the remote console expects to use to communicate with the ScriptEngine</param>
         /// <param name="scope">A intialized ScriptScope that is ready to start processing script commands</param>
         internal static void StartServer(string remoteRuntimeChannelName, ScriptScope scope) {
-            Debug.Assert(ChannelServices.GetChannel(remoteRuntimeChannelName) == null);
+            Debug.Assert(ChannelServices.GetChannel(remoteRuntimeChannelName) is null);
 
             IpcChannel channel = CreateChannel("ipc", remoteRuntimeChannelName);
 
@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
                 // Block on Console.In. This is used to determine when the host process exits, since ReadLine will return null then.
                 string input = System.Console.ReadLine();
-                Debug.Assert(input == null);
+                Debug.Assert(input is null);
             } finally {
                 ChannelServices.UnregisterChannel(channel);
             }

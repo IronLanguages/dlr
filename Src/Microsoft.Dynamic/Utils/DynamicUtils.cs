@@ -109,9 +109,9 @@ namespace Microsoft.Scripting.Utils {
             }
 
             public T/*!*/ Bind(DynamicMetaObjectBinder/*!*/ binder, int compilationThreshold, object[] args) {
-                if (CachedBindingInfo<T>.LastInterpretedFailure != null && CachedBindingInfo<T>.LastInterpretedFailure.Binder == binder) {
+                if (CachedBindingInfo<T>.LastInterpretedFailure is not null && CachedBindingInfo<T>.LastInterpretedFailure.Binder == binder) {
                     // we failed the rule because we have a compiled target available, return the compiled target
-                    Debug.Assert(CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget != null);
+                    Debug.Assert(CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget is not null);
                     var res = CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget;
                     CachedBindingInfo<T>.LastInterpretedFailure = null;
                     return res;
@@ -245,15 +245,15 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public override bool CheckCompiled() {
-            if (Target != null) {
+            if (Target is not null) {
                 // start compiling the target if no one else has
                 var lambda = Interlocked.Exchange(ref Target, null);
-                if (lambda != null) {
+                if (lambda is not null) {
                     new Task(() => { CompiledTarget = lambda.Compile(); }).Start();
                 }
             }
 
-            if (CompiledTarget != null) {
+            if (CompiledTarget is not null) {
                 LastInterpretedFailure = this;
                 return false;
             }

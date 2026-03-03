@@ -72,7 +72,7 @@ namespace Microsoft.Scripting.ComInterop {
             Exception exception = Marshal.GetExceptionForHR(errorCode);
 
             string message = ConvertAndFreeBstr(ref bstrDescription);
-            if (message != null) {
+            if (message is not null) {
                 // If we have a custom message, create a new Exception object with the message set correctly.
                 // We need to create a new object because "exception.Message" is a read-only property.
                 if (exception is COMException) {
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.ComInterop {
                 } else {
                     Type exceptionType = exception.GetType();
                     ConstructorInfo ctor = exceptionType.GetConstructor(new Type[] { typeof(string) });
-                    if (ctor != null) {
+                    if (ctor is not null) {
                         exception = (Exception)ctor.Invoke(new object[] { message });
                     }
                 }
@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.ComInterop {
             exception.Source = ConvertAndFreeBstr(ref bstrSource);
 
             string helpLink = ConvertAndFreeBstr(ref bstrHelpFile);
-            if (helpLink != null && dwHelpContext != 0) {
+            if (helpLink is not null && dwHelpContext != 0) {
                 helpLink += "#" + dwHelpContext;
             }
             exception.HelpLink = helpLink;

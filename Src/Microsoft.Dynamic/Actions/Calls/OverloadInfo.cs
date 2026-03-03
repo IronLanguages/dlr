@@ -128,15 +128,11 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public override string Name => _method.Name;
 
-        public override IList<ParameterInfo> Parameters => _parameters ?? (_parameters = new ReadOnlyCollection<ParameterInfo>(_method.GetParameters()));
+        public override IList<ParameterInfo> Parameters => _parameters ??= new ReadOnlyCollection<ParameterInfo>(_method.GetParameters());
 
-        public override ParameterInfo ReturnParameter {
-            get {
-                return _method is MethodInfo method ? method.ReturnParameter : null;
-            }
-        }
-        
-        public override IList<Type> GenericArguments => _genericArguments ?? (_genericArguments = new ReadOnlyCollection<Type>(_method.GetGenericArguments()));
+        public override ParameterInfo ReturnParameter => (_method as MethodInfo)?.ReturnParameter;
+
+        public override IList<Type> GenericArguments => _genericArguments ??= new ReadOnlyCollection<Type>(_method.GetGenericArguments());
 
         public override Type DeclaringType => _method.DeclaringType;
 

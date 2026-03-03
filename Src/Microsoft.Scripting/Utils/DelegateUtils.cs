@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Utils {
         public const char GenericArityDelimiter = '`';
 
         private static TypeBuilder DefineDelegateType(string name) {
-            if (_assembly == null) {
+            if (_assembly is null) {
 #if FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY
                 AssemblyBuilder newAssembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("DynamicDelegates"), AssemblyBuilderAccess.Run);
 #else

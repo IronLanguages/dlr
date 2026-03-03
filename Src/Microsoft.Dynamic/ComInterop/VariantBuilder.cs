@@ -41,7 +41,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (IsByRef) {
                 // temp = argument
                 // paramVariants._elementN.SetAsByrefT(ref temp)
-                Debug.Assert(TempVariable == null);
+                Debug.Assert(TempVariable is null);
                 var argExpr = _argBuilder.MarshalToRef(parameter);
                 
                 TempVariable = Expression.Variable(argExpr.Type, null);
@@ -104,22 +104,22 @@ namespace Microsoft.Scripting.ComInterop {
         internal Expression Clear() {
             if (IsByRef) {
                 if (_argBuilder is StringArgBuilder) {
-                    Debug.Assert(TempVariable != null);
+                    Debug.Assert(TempVariable is not null);
                     return Expression.Call(typeof(Marshal).GetMethod(nameof(Marshal.FreeBSTR)), TempVariable);
                 }
 
                 if (_argBuilder is DispatchArgBuilder) {
-                    Debug.Assert(TempVariable != null);
+                    Debug.Assert(TempVariable is not null);
                     return Release(TempVariable);
                 }
 
                 if (_argBuilder is UnknownArgBuilder) {
-                    Debug.Assert(TempVariable != null);
+                    Debug.Assert(TempVariable is not null);
                     return Release(TempVariable);
                 }
 
                 if (_argBuilder is VariantArgBuilder) {
-                    Debug.Assert(TempVariable != null);
+                    Debug.Assert(TempVariable is not null);
                     return Expression.Call(TempVariable, typeof(Variant).GetMethod(nameof(Variant.Clear)));
                 }
                 return null;
@@ -146,7 +146,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal Expression UpdateFromReturn(Expression parameter) {
-            if (TempVariable == null) {
+            if (TempVariable is null) {
                 return null;
             }
             return Expression.Assign(

@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public static MetadataTables OpenFile(string path) {
-            if (path == null) {
+            if (path is null) {
                 throw new ArgumentNullException(nameof(path));
             }
             
@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Metadata {
         }
 
         public static MetadataTables OpenModule(Module module) {
-            if (module == null) {
+            if (module is null) {
                 throw new ArgumentNullException(nameof(module));
             }
 

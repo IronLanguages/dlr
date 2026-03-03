@@ -149,7 +149,7 @@ namespace Microsoft.Scripting.Actions {
         public MethodInfo GetMethod(Type type, string name) {
             // declaring type takes precedence
             MethodInfo mi = GetSpecialNameMethod(type, name);
-            if (mi != null) {
+            if (mi is not null) {
                 return mi;
             }
 
@@ -159,8 +159,8 @@ namespace Microsoft.Scripting.Actions {
                 IList<Type> extTypes = GetExtensionTypes(curType);
                 foreach (Type t in extTypes) {
                     MethodInfo next = GetSpecialNameMethod(t, name);
-                    if (next != null) {
-                        if (mi != null) {
+                    if (next is not null) {
+                        if (mi is not null) {
                             throw AmbiguousMatch(type, name);
                         }
 
@@ -168,12 +168,12 @@ namespace Microsoft.Scripting.Actions {
                     }
                 }
 
-                if (mi != null) {
+                if (mi is not null) {
                     return mi;
                 }
 
                 curType = curType.BaseType;
-            } while (curType != null);
+            } while (curType is not null);
 
             return null;
         }

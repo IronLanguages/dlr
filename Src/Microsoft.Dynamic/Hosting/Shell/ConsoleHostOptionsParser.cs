@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                                 break;
                             }
                         }
-                        if (provider == null) {
+                        if (provider is null) {
                             throw new InvalidOptionException($"Unknown language id '{value}'.");
                         }
 
@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// name == "" means that the option name is empty (argument separator); the value is null then
         /// </summary>
         private void ParseOption(string arg, out string name, out string value) {
-            Debug.Assert(arg != null);
+            Debug.Assert(arg is not null);
 
             int colon = arg.IndexOf(':', StringComparison.Ordinal);
 
@@ -121,7 +121,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
 
         protected void OptionValueRequired(string optionName, string value) {
-            if (value == null) {
+            if (value is null) {
                 throw new InvalidOptionException(string.Format(CultureInfo.CurrentCulture, "Argument expected for the {0} option.", optionName));
             }
         }

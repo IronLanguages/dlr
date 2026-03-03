@@ -47,7 +47,7 @@ namespace Microsoft.Scripting.ComInterop {
             var target = _callable.DispatchComObject;
             var name = _callable.MemberName;
 
-            bool holdsNull = value.Value == null && value.HasValue;
+            bool holdsNull = value.Value is null && value.HasValue;
             if (target.TryGetPropertySetter(name, out ComMethodDesc method, value.LimitType, holdsNull) ||
                 target.TryGetPropertySetterExplicit(name, out method, value.LimitType, holdsNull)) {
 

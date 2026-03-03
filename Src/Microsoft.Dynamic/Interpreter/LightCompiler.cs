@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Interpreter {
         public readonly int LabelIndex;
         public readonly int HandlerStartIndex;
 
-        public bool IsFault => ExceptionType == null;
+        public bool IsFault => ExceptionType is null;
 
         internal ExceptionHandler(int start, int end, int labelIndex, int handlerStartIndex, Type exceptionType) {
             StartIndex = start;
@@ -38,14 +38,14 @@ namespace Microsoft.Scripting.Interpreter {
         public bool Matches(Type exceptionType, int index) {
             if (index < StartIndex || index >= EndIndex)
                 return false;
-            if (ExceptionType == null || ExceptionType.IsAssignableFrom(exceptionType)) {
+            if (ExceptionType is null || ExceptionType.IsAssignableFrom(exceptionType)) {
                 return true;
             }
             return false;
         }
 
         public bool IsBetterThan(ExceptionHandler other) {
-            if (other == null) return true;
+            if (other is null) return true;
 
             if (StartIndex == other.StartIndex && EndIndex == other.EndIndex) {
                 return HandlerStartIndex < other.HandlerStartIndex;
@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         public override string ToString() {
-            return MethodName + (DebugInfo != null ? ": " + DebugInfo : null);
+            return MethodName + (DebugInfo is not null ? ": " + DebugInfo : null);
         }
     }
 
@@ -245,7 +245,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return;
             if (type.IsValueType) {
                 object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
-                if (value != null) {
+                if (value is not null) {
                     Instructions.EmitLoad(value);
                 } else {
                     Instructions.EmitDefaultValue(type);
@@ -263,7 +263,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return local;
             }
 
-            if (_parent != null) {
+            if (_parent is not null) {
                 _parent.EnsureAvailableForClosure(expr);
                 return _locals.AddClosureVariable(expr);
             }
@@ -388,7 +388,7 @@ namespace Microsoft.Scripting.Interpreter {
             var index = (IndexExpression)expr;
 
             // instance:
-            if (index.Object != null) {
+            if (index.Object is not null) {
                 Compile(index.Object);
             }
 
@@ -397,7 +397,7 @@ namespace Microsoft.Scripting.Interpreter {
                 Compile(arg);
             }
 
-            if (index.Indexer != null) {
+            if (index.Indexer is not null) {
                 EmitCall(index.Indexer.GetGetMethod(true));
             } else if (index.Arguments.Count != 1) {
                 EmitCall(index.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
@@ -414,7 +414,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             // instance:
-            if (index.Object != null) {
+            if (index.Object is not null) {
                 Compile(index.Object);
             }
 
@@ -426,7 +426,7 @@ namespace Microsoft.Scripting.Interpreter {
             // value:
             Compile(node.Right);
 
-            if (index.Indexer != null) {
+            if (index.Indexer is not null) {
                 EmitCall(index.Indexer.GetSetMethod(true));
             } else if (index.Arguments.Count != 1) {
                 EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
@@ -457,7 +457,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             if (member.Member is FieldInfo fi) {
-                if (member.Expression != null) {
+                if (member.Expression is not null) {
                     Compile(member.Expression);
                 }
                 Compile(node.Right);
@@ -507,7 +507,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileBinaryExpression(Expression expr) {
             var node = (BinaryExpression)expr;
 
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 Compile(node.Left);
                 Compile(node.Right);
                 EmitCall(node.Method);
@@ -601,7 +601,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private void CompileConvertUnaryExpression(Expression expr) {
             var node = (UnaryExpression)expr;
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 Compile(node.Operand);
 
                 // We should be able to ignore Int32ToObject
@@ -651,7 +651,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileUnaryExpression(Expression expr) {
             var node = (UnaryExpression)expr;
             
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 Compile(node.Operand);
                 EmitCall(node.Method);
             } else {
@@ -678,7 +678,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         private void CompileLogicalBinaryExpression(Expression expr, bool andAlso) {
             var node = (BinaryExpression)expr;
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 throw new NotImplementedException();
             }
 
@@ -763,7 +763,7 @@ namespace Microsoft.Scripting.Interpreter {
             var node = (SwitchExpression)expr;
 
             // Currently only supports int test values, with no method
-            if (node.SwitchValue.Type != typeof(int) || node.Comparison != null) {
+            if (node.SwitchValue.Type != typeof(int) || node.Comparison is not null) {
                 throw new NotImplementedException();
             }
 
@@ -779,7 +779,7 @@ namespace Microsoft.Scripting.Interpreter {
             int switchIndex = Instructions.Count;
             Instructions.EmitSwitch(caseDict);
 
-            if (node.DefaultBody != null) {
+            if (node.DefaultBody is not null) {
                 Compile(node.DefaultBody);
             } else {
                 Debug.Assert(!hasValue);
@@ -816,17 +816,17 @@ namespace Microsoft.Scripting.Interpreter {
                 _labelBlock.TryGetLabelInfo(node.Target, out label);
 
                 // We're in a block but didn't find our label, try switch
-                if (label == null && _labelBlock.Parent.Kind == LabelScopeKind.Switch) {
+                if (label is null && _labelBlock.Parent.Kind == LabelScopeKind.Switch) {
                     _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
                 }
 
                 // if we're in a switch or block, we should've found the label
-                Debug.Assert(label != null);
+                Debug.Assert(label is not null);
             }
 
             label ??= DefineLabel(node.Target);
 
-            if (node.DefaultValue != null) {
+            if (node.DefaultValue is not null) {
                 if (node.Target.Type == typeof(void)) {
                     CompileAsVoid(node.DefaultValue);
                 } else {
@@ -841,11 +841,11 @@ namespace Microsoft.Scripting.Interpreter {
             var node = (GotoExpression)expr;
             var labelInfo = ReferenceLabel(node.Target);
 
-            if (node.Value != null) {
+            if (node.Value is not null) {
                 Compile(node.Value);
             }
 
-            Instructions.EmitGoto(labelInfo.GetLabel(this), node.Type != typeof(void), node.Value != null && node.Value.Type != typeof(void));
+            Instructions.EmitGoto(labelInfo.GetLabel(this), node.Type != typeof(void), node.Value is not null && node.Value.Type != typeof(void));
         }
 
         public BranchLabel GetBranchLabel(LabelTarget target) {
@@ -858,7 +858,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "kind")]
         public void PopLabelBlock(LabelScopeKind kind) {
-            Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
+            Debug.Assert(_labelBlock is not null && _labelBlock.Kind == kind);
             _labelBlock = _labelBlock.Parent;
         }
 
@@ -876,7 +876,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         internal LabelInfo DefineLabel(LabelTarget node) {
-            if (node == null) {
+            if (node is null) {
                 return new LabelInfo(null);
             }
             LabelInfo result = EnsureLabel(node);
@@ -976,7 +976,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileThrowUnaryExpression(Expression expr, bool asVoid) {
             var node = (UnaryExpression)expr;
 
-            if (node.Operand == null) {
+            if (node.Operand is null) {
                 CompileParameterExpression(_exceptionForRethrowStack.Peek());
                 if (asVoid) {
                     Instructions.EmitRethrowVoid();
@@ -998,7 +998,7 @@ namespace Microsoft.Scripting.Interpreter {
         private bool EndsWithRethrow(Expression expr) {
             if (expr.NodeType == ExpressionType.Throw) {
                 var node = (UnaryExpression)expr;
-                return node.Operand == null;
+                return node.Operand is null;
             }
 
             if (expr is BlockExpression block) {
@@ -1013,7 +1013,7 @@ namespace Microsoft.Scripting.Interpreter {
             int stackDepth = Instructions.CurrentStackDepth;
 
             if (expr.NodeType == ExpressionType.Throw) {
-                Debug.Assert(((UnaryExpression)expr).Operand == null);
+                Debug.Assert(((UnaryExpression)expr).Operand is null);
                 return;
             }
 
@@ -1036,7 +1036,7 @@ namespace Microsoft.Scripting.Interpreter {
             int tryStart = Instructions.Count;
 
             BranchLabel startOfFinally = null;
-            if (node.Finally != null) {
+            if (node.Finally is not null) {
                 startOfFinally = Instructions.MakeLabel();
                 Instructions.EmitEnterTryFinally(startOfFinally);
             }
@@ -1054,9 +1054,9 @@ namespace Microsoft.Scripting.Interpreter {
             // keep the result on the stack:     
             if (node.Handlers.Count > 0) {
                 // TODO: emulates faults (replace by true fault support)
-                if (node.Finally == null && node.Handlers.Count == 1) {
+                if (node.Finally is null && node.Handlers.Count == 1) {
                     var handler = node.Handlers[0];
-                    if (handler.Filter == null && handler.Test == typeof(Exception) && handler.Variable == null) {
+                    if (handler.Filter is null && handler.Test == typeof(Exception) && handler.Variable is null) {
                         if (EndsWithRethrow(handler.Body)) {
                             if (hasValue) {
                                 Instructions.EmitEnterExceptionHandlerNonVoid();
@@ -1082,7 +1082,7 @@ namespace Microsoft.Scripting.Interpreter {
                 foreach (var handler in node.Handlers) {
                     PushLabelBlock(LabelScopeKind.Catch);
 
-                    if (handler.Filter != null) {
+                    if (handler.Filter is not null) {
                         //PushLabelBlock(LabelScopeKind.Filter);
                         throw new NotImplementedException();
                         //PopLabelBlock(LabelScopeKind.Filter);
@@ -1120,12 +1120,12 @@ namespace Microsoft.Scripting.Interpreter {
                     _locals.UndefineLocal(local, Instructions.Count);
                 }
 
-                if (node.Fault != null) {
+                if (node.Fault is not null) {
                     throw new NotImplementedException();
                 }
             }
             
-            if (node.Finally != null) {
+            if (node.Finally is not null) {
                 PushLabelBlock(LabelScopeKind.Finally);
 
                 Instructions.MarkLabel(startOfFinally);
@@ -1206,7 +1206,7 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileNewExpression(Expression expr) {
             var node = (NewExpression)expr;
 
-            if (node.Constructor != null) {
+            if (node.Constructor is not null) {
                 var parameters = node.Constructor.GetParameters();
                 if (!CollectionUtils.TrueForAll(parameters, (p) => !p.ParameterType.IsByRef)
 #if FEATURE_LCG
@@ -1217,7 +1217,7 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            if (node.Constructor != null) {
+            if (node.Constructor is not null) {
                 foreach (var arg in node.Arguments) {
                     Compile(arg);
                 }
@@ -1250,7 +1250,7 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (member is PropertyInfo pi) {
                 var method = pi.GetGetMethod(true);
-                if (node.Expression != null) {
+                if (node.Expression is not null) {
                     Compile(node.Expression);
                 }
                 EmitCall(method);
@@ -1326,7 +1326,7 @@ namespace Microsoft.Scripting.Interpreter {
             var compiler = new LightCompiler(this);
             var creator = compiler.CompileTop(node);
 
-            if (compiler._locals.ClosureVariables != null) {
+            if (compiler._locals.ClosureVariables is not null) {
                 foreach (ParameterExpression variable in compiler._locals.ClosureVariables.Keys) {
                     CompileGetBoxedVariable(variable);
                 }
@@ -1341,7 +1341,7 @@ namespace Microsoft.Scripting.Interpreter {
                 throw new NotImplementedException();
             }
 
-            if (node.Conversion != null) {
+            if (node.Conversion is not null) {
                 throw new NotImplementedException();
             }
 

@@ -339,7 +339,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal static Variant GetVariantForObject(object obj) {
             Variant variant = default(Variant);
-            if (obj == null) {
+            if (obj is null) {
                 return variant;
             }
             InitVariantForObject(obj, ref variant);
@@ -347,7 +347,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal static void InitVariantForObject(object obj, ref Variant variant) {
-            Debug.Assert(obj != null);
+            Debug.Assert(obj is not null);
 
             // GetNativeVariantForObject is very expensive for values that marshal as VT_DISPATCH
             // also is is extremely common scenario when object at hand is an RCW.
@@ -493,11 +493,11 @@ namespace Microsoft.Scripting.ComInterop {
 
         internal static ModuleBuilder DynamicModule {
             get {
-                if (_dynamicModule != null) {
+                if (_dynamicModule is not null) {
                     return _dynamicModule;
                 }
                 lock (_lock) {
-                    if (_dynamicModule == null) {
+                    if (_dynamicModule is null) {
                         var attributes = new[] {
                             new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), EmptyArray<object>.Instance),
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
@@ -590,7 +590,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         private static IDispatchInvokeDelegate _IDispatchInvokeNoResult {
             get {
-                if (_IDispatchInvokeNoResultImpl == null) {
+                if (_IDispatchInvokeNoResultImpl is null) {
                     lock (_IDispatchInvoke) {
                         _IDispatchInvokeNoResultImpl ??= Create_IDispatchInvoke(false);
                     }

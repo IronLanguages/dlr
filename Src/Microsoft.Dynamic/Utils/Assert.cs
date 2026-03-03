@@ -21,23 +21,23 @@ namespace Microsoft.Scripting.Utils {
 
         [Conditional("DEBUG")]
         public static void NotNull(object var) {
-            Debug.Assert(var != null);
+            Debug.Assert(var is not null);
         }
 
         [Conditional("DEBUG")]
         public static void NotNull(object var1, object var2) {
-            Debug.Assert(var1 != null && var2 != null);
+            Debug.Assert(var1 is not null && var2 is not null);
         }
 
         [Conditional("DEBUG")]
         public static void NotNull(object var1, object var2, object var3) {
-            Debug.Assert(var1 != null && var2 != null && var3 != null);
+            Debug.Assert(var1 is not null && var2 is not null && var3 is not null);
         }
 
         [Conditional("DEBUG")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
         public static void NotNull(object var1, object var2, object var3, object var4) {
-            Debug.Assert(var1 != null && var2 != null && var3 != null && var4 != null);
+            Debug.Assert(var1 is not null && var2 is not null && var3 is not null && var4 is not null);
         }
 
         [Conditional("DEBUG")]
@@ -47,14 +47,14 @@ namespace Microsoft.Scripting.Utils {
 
         [Conditional("DEBUG")]
         public static void NotEmpty<T>(ICollection<T> array) {
-            Debug.Assert(array != null && array.Count > 0);
+            Debug.Assert(array is not null && array.Count > 0);
         }
 
         [Conditional("DEBUG")]
         public static void NotNullItems<T>(IEnumerable<T> items) where T : class {
-            Debug.Assert(items != null);
+            Debug.Assert(items is not null);
             foreach (object item in items) {
-                Debug.Assert(item != null);
+                Debug.Assert(item is not null);
             }
         }
 

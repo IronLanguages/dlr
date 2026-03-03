@@ -97,9 +97,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private void InitializeInput() {
-            if (_inputStream == null) {
+            if (_inputStream is null) {
                 lock (_mutex) {
-                    if (_inputStream == null) {
+                    if (_inputStream is null) {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _inputEncoding = Console.InputEncoding;
@@ -124,9 +124,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private void InitializeOutput() {
-            if (_outputStream == null) {
+            if (_outputStream is null) {
                 lock (_mutex) {
-                    if (_outputStream == null) {
+                    if (_outputStream is null) {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _outputStream = Console.OpenStandardOutput();
@@ -150,9 +150,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private void InitializeErrorOutput() {
-            if (_errorStream == null) {
+            if (_errorStream is null) {
                 lock (_mutex) {
-                    if (_errorStream == null) {
+                    if (_errorStream is null) {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _errorStream = Console.OpenStandardError();

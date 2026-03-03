@@ -903,7 +903,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Helper to unwrap multiple objects
         /// </summary>
         private static object[] GetLocalObjects(ObjectHandle[] ohs) {
-            Debug.Assert(ohs != null);
+            Debug.Assert(ohs is not null);
 
             object[] res = new object[ohs.Length];
             for (int i = 0; i < res.Length; i++) {

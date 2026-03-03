@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Runtime {
 
             foreach (string name in myWriter.Names) {
                 object value = myWriter.RootNameScope.FindName(name);
-                if (value != null) {
+                if (value is not null) {
                     operations.SetMember((object)scope, name, value);
                 }
             }
@@ -131,8 +131,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             public override void WriteValue(object value) {
-                string strValue;
-                if (_nameStack.Peek() && (strValue = value as string) != null) {
+                if (_nameStack.Peek() && value is string strValue) {
                     // we are writing a x:Name, save it so we can later get the name from the scope
                     _names.Add(strValue);
                 }
@@ -153,7 +152,7 @@ namespace Microsoft.Scripting.Runtime {
                     _nameStack.Push(false);
                 }
 
-                if (property.UnderlyingMember != null && property.UnderlyingMember.MemberType == System.Reflection.MemberTypes.Event) {
+                if (property.UnderlyingMember is not null && property.UnderlyingMember.MemberType == System.Reflection.MemberTypes.Event) {
                     base.WriteStartMember(new DynamicEventMember(this, (EventInfo)property.UnderlyingMember, SchemaContext));
                 } else {
                     base.WriteStartMember(property);

@@ -190,7 +190,7 @@ namespace Microsoft.Scripting.Hosting {
         /// The method doesn't lock nor send notifications to the host.
         /// </summary>
         private ScriptEngine GetEngineNoLockNoNotification(LanguageContext language, out bool freshEngineCreated) {
-            Debug.Assert(_engines != null, "Invalid ScriptRuntime initialization order");
+            Debug.Assert(_engines is not null, "Invalid ScriptRuntime initialization order");
 
             if (freshEngineCreated = !_engines.TryGetValue(language, out ScriptEngine engine)) {
                 engine = new ScriptEngine(this, language);
@@ -266,7 +266,7 @@ namespace Microsoft.Scripting.Hosting {
             foreach (string searchPath in searchPaths) {
                 string filePath = Path.Combine(searchPath, path);
                 ScriptScope scope = engine.GetScope(filePath);
-                if (scope != null) {
+                if (scope is not null) {
                     return scope;
                 }
             }

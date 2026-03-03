@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Debugging {
             else if (returnType != typeof(void))
                 _retVal = Ast.Variable(returnType, "$retVal");
 
-            if (_retVal != null) {
+            if (_retVal is not null) {
                 _lambdaVars.Add(_retVal);
                 _generatorVars.Add(_retVal);
             }
@@ -214,15 +214,15 @@ namespace Microsoft.Scripting.Debugging {
                 }
 
                 // See if there's an alias for the local
-                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
+                if (_lambdaInfo.VariableAliases is null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
                     alias = pendingLocal.Name;
                 }
 
                 bool isParameter = parameters.ContainsKey(pendingLocal);
-                bool isHidden = hiddenVariables != null && hiddenVariables.Contains(pendingLocal);
+                bool isHidden = hiddenVariables is not null && hiddenVariables.Contains(pendingLocal);
                 bool isStrongBoxed = strongBoxedLocals.ContainsKey(pendingLocal);
 
-                if (alias == null) {
+                if (alias is null) {
                     alias = "local";
                     isHidden = true;
                 }
@@ -274,14 +274,14 @@ namespace Microsoft.Scripting.Debugging {
                 MSAst.ParameterExpression verifiedLocal = pendingLocal;
 
                 // See if there's an alias for the local
-                if (_lambdaInfo.VariableAliases == null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
+                if (_lambdaInfo.VariableAliases is null || !_lambdaInfo.VariableAliases.TryGetValue(pendingLocal, out string alias)) {
                     alias = pendingLocal.Name;
                 }
 
                 bool isParameter = parameters.ContainsKey(pendingLocal);
-                bool isHidden = hiddenVariables != null && hiddenVariables.Contains(pendingLocal);
+                bool isHidden = hiddenVariables is not null && hiddenVariables.Contains(pendingLocal);
 
-                if (alias == null) {
+                if (alias is null) {
                     alias = "local";
                     isHidden = true;
                 }
@@ -345,7 +345,7 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         private void CreateFunctionInfo(MSAst.LambdaExpression generatorFactoryLambda) {
-            if (_lambdaInfo.CompilerSupport != null && _lambdaInfo.CompilerSupport.DoesExpressionNeedReduction(generatorFactoryLambda)) {
+            if (_lambdaInfo.CompilerSupport is not null && _lambdaInfo.CompilerSupport.DoesExpressionNeedReduction(generatorFactoryLambda)) {
                 _functionInfo = _lambdaInfo.CompilerSupport.QueueExpressionForReduction(
                     Ast.Call(
                         typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateFunctionInfo)),
@@ -478,20 +478,20 @@ namespace Microsoft.Scripting.Debugging {
                     typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.OnFrameExitTraceEvent)),
                     _thread,
                     _debugMarker,
-                    _retVal != null ? (MSAst.Expression)Ast.Convert(_retVal, typeof(object)) : Ast.Constant(null)
+                    _retVal is not null ? (MSAst.Expression)Ast.Convert(_retVal, typeof(object)) : Ast.Constant(null)
                 )
             );
 
             // normal exit
             tryExpressions.Add(
                 Ast.Block(
-                    _retVal != null ? Ast.Assign(_retVal, debuggableBody) : debuggableBody, 
+                    _retVal is not null ? Ast.Assign(_retVal, debuggableBody) : debuggableBody, 
                     Ast.Assign(_frameExitException, Ast.Constant(true)),
                     frameExit) 
             );
 
             tryExpressions.Add(
-                _retVal != null ? (MSAst.Expression)Ast.Return(returnLabelTarget, _retVal) : Ast.Empty()
+                _retVal is not null ? (MSAst.Expression)Ast.Return(returnLabelTarget, _retVal) : Ast.Empty()
             );
 
             MSAst.Expression[] popFrame = new MSAst.Expression[] {
@@ -645,7 +645,7 @@ namespace Microsoft.Scripting.Debugging {
                 generatorBody
             );
 
-            if (_retVal != null) {
+            if (_retVal is not null) {
                 body = Ast.Block(
                     Ast.Assign(_retVal, body),
                     AstUtils.YieldReturn(

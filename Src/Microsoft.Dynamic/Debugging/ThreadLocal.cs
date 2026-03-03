@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Debugging {
             get {
                 List<T> allValues = new List<T>(_stores.Length);
                 foreach (StorageInfo si in _stores) {
-                    if (si != null && si.Thread.IsAlive)
+                    if (si is not null && si.Thread.IsAlive)
                         allValues.Add(si.Value);
                 }
 
@@ -43,10 +43,10 @@ namespace Microsoft.Scripting.Debugging {
             int threadId = Environment.CurrentManagedThreadId;
 
             // fast path if we already have a value in the array
-            if (curStorage != null && curStorage.Length > threadId) {
+            if (curStorage is not null && curStorage.Length > threadId) {
                 StorageInfo res = curStorage[threadId];
 
-                if (res != null && res.Thread == Thread.CurrentThread) {
+                if (res is not null && res.Thread == Thread.CurrentThread) {
                     return res;
                 }
             }
@@ -85,13 +85,13 @@ namespace Microsoft.Scripting.Debugging {
                 }
 
                 // check and make sure we have a space in the array for our value
-                if (curStorage == null) {
+                if (curStorage is null) {
                     curStorage = new StorageInfo[threadId + 1];
                 } else if (curStorage.Length <= threadId) {
                     StorageInfo[] newStorage = new StorageInfo[threadId + 1];
                     for (int i = 0; i < curStorage.Length; i++) {
                         // leave out the threads that have exited
-                        if (curStorage[i] != null && curStorage[i].Thread.IsAlive) {
+                        if (curStorage[i] is not null && curStorage[i].Thread.IsAlive) {
                             newStorage[i] = curStorage[i];
                         }
                     }
@@ -100,7 +100,7 @@ namespace Microsoft.Scripting.Debugging {
 
                 // create our StorageInfo in the array, the empty check ensures we're only here
                 // when we need to create.
-                Debug.Assert(curStorage[threadId] == null || curStorage[threadId].Thread != Thread.CurrentThread);
+                Debug.Assert(curStorage[threadId] is null || curStorage[threadId].Thread != Thread.CurrentThread);
 
                 return curStorage[threadId] = newInfo;
             } finally {
@@ -118,7 +118,7 @@ namespace Microsoft.Scripting.Debugging {
             public T Value;                                // the current value for the owning thread
 
             public StorageInfo(Thread curThread) {
-                Debug.Assert(curThread != null);
+                Debug.Assert(curThread is not null);
                 Thread = curThread;
             }
         }

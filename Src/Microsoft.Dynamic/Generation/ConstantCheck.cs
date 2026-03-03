@@ -58,11 +58,11 @@ namespace Microsoft.Scripting.Generation {
         private static bool CheckAndAlso(BinaryExpression node, object value) {
             Debug.Assert(node.NodeType == ExpressionType.AndAlso);
 
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 return false;
             }
             //TODO: we can propagate through conversion, but it may not worth it.
-            if (node.Conversion != null) {
+            if (node.Conversion is not null) {
                 return false;
             }
     
@@ -80,7 +80,7 @@ namespace Microsoft.Scripting.Generation {
         private static bool CheckOrElse(BinaryExpression node, object value) {
             Debug.Assert(node.NodeType == ExpressionType.OrElse);
 
-            if (node.Method != null) {
+            if (node.Method is not null) {
                 return false;
             }
 
@@ -96,8 +96,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private static bool CheckConstant(ConstantExpression node, object value) {
-            if (value == null) {
-                return node.Value == null;
+            if (value is null) {
+                return node.Value is null;
             }
 
             return value.Equals(node.Value);

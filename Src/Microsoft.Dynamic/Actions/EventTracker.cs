@@ -70,9 +70,9 @@ namespace Microsoft.Scripting.Actions {
 
                 MethodInfo m;
                 Debug.Assert(
-                    ((m = Event.GetAddMethod(true)) == null || m.IsStatic == mi.IsStatic) &&
-                    ((m = Event.GetRaiseMethod(true)) == null || m.IsStatic == mi.IsStatic) &&
-                    ((m = Event.GetRaiseMethod(true)) == null || m.IsStatic == mi.IsStatic),
+                    ((m = Event.GetAddMethod(true)) is null || m.IsStatic == mi.IsStatic) &&
+                    ((m = Event.GetRaiseMethod(true)) is null || m.IsStatic == mi.IsStatic) &&
+                    ((m = Event.GetRaiseMethod(true)) is null || m.IsStatic == mi.IsStatic),
                     "Methods are either all static or all instance."
                 );
                 
@@ -116,7 +116,7 @@ namespace Microsoft.Scripting.Actions {
             var add = GetCallableAddMethod();
 
             // TODO (tomat): this used to use event.ReflectedType, is it still correct?
-            if (target != null) {
+            if (target is not null) {
                 add = CompilerHelpers.TryGetCallableMethod(target.GetType(), add);
             }
 
@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.Actions {
                 delegateHandler = GetHandlerList(target).RemoveHandler(handler, objectComparer);
             }
 
-            if (delegateHandler != null) {
+            if (delegateHandler is not null) {
                 GetCallableRemoveMethod().Invoke(target, new object[] { delegateHandler });
             }
         }
@@ -151,11 +151,11 @@ namespace Microsoft.Scripting.Actions {
             }
 #endif
 
-            if (_handlerLists == null) {
+            if (_handlerLists is null) {
                 Interlocked.CompareExchange(ref _handlerLists, new WeakDictionary<object, NormalHandlerList>(), null);
             }
 
-            if (instance == null) {
+            if (instance is null) {
                 // targetting a static method, we'll use a random object
                 // as our place holder here...
                 instance = _staticTarget;
@@ -185,10 +185,10 @@ namespace Microsoft.Scripting.Actions {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         private HandlerList GetComHandlerList(object instance) {
             HandlerList hl = (HandlerList)Marshal.GetComObjectData(instance, this);
-            if (hl == null) {
+            if (hl is null) {
                 lock (_staticTarget) {
                     hl = (HandlerList)Marshal.GetComObjectData(instance, this);
-                    if (hl == null) {
+                    if (hl is null) {
                         hl = new ComHandlerList();
                         if (!Marshal.SetComObjectData(instance, this, hl)) {
                             throw new COMException("Failed to set COM Object Data");
@@ -263,7 +263,7 @@ namespace Microsoft.Scripting.Actions {
                     object key = copyOfHandlers[i].Key.Target;
                     object value = copyOfHandlers[i].Value.Target;
 
-                    if (key != null && value != null && comparer.Equals(key, callableObject)) {
+                    if (key is not null && value is not null && comparer.Equals(key, callableObject)) {
                         Delegate handler = (Delegate)value;
                         _handlers.RemoveAt(i);
                         return handler;
