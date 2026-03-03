@@ -203,7 +203,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             //Filters out methods in Microsoft.Scripting namespaces.
-            if (mb.DeclaringType?.Namespace?.StartsWith("Microsoft.Scripting", StringComparison.Ordinal) == true) {
+            if (mb.DeclaringType?.Namespace?.StartsWith("Microsoft.Scripting", StringComparison.Ordinal) ?? false) {
                 return true;
             }
 

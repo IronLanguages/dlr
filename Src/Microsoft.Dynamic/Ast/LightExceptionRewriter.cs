@@ -279,7 +279,7 @@ namespace Microsoft.Scripting.Ast {
             // )
             //
             // ehLabel:
-            //  if ((e = GetLightException(_lastValue) as Exception)) is not null) {
+            //  if ((e = GetLightException(_lastValue) as Exception)) != null) {
             //      handler;
             //  } else {
             //      // unhandled exception, propagate up, either:

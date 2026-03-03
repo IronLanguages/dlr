@@ -196,7 +196,7 @@ namespace Microsoft.Scripting.Ast {
             //      saved = all;
             //  } finally {
             //      finally_body
-            //      if (saved is not null) {
+            //      if (saved != null) {
             //          throw saved;
             //      }
             //  }

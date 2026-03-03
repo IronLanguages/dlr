@@ -250,7 +250,6 @@ namespace Microsoft.Scripting.Generation {
                 }
             }
 
-
             // all others can't be exposed out this way
             return visible;
         }

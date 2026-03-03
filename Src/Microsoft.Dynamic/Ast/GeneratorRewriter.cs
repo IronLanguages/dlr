@@ -370,7 +370,7 @@ namespace Microsoft.Scripting.Ast {
                     // We need to rewrite rethrows into "throw deferredVar"
                     var catchBody = new RethrowRewriter { Exception = deferredVar }.Visit(c.Body);
 
-                    // if (deferredVar is not null) {
+                    // if (deferredVar != null) {
                     //     ... catch body ...
                     // }
                     block.Add(
@@ -396,7 +396,7 @@ namespace Microsoft.Scripting.Ast {
                 // finally {
                 //  if (_finallyReturnVar) goto finallyReturn;
                 //   ...
-                //   if (saved is not null) throw saved;
+                //   if (saved != null) throw saved;
                 //   finallyReturn:
                 // }
                 // if (_finallyReturnVar) goto _return;

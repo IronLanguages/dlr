@@ -63,7 +63,7 @@ namespace Microsoft.Scripting.Ast {
 
         private static Expression[] ArgumentConvertHelper(Expression[] arguments, ParameterInfo[] parameters) {
             Debug.Assert(arguments is not null);
-            Debug.Assert(arguments is not null);
+            Debug.Assert(parameters is not null);
 
             Expression[] clone = null;
             for (int arg = 0; arg < arguments.Length; arg++) {
@@ -81,9 +81,7 @@ namespace Microsoft.Scripting.Ast {
                     argument = ArgumentConvertHelper(argument, parameters[arg].ParameterType);
                 }
 
-                if (clone is not null) {
-                    clone[arg] = argument;
-                }
+                clone?[arg] = argument;
             }
             return clone ?? arguments;
         }

@@ -13,7 +13,7 @@ namespace Microsoft.Scripting.Ast {
 
         /// <summary>
         /// Null coalescing expression
-        /// {result} ::= ((tmp = {_left}) is null) ? {right} : tmp
+        /// {result} ::= ((tmp = {_left}) == null) ? {right} : tmp
         /// '??' operator in C#.
         /// </summary>
         public static Expression Coalesce(Expression left, Expression right, out ParameterExpression temp) {

@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public static object[] GetCombinedParameters(object[] initialArgs, object additionalArgs) {
             return additionalArgs switch {
-                IList listArgs => [..initialArgs, ..listArgs],
+                ICollection listArgs => [..initialArgs, ..listArgs],
                 IEnumerable ie => [..initialArgs, ..ie],
                 _ => throw new InvalidOperationException("args must be iterable")
             };
