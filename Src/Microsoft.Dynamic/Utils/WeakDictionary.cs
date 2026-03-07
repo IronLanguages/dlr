@@ -234,7 +234,7 @@ namespace Microsoft.Scripting.Utils {
         #endregion
     }
 
-    internal class WeakObject {
+    internal sealed class WeakObject {
         private readonly WeakReference weakReference;
         private readonly int hashCode;
 

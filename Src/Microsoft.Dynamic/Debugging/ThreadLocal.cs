@@ -8,7 +8,7 @@ using System.Threading;
 using System.Diagnostics;
 
 namespace Microsoft.Scripting.Debugging {
-    internal class ThreadLocal<T> {
+    internal sealed class ThreadLocal<T> {
         private StorageInfo[] _stores;                                         // array of storage indexed by managed thread ID
         private static readonly StorageInfo[] Updating = Array.Empty<StorageInfo>();   // a marker used when updating the array
 

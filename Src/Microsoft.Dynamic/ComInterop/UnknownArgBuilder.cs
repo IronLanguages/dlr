@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class UnknownArgBuilder : SimpleArgBuilder {
+    internal sealed class UnknownArgBuilder : SimpleArgBuilder {
         private readonly bool _isWrapper;
 
         internal UnknownArgBuilder(Type parameterType)

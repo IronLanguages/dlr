@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class VariantArgBuilder : SimpleArgBuilder {
+    internal sealed class VariantArgBuilder : SimpleArgBuilder {
         private readonly bool _isWrapper;
 
         internal VariantArgBuilder(Type parameterType)

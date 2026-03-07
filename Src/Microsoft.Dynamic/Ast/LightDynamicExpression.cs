@@ -339,10 +339,10 @@ namespace Microsoft.Scripting.Ast {
         #endregion
     }
 
-    internal class LightTypedDynamicExpression3 : LightDynamicExpression3, ILightExceptionAwareExpression {
+    internal sealed class LightTypedDynamicExpression3 : LightDynamicExpression3, ILightExceptionAwareExpression {
         private readonly Type _returnType;
 
-        internal protected LightTypedDynamicExpression3(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2)
+        internal LightTypedDynamicExpression3(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2)
             : base(binder, arg0, arg1, arg2) {
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;

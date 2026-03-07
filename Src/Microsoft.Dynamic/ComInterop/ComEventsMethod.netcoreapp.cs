@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// Part of ComEventHelpers APIs which allow binding
     /// managed delegates to COM's connection point based events.
     /// </summary>
-    internal class ComEventsMethod {
+    internal sealed class ComEventsMethod {
         /// <summary>
         /// Invoking ComEventsMethod means invoking a multi-cast delegate attached to it.
         /// Since multicast delegate's built-in chaining supports only chaining instances of the same type,

@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Ast {
     /// an additional check and throw is added.  When a block code of is re-written
     /// for light exceptions this instead reduces to not throw a .NET exception.
     /// </summary>
-    internal class LightCheckAndThrowExpression : Expression, ILightExceptionAwareExpression {
+    internal sealed class LightCheckAndThrowExpression : Expression, ILightExceptionAwareExpression {
         private readonly Expression _expr;
 
         internal LightCheckAndThrowExpression(Expression instance) {

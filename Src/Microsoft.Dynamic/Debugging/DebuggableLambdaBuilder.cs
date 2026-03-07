@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Debugging {
     /// <summary>
     /// DebuggableLambdaBuilder is used to transform a DLR expression tree into a debuggable lambda expression.
     /// </summary>
-    internal class DebuggableLambdaBuilder {
+    internal sealed class DebuggableLambdaBuilder {
         private readonly DebugContext _debugContext;                                    // DebugContext
         private Dictionary<DebugSourceFile, MSAst.ParameterExpression> _sourceFilesMap; // Map of source file instances to their variable nodes
         private readonly DebugLambdaInfo _lambdaInfo;                                   // Labmda info that's passed to us by the compiler

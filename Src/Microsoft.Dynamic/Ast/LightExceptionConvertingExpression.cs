@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
 namespace Microsoft.Scripting.Ast {
-    internal class LightExceptionConvertingExpression : Expression, ILightExceptionAwareExpression {
+    internal sealed class LightExceptionConvertingExpression : Expression, ILightExceptionAwareExpression {
         private readonly Expression _expr;
         private readonly bool _supportsLightEx;
 

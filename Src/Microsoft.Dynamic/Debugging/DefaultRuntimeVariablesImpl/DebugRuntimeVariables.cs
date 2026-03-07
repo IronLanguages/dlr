@@ -10,7 +10,7 @@ namespace Microsoft.Scripting.Debugging {
     /// Implementation of IDebugRuntimeVariables, which wraps IRuntimeVariables + FunctionInfo/DebugMarker
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    internal class DebugRuntimeVariables : IDebugRuntimeVariables {
+    internal sealed class DebugRuntimeVariables : IDebugRuntimeVariables {
         private readonly IRuntimeVariables _runtimeVariables;
 
         internal DebugRuntimeVariables(IRuntimeVariables runtimeVariables) {

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class ConvertArgBuilder : SimpleArgBuilder {
+    internal sealed class ConvertArgBuilder : SimpleArgBuilder {
         private readonly Type _marshalType;
 
         internal ConvertArgBuilder(Type parameterType, Type marshalType)

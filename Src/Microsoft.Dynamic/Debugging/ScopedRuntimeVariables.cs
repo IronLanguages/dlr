@@ -10,7 +10,7 @@ namespace Microsoft.Scripting.Debugging {
     /// <summary>
     /// Implements IRuntimeVariables in a way that preserves scoping within the lambda.
     /// </summary>
-    internal class ScopedRuntimeVariables : IRuntimeVariables {
+    internal sealed class ScopedRuntimeVariables : IRuntimeVariables {
         private readonly IList<VariableInfo> _variableInfos;
         private readonly IRuntimeVariables _variables;
 
