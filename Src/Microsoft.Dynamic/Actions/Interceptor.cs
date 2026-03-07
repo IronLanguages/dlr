@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Actions {
             return iw.Visit(lambda) as LambdaExpression;
         }
 
-        internal class InterceptorSiteBinder : CallSiteBinder {
+        internal sealed class InterceptorSiteBinder : CallSiteBinder {
             private readonly CallSiteBinder _binder;
 
             internal InterceptorSiteBinder(CallSiteBinder binder) {
@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        internal class InterceptorWalker : DynamicExpressionVisitor {
+        internal sealed class InterceptorWalker : DynamicExpressionVisitor {
             protected override Expression VisitDynamic(DynamicExpression node) {
                 CallSiteBinder binder = node.Binder;
                 if (!(binder is InterceptorSiteBinder)) {

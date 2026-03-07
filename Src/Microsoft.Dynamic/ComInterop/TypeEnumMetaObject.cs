@@ -13,7 +13,7 @@ using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
-    internal class TypeEnumMetaObject : DynamicMetaObject {
+    internal sealed class TypeEnumMetaObject : DynamicMetaObject {
         private readonly ComTypeEnumDesc _desc;
 
         internal TypeEnumMetaObject(ComTypeEnumDesc desc, Expression expression)

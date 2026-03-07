@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Microsoft.Scripting.ComInterop {
 
-    internal class StringArgBuilder : SimpleArgBuilder {
+    internal sealed class StringArgBuilder : SimpleArgBuilder {
         private readonly bool _isWrapper;
 
         internal StringArgBuilder(Type parameterType)

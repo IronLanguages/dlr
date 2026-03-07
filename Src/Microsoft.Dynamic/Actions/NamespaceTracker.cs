@@ -352,9 +352,9 @@ namespace Microsoft.Scripting.Actions {
         /// types slows down startup, increases working set, and is semantically incorrect as it can trigger
         /// TypeLoadExceptions sooner than required.
         /// </summary>
-        internal class TypeNames {
-            List<string> _simpleTypeNames = new List<string>();
-            Dictionary<string, List<string>> _genericTypeNames = new Dictionary<string, List<string>>();
+        internal sealed class TypeNames {
+            private readonly List<string> _simpleTypeNames = new();
+            private readonly Dictionary<string, List<string>> _genericTypeNames = new();
 
             private readonly Assembly _assembly;
             private readonly string _fullNamespace;

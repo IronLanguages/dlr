@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Scripting.ComInterop {
 
-    internal class DispatchArgBuilder : SimpleArgBuilder {
+    internal sealed class DispatchArgBuilder : SimpleArgBuilder {
         private readonly bool _isWrapper;
 
         internal DispatchArgBuilder(Type parameterType)

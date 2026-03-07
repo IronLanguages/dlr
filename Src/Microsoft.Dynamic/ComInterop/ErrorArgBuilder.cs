@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class ErrorArgBuilder : SimpleArgBuilder {
+    internal sealed class ErrorArgBuilder : SimpleArgBuilder {
         internal ErrorArgBuilder(Type parameterType)
             : base(parameterType) {
 

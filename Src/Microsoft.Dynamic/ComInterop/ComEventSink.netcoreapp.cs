@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// Part of ComEventHelpers APIs which allow binding
     /// managed delegates to COM's connection point based events.
     /// </summary>
-    internal class ComEventSink : IDispatch, ICustomQueryInterface, IDisposable {
+    internal sealed class ComEventSink : IDispatch, ICustomQueryInterface, IDisposable {
         private Guid _iidSourceItf;
         private IConnectionPoint _connectionPoint;
         private int _cookie;

@@ -15,7 +15,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// <summary>
     /// VariantBuilder handles packaging of arguments into a Variant for a call to IDispatch.Invoke
     /// </summary>
-    internal class VariantBuilder {
+    internal sealed class VariantBuilder {
 
         private MemberExpression _variant;
         private readonly ArgBuilder _argBuilder;

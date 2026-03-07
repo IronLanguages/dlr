@@ -101,7 +101,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
     }
 
-    internal class BranchInstruction : OffsetInstruction {
+    internal sealed class BranchInstruction : OffsetInstruction {
         private static Instruction[][][] _caches;
 
         public override Instruction[] Cache {

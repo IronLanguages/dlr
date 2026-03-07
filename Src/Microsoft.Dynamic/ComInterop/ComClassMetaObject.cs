@@ -11,7 +11,7 @@ using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
-    internal class ComClassMetaObject : DynamicMetaObject {
+    internal sealed class ComClassMetaObject : DynamicMetaObject {
         internal ComClassMetaObject(Expression expression, ComTypeClassDesc cls)
             : base(expression, BindingRestrictions.Empty, cls) {
         }

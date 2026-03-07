@@ -298,7 +298,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <summary>
         /// Special binder that indicates special semantics for COM GetMember operation.
         /// </summary>
-        internal class ComGetMemberBinder : GetMemberBinder {
+        internal sealed class ComGetMemberBinder : GetMemberBinder {
             private readonly GetMemberBinder _originalBinder;
             internal bool _CanReturnCallables;
 

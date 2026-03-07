@@ -7,7 +7,7 @@
 using System;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class ComEventDesc {
+    internal sealed class ComEventDesc {
         internal Guid sourceIID;
         internal int dispid;
     };

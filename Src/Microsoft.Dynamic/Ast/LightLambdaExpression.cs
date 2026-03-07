@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.Ast {
         public Type ReturnType { get; }
     }
 
-    internal class TypedLightLambdaExpression : LightLambdaExpression {
+    internal sealed class TypedLightLambdaExpression : LightLambdaExpression {
         private readonly Type _delegateType;
 
         internal TypedLightLambdaExpression(Type retType, Type delegateType, Expression body, string name, IList<ParameterExpression> args)
