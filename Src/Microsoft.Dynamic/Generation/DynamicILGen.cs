@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Generation {
         public abstract MethodInfo Finish();
     }
 
-    class DynamicILGenMethod : DynamicILGen {
+    internal sealed class DynamicILGenMethod : DynamicILGen {
         private readonly DynamicMethod _dm;
 
         internal DynamicILGenMethod(DynamicMethod dm, ILGenerator il)
@@ -44,7 +44,7 @@ namespace Microsoft.Scripting.Generation {
         }
     }
 #if FEATURE_REFEMIT
-    class DynamicILGenType : DynamicILGen {
+    internal sealed class DynamicILGenType : DynamicILGen {
         private readonly TypeBuilder _tb;
         private readonly MethodBuilder _mb;
 

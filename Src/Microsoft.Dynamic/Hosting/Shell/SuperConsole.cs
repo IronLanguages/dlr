@@ -25,8 +25,8 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// Class managing the command history.
         /// </summary>
-        class History {
-            protected List<string> _list = new();
+        private sealed class History {
+            private List<string> _list = new();
             private int _current;
             private bool _increment;         // increment on Next()
 
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// List of available options
         /// </summary>
-        class SuperConsoleOptions {
+        private sealed class SuperConsoleOptions {
             private List<string> _list = new();
             private int _current;
 

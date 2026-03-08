@@ -561,7 +561,7 @@ namespace Microsoft.Scripting.Runtime {
         /// key.  Logically this is a set based upon the binder and site-type but we
         /// store it in a dictionary.
         /// </summary>
-        private class SiteKey : IEquatable<SiteKey> {
+        private sealed class SiteKey : IEquatable<SiteKey> {
             // the key portion of the data
             internal readonly CallSiteBinder SiteBinder;
             private readonly Type _siteType;

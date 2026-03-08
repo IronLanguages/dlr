@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Utils {
             return GenericInterpretedBinder<T>.Instance.Bind(binder, compilationThreshold < 0 ? LightCompiler.DefaultCompilationThreshold : compilationThreshold, args);
         }
 
-        private class GenericInterpretedBinder<T> where T : class {
+        private sealed class GenericInterpretedBinder<T> where T : class {
             public static readonly GenericInterpretedBinder<T>/*!*/ Instance = new();
             private readonly ReadOnlyCollection<ParameterExpression>/*!*/ _parameters;
             private readonly Expression/*!*/ _updateExpression;
@@ -158,7 +158,7 @@ namespace Microsoft.Scripting.Utils {
             /// Expression which reduces to the normal test but under the interpreter adds a count down
             /// check which enables compiling when the count down is reached.
             /// </summary>
-            class InterpretedRuleHitCheckExpression : Expression, IInstructionProvider {
+            private sealed class InterpretedRuleHitCheckExpression : Expression, IInstructionProvider {
                 private readonly Expression/*!*/ _test;
                 private readonly CachedBindingInfo/*!*/ _bindingInfo;
 
@@ -221,7 +221,7 @@ namespace Microsoft.Scripting.Utils {
     /// longer functional.  Finally the language binder will call us again and we'll retrieve
     /// and return the compiled overload.
     /// </summary>
-    abstract class CachedBindingInfo {
+    internal abstract class CachedBindingInfo {
         public readonly DynamicMetaObjectBinder/*!*/ Binder;
         public int CompilationThreshold;
 
@@ -233,7 +233,7 @@ namespace Microsoft.Scripting.Utils {
         public abstract bool CheckCompiled();
     }
 
-    class CachedBindingInfo<T> : CachedBindingInfo where T : class {
+    internal sealed class CachedBindingInfo<T> : CachedBindingInfo where T : class {
         public T CompiledTarget;
         public Expression<T> Target;
 

@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// Contains a methods DISPID (in a string formatted of "[DISPID=N]"
         /// and a chained list of delegates to invoke
         /// </summary>
-        private class ComEventSinkMethod {
+        private sealed class ComEventSinkMethod {
             public string _name;
             public Func<object[], object> _handlers;
         }

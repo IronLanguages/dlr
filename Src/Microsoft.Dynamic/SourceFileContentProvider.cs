@@ -42,7 +42,7 @@ namespace Microsoft.Scripting {
         }
 
         [Serializable]
-        private class PALHolder : MarshalByRefObject
+        private sealed class PALHolder : MarshalByRefObject
         {
             [NonSerialized]
             private readonly PlatformAdaptationLayer _pal;

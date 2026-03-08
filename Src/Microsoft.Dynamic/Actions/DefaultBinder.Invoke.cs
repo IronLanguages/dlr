@@ -269,7 +269,7 @@ namespace Microsoft.Scripting.Actions {
         /// Encapsulates information about the target of the call.  This includes an implicit instance for the call,
         /// the methods that we'll be calling as well as any restrictions required to perform the call.
         /// </summary>
-        class TargetInfo {
+        private sealed class TargetInfo {
             public readonly DynamicMetaObject Instance;
             public readonly DynamicMetaObject[] Arguments;
             public readonly MethodBase[] Targets;
