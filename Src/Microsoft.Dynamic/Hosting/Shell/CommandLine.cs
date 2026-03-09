@@ -180,7 +180,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
         }
 
-#region Interactivity
+        #region Interactivity
 
         /// <summary>
         /// Starts the interactive loop.  Performs any initialization necessary before
