@@ -217,7 +217,7 @@ namespace Microsoft.Scripting.Ast {
             );
         }
 
-        class GotoRewriter : ExpressionVisitor {
+        private sealed class GotoRewriter : ExpressionVisitor {
             private readonly GotoRewriteInfo _gotoInfo;
             private readonly LabelTarget _target;
             private readonly GeneratorRewriter _rewriter;
@@ -464,7 +464,7 @@ namespace Microsoft.Scripting.Ast {
             return Expression.Block(Expression.Label(tryStart), @try);
         }
 
-        private class RethrowRewriter : ExpressionVisitor {
+        private sealed class RethrowRewriter : ExpressionVisitor {
             internal ParameterExpression Exception;
 
             protected override Expression VisitUnary(UnaryExpression node) {

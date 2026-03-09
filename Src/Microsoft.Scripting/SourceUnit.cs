@@ -164,7 +164,7 @@ namespace Microsoft.Scripting {
         }
 
 
-        private class KeyComparer<T1> : IComparer<KeyValuePair<int, T1>> {
+        private sealed class KeyComparer<T1> : IComparer<KeyValuePair<int, T1>> {
             public int Compare(KeyValuePair<int, T1> x, KeyValuePair<int, T1> y) {
                 return x.Key - y.Key;
             }

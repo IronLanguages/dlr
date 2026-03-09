@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Actions {
         /// might be one extension member which is being applied to multiple types.  Therefore we need to take into account the 
         /// extension type when ensuring that we only have 1 MemberTracker ever created.
         /// </summary>
-        class MemberKey {
+        private sealed class MemberKey {
             private readonly MemberInfo Member;
             private readonly Type Extending;
 

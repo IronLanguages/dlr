@@ -9,11 +9,11 @@ using System.Diagnostics;
 
 namespace Microsoft.Scripting {
     [Conditional("STUB")]
-    internal class SerializableAttribute : Attribute {
+    internal sealed class SerializableAttribute : Attribute {
     }
 
     [Conditional("STUB")]
-    internal class NonSerializedAttribute : Attribute {
+    internal sealed class NonSerializedAttribute : Attribute {
     }
 
     namespace Runtime {
@@ -24,7 +24,7 @@ namespace Microsoft.Scripting {
         }
     }
 
-    internal class SerializationException : Exception {
+    internal sealed class SerializationException : Exception {
     }
 }
 

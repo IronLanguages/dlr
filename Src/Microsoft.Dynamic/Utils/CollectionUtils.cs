@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        private class CovariantConvertor<T, TSuper> : IEnumerable<TSuper> where T : TSuper {
+        private sealed class CovariantConvertor<T, TSuper> : IEnumerable<TSuper> where T : TSuper {
             private IEnumerable<T> _enumerable;
 
             public CovariantConvertor(IEnumerable<T> enumerable) {

@@ -100,3 +100,8 @@ dotnet_diagnostic.CA5372.severity = suggestion  # CA5372: Use XmlReader For XPat
 
 dotnet_diagnostic.SYSLIB1045.severity = suggestion # SYSLIB1045: Use 'RegexGeneratorAttribute' to generate the regular expression implementation at compile-time
 dotnet_diagnostic.SYSLIB1054.severity = suggestion # SYSLIB1054: Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
+
+# Stricter rules for source code, which are not needed for test code
+[Src/**.cs]
+dotnet_diagnostic.CA1852.severity = warning      # CA1852: Seal internal types
+dotnet_code_quality.CA1852.ignore_internalsvisibleto = true

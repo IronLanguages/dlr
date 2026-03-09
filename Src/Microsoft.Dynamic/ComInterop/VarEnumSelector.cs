@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.ComInterop {
     /// 
     /// VarEnumSelector implements option # 3
     /// </summary>
-    internal class VarEnumSelector {
+    internal sealed class VarEnumSelector {
         private readonly VariantBuilder[] _variantBuilders;
 
         private static readonly Dictionary<VarEnum, Type> _ComToManagedPrimitiveTypes = CreateComToManagedPrimitiveTypes();

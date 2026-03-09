@@ -12,7 +12,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
-    internal class ConvertibleArgBuilder : ArgBuilder {
+    internal sealed class ConvertibleArgBuilder : ArgBuilder {
 
         internal override Expression Marshal(Expression parameter) {
             return Helpers.Convert(parameter, typeof(IConvertible));

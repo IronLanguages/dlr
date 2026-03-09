@@ -362,7 +362,7 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        private class DefaultConvertAction : ConvertBinder {
+        private sealed class DefaultConvertAction : ConvertBinder {
             internal DefaultConvertAction(Type type, bool @explicit)
                 : base(type, @explicit) {
             }
@@ -404,7 +404,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultConvertAction(toType, explicitCast ?? false);
         }
 
-        private class DefaultGetMemberAction : GetMemberBinder {
+        private sealed class DefaultGetMemberAction : GetMemberBinder {
             internal DefaultGetMemberAction(string name, bool ignoreCase)
                 : base(name, ignoreCase) {
             }
@@ -429,7 +429,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultGetMemberAction(name, ignoreCase);
         }
 
-        private class DefaultSetMemberAction : SetMemberBinder {
+        private sealed class DefaultSetMemberAction : SetMemberBinder {
             internal DefaultSetMemberAction(string name, bool ignoreCase)
                 : base(name, ignoreCase) {
             }
@@ -443,7 +443,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultSetMemberAction(name, ignoreCase);
         }
 
-        private class DefaultDeleteMemberAction : DeleteMemberBinder {
+        private sealed class DefaultDeleteMemberAction : DeleteMemberBinder {
             internal DefaultDeleteMemberAction(string name, bool ignoreCase)
                 : base(name, ignoreCase) {
             }
@@ -457,7 +457,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultDeleteMemberAction(name, ignoreCase);
         }
 
-        private class DefaultCallAction : InvokeMemberBinder {
+        private sealed class DefaultCallAction : InvokeMemberBinder {
             private readonly LanguageContext _context;
 
             internal DefaultCallAction(LanguageContext context, string name, bool ignoreCase, CallInfo callInfo)
@@ -495,7 +495,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultCallAction(this, name, ignoreCase, callInfo);
         }
 
-        private class DefaultInvokeAction : InvokeBinder {
+        private sealed class DefaultInvokeAction : InvokeBinder {
             internal DefaultInvokeAction(CallInfo callInfo)
                 : base(callInfo) {
             }
@@ -509,7 +509,7 @@ namespace Microsoft.Scripting.Runtime {
             return new DefaultInvokeAction(callInfo);
         }
 
-        private class DefaultCreateAction : CreateInstanceBinder {
+        private sealed class DefaultCreateAction : CreateInstanceBinder {
             internal DefaultCreateAction(CallInfo callInfo)
                 : base(callInfo) {
             }

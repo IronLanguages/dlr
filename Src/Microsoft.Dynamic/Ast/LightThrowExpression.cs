@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Ast {
     /// with the expression which creates the exception and this method will then call
     /// a helper method which wraps the exception in our internal light exception class.
     /// </summary>
-    class LightThrowExpression : Expression {
+    internal sealed class LightThrowExpression : Expression {
         private readonly Expression _exception;
         private static MethodInfo _throw = new Func<Exception, object>(LightExceptions.Throw).GetMethodInfo();
 

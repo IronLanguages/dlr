@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,7 +11,7 @@ namespace Microsoft.Scripting.Utils {
     /// <summary>
     /// A hybrid dictionary which compares based upon object identity.
     /// </summary>
-    class HybridReferenceDictionary<TKey, TValue> where TKey : class {
+    internal sealed class HybridReferenceDictionary<TKey, TValue> where TKey : class {
         private KeyValuePair<TKey, TValue>[] _keysAndValues;
         private Dictionary<TKey, TValue> _dict;
         private int _count;

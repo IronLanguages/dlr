@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
-    class ExtraKeyEnumerator : CheckedDictionaryEnumerator {
+    internal sealed class ExtraKeyEnumerator : CheckedDictionaryEnumerator {
         private readonly CustomStringDictionary _idDict;
         private int _curIndex = -1;
 

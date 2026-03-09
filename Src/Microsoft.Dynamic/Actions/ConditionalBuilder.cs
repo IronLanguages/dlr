@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Actions {
     /// false branch of the previous condition and body.  Finally a non-conditional terminating
     /// branch must be added.
     /// </summary>
-    class ConditionalBuilder {
+    internal sealed class ConditionalBuilder {
         private readonly List<Expression> _conditions = new();
         private readonly List<Expression> _bodies = new();
         private readonly List<ParameterExpression> _variables = new();

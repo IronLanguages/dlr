@@ -343,7 +343,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// for y and z.  Associated with y would be a GenericParameterInferer and associated with
         /// z would be a ConstructedParameterInferer.
         /// </summary>
-        private class ArgumentInputs {
+        private sealed class ArgumentInputs {
             private readonly List<Type>/*!*/ _parameterTypes = new();
             private readonly List<DynamicMetaObject>/*!*/ _inputs = new();
             private readonly Type/*!*/ _genericParam;

@@ -28,8 +28,8 @@ namespace Microsoft.Scripting {
         protected SavableScriptCode(SourceUnit sourceUnit)
             : base(sourceUnit) {
         }
-       
-        class CodeInfo {
+
+        private sealed class CodeInfo {
             public readonly MethodBuilder Builder;
             public readonly ScriptCode Code;
             public readonly Type DelegateType;

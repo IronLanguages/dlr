@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Ast {
     /// <summary>
     /// Internal re-writer class which creates code which is light exception aware.
     /// </summary>
-    class LightExceptionRewriter : DynamicExpressionVisitor {
+    internal sealed class LightExceptionRewriter : DynamicExpressionVisitor {
         private LabelTarget _currentHandler;    // current label we should branch to when an exception is found
         private ParameterExpression _rethrow;   // current exception variable that we will rethrow
 
@@ -57,7 +57,7 @@ namespace Microsoft.Scripting.Ast {
         /// <summary>
         /// Class used to be avoid overhead of creating expression trees when we're usually 
         /// </summary>
-        class LightExceptionRewrittenCode : Expression, IInstructionProvider {
+        private sealed class LightExceptionRewrittenCode : Expression, IInstructionProvider {
             private readonly LabelTarget _returnLabel;
             private readonly Expression _body;
 
@@ -377,7 +377,7 @@ namespace Microsoft.Scripting.Ast {
             return expr;
         }
 
-        class LightExceptionCheckExpression : Expression, IInstructionProvider {
+        private sealed class LightExceptionCheckExpression : Expression, IInstructionProvider {
             private readonly Type _retType;
             private readonly LabelTarget _target;
             private readonly Expression _lastValue, _expr;
@@ -456,7 +456,7 @@ namespace Microsoft.Scripting.Ast {
             return Expression.Goto(_currentHandler, retType);
         }
 
-        class IsLightExceptionExpression : Expression, IInstructionProvider {
+        private sealed class IsLightExceptionExpression : Expression, IInstructionProvider {
             public static readonly IsLightExceptionExpression Instance = new();
 
             private IsLightExceptionExpression() { }
@@ -493,7 +493,7 @@ namespace Microsoft.Scripting.Ast {
             #endregion
         }
 
-        class IsLightExceptionInstruction : Instruction {
+        private sealed class IsLightExceptionInstruction : Instruction {
             public static readonly IsLightExceptionInstruction Instance = new();
 
             private IsLightExceptionInstruction() { }

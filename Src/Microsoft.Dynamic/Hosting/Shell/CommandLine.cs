@@ -180,7 +180,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
         }
 
-#region Interactivity
+        #region Interactivity
 
         /// <summary>
         /// Starts the interactive loop.  Performs any initialization necessary before
@@ -426,9 +426,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return res;
         }
 
-#endregion
+        #endregion
 
-        class SimpleCommandDispatcher : ICommandDispatcher {
+        private sealed class SimpleCommandDispatcher : ICommandDispatcher {
             public object Execute(CompiledCode compiledCode, ScriptScope scope) {
                 return compiledCode.Execute(scope);
             }

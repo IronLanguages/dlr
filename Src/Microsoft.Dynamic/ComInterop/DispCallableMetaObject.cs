@@ -12,7 +12,7 @@ using System.Security;
 using System.Security.Permissions;
 
 namespace Microsoft.Scripting.ComInterop {
-    internal class DispCallableMetaObject : DynamicMetaObject {
+    internal sealed class DispCallableMetaObject : DynamicMetaObject {
         private readonly DispCallable _callable;
 
         internal DispCallableMetaObject(Expression expression, DispCallable callable)

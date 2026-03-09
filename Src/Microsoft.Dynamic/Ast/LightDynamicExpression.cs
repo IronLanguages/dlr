@@ -79,7 +79,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightDynamicExpression1 : LightDynamicExpression, ILightExceptionAwareExpression {
         internal readonly Expression _arg0;
 
-        internal protected LightDynamicExpression1(CallSiteBinder binder, Expression arg0) 
+        protected internal LightDynamicExpression1(CallSiteBinder binder, Expression arg0) 
             : base(binder) {
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             _arg0 = arg0;
@@ -135,7 +135,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightTypedDynamicExpression1 : LightDynamicExpression1, ILightExceptionAwareExpression {
         private readonly Type _returnType;
 
-        internal protected LightTypedDynamicExpression1(CallSiteBinder binder, Type returnType, Expression arg0)
+        protected internal LightTypedDynamicExpression1(CallSiteBinder binder, Type returnType, Expression arg0)
             : base(binder, arg0) {
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
@@ -169,7 +169,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightDynamicExpression2 : LightDynamicExpression, ILightExceptionAwareExpression {
         internal readonly Expression _arg0, _arg1;
 
-        internal protected LightDynamicExpression2(CallSiteBinder binder, Expression arg0, Expression arg1)
+        protected internal LightDynamicExpression2(CallSiteBinder binder, Expression arg0, Expression arg1)
             : base(binder) {
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             ContractUtils.RequiresNotNull(arg1, nameof(arg1));
@@ -181,7 +181,7 @@ namespace Microsoft.Scripting.Ast {
             return DynamicExpression.Dynamic(Binder, Type, _arg0, _arg1);
         }
 
-        protected override int ArgumentCount {
+        protected sealed override int ArgumentCount {
             get { return 2; }
         }
 
@@ -234,7 +234,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightTypedDynamicExpression2 : LightDynamicExpression2, ILightExceptionAwareExpression {
         private readonly Type _returnType;
 
-        internal protected LightTypedDynamicExpression2(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1)
+        protected internal LightTypedDynamicExpression2(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1)
             : base(binder, arg0, arg1) {
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
@@ -268,7 +268,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightDynamicExpression3 : LightDynamicExpression, ILightExceptionAwareExpression {
         internal readonly Expression _arg0, _arg1, _arg2;
 
-        internal protected LightDynamicExpression3(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
+        protected internal LightDynamicExpression3(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
             : base(binder) {
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             ContractUtils.RequiresNotNull(arg1, nameof(arg1));
@@ -339,10 +339,10 @@ namespace Microsoft.Scripting.Ast {
         #endregion
     }
 
-    internal class LightTypedDynamicExpression3 : LightDynamicExpression3, ILightExceptionAwareExpression {
+    public class LightTypedDynamicExpression3 : LightDynamicExpression3, ILightExceptionAwareExpression {
         private readonly Type _returnType;
 
-        internal protected LightTypedDynamicExpression3(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2)
+        protected internal LightTypedDynamicExpression3(CallSiteBinder binder, Type returnType, Expression arg0, Expression arg1, Expression arg2)
             : base(binder, arg0, arg1, arg2) {
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
             _returnType = returnType;
@@ -377,7 +377,7 @@ namespace Microsoft.Scripting.Ast {
     public class LightDynamicExpression4 : LightDynamicExpression, ILightExceptionAwareExpression {
         internal readonly Expression _arg0, _arg1, _arg2, _arg3;
 
-        internal protected LightDynamicExpression4(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
+        protected internal LightDynamicExpression4(CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(binder) {
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             ContractUtils.RequiresNotNull(arg1, nameof(arg1));
@@ -497,7 +497,7 @@ namespace Microsoft.Scripting.Ast {
         private readonly IList<Expression> _args;
         private readonly Type _returnType;
 
-        internal protected LightTypedDynamicExpressionN(CallSiteBinder binder, Type returnType, IList<Expression> args) 
+        protected internal LightTypedDynamicExpressionN(CallSiteBinder binder, Type returnType, IList<Expression> args) 
             : base(binder) {
                 Debug.Assert(args.Count > 0);
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
