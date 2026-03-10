@@ -13,7 +13,6 @@ namespace Microsoft.Scripting {
     /// Source code reader.
     /// </summary>    
     public class SourceCodeReader : TextReader {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static new readonly SourceCodeReader Null = new(TextReader.Null, null);
 
         public SourceCodeReader(TextReader textReader, Encoding encoding) {

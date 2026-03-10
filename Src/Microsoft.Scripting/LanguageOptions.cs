@@ -128,7 +128,6 @@ namespace Microsoft.Scripting {
             return GetStringCollectionOption(options, "SearchPaths", Path.PathSeparator);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         protected static readonly ReadOnlyCollection<string> EmptyStringCollection = new(ArrayUtils.EmptyStrings);
     }
 }

@@ -16,7 +16,6 @@ namespace Microsoft.Scripting.Generation {
     // TODO: This should be a static class
     // TODO: simplify initialization logic & state
     public sealed class Snippets {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly Snippets Shared = new();
 
         private Snippets() { }

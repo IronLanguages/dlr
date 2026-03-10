@@ -888,7 +888,6 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if FEATURE_LCG
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework")]
         internal static DynamicMethod RawCreateDynamicMethod(string name, Type returnType, Type[] parameterTypes) {
 
             //
@@ -1209,7 +1208,6 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if FEATURE_METADATA_READER
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2116:AptcaMethodsShouldOnlyCallAptcaMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static IEnumerable<MethodInfo> GetVisibleExtensionMethodsFast(Assembly assembly) {
             // Security: link demand

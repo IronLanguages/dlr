@@ -53,7 +53,6 @@ namespace Microsoft.Scripting.Interpreter {
     }
 
     public sealed class InstructionFactory<T> : InstructionFactory {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly InstructionFactory Factory = new InstructionFactory<T>();
 
         private Instruction _getArrayItem;

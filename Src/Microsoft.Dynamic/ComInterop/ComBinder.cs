@@ -14,7 +14,6 @@ using System.Security.Permissions;
 
 using Microsoft.Scripting.Utils;
 
-[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "System.Dynamic")]
 namespace Microsoft.Scripting.ComInterop {
 
     /// <summary>
@@ -241,7 +240,6 @@ namespace Microsoft.Scripting.ComInterop {
         /// </summary>
         /// <param name="value">The object for which member names are requested.</param>
         /// <returns>The collection of member names.</returns>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static IList<string> GetDynamicDataMemberNames(object value) {
             ContractUtils.RequiresNotNull(value, nameof(value));
             ContractUtils.Requires(IsComObject(value), nameof(value), Strings.ComObjectExpected);
@@ -256,8 +254,6 @@ namespace Microsoft.Scripting.ComInterop {
         /// <param name="value">The object for which data members are requested.</param>
         /// <param name="names">The enumeration of names of data members for which to retrieve values.</param>
         /// <returns>The collection of pairs that represent data member's names and their data.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static IList<KeyValuePair<string, object>> GetDynamicDataMembers(object value, IEnumerable<string> names) {
             ContractUtils.RequiresNotNull(value, nameof(value));
             ContractUtils.Requires(IsComObject(value), nameof(value), Strings.ComObjectExpected);

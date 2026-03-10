@@ -24,7 +24,6 @@ namespace Microsoft.Scripting.Actions {
     /// directly.
     /// </summary>
     public class MemberGroup : IEnumerable<MemberTracker> {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly MemberGroup EmptyGroup = new(MemberTracker.EmptyTrackers);
 
         private readonly MemberTracker[] _members;

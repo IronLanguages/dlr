@@ -8,7 +8,6 @@ namespace Microsoft.Scripting.Runtime {
 
     // TODO: this class should be abstract
     public class ScopeExtension {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly ScopeExtension[] EmptyArray = System.Array.Empty<ScopeExtension>();
 
         public Scope Scope { get; }

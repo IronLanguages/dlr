@@ -23,10 +23,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         // Emitted:
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly string[] EmptyStrings = EmptyArray<string>.Instance;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly object[] EmptyObjects = EmptyArray<object>.Instance;
 
         public static IComparer<T> ToComparer<T>(Comparison<T> comparison) {

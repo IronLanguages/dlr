@@ -72,7 +72,6 @@ namespace Microsoft.Scripting {
         }
 
         [SecurityCritical]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2140:TransparentMethodsMustNotReferenceCriticalCodeFxCopRule")]
         public override void GetObjectData(SerializationInfo info, StreamingContext context) {
             ContractUtils.RequiresNotNull(info, nameof(info));
 
