@@ -8,7 +8,6 @@ namespace Microsoft.Scripting.Runtime {
     /// have source code associated with it.
     /// </summary>
     public sealed class NullTextContentProvider : TextContentProvider {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly NullTextContentProvider Null = new();
 
         private NullTextContentProvider() {

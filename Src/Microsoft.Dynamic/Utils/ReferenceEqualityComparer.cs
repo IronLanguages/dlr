@@ -9,7 +9,6 @@ using System.Dynamic;
 
 namespace Microsoft.Scripting.Utils {
     public sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T> where T : class {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly ReferenceEqualityComparer<T> Instance = new();
 
         private ReferenceEqualityComparer() { }

@@ -34,7 +34,6 @@ namespace Microsoft.Scripting {
     /// </summary>
     [Serializable]
     public class PlatformAdaptationLayer {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly PlatformAdaptationLayer Default = new();
 
         [Obsolete("This will be removed in the the future.")]
@@ -298,8 +297,6 @@ namespace Microsoft.Scripting {
 
 #if FEATURE_PROCESS
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2149:TransparentMethodsMustNotCallNativeCodeFxCopRule")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2140:TransparentMethodsMustNotReferenceCriticalCodeFxCopRule")]
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void SetEmptyEnvironmentVariable(string key) {
             // System.Environment.SetEnvironmentVariable interprets an empty value string as 

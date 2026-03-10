@@ -29,7 +29,6 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="e">The expression to examine</param>
         /// <param name="value">The constant value to check for.</param>
         /// <returns>true/false</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         internal static bool IsConstant(Expression e, object value) {
             switch (e.NodeType) {
                 case ExpressionType.AndAlso:

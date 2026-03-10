@@ -84,11 +84,8 @@ namespace Microsoft.Scripting.Runtime {
     public sealed class DlrConfiguration {
         private bool _frozen;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly StringComparer FileExtensionComparer = StringComparer.OrdinalIgnoreCase;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly StringComparer LanguageNameComparer = StringComparer.OrdinalIgnoreCase;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly StringComparer OptionNameComparer = StringComparer.Ordinal;
 
         private readonly Dictionary<string, LanguageConfiguration> _languageNames;

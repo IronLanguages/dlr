@@ -23,7 +23,6 @@ namespace Microsoft.Scripting.Actions {
     /// It also provides a wrapper around the reflection APIs which cannot be extended from partial trust.
     /// </summary>
     public abstract class MemberTracker {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly MemberTracker[] EmptyTrackers = Array.Empty<MemberTracker>();
 
         private static readonly Dictionary<MemberKey, MemberTracker> _trackers = new();

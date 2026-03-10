@@ -15,21 +15,17 @@ namespace Microsoft.Scripting.Interpreter {
     using InterpretedFrameThreadLocal = Microsoft.Scripting.Utils.ThreadLocal<InterpretedFrame>;
 
     public sealed class InterpretedFrame {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly InterpretedFrameThreadLocal CurrentFrame = new();
 
         internal readonly Interpreter Interpreter;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         private int[] _continuations;
         private int _continuationIndex;
         private int _pendingContinuation;
         private object _pendingValue;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly object[] Data;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly StrongBox<object>[] Closure;
 
         public int StackIndex;

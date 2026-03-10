@@ -24,7 +24,6 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             return new TimeSpan(7, 0, 0, 0); // days,hours,mins,secs 
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2116:AptcaMethodsShouldOnlyCallAptcaMethods")] // TODO: Microsoft.Scripting does not need to be APTCA
         internal static IpcChannel CreateChannel(string channelName, string portName) {
             // The Hosting API classes require TypeFilterLevel.Full to be remoted
             BinaryServerFormatterSinkProvider serverProv = new BinaryServerFormatterSinkProvider();
