@@ -14,7 +14,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Scripting.Metadata {
     [SecurityCritical]
-    public unsafe sealed class MemoryMapping : CriticalFinalizerObject {
+    public sealed unsafe class MemoryMapping : CriticalFinalizerObject {
         [SecurityCritical]
         internal byte* _pointer;
 

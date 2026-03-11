@@ -11,7 +11,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Represents a block in memory.
     /// </summary>
-    public unsafe sealed class MemoryBlock {
+    public sealed unsafe class MemoryBlock {
         private readonly byte* _pointer;
 
         private readonly int _length;

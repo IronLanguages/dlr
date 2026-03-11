@@ -9,12 +9,12 @@ using System.Diagnostics;
 namespace Microsoft.Scripting.Metadata {
     internal static class ClrStubs {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        internal unsafe static int GetCharCount(this Encoding encoding, byte* bytes, int byteCount, object nls) {
+        internal static unsafe int GetCharCount(this Encoding encoding, byte* bytes, int byteCount, object nls) {
             return encoding.GetCharCount(bytes, byteCount);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        internal unsafe static void GetChars(this Encoding encoding, byte* bytes, int byteCount, char* chars, int charCount, object nls) {
+        internal static unsafe void GetChars(this Encoding encoding, byte* bytes, int byteCount, char* chars, int charCount, object nls) {
             encoding.GetChars(bytes, byteCount, chars, charCount);
         }
     }
