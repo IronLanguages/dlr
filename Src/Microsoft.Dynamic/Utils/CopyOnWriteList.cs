@@ -12,9 +12,9 @@ namespace Microsoft.Scripting.Utils {
     /// without taking a lock.
     /// </summary>
     public class CopyOnWriteList<T> : IList<T> {
-        List<T> _list = new List<T>();
+        private List<T> _list = new List<T>();
 
-        List<T> GetNewListForWrite() {
+        private List<T> GetNewListForWrite() {
             List<T> oldList = _list;
             List<T> newList = new List<T>(oldList.Count + 1);
             newList.AddRange(oldList);

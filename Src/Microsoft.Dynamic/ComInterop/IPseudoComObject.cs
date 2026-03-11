@@ -9,7 +9,7 @@ using System;
 using System.Dynamic;
 
 namespace Microsoft.Scripting.ComInterop {
-    interface IPseudoComObject {
+    internal interface IPseudoComObject {
         DynamicMetaObject GetMetaObject(Expression expression);
     }
 }

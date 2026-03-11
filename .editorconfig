@@ -105,3 +105,6 @@ dotnet_diagnostic.SYSLIB1054.severity = suggestion # SYSLIB1054: Use 'LibraryImp
 [Src/**.cs]
 dotnet_diagnostic.CA1852.severity = warning      # CA1852: Seal internal types
 dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
+
+# Modifier preferences
+dotnet_diagnostic.IDE0040.severity = warning     # IDE0040: Add accessibility modifiers

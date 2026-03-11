@@ -411,7 +411,7 @@ namespace Microsoft.Scripting.Actions {
                 }
             }
 
-            string GetFullChildName(string childName) {
+            private string GetFullChildName(string childName) {
                 Debug.Assert(childName.IndexOf('.') == -1); // This is the simple name, not the full name
                 if (_fullNamespace is null) {
                     return childName;

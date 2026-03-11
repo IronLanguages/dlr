@@ -24,7 +24,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// The RemoteConsoleHost listens to stdout of the remote runtime server and echos it locally to the user.
     /// </summary>
     public abstract class RemoteConsoleHost : ConsoleHost, IDisposable {
-        Process _remoteRuntimeProcess;
+        private Process _remoteRuntimeProcess;
         internal RemoteCommandDispatcher _remoteCommandDispatcher;
         private string _channelName = RemoteConsoleHost.GetChannelName();
         private IpcChannel _clientChannel;

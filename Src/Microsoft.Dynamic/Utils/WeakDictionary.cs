@@ -25,13 +25,13 @@ namespace Microsoft.Scripting.Utils {
     /// </summary>
     public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
         // The one and only comparer instance.
-        static readonly IEqualityComparer<object> comparer = new WeakComparer<object>();
-        static readonly ConstructorInfo valueConstructor;
+        private static readonly IEqualityComparer<object> comparer = new WeakComparer<object>();
+        private static readonly ConstructorInfo valueConstructor;
 
         private IDictionary<object, TValue> dict = new Dictionary<object, TValue>(comparer);
         private int version, cleanupVersion;
 
-        int cleanupGC = 0;
+        private int cleanupGC = 0;
 
         static WeakDictionary()
         {
@@ -115,7 +115,7 @@ namespace Microsoft.Scripting.Utils {
         /// get collected. This could be fixed by triggerring CheckCleanup() to be called on every garbage-collection
         /// by having a dummy watch-dog object with a finalizer which calls CheckCleanup().
         /// </summary>
-        void CheckCleanup() {
+        private void CheckCleanup() {
             version++;
 
             long change = version - cleanupVersion;
@@ -264,7 +264,7 @@ namespace Microsoft.Scripting.Utils {
     }
 
     // WeakComparer treats WeakObject as transparent envelope
-    sealed class WeakComparer<T> : IEqualityComparer<T> {
+    internal sealed class WeakComparer<T> : IEqualityComparer<T> {
         bool IEqualityComparer<T>.Equals(T x, T y) {
             if (x is WeakObject wx)
                 x = (T)wx.Target;

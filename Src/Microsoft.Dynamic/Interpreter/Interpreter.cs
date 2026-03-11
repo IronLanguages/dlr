@@ -157,7 +157,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        enum ExceptionHandlingResult {
+        private enum ExceptionHandlingResult {
             Rethrow,
             Continue,
             Return
