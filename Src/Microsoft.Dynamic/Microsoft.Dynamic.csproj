@@ -30,10 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="**/*.netfx.cs" />
     <Compile Remove="**/*.netcoreapp.cs" />
     <Compile Include="**/*.netfx.cs" Condition=" '$(IsFullFramework)' == 'true' " />
