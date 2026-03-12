@@ -117,7 +117,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// Cursor position management
         /// </summary>
-        struct Cursor {
+        private struct Cursor {
             /// <summary>
             /// Beginning position of the cursor - top coordinate.
             /// </summary>
@@ -743,7 +743,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return line;
         }
 
-        string FinalLineText {
+        private string FinalLineText {
             get {
                 return Environment.OSVersion.Platform != PlatformID.Unix ? "\x1A" : "\x04";
             }

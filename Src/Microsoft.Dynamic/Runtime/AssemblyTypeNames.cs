@@ -56,7 +56,7 @@ namespace Microsoft.Scripting.Runtime {
                    select new TypeName(t);
         }
 
-        static IEnumerable<TypeName> GetTypeNames(string[] namespaces, string[][] types) {
+        private static IEnumerable<TypeName> GetTypeNames(string[] namespaces, string[][] types) {
             Debug.Assert(namespaces.Length == types.Length);
 
             for (int i = 0; i < namespaces.Length; i++) {

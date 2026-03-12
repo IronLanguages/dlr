@@ -38,7 +38,7 @@ dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 # enforce some code styles
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggestion
-csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, file, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, required, volatile, async:suggestion
 
 # Analyzers
 dotnet_analyzer_diagnostic.severity = warning
@@ -105,3 +105,7 @@ dotnet_diagnostic.SYSLIB1054.severity = suggestion # SYSLIB1054: Use 'LibraryImp
 [Src/**.cs]
 dotnet_diagnostic.CA1852.severity = warning      # CA1852: Seal internal types
 dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
+
+# Modifier preferences
+dotnet_diagnostic.IDE0036.severity = warning     # IDE0036: Order modifiers
+dotnet_diagnostic.IDE0040.severity = warning     # IDE0040: Add accessibility modifiers

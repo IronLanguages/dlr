@@ -17,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
         ICollection<KeyValuePair<TKey, TValue>>,
         IEnumerable<KeyValuePair<TKey, TValue>> {
 
-        Dictionary<TKey, TValue> _dictionary;
+        private Dictionary<TKey, TValue> _dictionary;
 
         /// <summary>
         /// This returns the raw unsynchronized Dictionary[TKey, TValue]. Users are responsible for locking

@@ -846,7 +846,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        unsafe internal void CopyFromIndirect(object value) {
+        internal unsafe void CopyFromIndirect(object value) {
             VarEnum vt = (VarEnum)(((int)VariantType) & ~((int)VarEnum.VT_BYREF));
 
             if (value is null) {

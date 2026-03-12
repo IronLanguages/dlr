@@ -401,7 +401,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return _console.ReadLine(autoIndentSize);
         }
 
-        internal protected virtual TextWriter GetOutputWriter(bool isErrorOutput) {
+        protected internal virtual TextWriter GetOutputWriter(bool isErrorOutput) {
             return isErrorOutput ? System.Console.Error : System.Console.Out;
         }
 

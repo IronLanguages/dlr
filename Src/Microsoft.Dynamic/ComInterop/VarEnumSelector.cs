@@ -295,7 +295,7 @@ namespace Microsoft.Scripting.ComInterop {
         // Type.InvokeMember tries to marshal objects as VT_DISPATCH, and falls back to VT_UNKNOWN
         // VT_RECORD here just indicates that we have user defined type.
         // We will try VT_DISPATCH and then call GetNativeVariantForObject.
-        const VarEnum VT_DEFAULT = VarEnum.VT_RECORD;
+        private const VarEnum VT_DEFAULT = VarEnum.VT_RECORD;
 
         private VarEnum GetComType(ref Type argumentType) {
             if (argumentType == typeof(Missing)) {
