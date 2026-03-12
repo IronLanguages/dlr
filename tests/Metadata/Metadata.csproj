@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
-    <ProjectReference Include="..\..\Src\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
+    <ProjectReference Include="..\..\src\core\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
+    <ProjectReference Include="..\..\src\core\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" />
   </ItemGroup>
 
   <ItemGroup>
