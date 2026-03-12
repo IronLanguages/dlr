@@ -19,19 +19,19 @@ jobs:
     steps:
       # Prerequisites
     - name: Checkout DLR source code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
       # Setup .NET
     - name: Setup .NET 10.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0.x'
     - name: Setup .NET 9.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '9.0.x'
     - name: Setup .NET 8.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '8.0.x'
 
@@ -42,7 +42,7 @@ jobs:
       run: pwsh make.ps1 package
 
       # Upload package
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: packages-${{ matrix.os }}
         path: Package/Release/Packages
