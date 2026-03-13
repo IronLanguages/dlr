@@ -50,20 +50,20 @@
   </Target>
 
   <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="LoadIlasm">
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="Src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
     <Delete Files="$(OutputPath)\$(Prefix)missingtype.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee1.dll" Sources="Src\typeforwarder1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
-    <Exec Command="&quot;$(_IlasmDir)/ilasm&quot; -NOLOGO -QUIET -DLL -OUTPUT=&quot;$(OutputPath)/$(Prefix)typeforwarder2.dll&quot; Src/typeforwarder2.il" />
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
-    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee3.dll" Sources="Src\typeforwarder3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee1.dll" Sources="src\typeforwarder1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
+    <Exec Command="&quot;$(_IlasmDir)/ilasm&quot; -NOLOGO -QUIET -DLL -OUTPUT=&quot;$(OutputPath)/$(Prefix)typeforwarder2.dll&quot; src/typeforwarder2.il" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee3.dll" Sources="src\typeforwarder3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
   </Target>
 
-  <Target Name="TypeSample" Inputs="Src\TypeSamples.cs;Src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll">
-    <Csc TargetType="Library" References="@(ReferencePath)" Sources="Src\TypeSamples.cs;Src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
+  <Target Name="TypeSample" Inputs="src\TypeSamples.cs;src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\TypeSamples.cs;src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
   </Target>
 
   <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
@@ -90,38 +90,38 @@
   </Target>
 
   <ItemGroup>
-    <AreaCSFile Include="Src\fieldtests.cs" />
-    <AreaCSFile Include="Src\methodargs.cs" />
-    <AreaCSFile Include="Src\returnvalues.cs" />
-    <AreaCSFile Include="Src\operators.cs" />
-    <AreaCSFile Include="Src\userdefinedconversions.cs" />
-    <AreaCSFile Include="Src\delegatedefinitions.cs" />
-    <AreaCSFile Include="Src\eventdefinitions.cs" />
-    <AreaCSFile Include="Src\propertydefinitions.cs" />
-    <AreaCSFile Include="Src\indexerdefinitionscs.cs" />
-    <AreaCSFile Include="Src\defaultmemberscs.cs" />
-    <AreaCSFile Include="Src\baseclasscs.cs" />
-    <AreaCSFile Include="Src\dynamicobjmodel.cs" />
+    <AreaCSFile Include="src\fieldtests.cs" />
+    <AreaCSFile Include="src\methodargs.cs" />
+    <AreaCSFile Include="src\returnvalues.cs" />
+    <AreaCSFile Include="src\operators.cs" />
+    <AreaCSFile Include="src\userdefinedconversions.cs" />
+    <AreaCSFile Include="src\delegatedefinitions.cs" />
+    <AreaCSFile Include="src\eventdefinitions.cs" />
+    <AreaCSFile Include="src\propertydefinitions.cs" />
+    <AreaCSFile Include="src\indexerdefinitionscs.cs" />
+    <AreaCSFile Include="src\defaultmemberscs.cs" />
+    <AreaCSFile Include="src\baseclasscs.cs" />
+    <AreaCSFile Include="src\dynamicobjmodel.cs" />
 
-    <AreaVBFile Include="Src\*.vb" />
-    <LoadOrderCSFile Include="Src\loadorder\loadorder*.cs" />
+    <AreaVBFile Include="src\*.vb" />
+    <LoadOrderCSFile Include="src\loadorder\loadorder*.cs" />
 
-    <ReachTypeInput Include="Src\loadtypesample.cs" />
-    <ReachTypeInput Include="Src\missingtype.cs" />
-    <ReachTypeInput Include="Src\loadexception.cs" />
-    <ReachTypeInput Include="Src\typeforwardee1.cs" />
-    <ReachTypeInput Include="Src\typeforwarder1.cs" />
-    <ReachTypeInput Include="Src\typeforwardee2.cs" />
-    <ReachTypeInput Include="Src\typeforwarder2.il" />
-    <ReachTypeInput Include="Src\typeforwardee3.cs" />
-    <ReachTypeInput Include="Src\typeforwarder3.cs" />
+    <ReachTypeInput Include="src\loadtypesample.cs" />
+    <ReachTypeInput Include="src\missingtype.cs" />
+    <ReachTypeInput Include="src\loadexception.cs" />
+    <ReachTypeInput Include="src\typeforwardee1.cs" />
+    <ReachTypeInput Include="src\typeforwarder1.cs" />
+    <ReachTypeInput Include="src\typeforwardee2.cs" />
+    <ReachTypeInput Include="src\typeforwarder2.il" />
+    <ReachTypeInput Include="src\typeforwardee3.cs" />
+    <ReachTypeInput Include="src\typeforwarder3.cs" />
 
     <ReachTypeOutput Include="@(ReachTypeInput->'$(OutputPath)\$(Prefix)%(Filename).dll')" Exclude="$(OutputPath)\$(Prefix)missingtype.dll" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="dummy.cs" />
-    <None Include="Src\**\*" />
+    <None Include="src\**\*" />
   </ItemGroup>
 
   <ItemGroup>
