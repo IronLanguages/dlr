@@ -15,7 +15,7 @@ $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 $_defaultFrameworkSettings = @{
     "runner" = "dotnet";
-    "tests" = @{ "Microsoft.Dynamic.Test" = "Tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "Tests/Microsoft.Scripting.Test"; "Metadata" = "Tests/Metadata" };
+    "tests" = @{ "Microsoft.Dynamic.Test" = "tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "tests/Microsoft.Scripting.Test"; "Metadata" = "tests/Metadata" };
     "args" = @('test', '__BASEDIR__/__TESTFOLDER__', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
     "filterArg" = '--filter="__FILTER__"';
     "filters" = @{

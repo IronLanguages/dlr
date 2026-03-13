@@ -9,7 +9,7 @@
 
     <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
-    <BuildSysDir>$(RootDir)\Build</BuildSysDir>
+    <BuildSysDir>$(RootDir)\eng</BuildSysDir>
   </PropertyGroup>
 
   <Import Project="$(BuildSysDir)\Tasks.targets" />
@@ -88,7 +88,7 @@
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
-      <NuSpecDir>$(RootDir)/Package/nuget</NuSpecDir>
+      <NuSpecDir>$(RootDir)/eng/package/nuget</NuSpecDir>
     </Package>
   </ItemGroup>
 

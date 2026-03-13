@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Microsoft.Scripting\Microsoft.Scripting.csproj" />
+    <ProjectReference Include="..\..\src\core\Microsoft.Scripting\Microsoft.Scripting.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <DlrRootDir>$(MSBuildThisFileDirectory)</DlrRootDir>
-    <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
+    <DlrBuildDir>$(DlrRootDir)\eng</DlrBuildDir>
 
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>

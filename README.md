@@ -19,7 +19,7 @@ The best way to install the DLR is through the NuGet DynamicLanguageRuntime pack
 
 Documentation
 -------------
-The best current documentation is in the Docs/ directory, in Word and PDF format (it *was* a Microsoft project, after all).
+The best current documentation is in the `docs/` directory, in Word and PDF format (it *was* a Microsoft project, after all).
 
 Help
 ----
@@ -40,6 +40,8 @@ On Windows machines, start a Visual Studio PS prompt and type:
 On Unix machines, make sure Mono and PowerShell 7+ are installed and in the PATH, and type:
 
     $ ./make.ps1
+
+Engineering build assets such as framework props and CI templates live under eng/.
 
 Since the main development is on .NET, Mono bugs may inadvertently be introduced
 &mdash; please report them!
