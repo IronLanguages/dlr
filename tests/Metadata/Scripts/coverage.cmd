@@ -1,5 +1,5 @@
-set SRC=%DLR_ROOT%\Bin\v4Debug
-set DST=%DLR_ROOT%\Bin\CodeCoverage
+set SRC=%DLR_ROOT%\bin\v4Debug
+set DST=%DLR_ROOT%\bin\CodeCoverage
 set PERF_TOOLS=%VSINSTALLDIR%\Team Tools\Performance Tools
 set VSINSTR="%PERF_TOOLS%\vsinstr.exe" /coverage /outputpath:"%DST%"
 
@@ -14,7 +14,7 @@ xcopy /s /y "%SRC%\Microsoft.Scripting.dll" "%DST%"
 
 "%PERF_TOOLS%\vsperfcmd.exe" /start:coverage /OUTPUT:"%DST%\Metadata"
 
-"%DST%\Metadata.exe" /f "%DLR_ROOT%\Runtime\Tests\Metadata\TestFiles\1.exe"
+"%DST%\Metadata.exe" /f "%DLR_ROOT%\tests\Metadata\TestFiles\1.exe"
 "%DST%\Metadata.exe" /u /d ponetmd > NUL
  
 "%PERF_TOOLS%\vsperfcmd.exe" /shutdown
