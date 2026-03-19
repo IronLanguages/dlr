@@ -44,7 +44,7 @@
     <MSBuild
       Projects="$(Solution)"
       Targets="Build"
-      Properties="$(BuildProperties);Configuration=$(Configuration)" />
+      Properties="$(BuildProperties);Configuration=$(Configuration);$(DLR_ADDITIONAL_BUILD_PROPERTIES)" />
   </Target>
 
   <Target Name="Rebuild">
