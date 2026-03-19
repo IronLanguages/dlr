@@ -14,7 +14,7 @@ namespace Microsoft.Scripting.Utils {
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface")] // TODO
     public class EnumerableWrapper : IEnumerable {
-        private IEnumerable _wrappedObject;
+        private readonly IEnumerable _wrappedObject;
         public EnumerableWrapper(IEnumerable o) {
             _wrappedObject = o;
         }
@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private sealed class CovariantConvertor<T, TSuper> : IEnumerable<TSuper> where T : TSuper {
-            private IEnumerable<T> _enumerable;
+            private readonly IEnumerable<T> _enumerable;
 
             public CovariantConvertor(IEnumerable<T> enumerable) {
                 ContractUtils.RequiresNotNull(enumerable, nameof(enumerable));

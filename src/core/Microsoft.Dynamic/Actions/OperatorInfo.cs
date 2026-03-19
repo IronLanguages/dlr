@@ -10,7 +10,7 @@ namespace Microsoft.Scripting.Actions {
     /// OperatorInfo provides a mapping from DLR ExpressionType to their associated .NET methods.
     /// </summary>
     internal sealed class OperatorInfo {
-        private static Dictionary<ExpressionType, OperatorInfo> _infos = MakeOperatorTable(); // table of ExpressionType, names, and alt names for looking up methods.
+        private static readonly Dictionary<ExpressionType, OperatorInfo> _infos = MakeOperatorTable(); // table of ExpressionType, names, and alt names for looking up methods.
 
         private OperatorInfo(ExpressionType op, string name, string altName) {
             Operator = op;

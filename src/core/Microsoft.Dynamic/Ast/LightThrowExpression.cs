@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Ast {
     /// </summary>
     internal sealed class LightThrowExpression : Expression {
         private readonly Expression _exception;
-        private static MethodInfo _throw = new Func<Exception, object>(LightExceptions.Throw).GetMethodInfo();
+        private static readonly MethodInfo _throw = new Func<Exception, object>(LightExceptions.Throw).GetMethodInfo();
 
         public LightThrowExpression(Expression exception) {
             _exception = exception;

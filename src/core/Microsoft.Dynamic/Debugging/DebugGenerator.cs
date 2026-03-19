@@ -11,7 +11,7 @@ namespace Microsoft.Scripting.Debugging {
     /// Used to wrap a lambda that was already a generator prior to transform.
     /// </summary>
     internal sealed class DebugGenerator<T> : IEnumerator<T>, IDisposable {
-        private DebugFrame _frame;
+        private readonly DebugFrame _frame;
 
         internal DebugGenerator(DebugFrame frame) {
             _frame = frame;

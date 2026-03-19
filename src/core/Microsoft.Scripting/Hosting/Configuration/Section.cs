@@ -41,11 +41,11 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         private const string _Languages = "languages";
         private const string _Options = "options";
 
-        private static ConfigurationPropertyCollection _Properties = new() {
-            new ConfigurationProperty(_DebugMode, typeof(bool?), null), 
-            new ConfigurationProperty(_PrivateBinding, typeof(bool?), null), 
-            new ConfigurationProperty(_Languages, typeof(LanguageElementCollection), null, ConfigurationPropertyOptions.IsDefaultCollection), 
-            new ConfigurationProperty(_Options, typeof(OptionElementCollection), null), 
+        private static readonly ConfigurationPropertyCollection _Properties = new() {
+            new(_DebugMode, typeof(bool?), null), 
+            new(_PrivateBinding, typeof(bool?), null), 
+            new(_Languages, typeof(LanguageElementCollection), null, ConfigurationPropertyOptions.IsDefaultCollection), 
+            new(_Options, typeof(OptionElementCollection), null), 
         };
 
         protected override ConfigurationPropertyCollection Properties => _Properties;

@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal readonly Interpreter Interpreter;
 
-        private int[] _continuations;
+        private readonly int[] _continuations;
         private int _continuationIndex;
         private int _pendingContinuation;
         private object _pendingValue;

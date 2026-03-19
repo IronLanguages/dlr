@@ -164,7 +164,7 @@ namespace Microsoft.Scripting.Actions {
     public class ParameterMappingInfo {
         private readonly int _parameterIndex;
         private readonly int _actionIndex;
-        private ConstantExpression _fixedInput;
+        private readonly ConstantExpression _fixedInput;
 
         private ParameterMappingInfo(int param, int action, ConstantExpression fixedInput) {
             _parameterIndex = param;

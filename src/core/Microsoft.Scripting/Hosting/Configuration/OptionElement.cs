@@ -16,10 +16,10 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         private const string _Value = "value";
         private const string _Language = "language";
 
-        private static ConfigurationPropertyCollection _Properties = new() {
-            new ConfigurationProperty(_Option, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsKey),
-            new ConfigurationProperty(_Value, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired),
-            new ConfigurationProperty(_Language, typeof(string), string.Empty, ConfigurationPropertyOptions.IsKey),
+        private static readonly ConfigurationPropertyCollection _Properties = new() {
+            new(_Option, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsKey),
+            new(_Value, typeof(string), string.Empty, ConfigurationPropertyOptions.IsRequired),
+            new(_Language, typeof(string), string.Empty, ConfigurationPropertyOptions.IsKey),
         };
 
         protected override ConfigurationPropertyCollection Properties => _Properties;

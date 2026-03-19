@@ -12,14 +12,14 @@ namespace Microsoft.Scripting {
 
     [Serializable]
     public class SyntaxErrorException : Exception {
-        private SourceSpan _span;
+        private readonly SourceSpan _span;
 
-        private string _sourceCode;
-        private string _sourceLine;
-        private string _sourcePath;
+        private readonly string _sourceCode;
+        private readonly string _sourceLine;
+        private readonly string _sourcePath;
 
-        private Severity _severity;
-        private int _errorCode;
+        private readonly Severity _severity;
+        private readonly int _errorCode;
 
         public SyntaxErrorException() : base() { }
 

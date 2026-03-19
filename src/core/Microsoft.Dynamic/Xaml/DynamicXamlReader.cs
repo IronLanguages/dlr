@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Runtime {
             private readonly object _scope;
             private readonly DynamicOperations _operations;
             private readonly Stack<bool> _nameStack = new();
-            private HashSet<string> _names = new();
+            private readonly HashSet<string> _names = new();
 
             public DynamicWriter(object scope, DynamicOperations operations, XamlSchemaContext context, XamlObjectWriterSettings settings)
                 : base(context, settings) {
@@ -106,7 +106,7 @@ namespace Microsoft.Scripting.Runtime {
                 throw new InvalidOperationException();
             }
 
-            private static MethodInfo Dummy = new Action<object, object>(Adder).Method;
+            private static readonly MethodInfo Dummy = new Action<object, object>(Adder).Method;
 
             private sealed class DynamicEventMember : XamlMember {
                 public DynamicEventMember(DynamicWriter writer, EventInfo eventInfo, XamlSchemaContext ctx)

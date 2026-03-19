@@ -26,7 +26,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// Class managing the command history.
         /// </summary>
         private sealed class History {
-            private List<string> _list = new();
+            private readonly List<string> _list = [];
             private int _current;
             private bool _increment;         // increment on Next()
 
@@ -71,7 +71,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// List of available options
         /// </summary>
         private sealed class SuperConsoleOptions {
-            private List<string> _list = new();
+            private readonly List<string> _list = [];
             private int _current;
 
             public int Count {
@@ -160,7 +160,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// The console input buffer.
         /// </summary>
-        private StringBuilder _input = new();
+        private readonly StringBuilder _input = new();  // resets to 0 length each input
 
         /// <summary>
         /// Current position - index into the input buffer
@@ -180,12 +180,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// Command history
         /// </summary>
-        private History _history = new();
+        private readonly History _history = new();
 
         /// <summary>
         /// Tab options available in current context
         /// </summary>
-        private SuperConsoleOptions _options = new();
+        private readonly SuperConsoleOptions _options = new();
 
         /// <summary>
         /// Cursor anchor - position of cursor when the routine was called
@@ -195,12 +195,12 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// <summary>
         /// The command line that this console is attached to.
         /// </summary>
-        private CommandLine _commandLine;
+        private readonly CommandLine _commandLine;
 
         /// <summary>
         /// The current edit mode of the console.
         /// </summary>
-        private EditMode _editMode;
+        private readonly EditMode _editMode;
 
         public SuperConsole(CommandLine commandLine, ConsoleOptions options)
             : base(options) {

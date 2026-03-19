@@ -42,7 +42,7 @@ namespace Microsoft.Scripting.Runtime {
         //
         // Note that the closure content depends on the signature of the delegate. So a single dynamic object
         // might need multiple closures if it is converted to delegates of different signatures.
-        private WeakDictionary<object, WeakReference> _closureMap = new();
+        private readonly WeakDictionary<object, WeakReference> _closureMap = new();
         
         private readonly Type _returnType;
         private readonly Type[] _parameterTypes;

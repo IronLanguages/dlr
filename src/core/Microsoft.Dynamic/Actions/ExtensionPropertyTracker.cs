@@ -10,7 +10,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     public class ExtensionPropertyTracker : PropertyTracker {
-        private MethodInfo _getter, _setter, _deleter;
+        private readonly MethodInfo _getter, _setter, _deleter;
 
         public ExtensionPropertyTracker(string name, MethodInfo getter, MethodInfo setter, MethodInfo deleter, Type declaringType) {
             Name = name; 

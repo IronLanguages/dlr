@@ -78,9 +78,12 @@ namespace Microsoft.Scripting.Interpreter {
         private int _maxContinuationDepth;
         private int _runtimeLabelCount;
         private List<BranchLabel> _labels;
-        
+
+#pragma warning disable IDE0044
+        // Only non-null in debug builds.
         // list of (instruction index, cookie) sorted by instruction index:
         private List<KeyValuePair<int, object>> _debugCookies = null;
+#pragma warning restore IDE0044
 
         #region Debug View
 
@@ -781,8 +784,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         #endregion
 
-        private static Dictionary<Type, Func<CallSiteBinder, Instruction>> _factories =
-            new Dictionary<Type, Func<CallSiteBinder, Instruction>>();
+        private static readonly Dictionary<Type, Func<CallSiteBinder, Instruction>> _factories = new();
 
         /// <exception cref="SecurityException">Instruction can't be created due to insufficient privileges.</exception>
         internal static Instruction CreateDynamicInstruction(Type delegateType, CallSiteBinder binder) {

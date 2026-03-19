@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract class ActionBinder {
-        private ScriptDomainManager _manager;
+        private readonly ScriptDomainManager _manager;
 
         /// <summary>
         /// Determines if the binder should allow access to non-public members.

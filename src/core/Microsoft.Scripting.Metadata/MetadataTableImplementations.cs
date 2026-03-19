@@ -719,7 +719,7 @@ namespace Microsoft.Scripting.Metadata {
         private readonly int PackagingSizeOffset;
         private readonly int ClassSizeOffset;
         private readonly int ParentOffset;
-        private int RowSize;
+        private readonly int RowSize;
         internal MemoryBlock Table;
 
         internal ClassLayoutTable(int numberOfRows, int typeDefTableRowRefSize, int start, MemoryBlock block) {
@@ -911,7 +911,7 @@ namespace Microsoft.Scripting.Metadata {
         private readonly int FlagsOffset;
         private readonly int NameOffset;
         private readonly int EventTypeOffset;
-        private int RowSize;
+        private readonly int RowSize;
         internal MemoryBlock Table;
 
         internal EventTable(int numberOfRows, int typeDefOrRefRefSize, int stringHeapRefSize, int start, MemoryBlock block) {
