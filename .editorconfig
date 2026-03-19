@@ -103,6 +103,8 @@ dotnet_diagnostic.SYSLIB1054.severity = suggestion # SYSLIB1054: Use 'LibraryImp
 
 # Stricter rules for source code, which are not needed for test code
 [src/core/**.cs]
+dotnet_diagnostic.IDE0250.severity = warning     # test
+
 dotnet_diagnostic.CA1852.severity = warning      # CA1852: Seal internal types
 dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
 
