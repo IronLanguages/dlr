@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Debugging {
         private bool _inTraceBack;
         private bool _inGeneratorLoop;
         private bool _forceToGeneratorLoop;
-        private Dictionary<IList<VariableInfo>, ScopeData> _variables;
+        private readonly Dictionary<IList<VariableInfo>, ScopeData> _variables;
 
         // Symbol used to set "$exception" variable when exceptions are thrown
         private const string _exceptionVariableSymbol = "$debugException";

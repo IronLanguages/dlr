@@ -319,7 +319,7 @@ namespace Microsoft.Scripting.Interpreter {
     /// The last instruction of a catch exception handler.
     /// </summary>
     internal sealed class LeaveExceptionHandlerInstruction : IndexedBranchInstruction {
-        private static LeaveExceptionHandlerInstruction[] Cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
+        private static readonly LeaveExceptionHandlerInstruction[] Cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
 
         private readonly bool _hasValue;
 

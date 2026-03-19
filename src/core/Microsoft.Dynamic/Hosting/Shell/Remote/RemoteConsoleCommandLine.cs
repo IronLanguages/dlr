@@ -14,7 +14,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// Customize the CommandLine for remote scenarios
     /// </summary>
     public class RemoteConsoleCommandLine : CommandLine {
-        private RemoteConsoleCommandDispatcher _remoteConsoleCommandDispatcher;
+        private readonly RemoteConsoleCommandDispatcher _remoteConsoleCommandDispatcher;
 
         public RemoteConsoleCommandLine(ScriptScope scope, RemoteCommandDispatcher remoteCommandDispatcher, AutoResetEvent remoteOutputReceived) {
             _remoteConsoleCommandDispatcher = new RemoteConsoleCommandDispatcher(remoteCommandDispatcher, remoteOutputReceived);
@@ -51,8 +51,8 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
         /// CommandDispatcher to ensure synchronize output from the remote runtime
         /// </summary>
         private sealed class RemoteConsoleCommandDispatcher : ICommandDispatcher {
-            private RemoteCommandDispatcher _remoteCommandDispatcher;
-            private AutoResetEvent _remoteOutputReceived;
+            private readonly RemoteCommandDispatcher _remoteCommandDispatcher;
+            private readonly AutoResetEvent _remoteOutputReceived;
 
             internal RemoteConsoleCommandDispatcher(RemoteCommandDispatcher remoteCommandDispatcher, AutoResetEvent remoteOutputReceived) {
                 _remoteCommandDispatcher = remoteCommandDispatcher;

@@ -27,7 +27,7 @@ namespace Microsoft.Scripting.Runtime {
         private readonly LanguageContext _lc;
 
         /// <summary> a dictionary of SiteKey's which are used to cache frequently used operations, logically a set </summary>
-        private Dictionary<SiteKey, SiteKey> _sites = new();
+        private readonly Dictionary<SiteKey, SiteKey> _sites = new();
 
         /// <summary> the # of sites we had created at the last cleanup </summary>
         private int LastCleanup;
@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Runtime {
 
         #region Basic Operations
 
-        private Dictionary<int, Func<DynamicOperations, CallSiteBinder, object, object[], object>> _invokers = new();
+        private readonly Dictionary<int, Func<DynamicOperations, CallSiteBinder, object, object[], object>> _invokers = new();
 
         /// <summary>
         /// Calls the provided object with the given parameters and returns the result.

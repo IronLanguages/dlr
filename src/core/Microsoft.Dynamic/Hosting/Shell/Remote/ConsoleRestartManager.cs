@@ -53,16 +53,11 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")] // TODO: This is public only because the test (RemoteConsole.py) needs it to be so. The test should be rewritten
     public abstract class ConsoleRestartManager {
         private RemoteConsoleHost _remoteConsoleHost;
-        private Thread _consoleThread;
-        private bool _exitOnNormalExit;
+        private readonly Thread _consoleThread;
+        private readonly bool _exitOnNormalExit;
         private bool _terminating;
 
-        /// <summary>
-        /// Accessing _remoteConsoleHost from a thread other than console thread can result in race.
-        /// If _remoteConsoleHost is accessed while holding _accessLock, it is guaranteed to be
-        /// null or non-disposed.
-        /// </summary>
-        private object _accessLock = new();
+        private readonly object _accessLock = new();
 
         /// <summary>
         /// This is created on the "creating thread", and goes on standby. Start needs to be called for activation.
@@ -77,11 +72,16 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
             _consoleThread.Name = "Console thread";
         }
 
-        protected object AccessLock { get { return _accessLock; } }
+        /// <summary>
+        /// Accessing <see cref="RemoteConsoleHost"/> from a thread other than console thread can result in race.
+        /// If <see cref="RemoteConsoleHost"/> is accessed while holding <see cref="AccessLock"/>, it is guaranteed to be
+        /// null or non-disposed.
+        /// </summary>
+        protected object AccessLock => _accessLock;
 
-        public Thread ConsoleThread { get { return _consoleThread; } }
+        public Thread ConsoleThread =>  _consoleThread;
 
-        protected RemoteConsoleHost CurrentConsoleHost { get { return _remoteConsoleHost; } }
+        protected RemoteConsoleHost CurrentConsoleHost => _remoteConsoleHost;
 
         public abstract RemoteConsoleHost CreateRemoteConsoleHost();
 

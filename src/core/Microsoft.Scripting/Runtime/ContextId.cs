@@ -14,10 +14,10 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [Serializable]
     public readonly struct ContextId : IEquatable<ContextId> {
-        private static Dictionary<object, ContextId> _contexts = new();
+        private static readonly Dictionary<object, ContextId> _contexts = new();
         private static int _maxId = 1;
 
-        public static readonly ContextId Empty = new();
+        public static readonly ContextId Empty;
 
         internal ContextId(int id) {
             Id = id;
@@ -32,7 +32,7 @@ namespace Microsoft.Scripting.Runtime {
                     throw Error.LanguageRegistered();
                 }
 
-                return new ContextId(_maxId++);
+                return _contexts[identifier] = new ContextId(_maxId++);
             }
         }
 

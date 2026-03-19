@@ -23,12 +23,12 @@ namespace Microsoft.Scripting.ComInterop {
         // typically typelibs contain very small number of coclasses
         // so we will just use the linked list as it performs better
         // on small number of entities
-        private LinkedList<ComTypeClassDesc> _classes;
-        private Dictionary<string, ComTypeEnumDesc> _enums;
+        private readonly LinkedList<ComTypeClassDesc> _classes;
+        private readonly Dictionary<string, ComTypeEnumDesc> _enums;
         private string _typeLibName;
         private ComTypes.TYPELIBATTR _typeLibAttributes;
 
-        private static Dictionary<Guid, ComTypeLibDesc> _CachedTypeLibDesc = new();
+        private static readonly Dictionary<Guid, ComTypeLibDesc> _CachedTypeLibDesc = new();
 
         private ComTypeLibDesc() {
             _enums = new Dictionary<string, ComTypeEnumDesc>();

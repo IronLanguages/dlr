@@ -20,7 +20,7 @@ namespace Microsoft.Scripting.Metadata {
         private readonly int m_endRid;
         private readonly MetadataTokenType m_type;
         private readonly EnumerationIndirection m_indirection;
-        private MetadataTables m_tables;
+        private readonly MetadataTables m_tables;
         private int m_currentRid;
         private MetadataToken m_currentToken;
 

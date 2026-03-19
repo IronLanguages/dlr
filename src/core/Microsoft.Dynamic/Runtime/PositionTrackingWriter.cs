@@ -16,8 +16,8 @@ namespace Microsoft.Scripting.Runtime {
     /// so we can generate correct debugging information later
     /// </summary>
     public class PositionTrackingWriter : StringWriter {
-        private List<KeyValuePair<int, int>> _lineMap = new List<KeyValuePair<int, int>>();
-        private List<KeyValuePair<int, string>> _fileMap = new List<KeyValuePair<int, string>>();
+        private readonly List<KeyValuePair<int, int>> _lineMap = [];
+        private readonly List<KeyValuePair<int, string>> _fileMap = [];
 
         private int _line = 1;
         private int _column = 1;

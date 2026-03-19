@@ -38,8 +38,8 @@ namespace Microsoft.Scripting.ComInterop {
     /// </summary>
     internal sealed class ComEventSinkProxy : RealProxy {
 
-        private Guid _sinkIid;
-        private ComEventSink _sink;
+        private readonly Guid _sinkIid;
+        private readonly ComEventSink _sink;
         private static readonly MethodInfo _methodInfoInvokeMember = typeof(ComEventSink).GetMethod(nameof(ComEventSink.InvokeMember), BindingFlags.Instance | BindingFlags.Public);
 
         #region ctors

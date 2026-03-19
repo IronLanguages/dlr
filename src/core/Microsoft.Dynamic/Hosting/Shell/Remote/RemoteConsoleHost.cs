@@ -26,9 +26,9 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     public abstract class RemoteConsoleHost : ConsoleHost, IDisposable {
         private Process _remoteRuntimeProcess;
         internal RemoteCommandDispatcher _remoteCommandDispatcher;
-        private string _channelName = RemoteConsoleHost.GetChannelName();
+        private readonly string _channelName = RemoteConsoleHost.GetChannelName();
         private IpcChannel _clientChannel;
-        private AutoResetEvent _remoteOutputReceived = new(false);
+        private readonly AutoResetEvent _remoteOutputReceived = new(false);
         private ScriptScope _scriptScope;
 
         #region Private methods

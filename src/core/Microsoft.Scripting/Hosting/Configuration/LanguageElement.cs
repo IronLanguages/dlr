@@ -19,11 +19,11 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         private const string _Type = "type";
         private const string _DisplayName = "displayName";
 
-        private static ConfigurationPropertyCollection _Properties = new() {
-            new ConfigurationProperty(_Names, typeof(string), null),
-            new ConfigurationProperty(_Extensions, typeof(string), null),
-            new ConfigurationProperty(_Type, typeof(string), null, ConfigurationPropertyOptions.IsRequired),
-            new ConfigurationProperty(_DisplayName, typeof(string), null)
+        private static readonly ConfigurationPropertyCollection _Properties = new() {
+            new(_Names, typeof(string), null),
+            new(_Extensions, typeof(string), null),
+            new(_Type, typeof(string), null, ConfigurationPropertyOptions.IsRequired),
+            new(_DisplayName, typeof(string), null)
         };
 
         protected override ConfigurationPropertyCollection Properties => _Properties;

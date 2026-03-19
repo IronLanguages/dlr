@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private LanguageSetup _languageSetup;
         private PlatformAdaptationLayer _platform;
 
-        private List<string> _ignoredArgs = new();
+        private readonly List<string> _ignoredArgs = [];
         private string[] _args;
         private int _current = -1;
 

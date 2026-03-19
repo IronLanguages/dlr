@@ -12,7 +12,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Ast {
     public sealed class TryStatementBuilder {
         private readonly List<CatchBlock> _catchBlocks = new();
-        private Expression _try;
+        private readonly Expression _try;
         private Expression _finally, _fault;
         private bool _enableJumpsFromFinally;
 

@@ -13,8 +13,8 @@ using System.Threading;
 namespace Microsoft.Scripting.ComInterop {
 
     public class ComTypeDesc : ComTypeLibMemberDesc {
-        private string _typeName;
-        private string _documentation;
+        private readonly string _typeName;
+        private readonly string _documentation;
         //Hashtable is threadsafe for multiple readers single writer. 
         //Enumerating and writing is mutually exclusive so require locking.
         private Hashtable _funcs;

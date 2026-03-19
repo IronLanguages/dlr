@@ -23,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
     /// each unique group of methods.
     /// </summary>
     public class MethodGroup : MemberTracker {
-        private MethodTracker[] _methods;
+        private readonly MethodTracker[] _methods;
         private Dictionary<TypeList, MethodGroup> _boundGenerics;
 
         internal MethodGroup(params MethodTracker[] methods) {
@@ -129,7 +129,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         private sealed class TypeList {
-            private Type[] _types;
+            private readonly Type[] _types;
 
             public TypeList(Type[] types) {
                 Debug.Assert(types is not null);

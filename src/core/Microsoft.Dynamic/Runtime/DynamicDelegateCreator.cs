@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Runtime {
         // The stub does only depend on the signature, it doesn't depend on the dynamic object.
         // So we can reuse these stubs among multiple dynamic object for which a delegate was created with the same signature.
         // 
-        private Publisher<DelegateSignatureInfo, DelegateInfo> _dynamicDelegateCache = new();
+        private readonly Publisher<DelegateSignatureInfo, DelegateInfo> _dynamicDelegateCache = new();
 
         public Delegate GetOrCreateDelegateForDynamicObject(object dynamicObject, Type delegateType, MethodInfo invoke) {
             var signatureInfo = new DelegateSignatureInfo(invoke);

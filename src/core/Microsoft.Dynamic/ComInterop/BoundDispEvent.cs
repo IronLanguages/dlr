@@ -12,9 +12,9 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
     internal sealed class BoundDispEvent : DynamicObject {
-        private object _rcw;
-        private Guid _sourceIid;
-        private int _dispid;
+        private readonly object _rcw;
+        private readonly Guid _sourceIid;
+        private readonly int _dispid;
 
         internal BoundDispEvent(object rcw, Guid sourceIid, int dispid) {
             _rcw = rcw;
