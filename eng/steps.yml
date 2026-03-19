@@ -21,6 +21,11 @@ steps:
      Write-Host ("##vso[task.setvariable variable=PackageVersion;isSecret=false;isOutput=true;]$PackageVersion")
     displayName: Grab Package Version
 
+  - powershell: |
+      ${Env:DLR_ADDITIONAL_BUILD_PROPERTIES} = "TreatWarningsAsErrors=true"
+    displayName: Set Additional Build Properties
+
+
   - task: UseDotNet@2
     displayName: Install .NET 10.0 SDK for build
     inputs:

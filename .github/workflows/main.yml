@@ -6,6 +6,8 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
+    env:
+      DLR_ADDITIONAL_BUILD_PROPERTIES: TreatWarningsAsErrors=true
 
     strategy:
       fail-fast: false
