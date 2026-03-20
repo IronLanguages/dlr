@@ -12,7 +12,7 @@ namespace Microsoft.Scripting.Utils {
     /// an <see cref="InvalidOperationException"/>.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO: fix
-    public struct WeakHandle {
+    public readonly struct WeakHandle {
 
         private readonly GCHandle _gcHandle;
 

@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Actions {
     /// <summary>
     /// Richly represents the signature of a callsite.
     /// </summary>
-    public struct CallSignature : IEquatable<CallSignature> {
+    public readonly struct CallSignature : IEquatable<CallSignature> {
         // TODO: invariant _infos != null ==> _argumentCount == _infos.Length
         
         /// <summary>

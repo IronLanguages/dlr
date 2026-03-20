@@ -12,7 +12,7 @@ namespace Microsoft.Scripting.Actions {
     /// <summary>
     /// TODO: Alternatively, it should be sufficient to remember indices for this, list, dict and block.
     /// </summary>
-    public struct Argument : IEquatable<Argument> {
+    public readonly struct Argument : IEquatable<Argument> {
         private readonly ArgumentType _kind;
         private readonly string _name;
 

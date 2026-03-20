@@ -12,7 +12,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Runtime {
 
-    internal struct TypeName : IEquatable<TypeName> {
+    internal readonly struct TypeName : IEquatable<TypeName> {
         internal TypeName(Type type) {
             Debug.Assert(!type.IsNested());
             Namespace = type.Namespace;

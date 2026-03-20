@@ -17,7 +17,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Interpreter {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [DebuggerTypeProxy(typeof(InstructionArray.DebugView))]
-    public struct InstructionArray {
+    public readonly struct InstructionArray {
         internal readonly int MaxStackDepth;
         internal readonly int MaxContinuationDepth;
         internal readonly Instruction[] Instructions;
@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             [DebuggerDisplay("{GetValue(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
-            internal struct InstructionView {
+            internal readonly struct InstructionView {
                 private readonly int _index;
                 private readonly int _stackDepth;
                 private readonly int _continuationsDepth;

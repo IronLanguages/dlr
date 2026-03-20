@@ -1431,7 +1431,7 @@ namespace Microsoft.Scripting.Utils {
         #endregion
     }
 
-    public struct ExtensionMethodInfo : IEquatable<ExtensionMethodInfo> {
+    public readonly struct ExtensionMethodInfo : IEquatable<ExtensionMethodInfo> {
         private readonly Type/*!*/ _extendedType; // cached type of the first parameter
         private readonly MethodInfo/*!*/ _method;
 

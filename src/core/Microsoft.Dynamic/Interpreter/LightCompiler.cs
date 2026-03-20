@@ -122,7 +122,7 @@ namespace Microsoft.Scripting.Interpreter {
     // TODO:
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [Serializable]
-    public struct InterpretedFrameInfo {
+    public readonly struct InterpretedFrameInfo {
         public readonly string MethodName;
         
         // TODO:

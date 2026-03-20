@@ -87,7 +87,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        private struct KeyInfo {
+        private readonly struct KeyInfo {
             internal readonly TValue Value;
             internal readonly LinkedListNode<TKey> List;
 

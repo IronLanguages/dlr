@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Interpreter {
-    internal struct RuntimeLabel {
+    internal readonly struct RuntimeLabel {
         public readonly int Index;
         public readonly int StackDepth;
         public readonly int ContinuationStackDepth;

@@ -82,7 +82,7 @@ namespace Microsoft.Scripting.Ast {
             internal LabelTarget FlowLabel;
         }
 
-        private struct LabelInfo {
+        private readonly struct LabelInfo {
             internal readonly int FlowState;
             internal readonly ParameterExpression Variable;
 
