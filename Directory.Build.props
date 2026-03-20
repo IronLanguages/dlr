@@ -33,6 +33,10 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <PropertyGroup>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
