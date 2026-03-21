@@ -486,7 +486,7 @@ namespace Microsoft.Scripting.Metadata {
         internal int[] CompressedMetadataTableRowCount;
 
         //  Helper methods
-        internal int GetNumberOfTablesPresent() {
+        internal readonly int GetNumberOfTablesPresent() {
             const ulong MASK_01010101010101010101010101010101 = 0x5555555555555555UL;
             const ulong MASK_00110011001100110011001100110011 = 0x3333333333333333UL;
             const ulong MASK_00001111000011110000111100001111 = 0x0F0F0F0F0F0F0F0FUL;

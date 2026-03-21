@@ -116,7 +116,7 @@ namespace Microsoft.Scripting.ComInterop {
             internal Record _record;
         }
 
-        public override string ToString() {
+        public override readonly string ToString() {
             return String.Format(CultureInfo.CurrentCulture, "Variant ({0})", VariantType);
         }
 
@@ -239,19 +239,11 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         public VarEnum VariantType {
-            get {
-                return (VarEnum)_typeUnion._vt;
-            }
-            set {
-                _typeUnion._vt = (ushort)value;
-            }
+            readonly get => (VarEnum)_typeUnion._vt;
+            set => _typeUnion._vt = (ushort)value;
         }
 
-        internal bool IsEmpty {
-            get {
-                return _typeUnion._vt == ((ushort)VarEnum.VT_EMPTY);
-            }
-        }
+        internal readonly bool IsEmpty => _typeUnion._vt == ((ushort)VarEnum.VT_EMPTY);
 
         public void SetAsNull() {
             Debug.Assert(IsEmpty); // The setter can only be called once as VariantClear might be needed otherwise
@@ -296,7 +288,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_I1
         public SByte AsI1 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_I1);
                 return _typeUnion._unionTypes._i1;
             }
@@ -315,7 +307,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_I2
         public Int16 AsI2 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_I2);
                 return _typeUnion._unionTypes._i2;
             }
@@ -334,7 +326,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_I4
         public Int32 AsI4 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_I4);
                 return _typeUnion._unionTypes._i4;
             }
@@ -353,7 +345,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_I8
         public Int64 AsI8 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_I8);
                 return _typeUnion._unionTypes._i8;
             }
@@ -372,7 +364,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UI1
         public Byte AsUi1 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UI1);
                 return _typeUnion._unionTypes._ui1;
             }
@@ -391,7 +383,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UI2
         public UInt16 AsUi2 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UI2);
                 return _typeUnion._unionTypes._ui2;
             }
@@ -410,7 +402,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UI4
         public UInt32 AsUi4 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UI4);
                 return _typeUnion._unionTypes._ui4;
             }
@@ -429,7 +421,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UI8
         public UInt64 AsUi8 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UI8);
                 return _typeUnion._unionTypes._ui8;
             }
@@ -448,7 +440,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_INT
         public IntPtr AsInt {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_INT);
                 return _typeUnion._unionTypes._int;
             }
@@ -467,7 +459,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UINT
         public UIntPtr AsUint {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UINT);
                 return _typeUnion._unionTypes._uint;
             }
@@ -486,7 +478,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_BOOL
         public Boolean AsBool {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_BOOL);
                 return _typeUnion._unionTypes._bool != 0;
             }
@@ -505,7 +497,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_ERROR
         public Int32 AsError {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_ERROR);
                 return _typeUnion._unionTypes._error;
             }
@@ -524,7 +516,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_R4
         public Single AsR4 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_R4);
                 return _typeUnion._unionTypes._r4;
             }
@@ -543,7 +535,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_R8
         public Double AsR8 {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_R8);
                 return _typeUnion._unionTypes._r8;
             }
@@ -562,7 +554,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_DECIMAL
         public Decimal AsDecimal {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_DECIMAL);
                 // The first byte of Decimal is unused, but usually set to 0
                 Variant v = this;
@@ -586,7 +578,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_CY
         public Decimal AsCy {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_CY);
                 return Decimal.FromOACurrency(_typeUnion._unionTypes._cy);
             }
@@ -605,7 +597,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_DATE
         public DateTime AsDate {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_DATE);
                 return DateTime.FromOADate(_typeUnion._unionTypes._date);
             }
@@ -624,7 +616,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_BSTR
         public String AsBstr {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_BSTR);
                 if (_typeUnion._unionTypes._bstr != IntPtr.Zero) {
                     return Marshal.PtrToStringBSTR(_typeUnion._unionTypes._bstr);
@@ -648,7 +640,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_UNKNOWN
         public Object AsUnknown {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_UNKNOWN);
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._unknown);
@@ -672,7 +664,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         // VT_DISPATCH
         public Object AsDispatch {
-            get {
+            readonly get {
                 Debug.Assert(VariantType == VarEnum.VT_DISPATCH);
                 if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {
                     return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._dispatch);
@@ -846,7 +838,10 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
+#pragma warning disable IDE0251 // Member can be made 'readonly' - not really, it uses pointers to modify the content of the struct
         internal unsafe void CopyFromIndirect(object value) {
+#pragma warning restore IDE0251 // Member can be made 'readonly'
+
             VarEnum vt = (VarEnum)(((int)VariantType) & ~((int)VarEnum.VT_BYREF));
 
             if (value is null) {
@@ -951,7 +946,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        public IntPtr AsByRefVariant {
+        public readonly IntPtr AsByRefVariant {
             get {
                 Debug.Assert(VariantType == (VarEnum.VT_BYREF | VarEnum.VT_VARIANT));
                 return _typeUnion._unionTypes._byref;
