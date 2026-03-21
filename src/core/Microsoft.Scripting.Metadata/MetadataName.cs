@@ -14,7 +14,7 @@ namespace Microsoft.Scripting.Metadata {
     /// The name is bound to the module it was retrieved from. The module is kept alive until all its metadata names are collected.
     /// Doesn't cache hashcode, byte or character count.
     /// </summary>
-    public unsafe struct MetadataName : IEquatable<MetadataName>, IEquatable<MetadataNamePart> {
+    public readonly unsafe struct MetadataName : IEquatable<MetadataName>, IEquatable<MetadataNamePart> {
         internal readonly byte* m_data;
         internal readonly object m_keepAlive;
 
@@ -332,7 +332,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public struct MetadataNamePart : IEquatable<MetadataNamePart>, IEquatable<MetadataName> {
+    public readonly struct MetadataNamePart : IEquatable<MetadataNamePart>, IEquatable<MetadataName> {
         private readonly MetadataName m_name;
         private readonly int m_byteCount;
 

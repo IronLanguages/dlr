@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Interpreter {
     using LoopFunc = Func<object[], StrongBox<object>[], InterpretedFrame, int>;
 
     internal sealed class LoopCompiler : ExpressionVisitor {
-        private struct LoopVariable {
+        private readonly struct LoopVariable {
             public readonly ExpressionAccess Access;
 
             // a variable that holds on the strong box for closure variables:

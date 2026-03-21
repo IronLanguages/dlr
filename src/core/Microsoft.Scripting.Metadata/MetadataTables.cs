@@ -55,7 +55,7 @@ namespace System.Reflection {
     }
 
     [Serializable, DebuggerDisplay("{DebugView}")]
-    public partial struct MetadataToken : IEquatable<MetadataToken> {
+    public readonly partial struct MetadataToken : IEquatable<MetadataToken> {
         internal readonly int m_value;
 
         /// <summary>
@@ -673,7 +673,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct PropertyAccessors {
+    public readonly partial struct PropertyAccessors {
         private readonly PropertyDef m_property;
 
         // method-defs or null tokens:
@@ -737,7 +737,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct EventAccessors {
+    public readonly partial struct EventAccessors {
         private readonly EventDef m_event;
 
         // method-defs or null tokens:

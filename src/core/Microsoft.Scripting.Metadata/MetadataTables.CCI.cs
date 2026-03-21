@@ -97,7 +97,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MetadataRecord {
+    public readonly partial struct MetadataRecord {
         internal int Rid {
             get { return m_token.Rid; }
         }
@@ -107,7 +107,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MetadataTableView {
+    public readonly partial struct MetadataTableView {
         /// <summary>
         /// Gets the number of records in the view.
         /// If the view is over an entire table this operation is O(1), 
@@ -127,7 +127,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct ModuleDef {
+    public readonly partial struct ModuleDef {
         internal ModuleDef(MetadataRecord record) {
             Contract.Requires(record.IsModuleDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -146,7 +146,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct TypeRef {
+    public readonly partial struct TypeRef {
         internal TypeRef(MetadataRecord record) {
             Contract.Requires(record.IsTypeRef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -184,7 +184,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct TypeDef {
+    public readonly partial struct TypeDef {
         internal TypeDef(MetadataRecord record) {
             Contract.Requires(record.IsTypeDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -237,7 +237,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
     
-    public partial struct FieldDef {
+    public readonly partial struct FieldDef {
         internal FieldDef(MetadataRecord record) {
             Contract.Requires(record.IsFieldDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -296,7 +296,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MethodDef {
+    public readonly partial struct MethodDef {
         internal MethodDef(MetadataRecord record) {
             Contract.Requires(record.IsMethodDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -363,7 +363,7 @@ namespace Microsoft.Scripting.Metadata {
         // TODO: FindAssociate: event/property
     }
 
-    public partial struct ParamDef {
+    public readonly partial struct ParamDef {
         internal ParamDef(MetadataRecord record) {
             Contract.Requires(record.IsParamDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -411,7 +411,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct InterfaceImpl {
+    public readonly partial struct InterfaceImpl {
         internal InterfaceImpl(MetadataRecord record) {
             Contract.Requires(record.IsInterfaceImpl && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -439,7 +439,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MemberRef {
+    public readonly partial struct MemberRef {
         internal MemberRef(MetadataRecord record) {
             Contract.Requires(record.IsMemberRef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -478,7 +478,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct CustomAttributeDef {
+    public readonly partial struct CustomAttributeDef {
         internal CustomAttributeDef(MetadataRecord record) {
             Contract.Requires(record.IsCustomAttributeDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -513,7 +513,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct SignatureDef {
+    public readonly partial struct SignatureDef {
         internal SignatureDef(MetadataRecord record) {
             Contract.Requires(record.IsSignatureDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -526,7 +526,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct PropertyDef {
+    public readonly partial struct PropertyDef {
         internal PropertyDef(MetadataRecord record) {
             Contract.Requires(record.IsProperty && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -585,7 +585,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct EventDef {
+    public readonly partial struct EventDef {
         internal EventDef(MetadataRecord record) {
             Contract.Requires(record.IsEvent && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -641,7 +641,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct ModuleRef {
+    public readonly partial struct ModuleRef {
         internal ModuleRef(MetadataRecord record) {
             Contract.Requires(record.IsModuleRef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -654,7 +654,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct TypeSpec {
+    public readonly partial struct TypeSpec {
         internal TypeSpec(MetadataRecord record) {
             Contract.Requires(record.IsTypeSpec && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -667,7 +667,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct AssemblyDef {
+    public readonly partial struct AssemblyDef {
         internal AssemblyDef(MetadataRecord record) {
             Contract.Requires(record.IsAssemblyDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -709,7 +709,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct AssemblyRef {
+    public readonly partial struct AssemblyRef {
         internal AssemblyRef(MetadataRecord record) {
             Contract.Requires(record.IsAssemblyRef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -750,7 +750,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct FileDef {
+    public readonly partial struct FileDef {
         internal FileDef(MetadataRecord record) {
             Contract.Requires(record.IsFileDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -774,7 +774,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct TypeExport {
+    public readonly partial struct TypeExport {
         internal TypeExport(MetadataRecord record) {
             Contract.Requires(record.IsTypeExport && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -810,7 +810,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct ManifestResourceDef {
+    public readonly partial struct ManifestResourceDef {
         internal ManifestResourceDef(MetadataRecord record) {
             Contract.Requires(record.IsManifestResourceDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -843,7 +843,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct TypeNesting {
+    public readonly partial struct TypeNesting {
         internal TypeNesting(MetadataRecord record) {
             Contract.Requires(record.IsTypeNesting && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -862,7 +862,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct GenericParamDef {
+    public readonly partial struct GenericParamDef {
         internal GenericParamDef(MetadataRecord record) {
             Contract.Requires(record.IsGenericParamDef && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -900,7 +900,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct GenericParamConstraint {
+    public readonly partial struct GenericParamConstraint {
         internal GenericParamConstraint(MetadataRecord record) {
             Contract.Requires(record.IsGenericParamConstraint && record.Tables.IsValidToken(record.Token));
             m_record = record;
@@ -922,7 +922,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MethodSpec {
+    public readonly partial struct MethodSpec {
         internal MethodSpec(MetadataRecord record) {
             Contract.Requires(record.IsMethodSpec && record.Tables.IsValidToken(record.Token));
             m_record = record;

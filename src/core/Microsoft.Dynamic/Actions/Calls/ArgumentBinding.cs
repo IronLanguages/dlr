@@ -6,7 +6,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions.Calls {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // TODO
-    public struct ArgumentBinding {
+    public readonly struct ArgumentBinding {
         private static readonly int[] _EmptyBinding = System.Array.Empty<int>();
 
         private readonly int _positionalArgCount;

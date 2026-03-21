@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
     }
 
-    public struct LocalDefinition : IEquatable<LocalDefinition> {
+    public readonly struct LocalDefinition : IEquatable<LocalDefinition> {
 
         internal LocalDefinition(int localIndex, ParameterExpression parameter) {
             Index = localIndex;

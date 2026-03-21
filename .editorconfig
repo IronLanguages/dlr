@@ -110,3 +110,4 @@ dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
 dotnet_diagnostic.IDE0036.severity = warning     # IDE0036: Order modifiers
 dotnet_diagnostic.IDE0040.severity = warning     # IDE0040: Add accessibility modifiers
 dotnet_diagnostic.IDE0044.severity = warning     # IDE0044: Add readonly modifier (fields)
+dotnet_diagnostic.IDE0250.severity = warning     # IDE0250: Struct can be made 'readonly'

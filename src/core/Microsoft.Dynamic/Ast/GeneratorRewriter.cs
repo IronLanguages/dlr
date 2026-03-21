@@ -192,7 +192,7 @@ namespace Microsoft.Scripting.Ast {
             return Expression.Assign(variable, value);
         }
 
-        private struct GotoRewriteInfo {
+        private readonly struct GotoRewriteInfo {
             public readonly ParameterExpression Variable;
             public readonly LabelTarget VoidTarget;
 
