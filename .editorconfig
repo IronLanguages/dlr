@@ -110,6 +110,15 @@ dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
 dotnet_diagnostic.IDE0036.severity = warning     # IDE0036: Order modifiers
 dotnet_diagnostic.IDE0040.severity = warning     # IDE0040: Add accessibility modifiers
 dotnet_diagnostic.IDE0044.severity = warning     # IDE0044: Add readonly modifier (fields)
+dotnet_diagnostic.IDE0062.severity = warning     # IDE0062: Make local function static
 dotnet_diagnostic.IDE0064.severity = warning     # IDE0064: Make struct fields writable
 dotnet_diagnostic.IDE0250.severity = warning     # IDE0250: Struct can be made 'readonly'
 dotnet_diagnostic.IDE0251.severity = warning     # IDE0251: Member can be made 'readonly'
+dotnet_diagnostic.IDE0320.severity = warning     # IDE0320: Make anonymous function static
+
+# Null-checking preferences
+dotnet_diagnostic.IDE0019.severity = warning     # IDE0019: Use pattern matching to avoid 'as' followed by a 'null' check
+dotnet_diagnostic.IDE0020.severity = warning     # IDE0020: Use pattern matching to avoid 'is' check followed by a cast (with variable)
+dotnet_diagnostic.IDE0020.severity = warning     # IDE0020: Use pattern matching to avoid 'is' check followed by a cast (without variable)
+dotnet_diagnostic.IDE0041.severity = warning     # IDE0041: Use 'is null' check
+dotnet_diagnostic.IDE1005.severity = warning     # IDE1005: Use conditional delegate call
