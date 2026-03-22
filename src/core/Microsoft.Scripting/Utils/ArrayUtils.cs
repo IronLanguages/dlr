@@ -265,8 +265,7 @@ namespace Microsoft.Scripting.Utils {
         /// If the collection is already an  array of T the original collection is returned.
         /// </summary>
         public static T[] ToArray<T>(ICollection<T> list) {
-            T[] res = list as T[];
-            if (res is null) {
+            if (list is not T[] res) {
                 res = new T[list.Count];
                 int i = 0;
                 foreach (T obj in list) {

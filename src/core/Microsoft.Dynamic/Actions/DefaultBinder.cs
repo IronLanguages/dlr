@@ -183,7 +183,7 @@ namespace Microsoft.Scripting.Actions {
             
             foreach (MethodInfo candidate in type.GetInheritedMethods(name).WithBindingFlags(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)) {
                 if (candidate.IsSpecialName) {
-                    if (object.ReferenceEquals(res, null)) {
+                    if (res is null) {
                         res = candidate;
                     } else {
                         throw AmbiguousMatch(type, name);
