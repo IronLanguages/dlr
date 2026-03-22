@@ -132,7 +132,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
                 _anchorLeft = Console.CursorLeft;
             }
 
-            public void Reset() {
+            public readonly void Reset() {
                 Console.CursorTop = _anchorTop;
                 Console.CursorLeft = _anchorLeft;
             }

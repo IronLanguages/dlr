@@ -27,7 +27,7 @@ namespace Microsoft.Scripting {
 
         #region IEquatable<TokenInfo> Members
 
-        public override int GetHashCode() {
+        public override readonly int GetHashCode() {
             unchecked {
                 int hash = Category.GetHashCode();
                 hash = ((hash << 5) + hash) ^ Trigger.GetHashCode();
@@ -35,15 +35,15 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override bool Equals(object obj) =>
+        public override readonly bool Equals(object obj) =>
             obj is TokenInfo info && Equals(info);
 
-        public bool Equals(TokenInfo other) =>
+        public readonly bool Equals(TokenInfo other) =>
             Category == other.Category && Trigger == other.Trigger && SourceSpan == other.SourceSpan;
 
         #endregion
 
-        public override string ToString() {
+        public override readonly string ToString() {
             return $"TokenInfo: {SourceSpan}, {Category}, {Trigger}";
         }
     }
