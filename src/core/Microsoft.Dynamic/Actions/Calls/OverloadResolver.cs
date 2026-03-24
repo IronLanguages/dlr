@@ -563,7 +563,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new RestrictedArguments(restrictedArgs, types, hasAdditionalRestrictions);
         }
 
-        private DynamicMetaObject RestrictArgument(DynamicMetaObject arg, ParameterWrapper parameter) {
+        private static DynamicMetaObject RestrictArgument(DynamicMetaObject arg, ParameterWrapper parameter) {
             if (parameter.Type == typeof(object)) {
                 // don't use Restrict as it'll box & unbox.
                 return new DynamicMetaObject(arg.Expression, BindingRestrictionsHelpers.GetRuntimeTypeRestriction(arg.Expression, arg.GetLimitType()));
@@ -1108,7 +1108,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)), AstUtils.Constant("Invalid arguments.")));
         }
 
-        private ErrorInfo MakeNoCallableMethodError() {
+        private static ErrorInfo MakeNoCallableMethodError() {
             return ErrorInfo.FromException(
                 Expression.New(typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) }), AstUtils.Constant("No callable method."))
             );

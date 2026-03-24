@@ -96,7 +96,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         /// name == null means that the argument doesn't specify an option; the value contains the entire argument
         /// name == "" means that the option name is empty (argument separator); the value is null then
         /// </summary>
-        private void ParseOption(string arg, out string name, out string value) {
+        private static void ParseOption(string arg, out string name, out string value) {
             Debug.Assert(arg is not null);
 
             int colon = arg.IndexOf(':', StringComparison.Ordinal);

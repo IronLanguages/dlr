@@ -69,6 +69,8 @@ namespace Microsoft.Scripting.Generation {
             if (_saveSnippets) {
                 dir = _snippetsDirectory ?? Directory.GetCurrentDirectory();
             }
+#else
+            _ = this; // avoid CA1822, gets removed by the compiler
 #endif
 
             string name = "Snippets" + nameSuffix;

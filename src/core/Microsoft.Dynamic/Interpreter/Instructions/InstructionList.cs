@@ -684,7 +684,7 @@ namespace Microsoft.Scripting.Interpreter {
             Emit(GetLoadField(field));
         }
 
-        private Instruction GetLoadField(FieldInfo field) {
+        private static Instruction GetLoadField(FieldInfo field) {
             lock (_loadFields) {
                 if (_loadFields.TryGetValue(field, out Instruction instruction))
                     return instruction;

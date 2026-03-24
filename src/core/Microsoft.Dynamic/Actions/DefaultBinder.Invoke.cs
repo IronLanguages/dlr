@@ -166,7 +166,7 @@ namespace Microsoft.Scripting.Actions {
         /// Binds to the BoundMemberTracker and uses the instance in the tracker and restricts
         /// based upon the object instance type.
         /// </summary>
-        private TargetInfo TryGetBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, BoundMemberTracker bmt) {
+        private static TargetInfo TryGetBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, BoundMemberTracker bmt) {
             if (bmt is not null) {
                 Debug.Assert(bmt.Instance is null); // should be null for trackers that leak to user code
 

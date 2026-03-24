@@ -152,6 +152,8 @@ namespace Microsoft.Scripting.Generation {
         internal void Verify() {
 #if FEATURE_ASSEMBLYBUILDER_SAVE
             PeVerifyThis();
+#else
+            _ = this; // avoid CA1822, gets removed by the compiler
 #endif
         }
 

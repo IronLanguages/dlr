@@ -297,7 +297,7 @@ namespace Microsoft.Scripting.ComInterop {
         // We will try VT_DISPATCH and then call GetNativeVariantForObject.
         private const VarEnum VT_DEFAULT = VarEnum.VT_RECORD;
 
-        private VarEnum GetComType(ref Type argumentType) {
+        private static VarEnum GetComType(ref Type argumentType) {
             if (argumentType == typeof(Missing)) {
                 //actual variant type will be VT_ERROR | E_PARAMNOTFOUND 
                 return VarEnum.VT_RECORD;
@@ -363,7 +363,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <summary>
         /// Get the COM Variant type that argument should be marshaled as for a call to COM
         /// </summary>
-        private VariantBuilder GetVariantBuilder(Type argumentType) {
+        private static VariantBuilder GetVariantBuilder(Type argumentType) {
             //argumentType is coming from MarshalType, null means the dynamic object holds
             //a null value and not byref
             if (argumentType is null) {

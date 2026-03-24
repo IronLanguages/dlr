@@ -356,7 +356,7 @@ namespace Microsoft.Scripting.Actions {
             return MemberGroup.EmptyGroup;
         }
 
-        private MethodInfo GetExtensionOperator(Type ext, string name) {
+        private static MethodInfo GetExtensionOperator(Type ext, string name) {
             return ext.GetInheritedMethods(name)
                    .WithBindingFlags(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
                    .SingleOrDefault(mi => mi.IsDefined(typeof(PropertyMethodAttribute), false));

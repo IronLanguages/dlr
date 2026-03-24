@@ -76,7 +76,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _returnBuilder = MakeReturnBuilder(specialParameters);
         }
 
-        private bool IsSpecialParameter(BitArray specialParameters, int infoIndex) {
+        private static bool IsSpecialParameter(BitArray specialParameters, int infoIndex) {
             return specialParameters is not null && infoIndex < specialParameters.Length && specialParameters[infoIndex];
         }
 

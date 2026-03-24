@@ -994,7 +994,7 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         // TODO: remove (replace by true fault support)
-        private bool EndsWithRethrow(Expression expr) {
+        private static bool EndsWithRethrow(Expression expr) {
             if (expr.NodeType == ExpressionType.Throw) {
                 var node = (UnaryExpression)expr;
                 return node.Operand is null;

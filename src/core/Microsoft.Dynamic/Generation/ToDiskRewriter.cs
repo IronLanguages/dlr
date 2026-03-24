@@ -222,6 +222,7 @@ namespace Microsoft.Scripting.Generation {
 
             return false;
 #else
+            _ = this; // avoid CA1822, gets removed by the compiler
             return true; // TODO:
 #endif
         }
