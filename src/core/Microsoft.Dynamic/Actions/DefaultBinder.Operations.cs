@@ -558,7 +558,7 @@ namespace Microsoft.Scripting.Actions {
 
         #region Common helpers
 
-        private DynamicMetaObject TryMakeBindingTarget(OverloadResolverFactory resolverFactory, MethodInfo[] targets, DynamicMetaObject[] args, BindingRestrictions restrictions) {
+        private static DynamicMetaObject TryMakeBindingTarget(OverloadResolverFactory resolverFactory, MethodInfo[] targets, DynamicMetaObject[] args, BindingRestrictions restrictions) {
             var resolver = resolverFactory.CreateOverloadResolver(args, new CallSignature(args.Length), CallTypes.None);
             BindingTarget target = resolver.ResolveOverload(targets[0].Name, targets, NarrowingLevel.None, NarrowingLevel.All);
             if (target.Success) {
@@ -571,7 +571,7 @@ namespace Microsoft.Scripting.Actions {
             return null;
         }
 
-        private DynamicMetaObject TryMakeInvertedBindingTarget(OverloadResolverFactory resolverFactory, MethodBase[] targets, DynamicMetaObject[] args) {
+        private static DynamicMetaObject TryMakeInvertedBindingTarget(OverloadResolverFactory resolverFactory, MethodBase[] targets, DynamicMetaObject[] args) {
             var resolver = resolverFactory.CreateOverloadResolver(args, new CallSignature(args.Length), CallTypes.None);
             BindingTarget target = resolver.ResolveOverload(targets[0].Name, targets, NarrowingLevel.None, NarrowingLevel.All);
             if (target.Success) {

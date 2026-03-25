@@ -410,7 +410,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        private DynamicMetaObject MakeReturnValue(DynamicMetaObject expression, DynamicMetaObject target) {
+        private static DynamicMetaObject MakeReturnValue(DynamicMetaObject expression, DynamicMetaObject target) {
             return new DynamicMetaObject(
                 Expression.Block(
                     expression.Expression,
@@ -420,7 +420,7 @@ namespace Microsoft.Scripting.Actions {
             );
         }
 
-        private Expression MakeReturnValue(Expression expression, DynamicMetaObject target) {
+        private static Expression MakeReturnValue(Expression expression, DynamicMetaObject target) {
             return Expression.Block(
                 expression,
                 Expression.Convert(target.Expression, typeof(object))

@@ -124,7 +124,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         // TODO: revisit
-        private DynamicMetaObject MakeInvalidParametersRule(DefaultOverloadResolver binder, BindingRestrictions restrictions, BindingTarget bt) {
+        private static DynamicMetaObject MakeInvalidParametersRule(DefaultOverloadResolver binder, BindingRestrictions restrictions, BindingTarget bt) {
             var args = binder.Arguments;
             
             BindingRestrictions restriction = MakeSplatTests(binder.CallType, binder.Signature, true, args);

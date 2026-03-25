@@ -206,7 +206,7 @@ namespace Microsoft.Scripting.Metadata {
             memReader.SeekRelative(4 * 2 * sizeof(uint));
         }
 
-        private void ReadMetadataHeader(MemoryReader memReader) {
+        private static void ReadMetadataHeader(MemoryReader memReader) {
             uint signature = memReader.ReadUInt32();
             if (signature != COR20Constants.COR20MetadataSignature) {
                 throw new BadImageFormatException();
@@ -902,7 +902,7 @@ namespace Microsoft.Scripting.Metadata {
             return (int)start;
         }
 
-        private int GetRangeCount(int rowCount, uint start, uint nextStart) {
+        private static int GetRangeCount(int rowCount, uint start, uint nextStart) {
             if (start == 0) {
                 return 0;
             }

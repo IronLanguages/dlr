@@ -743,7 +743,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return line;
         }
 
-        private string FinalLineText {
+        private static string FinalLineText {
             get {
                 return Environment.OSVersion.Platform != PlatformID.Unix ? "\x1A" : "\x04";
             }

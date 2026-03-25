@@ -132,7 +132,7 @@ namespace Microsoft.Scripting.Actions {
             return new ComboDynamicSiteExpression(node.Type, binders, inputs.ToArray());
         }
 
-        private bool IsSideEffectFree(Expression rewritten) {
+        private static bool IsSideEffectFree(Expression rewritten) {
             if (rewritten is ParameterExpression) {
                 return true;
             }

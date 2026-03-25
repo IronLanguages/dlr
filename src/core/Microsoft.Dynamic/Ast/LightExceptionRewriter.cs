@@ -156,7 +156,7 @@ namespace Microsoft.Scripting.Ast {
             return node;
         }
 
-        private Expression RewriteTryFinally(Expression tryBody, Expression finallyBody) {
+        private static Expression RewriteTryFinally(Expression tryBody, Expression finallyBody) {
             // TODO: Make this work
             //var finallyRan = Expression.Parameter(typeof(bool), "finallyRan");
             //return Expression.Block(
@@ -247,7 +247,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "realCatch"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exception")]
-        private Expression TrackCatch(Expression expression, Expression exception, bool realCatch) {
+        private static Expression TrackCatch(Expression expression, Expression exception, bool realCatch) {
 #if DEBUG
             if (realCatch) {
                 return Expression.Block(
