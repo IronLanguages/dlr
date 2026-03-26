@@ -137,7 +137,7 @@ namespace System.Reflection {
 
 namespace Microsoft.Scripting.Metadata {
     [DebuggerDisplay("{DebugView}")]
-    public partial struct MetadataRecord : IEquatable<MetadataRecord> {
+    public readonly partial struct MetadataRecord : IEquatable<MetadataRecord> {
         internal readonly MetadataToken m_token;
         internal readonly MetadataTables m_tables;
         
@@ -347,7 +347,7 @@ namespace Microsoft.Scripting.Metadata {
         }
     }
 
-    public partial struct MetadataTableView {
+    public readonly partial struct MetadataTableView {
         private readonly MetadataTokenType m_type;
         private readonly MetadataRecord m_parent;
 
@@ -360,7 +360,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Module table entry (0x00 tokens).
     /// </summary>
-    public partial struct ModuleDef {
+    public readonly partial struct ModuleDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(ModuleDef moduleDef) {
@@ -385,7 +385,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// TypeRef table entry (0x01 tokens).
     /// </summary>
-    public partial struct TypeRef {
+    public readonly partial struct TypeRef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(TypeRef typeRef) {
@@ -404,7 +404,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// TypeDef table entry (0x02 tokens).
     /// </summary>
-    public partial struct TypeDef {
+    public readonly partial struct TypeDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(TypeDef typeDef) {
@@ -474,7 +474,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Combines Field (0x04 tokens), FieldRVA (0x1d tokens) and Constant (0x0B) table entries.
     /// </summary>
-    public partial struct FieldDef {
+    public readonly partial struct FieldDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(FieldDef fieldDef) {
@@ -499,7 +499,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// MethodDef table entry (0x06 tokens).
     /// </summary>
-    public partial struct MethodDef {
+    public readonly partial struct MethodDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(MethodDef methodDef) {
@@ -538,7 +538,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Param table entry (0x08 tokens).
     /// </summary>
-    public partial struct ParamDef {
+    public readonly partial struct ParamDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(ParamDef paramDef) {
@@ -564,7 +564,7 @@ namespace Microsoft.Scripting.Metadata {
     /// InterfaceImpl table entry (0x09 tokens).
     /// TODO: we might not need this - TypeDef.ImplementedInterfaces might be a special enumerator that directly returns InterfaceType tokens.
     /// </summary>
-    public partial struct InterfaceImpl {
+    public readonly partial struct InterfaceImpl {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(InterfaceImpl paramDef) {
@@ -584,7 +584,7 @@ namespace Microsoft.Scripting.Metadata {
     /// MemberRef table entry (0x0A tokens).
     /// Stores MethodRefs and FieldRefs.
     /// </summary>
-    public partial struct MemberRef {
+    public readonly partial struct MemberRef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(MemberRef memberRef) {
@@ -605,7 +605,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// CustomAttribute table entry (0x0C tokens).
     /// </summary>
-    public partial struct CustomAttributeDef {
+    public readonly partial struct CustomAttributeDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(CustomAttributeDef customAttributeDef) {
@@ -631,7 +631,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// StandAloneSig table entry (0x11 token).
     /// </summary>
-    public partial struct SignatureDef {
+    public readonly partial struct SignatureDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(SignatureDef signatureDef) {
@@ -650,7 +650,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Combines information from PropertyMap (0x15), MethodSemantics (0x18) and Property (0x17) tables.
     /// </summary>
-    public partial struct PropertyDef {
+    public readonly partial struct PropertyDef {
         // index into Property table
         private readonly MetadataRecord m_record;
 
@@ -714,7 +714,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Combines information from EventMap (0x15), MethodSemantics (0x18) and Event (0x17) tables.
     /// </summary>
-    public partial struct EventDef {
+    public readonly partial struct EventDef {
         // index into Event table
         private readonly MetadataRecord m_record;
 
@@ -779,7 +779,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// ModuleRef table entry (0x1A tokens).
     /// </summary>
-    public partial struct ModuleRef {
+    public readonly partial struct ModuleRef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(ModuleRef moduleDef) {
@@ -798,7 +798,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// TypeSpec table entry (0x1B tokens).
     /// </summary>
-    public partial struct TypeSpec {
+    public readonly partial struct TypeSpec {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(TypeSpec typeSpec) {
@@ -819,7 +819,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Assembly table entry (0x20 tokens).
     /// </summary>
-    public partial struct AssemblyDef {
+    public readonly partial struct AssemblyDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(AssemblyDef assemblyDef) {
@@ -844,7 +844,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// Assembly table entry (0x23 tokens).
     /// </summary>
-    public partial struct AssemblyRef {   // TODO: AssemblyRef name is already an internal class 
+    public readonly partial struct AssemblyRef {   // TODO: AssemblyRef name is already an internal class 
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(AssemblyRef assemblyRef) {
@@ -863,7 +863,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// File table entry (0x26 tokens).
     /// </summary>
-    public partial struct FileDef {
+    public readonly partial struct FileDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(FileDef fileDef) {
@@ -882,7 +882,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// ExportedType table entry (0x27 tokens).
     /// </summary>
-    public partial struct TypeExport {
+    public readonly partial struct TypeExport {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(TypeExport typeExport) {
@@ -901,7 +901,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// ManifestResource table entry (0x28 tokens).
     /// </summary>
-    public partial struct ManifestResourceDef {
+    public readonly partial struct ManifestResourceDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(ManifestResourceDef resourceDef) {
@@ -921,7 +921,7 @@ namespace Microsoft.Scripting.Metadata {
     /// NestedClass table entry (0x29 tokens).
     /// TODO: Don't need if we exposed nested types enumeration on type-def directly and build TypeNesting mapping lazily.
     /// </summary>
-    public partial struct TypeNesting {
+    public readonly partial struct TypeNesting {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(TypeNesting nestedClassDef) {
@@ -940,7 +940,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// GenericParam table entry (0x2A tokens).
     /// </summary>
-    public partial struct GenericParamDef {
+    public readonly partial struct GenericParamDef {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(GenericParamDef genericParamDef) {
@@ -971,7 +971,7 @@ namespace Microsoft.Scripting.Metadata {
     /// <summary>
     /// GenericParamConstraint table entry (0x2C tokens).
     /// </summary>
-    public partial struct GenericParamConstraint {
+    public readonly partial struct GenericParamConstraint {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(GenericParamConstraint constraint) {
@@ -991,7 +991,7 @@ namespace Microsoft.Scripting.Metadata {
     /// MethodSpec table entry (0x2B tokens).
     /// Used when decoding IL instructions.
     /// </summary>
-    public partial struct MethodSpec {
+    public readonly partial struct MethodSpec {
         private readonly MetadataRecord m_record;
 
         public static implicit operator MetadataRecord(MethodSpec methodSpec) {
