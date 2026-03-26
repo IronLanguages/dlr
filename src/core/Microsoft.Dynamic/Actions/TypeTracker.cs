@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Actions {
         internal static void GetMemberNames(Type type, HashSet<string> result) {
             foreach (Type ancestor in type.Ancestors()) {
                 foreach (MemberInfo mi in ancestor.GetDeclaredMembers()) {
-                    if (!(mi is ConstructorInfo)) {
+                    if (mi is not ConstructorInfo) {
                         result.Add(mi.Name);
                     }
                 }

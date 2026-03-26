@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<LanguageElement> GetLanguages() {
-            if (!(this[_Languages] is LanguageElementCollection languages)) {
+            if (this[_Languages] is not LanguageElementCollection languages) {
                 yield break;
             }
 
@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<OptionElement> GetOptions() {
-            if (!(this[_Options] is OptionElementCollection options)) {
+            if (this[_Options] is not OptionElementCollection options) {
                 yield break;
             }
 

@@ -543,7 +543,7 @@ namespace Microsoft.Scripting.Hosting {
             get {
                 if (_config is null) {
                     // The user shouldn't be able to get a hold of the invariant engine
-                    Debug.Assert(!(LanguageContext is InvariantContext));
+                    Debug.Assert(LanguageContext is not InvariantContext);
 
                     // Find the matching language configuration
                     LanguageConfiguration config = Runtime.Manager.Configuration.GetLanguageConfig(LanguageContext);

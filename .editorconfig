@@ -123,4 +123,5 @@ dotnet_diagnostic.IDE0019.severity = warning     # IDE0019: Use pattern matching
 dotnet_diagnostic.IDE0020.severity = warning     # IDE0020: Use pattern matching to avoid 'is' check followed by a cast (with variable)
 dotnet_diagnostic.IDE0020.severity = warning     # IDE0020: Use pattern matching to avoid 'is' check followed by a cast (without variable)
 dotnet_diagnostic.IDE0041.severity = warning     # IDE0041: Use 'is null' check
+dotnet_diagnostic.IDE0083.severity = warning     # IDE0083: Use pattern matching (not operator)
 dotnet_diagnostic.IDE1005.severity = warning     # IDE1005: Use conditional delegate call

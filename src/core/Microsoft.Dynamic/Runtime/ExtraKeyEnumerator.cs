@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Runtime {
 
         protected override object GetValue() {
             bool hasExtraValue = _idDict.TryGetExtraValue(_idDict.GetExtraKeys()[_curIndex], out object val);
-            Debug.Assert(hasExtraValue && !(val is Uninitialized));
+            Debug.Assert(hasExtraValue && val is not Uninitialized);
             return val;
         }
 

@@ -73,7 +73,7 @@ namespace Microsoft.Scripting.Generation {
 
             if (attrs is not null) {
                 foreach(var attr in attrs) {
-                    if (!(attr.Value is string a) || string.IsNullOrWhiteSpace(a)) {
+                    if (attr.Value is not string a || string.IsNullOrWhiteSpace(a)) {
                         continue;
                     }
 
