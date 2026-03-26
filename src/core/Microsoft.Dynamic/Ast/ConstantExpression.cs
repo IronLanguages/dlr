@@ -25,7 +25,7 @@ namespace Microsoft.Scripting.Ast {
         /// the value from the WeakReference.
         /// </summary>
         public static MemberExpression WeakConstant(object value) {
-            System.Diagnostics.Debug.Assert(!(value is Expression));
+            System.Diagnostics.Debug.Assert(value is not Expression);
             return Expression.Property(
                 Constant(new WeakReference(value)),
                 typeof(WeakReference).GetDeclaredProperty("Target")

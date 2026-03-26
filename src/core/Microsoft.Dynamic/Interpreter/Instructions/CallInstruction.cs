@@ -77,7 +77,7 @@ namespace Microsoft.Scripting.Interpreter {
                     res = SlowCreate(info, parameters);
                 }
             } catch (TargetInvocationException tie) {
-                if (!(tie.InnerException is NotSupportedException)) {
+                if (tie.InnerException is not NotSupportedException) {
                     throw tie.InnerException;
                 }
 

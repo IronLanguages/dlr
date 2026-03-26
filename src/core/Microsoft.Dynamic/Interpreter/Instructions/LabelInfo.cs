@@ -161,7 +161,7 @@ namespace Microsoft.Scripting.Interpreter {
             if (_definitions is null) {
                 _definitions = scope;
             } else {
-                if(!(_definitions is HashSet<LabelScopeInfo> set)) {
+                if(_definitions is not HashSet<LabelScopeInfo> set) {
                     _definitions = set = new HashSet<LabelScopeInfo>() { (LabelScopeInfo)_definitions };
                 }
                 set.Add(scope);

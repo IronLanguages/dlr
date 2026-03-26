@@ -168,7 +168,7 @@ namespace Microsoft.Scripting.Runtime {
                 object res;
                 if (key is string strKey) {
                     lock (this) {
-                        if (TryGetExtraValue(strKey, out res) && !(res is Uninitialized)) return res;
+                        if (TryGetExtraValue(strKey, out res) && res is not Uninitialized) return res;
 
                         if (_data is null) {
                             throw new KeyNotFoundException(strKey);
@@ -248,7 +248,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public bool Remove(object key) {
-            if (!(key is string strKey))
+            if (key is not string strKey)
                 return RemoveObjectKey(key);
 
             if (TrySetExtraValue(strKey, Uninitialized.Instance)) {

@@ -59,7 +59,7 @@ namespace Microsoft.Scripting.Actions {
         internal sealed class InterceptorWalker : DynamicExpressionVisitor {
             protected override Expression VisitDynamic(DynamicExpression node) {
                 CallSiteBinder binder = node.Binder;
-                if (!(binder is InterceptorSiteBinder)) {
+                if (binder is not InterceptorSiteBinder) {
                     binder = new InterceptorSiteBinder(binder);
                     return DynamicExpression.MakeDynamic(node.DelegateType, binder, node.Arguments);
                 }
