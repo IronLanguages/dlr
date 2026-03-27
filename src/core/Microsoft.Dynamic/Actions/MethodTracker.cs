@@ -69,7 +69,7 @@ namespace Microsoft.Scripting.Actions {
                                 AstUtils.Constant(Method),
                                 typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
                                 AstUtils.Constant(null),
-                                AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(arguments, x => x.Expression))
+                                AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(arguments, static x => x.Expression))
                             ),
                             Method.ReturnType
                         ),
@@ -86,7 +86,7 @@ namespace Microsoft.Scripting.Actions {
                         AstUtils.Constant(Method),
                         typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
                         arguments[0].Expression,
-                        AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(ArrayUtils.RemoveFirst(arguments), x => x.Expression))
+                        AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(ArrayUtils.RemoveFirst(arguments), static x => x.Expression))
                     ),
                     Method.ReturnType
                 ),

@@ -136,7 +136,7 @@ namespace Microsoft.Scripting.Generation {
                     Expression.NewArrayInit(
                          typeof(string),
                          new ReadOnlyCollection<Expression>(
-                             strings.Map(s => Expression.Constant(s, typeof(string)))
+                             strings.Map(static s => Expression.Constant(s, typeof(string)))
                          )
                      )
                  );
@@ -176,7 +176,7 @@ namespace Microsoft.Scripting.Generation {
 
                 newDelegateType = _typeGen.AssemblyGen.MakeDelegateType(
                     delegateType.Name,
-                    invoke.GetParameters().Map(p => p.ParameterType),
+                    invoke.GetParameters().Map(static p => p.ParameterType),
                     invoke.ReturnType
                 );
 

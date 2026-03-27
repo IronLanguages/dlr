@@ -189,7 +189,7 @@ namespace Microsoft.Scripting {
             public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
                 return DynamicTryGetValue(binder.Name, binder.IgnoreCase,
                     binder.FallbackGetMember(this).Expression,
-                    (tmp) => tmp
+                    static tmp => tmp
                 );
             }
 

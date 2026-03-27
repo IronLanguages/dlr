@@ -767,7 +767,7 @@ namespace Microsoft.Scripting.Interpreter {
             }
 
             // Test values must be constant
-            if (!node.Cases.All(c => c.TestValues.All(t => t is ConstantExpression))) {
+            if (!node.Cases.All(static c => c.TestValues.All(static t => t is ConstantExpression))) {
                 throw new NotImplementedException();
             }
             LabelInfo end = DefineLabel(null);

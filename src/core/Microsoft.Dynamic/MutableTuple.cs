@@ -319,7 +319,7 @@ namespace Microsoft.Scripting {
         /// Provides an expression for creating a tuple with the specified values.
         /// </summary>
         public static Expression Create(params Expression[] values) {
-            return CreateNew(MakeTupleType(ArrayUtils.ConvertAll(values, x => x.Type)), 0, values.Length, values);
+            return CreateNew(MakeTupleType(ArrayUtils.ConvertAll(values, static x => x.Type)), 0, values.Length, values);
         }
 
         private static int PowerOfTwoRound(int value) {
@@ -369,7 +369,7 @@ namespace Microsoft.Scripting {
             }
             
             return Expression.New(
-                tupleType.GetConstructor(ArrayUtils.ConvertAll(newValues, x => x.Type)), 
+                tupleType.GetConstructor(ArrayUtils.ConvertAll(newValues, static x => x.Type)), 
                 newValues);
         }
     }

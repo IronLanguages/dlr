@@ -671,7 +671,7 @@ namespace Microsoft.Scripting.Utils {
         public const char GenericArityDelimiter = '`';
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method) {
-            return FormatSignature(result, method, t => t.FullName);
+            return FormatSignature(result, method, static t => t.FullName);
         }
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method, Func<Type, string> nameDispenser) {
@@ -724,7 +724,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type) {
-            return FormatTypeName(result, type, t => t.FullName);
+            return FormatTypeName(result, type, static t => t.FullName);
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type, Func<Type, string> nameDispenser) {
@@ -755,7 +755,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeArgs(StringBuilder result, Type[] types) {
-            return FormatTypeArgs(result, types, (t) => t.FullName);
+            return FormatTypeArgs(result, types, static t => t.FullName);
         }
 
         public static StringBuilder FormatTypeArgs(StringBuilder result, Type[] types, Func<Type, string> nameDispenser) {
@@ -906,7 +906,7 @@ namespace Microsoft.Scripting.Utils {
         public static MethodBase[] GetMethodInfos(MemberInfo[] members) {
             return ArrayUtils.ConvertAll<MemberInfo, MethodBase>(
                 members,
-                delegate (MemberInfo inp) { return (MethodBase)inp; });
+                static (MemberInfo inp) => (MethodBase)inp);
         }
 
         public static Type[] GetParameterTypes(ParameterInfo[] parameterInfos) {
@@ -1089,7 +1089,7 @@ namespace Microsoft.Scripting.Utils {
                 // for just the list of types that we successfully loaded.
             }
 
-            return GetAllTypesFromAssembly(assembly).Where(type => type.IsPublic);
+            return GetAllTypesFromAssembly(assembly).Where(static type => type.IsPublic);
         }
 
         #endregion
