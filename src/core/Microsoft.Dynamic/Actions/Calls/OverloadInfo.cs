@@ -192,7 +192,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         public static OverloadInfo[] CreateArray(MethodBase[] methods) {
-            return ArrayUtils.ConvertAll(methods, m => new ReflectionOverloadInfo(m));
+            return ArrayUtils.ConvertAll(methods, static m => new ReflectionOverloadInfo(m));
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Generation {
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
-            if (types.Length > MaximumArity || types.Any(t => t.IsByRef)) {
+            if (types.Length > MaximumArity || types.Any(static t => t.IsByRef)) {
                 return MakeCustomDelegate(types);
             }
 

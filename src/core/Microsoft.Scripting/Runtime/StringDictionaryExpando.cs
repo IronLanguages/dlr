@@ -67,7 +67,7 @@ namespace Microsoft.Scripting.Runtime {
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder) {
             return DynamicTryGetMember(binder.Name,
                 binder.FallbackGetMember(this).Expression,
-                tmp => tmp
+                static tmp => tmp
             );
         }
 

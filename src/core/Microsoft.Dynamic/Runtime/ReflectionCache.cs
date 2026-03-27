@@ -26,9 +26,7 @@ namespace Microsoft.Scripting.Runtime {
                     _functions[cache] = res = new MethodGroup(
                         ArrayUtils.ConvertAll<MethodBase, MethodTracker>(
                             methods,
-                            delegate(MethodBase x) {
-                                return (MethodTracker)MemberTracker.FromMemberInfo(x);
-                            }
+                            static (MethodBase x) => (MethodTracker)MemberTracker.FromMemberInfo(x)
                         )
                     );
                 }

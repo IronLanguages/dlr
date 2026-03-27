@@ -1058,7 +1058,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         }
                         break;
                     case CallFailureReason.DuplicateKeyword:
-                        int duppedIdx = cf.PositionalArguments.FindIndex(p => p != 0);
+                        int duppedIdx = cf.PositionalArguments.FindIndex(static p => p != 0);
                         return duppedIdx >= 0 ?
                             ErrorInfo.FromException(
                                 Expression.Call(

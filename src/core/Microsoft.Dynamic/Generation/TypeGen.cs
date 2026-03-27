@@ -58,7 +58,7 @@ namespace Microsoft.Scripting.Generation {
             MethodAttributes attrs = baseMethod.Attributes & ~(MethodAttributes.Abstract | MethodAttributes.Public);
             attrs |= MethodAttributes.NewSlot | MethodAttributes.Final;
 
-            Type[] baseSignature = baseMethod.GetParameters().Map(p => p.ParameterType);
+            Type[] baseSignature = baseMethod.GetParameters().Map(static p => p.ParameterType);
             MethodBuilder mb = TypeBuilder.DefineMethod(
                 baseMethod.DeclaringType.Name + "." + baseMethod.Name,
                 attrs,
@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Generation {
         // TODO: Use ReflectionUtils.DefineMethodOverride?
         public ILGen DefineMethodOverride(MethodInfo baseMethod) {
             MethodAttributes finalAttrs = baseMethod.Attributes & ~MethodAttributesToEraseInOveride;
-            Type[] baseSignature = baseMethod.GetParameters().Map(p => p.ParameterType);
+            Type[] baseSignature = baseMethod.GetParameters().Map(static p => p.ParameterType);
             MethodBuilder mb = TypeBuilder.DefineMethod(baseMethod.Name, finalAttrs, baseMethod.ReturnType, baseSignature);
 
             TypeBuilder.DefineMethodOverride(mb, baseMethod);

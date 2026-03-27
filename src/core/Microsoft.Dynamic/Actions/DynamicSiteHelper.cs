@@ -37,7 +37,7 @@ namespace Microsoft.Scripting.Actions {
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
-            if (types.Length > MaximumArity || Any(types, t => t.IsByRef)) {
+            if (types.Length > MaximumArity || Any(types, static t => t.IsByRef)) {
                 return null;
             }
 
