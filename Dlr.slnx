@@ -41,6 +41,9 @@
     <Project Path="tests/Microsoft.Dynamic.Test/Microsoft.Dynamic.Test.csproj" />
     <Project Path="tests/Microsoft.Scripting.Test/Microsoft.Scripting.Test.csproj" />
   </Folder>
+  <Folder Name="/Benchmarks/">
+    <Project Path="tests/Microsoft.Dynamic.Benchmarks/Microsoft.Dynamic.Benchmarks.csproj" />
+  </Folder>
   <Project Path="src/core/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
   <Project Path="src/core/Microsoft.Scripting.Metadata/Microsoft.Scripting.Metadata.csproj" />
   <Project Path="src/core/Microsoft.Scripting/Microsoft.Scripting.csproj" />
