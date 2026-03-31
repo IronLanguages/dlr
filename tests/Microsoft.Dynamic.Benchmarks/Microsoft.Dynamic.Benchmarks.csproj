@@ -12,6 +12,9 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
 
+    <!-- Disable obsolescence warnings -->
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
+
     <!-- net462 SDK default is C# 7.3; override so all TFMs compile modern syntax -->
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
