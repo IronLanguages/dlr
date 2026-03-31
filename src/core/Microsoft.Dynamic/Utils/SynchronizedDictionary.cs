@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,6 +13,7 @@ namespace Microsoft.Scripting.Utils {
     /// provides a thread-safe implementation. It holds onto a Dictionary[TKey, TValue] instead of inheriting from
     /// it so that users who need to do manual synchronization can access the underlying Dictionary[TKey, TValue].
     /// </summary>
+    [Obsolete("Use System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue> instead.")]
     public class SynchronizedDictionary<TKey, TValue> :
         IDictionary<TKey, TValue>,
         ICollection<KeyValuePair<TKey, TValue>>,
