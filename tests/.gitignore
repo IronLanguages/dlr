@@ -17,3 +17,6 @@ dlldata.obj
 # Log files
 *.log
 *.tlog
+
+# Benchmark artifacts
+*.Benchmarks/artifacts/
