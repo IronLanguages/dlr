@@ -1,0 +1,50 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Build.proj" />
+    <File Path="CurrentVersion.props" />
+    <File Path="Directory.Build.props" />
+    <File Path="LICENSE" />
+    <File Path="make.ps1" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/eng/">
+    <File Path="eng/After.targets" />
+    <File Path="eng/net10.0.props" />
+    <File Path="eng/net462.props" />
+    <File Path="eng/net8.0.props" />
+    <File Path="eng/net9.0.props" />
+    <File Path="eng/netstandard2.0.props" />
+    <File Path="eng/Tasks.targets" />
+  </Folder>
+  <Folder Name="/Solution Items/CI/" />
+  <Folder Name="/Solution Items/CI/Azure/">
+    <File Path=".vsts-ci.yml" />
+    <File Path="eng/steps.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/CI/GitHub/">
+    <File Path=".github/workflows/main.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/Package/" />
+  <Folder Name="/Solution Items/eng/package/nuget/">
+    <File Path="eng/package/nuget/DynamicLanguageRuntime.nuspec" />
+    <File Path="eng/package/nuget/NuGet.Packaging.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/ClrAssembly/ClrAssembly.csproj">
+      <BuildDependency Project="src/core/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
+    </Project>
+    <Project Path="tests/Metadata/Metadata.csproj" />
+    <Project Path="tests/Microsoft.Dynamic.Test/Microsoft.Dynamic.Test.csproj" />
+    <Project Path="tests/Microsoft.Scripting.Test/Microsoft.Scripting.Test.csproj" />
+  </Folder>
+  <Folder Name="/Benchmarks/">
+    <Project Path="tests/Microsoft.Dynamic.Benchmarks/Microsoft.Dynamic.Benchmarks.csproj" />
+  </Folder>
+  <Project Path="src/core/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
+  <Project Path="src/core/Microsoft.Scripting.Metadata/Microsoft.Scripting.Metadata.csproj" />
+  <Project Path="src/core/Microsoft.Scripting/Microsoft.Scripting.csproj" />
+</Solution>

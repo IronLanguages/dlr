@@ -1,0 +1,202 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Threading;
+using System.Diagnostics;
+
+namespace Microsoft.Scripting.Utils {
+    /// <summary>
+    /// Provides fast strongly typed thread local storage.  This is significantly faster than
+    /// Thread.GetData/SetData.
+    /// </summary>
+    public class ThreadLocal<T> {
+        private StorageInfo[] _stores;                                         // array of storage indexed by managed thread ID
+        private static readonly StorageInfo[] Updating = Array.Empty<StorageInfo>();   // a marker used when updating the array
+        private readonly bool _refCounted;
+
+        public ThreadLocal() {
+        }
+
+        /// <summary>
+        /// True if the caller will guarantee that all cleanup happens as the thread
+        /// unwinds.
+        /// 
+        /// This is typically used in a case where the thread local is surrounded by
+        /// a try/finally block.  The try block pushes some state, the finally block
+        /// restores the previous state.  Therefore when the thread exits the thread
+        /// local is back to it's original state.  This allows the ThreadLocal object
+        /// to not check the current owning thread on retrieval.
+        /// </summary>
+        public ThreadLocal(bool refCounted) {
+            _refCounted = refCounted;
+        }
+
+        #region Public API
+
+        /// <summary>
+        /// Gets or sets the value for the current thread.
+        /// </summary>
+        public T Value {
+            get {
+                return GetStorageInfo().Value;
+            }
+            set {
+                GetStorageInfo().Value = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current value if it is not null or calls the provided function
+        /// to create a new value.
+        /// </summary>
+        public T GetOrCreate(Func<T> func) {
+            Assert.NotNull(func);
+
+            StorageInfo si = GetStorageInfo();
+            T res = si.Value;
+            if (res is null) {
+                si.Value = res = func();
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Calls the provided update function with the current value and
+        /// replaces the current value with the result of the function.
+        /// </summary>
+        public T Update(Func<T, T> updater) {
+            Assert.NotNull(updater);
+
+            StorageInfo si = GetStorageInfo();
+            return si.Value = updater(si.Value);
+        }
+
+        /// <summary>
+        /// Replaces the current value with a new one and returns the old value.
+        /// </summary>
+        public T Update(T newValue) {
+            StorageInfo si = GetStorageInfo();
+            var oldValue = si.Value;
+            si.Value = newValue;
+            return oldValue;
+        }
+
+        #endregion
+
+        #region Storage implementation
+
+        private static int GetCurrentThreadId() {
+            return Environment.CurrentManagedThreadId;
+        }
+
+        /// <summary>
+        /// Gets the StorageInfo for the current thread.
+        /// </summary>
+        public StorageInfo GetStorageInfo() {
+            return GetStorageInfo(_stores);
+        }
+
+        private StorageInfo GetStorageInfo(StorageInfo[] curStorage) {
+            int threadId = GetCurrentThreadId();
+
+            // fast path if we already have a value in the array
+            if (curStorage is not null && curStorage.Length > threadId) {
+                StorageInfo res = curStorage[threadId];
+
+                if (res is not null && (_refCounted || res.Thread == Thread.CurrentThread)) {
+                    return res;
+                }
+            }
+
+            return RetryOrCreateStorageInfo(curStorage);
+        }
+
+        /// <summary>
+        /// Called when the fast path storage lookup fails. if we encountered the Empty storage 
+        /// during the initial fast check then spin until we hit non-empty storage and try the fast 
+        /// path again.
+        /// </summary>
+        private StorageInfo RetryOrCreateStorageInfo(StorageInfo[] curStorage) {
+            if (curStorage == Updating) {
+                // we need to retry
+                while ((curStorage = _stores) == Updating) {
+                    Thread.Sleep(0);
+                }
+
+                // we now have a non-empty storage info to retry with
+                return GetStorageInfo(curStorage);
+            }
+
+            // we need to mutate the StorageInfo[] array or create a new StorageInfo
+            return CreateStorageInfo();
+        }
+
+        /// <summary>
+        /// Creates the StorageInfo for the thread when one isn't already present.
+        /// </summary>
+        private StorageInfo CreateStorageInfo() {
+            // we do our own locking, tell hosts this is a bad time to interrupt us.
+            Thread.BeginCriticalRegion();
+            StorageInfo[] curStorage = Updating;
+            try {
+                int threadId = GetCurrentThreadId();
+                StorageInfo newInfo = new StorageInfo(Thread.CurrentThread);
+
+                // set to updating while potentially resizing/mutating, then we'll
+                // set back to the current value.                                        
+                while ((curStorage = Interlocked.Exchange(ref _stores, Updating)) == Updating) {
+                    // another thread is already updating...
+                    Thread.Sleep(0);
+                }
+
+                // check and make sure we have a space in the array for our value
+                if (curStorage is null) {
+                    curStorage = new StorageInfo[threadId + 1];
+                } else if (curStorage.Length <= threadId) {
+                    StorageInfo[] newStorage = new StorageInfo[threadId + 1];
+                    for (int i = 0; i < curStorage.Length; i++) {
+                        // leave out the threads that have exited
+                        if (curStorage[i] is not null && curStorage[i].Thread.IsAlive) {
+                            newStorage[i] = curStorage[i];
+                        }
+                    }
+                    curStorage = newStorage;
+                }
+
+                // create our StorageInfo in the array, the empty check ensures we're only here
+                // when we need to create.
+                Debug.Assert(curStorage[threadId] is null || curStorage[threadId].Thread != Thread.CurrentThread);
+
+                return curStorage[threadId] = newInfo;
+            } finally {
+                if (curStorage != Updating) {
+                    // let others access the storage again
+                    Interlocked.Exchange(ref _stores, curStorage);
+                }
+
+                Thread.EndCriticalRegion();
+            }
+        }
+
+        /// <summary>
+        /// Helper class for storing the value.  We need to track if a ManagedThreadId
+        /// has been re-used so we also store the thread which owns the value.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")] // TODO
+        public sealed class StorageInfo {
+            internal readonly Thread Thread;                 // the thread that owns the StorageInfo
+            public T Value;                                // the current value for the owning thread
+
+            internal StorageInfo(Thread curThread) {
+                Assert.NotNull(curThread);
+
+                Thread = curThread;
+            }
+        }
+
+        #endregion
+    }
+}

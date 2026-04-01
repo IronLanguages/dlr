@@ -10,27 +10,53 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-22.04, macos-14]
+        # macOS 14 Sonoma will be deprecated on 2026-07-06 and unsupported on 2026-11-02
+        # https://github.com/actions/runner-images/issues/13518
+        # but it is the last macOS image that comes with Mono preinstalled
+        # https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1
+      # Prerequisites
+    - name: Checkout DLR source code
+      uses: actions/checkout@v6
+
+      # Setup .NET
+    - name: Setup .NET 10.0
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '3.0.100'
+        dotnet-version: '10.0.x'
+    - name: Setup .NET 9.0
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '9.0.x'
+    - name: Setup .NET 8.0
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '8.0.x'
+
+      # Build & package
     - name: Build
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
-    - uses: actions/upload-artifact@master
+
+      # Upload package
+    - uses: actions/upload-artifact@v7
       with:
-        name: packages
+        name: packages-${{ matrix.os }}
         path: Package/Release/Packages
-    - name: Test
-      run: |
-        Write-Host ${env:DOTNET_ROOT}
-        ./make.ps1 -frameworks net45,netcoreapp3.0 test-all
-      env:
-        # Work around https://github.com/actions/setup-dotnet/issues/29
-        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/3.0.100/x64
+
+      # Tests
+    - name: Test (net10.0)
+      run: ./make.ps1 -frameworks net10.0 test-all
       shell: pwsh
-      # TODO: figure out how to also test on netcoreapp2.1
+    - name: Test (net9.0)
+      run: ./make.ps1 -frameworks net9.0 test-all
+      shell: pwsh
+    - name: Test (net8.0)
+      run: ./make.ps1 -frameworks net8.0 test-all
+      shell: pwsh
+    - name: Test (net462)
+      run: ./make.ps1 -frameworks net462 test-all
+      shell: pwsh

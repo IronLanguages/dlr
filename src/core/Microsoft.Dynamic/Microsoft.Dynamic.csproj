@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>Microsoft.Scripting</RootNamespace>
+    <BaseAddress>859832320</BaseAddress>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <!-- Suppress CA2263 for .NET 10 - prefer to keep consistent code across all frameworks -->
+    <NoWarn>$(NoWarn);CA2263</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" Condition=" $(Features.Contains('FEATURE_METADATA_READER')) " />
+    <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(IsFullFramework)' == 'true' ">
+    <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
+    <Reference Include="System.Runtime.Remoting" Condition=" $(Features.Contains('FEATURE_REMOTING')) " />
+    <Reference Include="System.Xaml" Condition=" $(Features.Contains('FEATURE_WPF')) " />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**/*.netfx.cs" />
+    <Compile Remove="**/*.netcoreapp.cs" />
+    <Compile Include="**/*.netfx.cs" Condition=" '$(IsFullFramework)' == 'true' " />
+    <Compile Include="**/*.netcoreapp.cs" Condition=" '$(IsFullFramework)' != 'true' " />
+  </ItemGroup>
+
+  <Import Project="$(AfterTargetFiles)" />
+
+  <Target Name="AfterBuildEnds" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
+
+</Project>

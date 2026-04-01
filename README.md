@@ -19,7 +19,7 @@ The best way to install the DLR is through the NuGet DynamicLanguageRuntime pack
 
 Documentation
 -------------
-The best current documentation is in the Docs/ directory, in Word and PDF format (it *was* a Microsoft project, after all).
+The best current documentation is in the `docs/` directory, in Word and PDF format (it *was* a Microsoft project, after all).
 
 Help
 ----
@@ -31,15 +31,17 @@ The original DLR site is at [CodePlex](http://dlr.codeplex.com). The DLR was par
 
 Build
 -----
-You will need to have Visual Studio 2019 16.3.0 or later installed on your machine.
+You will need to have Visual Studio 2022 17.14.26 or later (Windows only) and .NET 10.0 SDK installed on your machine.
 
-On Windows machines, start a Visual Studio command prompt and type:
+On Windows machines, start a Visual Studio PS prompt and type:
 
-    > make
+    > ./make
     
-On Unix machines, make sure Mono is installed and in the PATH, and type:
+On Unix machines, make sure Mono and PowerShell 7+ are installed and in the PATH, and type:
 
-    $ make
+    $ ./make.ps1
 
-Since the main development is on Windows, Mono bugs may inadvertantly be introduced
-- please report them!
+Engineering build assets such as framework props and CI templates live under eng/.
+
+Since the main development is on .NET, Mono bugs may inadvertently be introduced
+&mdash; please report them!

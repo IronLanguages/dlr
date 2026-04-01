@@ -2,51 +2,20 @@
 [CmdletBinding()]
 Param(
     [Parameter(Position=1)]
-    [String] $target = "release",
+    [String] $target = "build",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.1','netcoreapp3.0'),
-    [String] $platform = "x64",
+    [String[]] $frameworks=@('net462','net8.0','net9.0','net10.0'),
+    [String] $platform = $null,  # auto-detect
     [switch] $runIgnored
 )
 
 [int] $global:Result = 0
-[bool] $global:isUnix = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix
 
 $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
-if(!$global:isUnix) {
-    $_VSWHERE = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft Visual Studio\Installer\vswhere.exe')
-    $_VSINSTPATH = ''
-
-    if([System.IO.File]::Exists($_VSWHERE)) {
-        $_VSINSTPATH = & "$_VSWHERE" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
-    } else {
-        Write-Error "Visual Studio 2019 16.3.0 or later is required"
-        Exit 1
-    }
-
-    if(-not [System.IO.Directory]::Exists($_VSINSTPATH)) {
-        Write-Error "Could not determine installation path to Visual Studio"
-        Exit 1
-    }
-
-    if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\MSBuild.exe'))) {
-        $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\')
-        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
-            $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
-        }
-    }
-    elseif([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
-        $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\')
-        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
-            $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
-        }
-    }
-}
-
 $_defaultFrameworkSettings = @{
     "runner" = "dotnet";
-    "tests" = @{ "Microsoft.Dynamic.Test" = "Tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "Tests/Microsoft.Scripting.Test"; "Metadata" = "Tests/Metadata" };
+    "tests" = @{ "Microsoft.Dynamic.Test" = "tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "tests/Microsoft.Scripting.Test"; "Metadata" = "tests/Metadata" };
     "args" = @('test', '__BASEDIR__/__TESTFOLDER__', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
     "filterArg" = '--filter="__FILTER__"';
     "filters" = @{
@@ -67,8 +36,12 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
     [System.Xml.XmlDocument]$doc = New-Object System.Xml.XmlDocument
 
 #   <RunSettings>
+#     <RunConfiguration>
+#       <TargetPlatform>x64</TargetPlatform> <!-- if defined -->
+#     </RunConfiguration>
 #     <TestRunParameters>
-#       <Parameter name="FRAMEWORK" value="net45" />
+#       <Parameter name="FRAMEWORK" value="net462" />
+#       <Parameter name="CONFIGURATION" value="Release" />
 #     </TestRunParameters>
 #   </RunSettings>
 
@@ -79,9 +52,11 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
 
     $runConfiguration = $doc.CreateElement("RunConfiguration")
     $runSettings.AppendChild($runConfiguration) | Out-Null
-    $targetPlatform = $doc.CreateElement("TargetPlatform")
-    $targetPlatform.InnerText = $platform
-    $runConfiguration.AppendChild($targetPlatform) | Out-Null
+    if ($platform) {
+        $targetPlatform = $doc.CreateElement("TargetPlatform")
+        $targetPlatform.InnerText = $platform
+        $runConfiguration.AppendChild($targetPlatform) | Out-Null
+    }
 
     $testRunParameters = $doc.CreateElement("TestRunParameters")
     $runSettings.AppendChild($testRunParameters) | Out-Null
@@ -181,14 +156,20 @@ switch -wildcard ($target) {
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
     "test-debug-*"  { Test $target.Substring(11) "Debug" $frameworks $platform; break }
+    "test-debug"    { Test "all" "Debug" $frameworks $platform; break }
 
     # release targets
-    "restore"       { Main "RestoreReferences" "Release" }
     "release"       { Main "Build" "Release" }
-    "clean"         { Main "Clean" "Release" }
-    "stage"         { Main "Stage" "Release" }
-    "package"       { Main "Package" "Release" }
-    "test-*"        { Test $target.Substring(5) "Release" $frameworks $platform; break }
+
+    # general targets
+    "restore"       { Main "RestoreReferences" $configuration }
+    "build"         { Main "Build" $configuration }
+    "clean"         { Main "Clean" $configuration }
+    "stage"         { Main "Stage" $configuration }
+    "package"       { Main "Package" $configuration }
+    "test-*"        { Test $target.Substring(5) $configuration $frameworks $platform; break }
+    "test"          { Test "all" $configuration $frameworks $platform; break }
+
 
     default { Write-Error "No target '$target'" ; Exit -1 }
 }

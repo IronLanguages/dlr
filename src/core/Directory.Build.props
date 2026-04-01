@@ -1,0 +1,17 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- References -->
+  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
+
+  <PropertyGroup>
+    <DefineConstants>$(Features);$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Include shared global usings (e.g. Lock alias) in all DLR projects -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" Link="GlobalUsings.cs" />
+  </ItemGroup>
+
+</Project>

@@ -4,9 +4,7 @@
 
   <PropertyGroup>
     <DlrRootDir>$(MSBuildThisFileDirectory)</DlrRootDir>
-    <DlrBuildDir>$(DlrRootDir)\Build</DlrBuildDir>
-
-    <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
+    <DlrBuildDir>$(DlrRootDir)\eng</DlrBuildDir>
 
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding additional assembly references -->
     <NoConfig>true</NoConfig>
@@ -29,6 +27,23 @@
     <!-- Don't include SourceRevisionId in InformationalVersion (SourceLink) -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
+
+  <!-- Deterministic build -->
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' or '$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
+  </ItemGroup>
 
   <!-- Signing -->
   <PropertyGroup>
@@ -68,33 +83,26 @@
     <Configuration Condition="'$(Configuration)' == 'Release'">Release</Configuration>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Mono)' == 'true'">
-    <CscToolExeSuffix Condition="'$(OS)' == 'Windows_NT'">.bat</CscToolExeSuffix>
-    <CscToolExeSuffix Condition="'$(OS)' != 'Windows_NT'"></CscToolExeSuffix>
-  </PropertyGroup>
-
-  <!-- References -->
-  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
-
   <PropertyGroup>
     <BaseOutputPath>$(DlrRootDir)\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
     <NoWarn>1591;1584;1574;1685;1573</NoWarn>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <!-- Release -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);TRACE</DefineConstants>
+    <DefineConstants>$(SignedSym);TRACE</DefineConstants>
   </PropertyGroup>
 
   <!-- Debug -->
@@ -102,8 +110,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <!-- TODO: Python & zlib.net need some work -->
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>$(Features);$(SignedSym);DEBUG;TRACE</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>$(SignedSym);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>

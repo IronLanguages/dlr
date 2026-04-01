@@ -1,0 +1,131 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <RootNamespace>merlintest</RootNamespace>
+    <AssemblyName>merlintest.dummy</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Prefix>rowantest.</Prefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- Load ilasm from NuGet - TODO: use an ilproj when it becomes supported? -->
+  <PropertyGroup>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('windows'))">win</_OSPlatform>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('linux'))">linux</_OSPlatform>
+    <_OSPlatform Condition="$([MSBuild]::IsOSPlatform('osx'))">osx</_OSPlatform>
+    <_OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</_OSArchitecture>
+
+    <MicrosoftNetCoreIlasmPackageRuntimeId>$(_OSPlatform)-$(_OSArchitecture.ToLower())</MicrosoftNetCoreIlasmPackageRuntimeId>
+    <MicrosoftNetCoreIlasmPackageVersion>7.0.0</MicrosoftNetCoreIlasmPackageVersion>
+    <MicrosoftNetCoreIlasmPackageName>runtime.$(MicrosoftNetCoreIlasmPackageRuntimeId).microsoft.netcore.ilasm</MicrosoftNetCoreIlasmPackageName>
+
+    <ToolsDir Condition="'$(ToolsDir)' == ''">$([System.IO.Path]::Combine($([System.IO.Path]::GetTempPath()), $([System.IO.Path]::GetRandomFileName())))</ToolsDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="$(MicrosoftNetCoreIlasmPackageName)" Version="$(MicrosoftNetCoreIlasmPackageVersion)" PrivateAssets="all" IsImplicitlyDefined="true" />
+  </ItemGroup>
+
+  <Target Name="LoadIlasm">
+    <ItemGroup>
+      <_IlasmSourceFiles Include="$(NuGetPackageRoot)\$(MicrosoftNetCoreIlasmPackageName)\$(MicrosoftNetCoreIlasmPackageVersion)\runtimes\$(MicrosoftNetCoreIlasmPackageRuntimeId)\native\**\*" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_IlasmDir>$(ToolsDir)\ilasm</_IlasmDir>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(_IlasmDir)" />
+    <Copy DestinationFolder="$(_IlasmDir)" SourceFiles="@(_IlasmSourceFiles)" />
+  </Target>
+
+  <Target Name="LoadOrder" Inputs="@(LoadOrderCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="%(LoadOrderCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(LoadOrderCSFile.Filename).dll" />
+  </Target>
+
+  <Target Name="ReachType" Inputs="@(ReachTypeInput)" Outputs="@(ReachTypeOutput)" DependsOnTargets="LoadIlasm">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\loadtypesample.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadtypesample.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\missingtype.cs" OutputAssembly="$(OutputPath)\$(Prefix)missingtype.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)missingtype.dll" Sources="src\loadexception.cs" OutputAssembly="$(OutputPath)\$(Prefix)loadexception.dll" />
+    <Delete Files="$(OutputPath)\$(Prefix)missingtype.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee1.dll" Sources="src\typeforwarder1.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder1.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee2.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee2.dll" />
+    <Exec Command="&quot;$(_IlasmDir)/ilasm&quot; -NOLOGO -QUIET -DLL -OUTPUT=&quot;$(OutputPath)/$(Prefix)typeforwarder2.dll&quot; src/typeforwarder2.il" />
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\typeforwardee3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwardee3.dll" />
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typeforwardee3.dll" Sources="src\typeforwarder3.cs" OutputAssembly="$(OutputPath)\$(Prefix)typeforwarder3.dll" />
+  </Target>
+
+  <Target Name="TypeSample" Inputs="src\TypeSamples.cs;src\testsupport.cs" Outputs="$(OutputPath)\$(Prefix)typesamples.dll">
+    <Csc TargetType="Library" References="@(ReferencePath)" Sources="src\TypeSamples.cs;src\testsupport.cs" OutputAssembly="$(OutputPath)\$(Prefix)typesamples.dll" />
+  </Target>
+
+  <Target Name="CSManyArea" Inputs="@(AreaCSFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
+    <Csc TargetType="Library" References="@(ReferencePath);$(OutputPath)\$(Prefix)typesamples.dll" Sources="%(AreaCSFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaCSFile.Filename).dll" />
+  </Target>
+
+  <Target Name="VBManyArea" Inputs="@(AreaVBFile)" Outputs="$(OutputPath)\$(Prefix)%(Filename).dll" DependsOnTargets="TypeSample">
+    <ItemGroup>
+      <VbcReferencePath Include="@(ReferencePath)" />
+      <VbcReferencePath Include="$(OutputPath)$(Prefix)typesamples.dll" />
+    </ItemGroup>
+
+    <Vbc TargetType="Library" References="@(VbcReferencePath)" Sources="%(AreaVBFile.Identity)" OutputAssembly="$(OutputPath)\$(Prefix)%(AreaVBFile.Filename).dll" NoStandardLib="true" VBRuntime="Embed" />
+  </Target>
+
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveReferences;LoadOrder;ReachType;CSManyArea;VBManyArea" Condition="'$(Staging)' != 'true'" />
+
+  <Target Name="CleanAssemblies" AfterTargets="Clean">
+    <Delete Files="@(AreaCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(AreaVBFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(LoadOrderCSFile->'$(OutputPath)\$(Prefix)%(Filename).dll')" />
+    <Delete Files="@(ReachTypeOutput)" />
+    <Delete Files="$(OutputPath)\$(Prefix)typesamples.dll" />
+  </Target>
+
+  <ItemGroup>
+    <AreaCSFile Include="src\fieldtests.cs" />
+    <AreaCSFile Include="src\methodargs.cs" />
+    <AreaCSFile Include="src\returnvalues.cs" />
+    <AreaCSFile Include="src\operators.cs" />
+    <AreaCSFile Include="src\userdefinedconversions.cs" />
+    <AreaCSFile Include="src\delegatedefinitions.cs" />
+    <AreaCSFile Include="src\eventdefinitions.cs" />
+    <AreaCSFile Include="src\propertydefinitions.cs" />
+    <AreaCSFile Include="src\indexerdefinitionscs.cs" />
+    <AreaCSFile Include="src\defaultmemberscs.cs" />
+    <AreaCSFile Include="src\baseclasscs.cs" />
+    <AreaCSFile Include="src\dynamicobjmodel.cs" />
+
+    <AreaVBFile Include="src\*.vb" />
+    <LoadOrderCSFile Include="src\loadorder\loadorder*.cs" />
+
+    <ReachTypeInput Include="src\loadtypesample.cs" />
+    <ReachTypeInput Include="src\missingtype.cs" />
+    <ReachTypeInput Include="src\loadexception.cs" />
+    <ReachTypeInput Include="src\typeforwardee1.cs" />
+    <ReachTypeInput Include="src\typeforwarder1.cs" />
+    <ReachTypeInput Include="src\typeforwardee2.cs" />
+    <ReachTypeInput Include="src\typeforwarder2.il" />
+    <ReachTypeInput Include="src\typeforwardee3.cs" />
+    <ReachTypeInput Include="src\typeforwarder3.cs" />
+
+    <ReachTypeOutput Include="@(ReachTypeInput->'$(OutputPath)\$(Prefix)%(Filename).dll')" Exclude="$(OutputPath)\$(Prefix)missingtype.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="dummy.cs" />
+    <None Include="src\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\core\Microsoft.Dynamic\Microsoft.Dynamic.csproj" />
+  </ItemGroup>
+
+</Project>

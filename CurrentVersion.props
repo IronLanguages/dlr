@@ -2,10 +2,11 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MajorVersion>1</MajorVersion>
-    <MinorVersion>2</MinorVersion>
-    <MicroVersion>3</MicroVersion>
-    <ReleaseSerial>0</ReleaseSerial>
-    <ReleaseLevel>alpha</ReleaseLevel>
+    <MinorVersion>3</MinorVersion>
+    <MicroVersion>5</MicroVersion>
+    <ReleaseLevel>final</ReleaseLevel><!-- alpha, beta, candidate or final -->
+    <ReleaseSerial>0</ReleaseSerial><!-- this should only be 0 when final -->
+
     <AssemblyRevision>0</AssemblyRevision>
   </PropertyGroup>
 </Project>

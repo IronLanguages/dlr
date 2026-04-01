@@ -1,0 +1,110 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Diagnostics;
+
+namespace Microsoft.Scripting.Utils {
+    /// <summary>
+    /// Console input stream (Console.OpenStandardInput) has a bug that manifests itself if reading small amounts of data.
+    /// This class wraps the standard input stream with a buffer that ensures that enough data are read from the underlying stream.
+    /// </summary>
+    public sealed class ConsoleInputStream : Stream {
+        public static readonly ConsoleInputStream Instance = new();
+
+        // we use 0x1000 to be safe (MSVCRT uses this value for stdin stream buffer).
+        private const int MinimalBufferSize = 0x1000; 
+
+        private readonly Stream _input;
+        private readonly Lock _lock = new();
+        private readonly byte[] _buffer = new byte[MinimalBufferSize];
+        private int _bufferPos;
+        private int _bufferSize;
+
+        private ConsoleInputStream() {
+            try {
+                _input = Console.OpenStandardInput();
+            } catch (PlatformNotSupportedException) {
+                _input = Stream.Null;
+            }
+        }
+
+        public override bool CanRead {
+            get { return true; }
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) {
+            int result;
+            lock (_lock) {
+                if (_bufferSize > 0) {
+                    result = Math.Min(count, _bufferSize);
+                    Buffer.BlockCopy(_buffer, _bufferPos, buffer, offset, result);
+                    _bufferPos += result;
+                    _bufferSize -= result;
+                    offset += result;
+                    count -= result;
+                } else {
+                    result = 0;
+                }
+
+                if (count > 0) {
+                    Debug.Assert(_bufferSize == 0);
+                    if (count < MinimalBufferSize) {
+                        int bytesRead = _input.Read(_buffer, 0, MinimalBufferSize);
+                        int bytesToReturn = Math.Min(bytesRead, count);
+                        Buffer.BlockCopy(_buffer, 0, buffer, offset, bytesToReturn);
+
+                        _bufferSize = bytesRead - bytesToReturn;
+                        _bufferPos = bytesToReturn;
+                        result += bytesToReturn;
+                    } else {
+                        result += _input.Read(buffer, offset, count);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        #region Stubs
+
+        public override bool CanSeek {
+            get { return false; }
+        }
+
+        public override bool CanWrite {
+            get { return false; }
+        }
+
+        public override void Flush() {
+            throw new NotSupportedException();
+        }
+
+        public override long Length {
+            get { throw new NotSupportedException(); }
+        }
+
+        public override long Position {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin) {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value) {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+    }
+}
