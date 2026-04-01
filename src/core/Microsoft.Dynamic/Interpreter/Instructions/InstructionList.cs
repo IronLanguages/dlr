@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -222,13 +223,13 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
 #if STATS
-        private static Dictionary<string, int> _executedInstructions = new();
-        private static Dictionary<string, Dictionary<object, bool>> _instances = new();
+        private static readonly Dictionary<string, int> _executedInstructions = new();
+        private static readonly Dictionary<string, HashSet<object>> _instances = new();
 
         static InstructionList() {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler((_, __) => {
                 PerfTrack.DumpHistogram(_executedInstructions);
-                Console.WriteLine("-- Total executed: {0}", _executedInstructions.Values.Aggregate(0, (sum, value) => sum + value));
+                Console.WriteLine("-- Total executed: {0}", _executedInstructions.Values.Aggregate(0, static (sum, value) => sum + value));
                 Console.WriteLine("-----");
 
                 var referenced = new Dictionary<string, int>();
@@ -253,18 +254,17 @@ namespace Microsoft.Scripting.Interpreter {
                     _executedInstructions.TryGetValue(name, out value);
                     _executedInstructions[name] = value + 1;
 
-                    Dictionary<object, bool> dict;
-                    if (!_instances.TryGetValue(name, out dict)) {
-                        _instances[name] = dict = new Dictionary<object, bool>();
+                    if (!_instances.TryGetValue(name, out HashSet<object> set)) {
+                        _instances[name] = set = new();
                     }
-                    dict[instr] = true;
+                    set.Add(instr);
                 });
             }
 #endif
             return new InstructionArray(
                 _maxStackDepth,
                 _maxContinuationDepth,
-                _instructions.ToArray(),                
+                _instructions.ToArray(),
                 _objects?.ToArray(),
                 BuildRuntimeLabels(),
                 _debugCookies
