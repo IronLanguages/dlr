@@ -37,7 +37,7 @@ namespace Microsoft.Dynamic.Benchmarks;
 ///   FrozenDictionary             – immutable snapshot; fastest reads, no write support (.NET only)
 ///   FrozenSet                    – immutable set of keys only, no values, no write support (.NET only)
 ///   HashSet                      – set of keys only, no values
-///   ImmutableHashSet             – immutable set of keys only, no valuesgit     
+///   ImmutableHashSet             – immutable set of keys only, no values
 ///
 /// Scenarios
 /// ─────────
