@@ -28,20 +28,24 @@ namespace Microsoft.Dynamic.Benchmarks;
 /// <remarks>
 /// Collections under test
 /// ──────────────────────
-///   ConcurrentDictionary         – lock-striped generic dictionary; the modern .NET recommendation
+///   ConcurrentDictionary         – lock-striped generic dictionary; the modern .NET recommendation (baseline)
 ///   Hashtable                    – BCL non-generic; concurrent reads are safe, writes require external sync
+///   Dictionary                   – generic Dictionary, not write-thread safe
+///   lock+Hashtable               – lock-guarded BCL non-generic Hashtable
 ///   lock+Dictionary              – lock-guarded generic Dictionary (same pattern as SynchronizedDictionary)
-///   SynchronizedDictionary       – project-local lock-based wrapper (candidate for replacement)
-///   FrozenDictionary             – immutable snapshot; fastest reads, no write support
-///   FrozenSet                    – immutable set of keys only, no values; included for completeness, not a direct comparison
-///   HashSet                      – set of keys only, no values; included for completeness, not a direct comparison
-///   ImmutableHashSet             – immutable set of keys only, no values; included for completeness, not a direct comparison  
+///   SynchronizedDictionary       – project-local lock-based wrapper (intended for replacement)
+///   FrozenDictionary             – immutable snapshot; fastest reads, no write support (.NET only)
+///   FrozenSet                    – immutable set of keys only, no values, no write support (.NET only)
+///   HashSet                      – set of keys only, no values
+///   ImmutableHashSet             – immutable set of keys only, no values
 ///
 /// Scenarios
 /// ─────────
 ///   ReadOnly       – all readers, no writes; the hot path in production (cache populated once)
 ///   WriteOnly      – single-threaded sequential writes; baseline for mutation cost
 ///   SWMR           – Single Writer + Multiple Readers running concurrently
+///
+/// Not all scenarios test all collections. See README.md for more details.
 /// </remarks>
 
 #if NET // ThreadingDiagnoser supports only .NET Core 3.0+
@@ -118,7 +122,7 @@ public class DictionaryBenchmarks {
     // Scenario 1 – Read-only (concurrent reads, no writes)
     // ════════════════════════════════════════════════════════════════════════
 
-    [Benchmark(Description = "ReadOnly – ConcurrentDictionary")]
+    [Benchmark(Description = "ReadOnly – ConcurrentDictionary", Baseline = true)]
     [BenchmarkCategory("ReadOnly")]
     public void ReadOnly_ConcurrentDictionary() {
         RunReaders(i => {
@@ -133,6 +137,15 @@ public class DictionaryBenchmarks {
         RunReaders(i => {
             string key = _keys[i % KeyCount];
             _ = _hashtable[key];
+        });
+    }
+
+    [Benchmark(Description = "ReadOnly – Dictionary")]
+    [BenchmarkCategory("ReadOnly")]
+    public void ReadOnly_Dictionary() {
+        RunReaders(i => {
+            string key = _keys[i % KeyCount];
+            _dictionary.TryGetValue(key, out _);
         });
     }
 
@@ -156,8 +169,8 @@ public class DictionaryBenchmarks {
         });
     }
 
-#if !NET462
-    [Benchmark(Description = "ReadOnly – FrozenDictionary", Baseline = true)]
+#if NET
+    [Benchmark(Description = "ReadOnly – FrozenDictionary")]
     [BenchmarkCategory("ReadOnly")]
     public void ReadOnly_FrozenDictionary() {
         RunReaders(i => {
@@ -200,7 +213,7 @@ public class DictionaryBenchmarks {
     //   FrozenDictionary is excluded — it is immutable by design.
     // ════════════════════════════════════════════════════════════════════════
 
-    [Benchmark(Description = "WriteOnly – ConcurrentDictionary")]
+    [Benchmark(Description = "WriteOnly – ConcurrentDictionary", Baseline = true)]
     [BenchmarkCategory("WriteOnly")]
     public void WriteOnly_ConcurrentDictionary() {
         for (int i = 0; i < WriterOps; i++) {
@@ -210,9 +223,29 @@ public class DictionaryBenchmarks {
         }
     }
 
-    [Benchmark(Description = "WriteOnly – lock+Hashtable")]
+    [Benchmark(Description = "WriteOnly – Hashtable")]
     [BenchmarkCategory("WriteOnly")]
     public void WriteOnly_Hashtable() {
+        for (int i = 0; i < WriterOps; i++) {
+            string key   = _keys[i % KeyCount];
+            string value = _values[(i + 1) % KeyCount];
+            _hashtable[key] = value;
+        }
+    }
+
+    [Benchmark(Description = "WriteOnly – Dictionary")]
+    [BenchmarkCategory("WriteOnly")]
+    public void WriteOnly_Dictionary() {
+        for (int i = 0; i < WriterOps; i++) {
+            string key   = _keys[i % KeyCount];
+            string value = _values[(i + 1) % KeyCount];
+            _dictionary[key] = value;
+        }
+    }
+
+    [Benchmark(Description = "WriteOnly – lock+Hashtable")]
+    [BenchmarkCategory("WriteOnly")]
+    public void WriteOnly_LockHashtable() {
         for (int i = 0; i < WriterOps; i++) {
             string key   = _keys[i % KeyCount];
             string value = _values[(i + 1) % KeyCount];
@@ -222,7 +255,7 @@ public class DictionaryBenchmarks {
         }
     }
 
-    [Benchmark(Description = "WriteOnly – lock+Dictionary", Baseline = true)]
+    [Benchmark(Description = "WriteOnly – lock+Dictionary")]
     [BenchmarkCategory("WriteOnly")]
     public void WriteOnly_LockDictionary() {
         for (int i = 0; i < WriterOps; i++) {
@@ -244,9 +277,19 @@ public class DictionaryBenchmarks {
         }
     }
 
-    [Benchmark(Description = "WriteOnly – lock+HashSet")]
+    [Benchmark(Description = "WriteOnly – HashSet")]
     [BenchmarkCategory("WriteOnly")]
     public void WriteOnly_HashSet() {
+        for (int i = 0; i < WriterOps; i++) {
+            string key   = _keys[i % KeyCount];
+            string _ = _values[(i + 1) % KeyCount];
+            _hashSet.Add(key);
+        }
+    }
+
+    [Benchmark(Description = "WriteOnly – lock+HashSet")]
+    [BenchmarkCategory("WriteOnly")]
+    public void WriteOnly_LockHashSet() {
         for (int i = 0; i < WriterOps; i++) {
             string key   = _keys[i % KeyCount];
             string _ = _values[(i + 1) % KeyCount];
@@ -300,7 +343,11 @@ public class DictionaryBenchmarks {
     [Benchmark(Description = "SWMR – lock+Dictionary")]
     [BenchmarkCategory("SWMR")]
     public void SWMR_LockDictionary() {
-        object syncRoot = _dictionary;
+#if NET9_0_OR_GREATER
+        var syncRoot = new Lock();
+#else
+        var syncRoot = new object();
+#endif
         RunSingleWriterMultipleReaders(
             readerOp: i => {
                 string key = _keys[i % KeyCount];
