@@ -112,12 +112,12 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         internal string[] GetMemberNames(bool dataOnly) {
-            var names = new Dictionary<string, object>();
+            var names = new HashSet<string>();
 
             lock (Funcs) {
                 foreach (ComMethodDesc func in Funcs.Values) {
                     if (!dataOnly || func.IsDataMember) {
-                        names.Add(func.Name, null);
+                        names.Add(func.Name);
                     }
                 }
             }
@@ -125,32 +125,24 @@ namespace Microsoft.Scripting.ComInterop {
             if (!dataOnly) {
                 lock (Puts) {
                     foreach (ComMethodDesc func in Puts.Values) {
-                        if (!names.ContainsKey(func.Name)) {
-                            names.Add(func.Name, null);
-                        }
+                        names.Add(func.Name);
                     }
                 }
 
                 lock (PutRefs) {
                     foreach (ComMethodDesc func in PutRefs.Values) {
-                        if (!names.ContainsKey(func.Name)) {
-                            names.Add(func.Name, null);
-                        }
+                        names.Add(func.Name);
                     }
                 }
 
                 if (Events is not null && Events.Count > 0) {
                     foreach (string name in Events.Keys) {
-                        if (!names.ContainsKey(name)) {
-                            names.Add(name, null);
-                        }
+                        names.Add(name);
                     }
                 }
             }
 
-            string[] result = new string[names.Keys.Count];
-            names.Keys.CopyTo(result, 0);
-            return result;
+            return [..names];
         }
 
         // this property is public - accessed by an AST
