@@ -45,7 +45,7 @@ jobs:
     - uses: actions/upload-artifact@v7
       with:
         name: packages-${{ matrix.os }}
-        path: out/Release/Packages
+        path: dist/Release/Packages
 
       # Tests
     - name: Test (net10.0)

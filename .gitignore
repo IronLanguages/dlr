@@ -5,7 +5,7 @@
 # Output directories
 obj/
 bin/
-/out/
+/dist/
 /Util/References
 TestResults
 
