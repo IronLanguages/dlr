@@ -19,8 +19,8 @@
     <PackageVersion Condition="'$(ReleaseLevel)' == 'final'">$(MajorVersion).$(MinorVersion).$(MicroVersion)</PackageVersion>
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
 
-    <StageDir>$(RootDir)\Package\$(Configuration)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(Configuration)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
+    <StageDir>$(RootDir)\out\$(Configuration)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
+    <PackageDir>$(RootDir)\out\$(Configuration)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
   </PropertyGroup>
 
   <PropertyGroup>
