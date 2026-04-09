@@ -1,8 +1,9 @@
 # Getting Started with the DLR as a Library Author
 
+**Alex Turner and Bill Chiles**
+
 ## Contents
 
-- [Frontmatter](frontmatter.md)
 - [1 Introduction](introduction.md)
 - [2 ExpandoObject](expandoobject.md)
 - [3 DynamicObject](dynamicobject.md)

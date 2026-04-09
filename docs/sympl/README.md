@@ -1,8 +1,11 @@
 # SymPL Implementation on the Dynamic Language Runtime
 
+**Bill Chiles**
+
+**This draft still needs a final proofreading pass!**
+
 ## Contents
 
-- [Frontmatter](frontmatter.md)
 - [1 Introduction](introduction.md)
 	- [1.1 Sources](introduction.md#sources)
 	- [1.2 Walkthrough Organization](introduction.md#walkthrough-organization)
