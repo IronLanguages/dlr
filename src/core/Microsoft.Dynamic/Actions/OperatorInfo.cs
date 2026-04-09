@@ -35,6 +35,7 @@ namespace Microsoft.Scripting.Actions {
             return data;
         }
 
+
         [Obsolete("This method is not efficient; use GetOperatorInfo(ExpressionType) instead.")]
         public static OperatorInfo GetOperatorInfo(string name) {
             foreach (OperatorInfo info in _infos.Values) {
@@ -62,6 +63,7 @@ namespace Microsoft.Scripting.Actions {
         /// This method name is usually a standard .NET method name with pascal casing (e.g. Add).
         /// </summary>
         public string AlternateName { get; }
+
 
         private static OperatorDictionary MakeOperatorTable() {
 
