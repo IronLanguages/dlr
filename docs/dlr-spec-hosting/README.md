@@ -1,8 +1,11 @@
 # DLR Hosting Spec
 
+**Bill Chiles**
+
+**WARNING: This is a big document, in case you are thinking of printing it. This document is reasonably stable, but there is ongoing work in some sections. Some sections are not fully fleshed out for types more rarely used or "more obvious" in their usage.**
+
 ## Contents
 
-- [Frontmatter](frontmatter.md)
 - [1 Introduction](introduction.md)
 - [2 High-level Hosting Model Concepts](high-level-hosting-model-concepts.md)
 	- [2.1 Level One -- Script Runtimes, Scopes, and Executing Files and Snippets](high-level-hosting-model-concepts.md#level-one----script-runtimes-scopes-and-executing-files-and-snippets)

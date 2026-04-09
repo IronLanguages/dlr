@@ -1,8 +1,13 @@
 # Expression Trees v2 Spec
 
+**Bill Chiles**
+
+**This document specifies ETs v2 for CLR 4.0.**
+
+****PRINT WARNING**: Doc is almost 200 pages, but conceptual introduction is about 15 pages.**
+
 ## Contents
 
-- [Frontmatter](frontmatter.md)
 - [1 Introduction](introduction.md)
 	- [1.1 Relation to Other Models](introduction.md#relation-to-other-models)
 	- [1.2 Review from LINQ Expression Trees v1](introduction.md#review-from-linq-expression-trees-v1)

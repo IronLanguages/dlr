@@ -1,8 +1,9 @@
 # Sites, Binders, and Dynamic Object Interop Spec
 
+**Alex Turner and Bill Chiles**
+
 ## Contents
 
-- [Frontmatter](frontmatter.md)
 - [1 Introduction](introduction.md)
 	- [1.1 Performance](introduction.md#performance)
 	- [1.2 Language Interop](introduction.md#language-interop)
