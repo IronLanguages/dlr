@@ -98,15 +98,15 @@ namespace Microsoft.Dynamic.Test {
                     testCount++;
                 }
             } finally {
-                Console.Write("Ran {0} tests", testCount);
+                TestContext.Progress.WriteLine("Ran {0} tests", testCount);
             }
         }
 
         private static void PrintLambda(Expression<Func<List<string>, object>> lambda, List<string> record, List<string> rewriteRecord) {
             for (int i = 0; i < Math.Min(record.Count, rewriteRecord.Count); i++) {
-                Console.WriteLine(record[i]);
-                Console.WriteLine(rewriteRecord[i]);
-                Console.WriteLine();
+                TestContext.Out.WriteLine(record[i]);
+                TestContext.Out.WriteLine(rewriteRecord[i]);
+                TestContext.Out.WriteLine();
             }
         }
 
