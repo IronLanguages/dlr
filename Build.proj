@@ -7,7 +7,6 @@
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
     <Solution>$(RootDir)\Dlr.slnx</Solution>
 
-    <UtilDir>$(RootDir)\Util</UtilDir>
     <BinDir>$(RootDir)\bin</BinDir>
     <BuildSysDir>$(RootDir)\eng</BuildSysDir>
   </PropertyGroup>

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Scripting.Hosting;
-using IronRuby.Runtime;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
@@ -39,13 +38,29 @@ namespace HostingTest {
             _runTime = _runtime;// _remoteRuntime;
 
             _PYEng = _runTime.GetEngine("py");
-            _RBEng = _runTime.GetEngine("rb");
+            _RBEng = TryGetEngine(_runTime, "rb");
 
             SetTestLanguage();
             
             _defaultScope = _runTime.CreateScope();
             _codeSnippets = new PreDefinedCodeSnippets();
         }
+
+        /// <summary>
+        /// Try to get a script engine by name. Returns null if not available.
+        /// </summary>
+        private static ScriptEngine TryGetEngine(ScriptRuntime runtime, string name) {
+            try {
+                return runtime.GetEngine(name);
+            } catch (ArgumentException) {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if IronRuby is configured and available.
+        /// </summary>
+        protected bool IsRubyAvailable => _RBEng != null;
 
         public static ScriptRuntime CreateRuntime() {
             return new ScriptRuntime(CreateSetup());

@@ -482,7 +482,7 @@ namespace HostingTest    {
         /// Note     : this might not make sense for vars but only class members.
         /// </summary>
         [Test]
-        [Ignore] // Bug # 478257 - This might not be valid though IP code like "x=4\ndel x\n" works in IP
+        [Ignore(@"Bug # 478257 - This might not be valid though IP code like 'x=4\ndel x\n' works in IP")]
         public void RemoveMember_BaiscObjectRemovalVar() {
             // BUG -  investigate/file bug
             string varName = "x";
@@ -617,7 +617,7 @@ namespace HostingTest    {
         /// Expected : New env change should give correct __future__ division type.
         /// </summary>
         [Test]
-        [Ignore] // BUG 476154
+        [Ignore("BUG 476154")]
         public void TestFromFuture_UsingOperations() {
 
             ScriptRuntime sr = CreateRuntime();

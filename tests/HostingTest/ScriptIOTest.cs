@@ -66,7 +66,7 @@ namespace HostingTest    {
         /// Test    : Set stream to a valid object; set writer to a valid object
         /// Result  : The output stream receives the proper values in proper format
         /// </summary>
-        [Ignore]// bug #466678 - this issue doesn't happen in ruby
+        [Ignore("bug # 466678 - this issue doesn't happen in ruby")]
         [Test]
         public void SetOutput_TextWriterValidateOutputCloseStreamAndVerifyEngineStability() {
 
@@ -253,7 +253,7 @@ namespace HostingTest    {
         /// Test     : Invoke the method
         /// Results  : Errors, input and output is redirected to console overriding any pervious setting
         /// </summary>
-        [Ignore]//This is easy to do as a manual test. Consider that option too
+        [Ignore("This is easy to do as a manual test. Consider that option too")]
         [Test]
         public void RedirectToConsole_Invoke() {
             _runTime.IO.RedirectToConsole();

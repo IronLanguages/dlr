@@ -92,7 +92,7 @@ namespace HostingTest {
             _runtime.CreateScope().GetVariable("MissingVar");
         }
 
-        [Ignore]        
+        [Ignore("reason unspecified")]
         [Test]
         public void DefaultEngine_GetDefaultEngineTest() {
             ScriptRuntime defaultRuntime = CreateRuntime();

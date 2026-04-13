@@ -37,7 +37,7 @@ namespace HostingTest {
         }
 
         [Test]
-        [Ignore()]//Bug # 484856
+        [Ignore("Bug # 484856")]
         public void ScriptSource_GetCodeProperties() {
             ValidateGetCodeProperties( _codeSnippets[CodeType.Valid1], ScriptCodeParseResult.Complete);
             ValidateGetCodeProperties( _codeSnippets[CodeType.InCompleteStatement1], ScriptCodeParseResult.IncompleteStatement);
@@ -223,8 +223,7 @@ namespace HostingTest {
         }
 
         [Test]
-        [Ignore()]//Bug 464777 - the test actually succeeds, but we want to check for the path->scope mapping 
-        //and that is blocked by this bug
+        [Ignore("Bug 464777 - the test actually succeeds, but we want to check for the path->scope mapping and that is blocked by this bug")]
         public void Path_ExplicitSetDuringConstruction()
         {
             string path = "UniquePath1";
@@ -321,7 +320,7 @@ namespace HostingTest {
             //Assert.Fail("ErrorSink is currently undefined");
         }
 
-        [Ignore]//Bug # 450336
+        [Ignore("Bug # 450336")]
         [Test]
         [Negative]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -337,7 +336,7 @@ namespace HostingTest {
         }
 
         [Test]
-        [Ignore] //blocked by bug #450125
+        [Ignore("blocked by bug # 450125")]
         public void Compile_InvokeWithOptions()
         {
             // BUG - CompiledCode is only a stub currently.
@@ -422,7 +421,7 @@ namespace HostingTest {
         ///   
         /// This example is more of a ScriptScope example
         /// </summary>
-        [Ignore]// Bug #466321
+        [Ignore("Bug # 466321")]
         [Test]
         public void Execute_SingleInvocationMultipleCallsOfLoadedFn()
         {
@@ -741,7 +740,7 @@ test1 = abs(test1)";
         }
 
         [Test]
-        [Ignore]//Not implemented
+        [Ignore("Not implemented")]
         public void GetReader_ThreadSafetyTest()
         {
             Assert.Inconclusive("test not yet implemented");

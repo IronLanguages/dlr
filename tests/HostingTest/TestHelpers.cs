@@ -29,12 +29,12 @@ namespace HostingTest {
         public static string BinDirectory { get; private set; }
 
         static TestHelpers() {
-            BinDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(new Uri(typeof(HAPITestBase).Assembly.CodeBase).AbsolutePath));
+            BinDirectory = Path.GetDirectoryName(typeof(HAPITestBase).Assembly.Location);
             StandardConfigFile = GetStandardConfigFile();
         }
 
         private static string GetStandardConfigFile() {
-            var configFile = Path.GetFullPath(Uri.UnescapeDataString(new Uri(typeof(HAPITestBase).Assembly.CodeBase).AbsolutePath)) + ".config";
+            var configFile = typeof(HAPITestBase).Assembly.Location + ".config";
             Debug.Assert(File.Exists(configFile), configFile);
             return configFile;
         }
@@ -135,7 +135,12 @@ namespace HostingTest {
 
 
         public static AppDomain CreateAppDomain(string name) {
-            return AppDomain.CreateDomain(name, null, BinDirectory, BinDirectory, false);
+            var setup = new AppDomainSetup {
+                ApplicationBase = BinDirectory,
+                PrivateBinPath = BinDirectory,
+                ConfigurationFile = StandardConfigFile
+            };
+            return AppDomain.CreateDomain(name, null, setup);
         }
 
         public class EnvSetupTearDown {

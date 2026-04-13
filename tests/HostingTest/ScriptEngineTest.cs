@@ -37,8 +37,10 @@ namespace HostingTest {
         public void GetRegisteredIdentifiers_Test() {
             var result = _runTime.GetEngine("python").Setup.Names;
             TestHelpers.AreEqualArrays(new string[] { "IronPython", "Python", "py" }, result);
-            result = _runTime.GetEngine("ruby").Setup.Names;
-            TestHelpers.AreEqualArrays(new string[] { "IronRuby", "Ruby", "rb" }, result);
+            if (IsRubyAvailable) {
+                result = _runTime.GetEngine("ruby").Setup.Names;
+                TestHelpers.AreEqualArrays(new string[] { "IronRuby", "Ruby", "rb" }, result);
+            }
         }
 
         [Test]
@@ -46,8 +48,10 @@ namespace HostingTest {
             var result = _runTime.GetEngine("python").Setup.FileExtensions;
             TestHelpers.AreEqualArrays(new string[] { ".py" }, result);
 
-            result = _runTime.GetEngine("ruby").Setup.FileExtensions;
-            TestHelpers.AreEqualArrays(new string[] { ".rb" }, result);
+            if (IsRubyAvailable) {
+                result = _runTime.GetEngine("ruby").Setup.FileExtensions;
+                TestHelpers.AreEqualArrays(new string[] { ".rb" }, result);
+            }
         }
         
         [Test]
@@ -568,7 +572,9 @@ def f(arg):
         public void Operations_InvokeIsNotNull_Test() {
             
             Assert.IsNotNull(_testEng.Operations);
-            Assert.IsNotNull(_RBEng.Operations);
+            if (IsRubyAvailable) {
+                Assert.IsNotNull(_RBEng.Operations);
+            }
             Assert.IsNotNull(_runTime.Operations);
         }
 
@@ -677,7 +683,9 @@ def f(arg):
         public void GetScope_InvalidPath() {
             string wrongPath = "~//root/blah/blah";
             Assert.IsNull(_testEng.GetScope(wrongPath));
-            Assert.IsNull(_RBEng.GetScope(wrongPath));
+            if (IsRubyAvailable) {
+                Assert.IsNull(_RBEng.GetScope(wrongPath));
+            }
         }
 
         /// <summary>
@@ -878,7 +886,7 @@ def f(arg):
         }
 
         [Test]
-        [Ignore]// BUG # 446911
+        [Ignore("BUG # 446911")]
         public void SourceSearchPaths_SpecificPathsCheck() {
             //_testEng.SetSearchPaths
             Assert.Fail("Missing Property definition");

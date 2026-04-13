@@ -6,7 +6,6 @@
 obj/
 bin/
 /dist/
-/Util/References
 TestResults
 
 # NuGet Packages

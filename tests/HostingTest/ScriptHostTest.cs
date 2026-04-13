@@ -119,8 +119,7 @@ namespace HostingTest    {
         [Test]
         [Negative]
         [ExpectedException(typeof(InvalidOperationException))]
-        [Ignore] // BUG - Currently blocked by lack of documentation for ScriptHost|PAL 
-                 // (Investigate | file bug)
+        [Ignore("BUG - Currently blocked by lack of documentation for ScriptHost|PAL (Investigate | file bug)")]
         public void Host_UninitializedPALProperty() {
 
             // Setup test values

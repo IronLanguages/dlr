@@ -39,9 +39,16 @@ namespace HostingTest{
         }
 
         static LangSetup() {
-            Python = new LangSetup( new[] { "IronPython","Python","py" },new[] { ".py" }, "IronPython 3.0",
-                "IronPython.Runtime.PythonContext", "IronPython, Version=2.9.0.0, Culture=neutral"
+            Python = new LangSetup( [ "IronPython","Python","py" ], [ ".py" ], "IronPython 3.4",
+                "IronPython.Runtime.PythonContext", "IronPython"
             );
+            // Only set up Ruby if IronRuby is available
+            var rubyType = Type.GetType("IronRuby.Runtime.RubyContext, IronRuby", throwOnError: false);
+            if (rubyType != null) {
+                Ruby = new LangSetup( [ "IronRuby","Ruby","rb" ], [ ".rb" ], "IronRuby 1.1",
+                    "IronRuby.Runtime.RubyContext", "IronRuby"
+                );
+            }
         }
 
         internal static LangSetup Python, Ruby;
