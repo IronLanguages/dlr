@@ -546,7 +546,7 @@ namespace HostingTest    {
             ///Setup
             string varName = "date";
             // Expected value
-            string expectedDocs = "datetime(year: int, month: int, day: int, hour: int, minute: int, second: int, microsecond: int, tzinfo: tzinfo)";
+            string expectedDocs = "datetime(year: Int32, month: Int32, day: Int32, hour: Int32, minute: Int32, second: Int32, microsecond: Int32, tzinfo: tzinfo)";
             object objectVar = GetVariableValue(_codeSnippets[CodeType.ImportCPythonDateTimeModule],
                                                               varName);
 
@@ -586,7 +586,7 @@ namespace HostingTest    {
             // This could break if the Underlining DotNet documentation changes.
             //http://dlr.codeplex.com/WorkItem/View.aspx?WorkItemId=6071
             //string expectedDocs = "Represents an instant in time, typically expressed as a date and time of day";
-            string expectedDocs = "DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, calendar: Calendar, kind: DateTimeKind)";
+            string expectedDocs = "DateTime(year: Int32, month: Int32, day: Int32, hour: Int32, minute: Int32, second: Int32, millisecond: Int32, calendar: Calendar, kind: DateTimeKind)";
             object testObject = scope.GetVariable(varName);
             string doc = _testEng.Operations.GetDocumentation(testObject);
             Assert.IsTrue(doc.Contains(expectedDocs));
