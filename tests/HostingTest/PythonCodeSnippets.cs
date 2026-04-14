@@ -32,7 +32,7 @@ namespace HostingTest {
                      new CodeSnippet(
                         CodeType.ValidStatement1, "Valid Statement",
                         @"if 1>0 : 
-    print 1001"),
+    print(1001)"),
 
                     /// <summary>
                     ///  Test Bug : this is not an expression - This is a statement!

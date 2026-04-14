@@ -441,7 +441,7 @@ namespace HostingTest {
             scope.SetVariable("modulevar", 5);
 
             //Compile and execute a normal statement
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print 2+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(2+2)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "4");
         }
 
@@ -463,7 +463,7 @@ namespace HostingTest {
             ScriptScope scope = _runTime.CreateScope();
 
             //Compile a statement referencing an unbound variable, which generates a runtime error
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print unbound+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(unbound+2)", SourceCodeKind.Statements).Compile();
             e1.Execute(scope);
             
         }
@@ -474,7 +474,7 @@ namespace HostingTest {
             scope.SetVariable("modulevar", 5);
 
             //Compile a statement referencing a module bound variable
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print modulevar+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(modulevar+2)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "7");
         }
 
@@ -484,7 +484,7 @@ namespace HostingTest {
 
             //Bind a module variable in a statement and then reference it
             _testEng.CreateScriptSourceFromString("pythonvar='This is a python variable'", SourceCodeKind.Statements).Execute(scope);
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print pythonvar", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(pythonvar)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "This is a python variable");
             Assert.IsTrue(scope.ContainsVariable("pythonvar"), "Bound variable isn't visible in the module dict");
 
@@ -510,7 +510,7 @@ namespace HostingTest {
             //Define methods in the module we'll use for code
             _testEng.CreateScriptSourceFromString(@"
 def f(arg):
-    print arg
+    print(arg)
 ", SourceCodeKind.Statements).Execute(scope);
 
             //Compile and execute valid code
@@ -525,7 +525,7 @@ def f(arg):
 
             _testEng.CreateScriptSourceFromString(@"
 def f(arg):
-    print arg
+    print(arg)
 ", SourceCodeKind.Statements).Execute(scope);
         }
 

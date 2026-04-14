@@ -292,7 +292,7 @@ namespace HostingTest    {
 
             string tempFile = Path.GetTempFileName();
             string newFile = Path.ChangeExtension(tempFile, ".py");
-            File.WriteAllText(newFile, "print \"Hello\"");
+            File.WriteAllText(newFile, "print(\"Hello\")");
 
             //e.g., 'foo.py' string in dlrpath
             string fileNameWithExtension = Path.GetFileName(newFile);
