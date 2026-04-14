@@ -40,6 +40,8 @@ namespace HostingTest {
             _PYEng = _runTime.GetEngine("py");
             _RBEng = TryGetEngine(_runTime, "rb");
 
+            AddSearchPaths(_PYEng);
+
             SetTestLanguage();
             
             _defaultScope = _runTime.CreateScope();
@@ -79,6 +81,17 @@ namespace HostingTest {
         private void SetTestLanguage() {
 //          _testLanguage = "ironpython";
             _testEng = _PYEng; 
+        }
+
+        private static void AddSearchPaths(ScriptEngine engine) {
+            var ironPythonPath = TestHelpers.IronPythonPath;
+            if (!string.IsNullOrEmpty(ironPythonPath)) {
+                var paths = new System.Collections.Generic.List<string>(engine.GetSearchPaths());
+                if (!paths.Contains(ironPythonPath)) {
+                    paths.Insert(0, ironPythonPath);
+                    engine.SetSearchPaths(paths);
+                }
+            }
         }
 
     }
