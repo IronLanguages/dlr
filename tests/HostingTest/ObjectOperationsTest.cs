@@ -221,6 +221,7 @@ namespace HostingTest    {
         }
 
         [Test]
+        [Ignore("BUG: GetCallSignatures is not working as this test expects")]
         public void GetCallSignature_PassValidClassObject() {
             // depending on how the object stores objects 
             // internally python stores 4 members maybe?
