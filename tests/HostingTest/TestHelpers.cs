@@ -19,6 +19,41 @@ namespace HostingTest {
     internal class TestHelpers {
 
         /// <summary>
+        /// A stream that wraps a TextWriter, converting byte writes to text.
+        /// </summary>
+        private sealed class TextWriterStream : Stream {
+            private readonly TextWriter _writer;
+            private readonly Encoding _encoding;
+
+            public TextWriterStream(TextWriter writer, Encoding encoding = null) {
+                _writer = writer;
+                _encoding = encoding ?? Encoding.UTF8;
+            }
+
+            public override bool CanRead => false;
+            public override bool CanSeek => false;
+            public override bool CanWrite => true;
+            public override long Length => throw new NotSupportedException();
+            public override long Position {
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
+            }
+
+            public override void Flush() => _writer.Flush();
+
+            public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+            public override void SetLength(long value) => throw new NotSupportedException();
+
+            public override void Write(byte[] buffer, int offset, int count) {
+                var text = _encoding.GetString(buffer, offset, count);
+                _writer.Write(text);
+            }
+        }
+
+        /// <summary>
         /// Config file containing the tested languages - py,rb,ts
         /// </summary>
         public static string StandardConfigFile { get; private set; }
@@ -52,8 +87,9 @@ namespace HostingTest {
         }
 
         internal static void RedirectOutput(ScriptRuntime runTime, TextWriter output, System.Action f) {
-            runTime.IO.SetOutput(Stream.Null, output);
-            runTime.IO.SetErrorOutput(Stream.Null, output);
+            var stream = new TextWriterStream(output);
+            runTime.IO.SetOutput(stream, output);
+            runTime.IO.SetErrorOutput(stream, output);
 
             try {
                 f();
