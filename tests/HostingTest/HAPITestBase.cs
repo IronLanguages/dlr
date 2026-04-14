@@ -60,7 +60,7 @@ namespace HostingTest {
         /// <summary>
         /// Returns true if IronRuby is configured and available.
         /// </summary>
-        protected bool IsRubyAvailable => _RBEng != null;
+        internal protected bool IsRubyAvailable => _RBEng != null;
 
         public static ScriptRuntime CreateRuntime() {
             return new ScriptRuntime(CreateSetup());

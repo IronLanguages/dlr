@@ -518,6 +518,7 @@ namespace HostingTest{
         }
 
         [Test]
+        [RequiresRuby]
         public void Configuration_ManyRegisteredLanguages() {
             //the default runtime should have more than 1 registered languages
             Assert.IsTrue(_runtime.Setup.LanguageSetups.Count > 1);
