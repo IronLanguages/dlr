@@ -429,11 +429,11 @@ namespace HostingTest{
 
         [Test]
         public void GetEngine_PassAllRegisteredLanguages(){
-            Dictionary<ScriptEngine, string[]> idDict = new Dictionary<ScriptEngine, string[]>() {
-                {_PYEng, new string[]{ "py", "python", "ironpython" }},
+            var idDict = new Dictionary<ScriptEngine, string[]>() {
+                {_PYEng, ["py", "python", "ironpython"]},
             };
             if (IsRubyAvailable) {
-                idDict.Add(_RBEng, new string[]{ "rb", "ruby", "ironruby" });
+                idDict.Add(_RBEng, ["rb", "ruby", "ironruby"]);
             }
 
             foreach (var key in idDict.Keys) {
@@ -479,11 +479,11 @@ namespace HostingTest{
 
         [Test]
         public void GetEngineByFileExtension_AllRegisteredExtensions(){
-            Dictionary<ScriptEngine, string[]> fileExtDict = new Dictionary<ScriptEngine, string[]>() {
-                {_PYEng, new string[] { ".py" } },
+            var fileExtDict = new Dictionary<ScriptEngine, string[]>() {
+                {_PYEng, [".py"] },
             };
             if (IsRubyAvailable) {
-                fileExtDict.Add(_RBEng, new string[] { ".rb" });
+                fileExtDict.Add(_RBEng, [".rb"]);
             }
 
             foreach (var key in fileExtDict.Keys) {
@@ -580,7 +580,7 @@ namespace HostingTest{
         public void Setup_AssemblyNameWithoutPublicKeyToken() {
             // Dev10 bug 502278
             var setup = new ScriptRuntimeSetup();
-            setup.LanguageSetups.Add(new LanguageSetup("IronPython.Runtime.PythonContext,IronPython", "IronPython", new[]{"py"}, new[] {"py"}));
+            setup.LanguageSetups.Add(new("IronPython.Runtime.PythonContext,IronPython", "IronPython", ["py"], ["py"]));
             var python = new ScriptRuntime(setup).GetEngine("py");
             Assert.AreEqual(python.Setup.DisplayName, "IronPython");
         }

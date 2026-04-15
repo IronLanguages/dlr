@@ -174,21 +174,21 @@ namespace HostingTest {
         [Test]
         public void GetCodeLines_Basic1() {
             string input = _codeSnippets[CodeType.SevenLinesOfAssignemtStatements];
-            string[] expected = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] expected = input.Split(["\r\n", "\n"], StringSplitOptions.None);
             ValidateGetCodeLines(input, 1, expected.Length, expected);
         }
 
         [Test]
         public void GetCodeLines_Basic2() {
             string input = _codeSnippets[CodeType.SevenLinesOfAssignemtStatements];
-            string[] expected = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] expected = input.Split(["\r\n", "\n"], StringSplitOptions.None);
             ValidateGetCodeLines(input, 1, 100, expected);
         }
 
         [Test]
         public void GetCodeLines_Basic3() {
             string input = _codeSnippets[CodeType.SevenLinesOfAssignemtStatements];
-            string[] temp = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] temp = input.Split(["\r\n", "\n"], StringSplitOptions.None);
             string[] expected = new[] { temp[2], temp[3] };
             ValidateGetCodeLines(input, 3, 2, expected);
         }
@@ -196,9 +196,9 @@ namespace HostingTest {
         [Test]
         public void GetCodeLines_Basic4() {
             string input = _codeSnippets[CodeType.SevenLinesOfAssignemtStatements];
-            string[] temp = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] temp = input.Split(["\r\n", "\n"], StringSplitOptions.None);
 
-            ValidateGetCodeLines(input, temp.Length, 1, new string[] { temp[6] });
+            ValidateGetCodeLines(input, temp.Length, 1, [temp[6]]);
         }
 
         [Test]
@@ -210,7 +210,7 @@ namespace HostingTest {
             string scriptName = TestHelpers.CreateTempSourceFile(sourceInput, ".py");
             ScriptSource source = _testEng.CreateScriptSourceFromFile(scriptName);
 
-            string[] expected = sourceInput.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] expected = sourceInput.Split(["\r\n", "\n"], StringSplitOptions.None);
             ValidateGetCodeLines(sourceInput, 1, expected.Length, expected);
         }
 

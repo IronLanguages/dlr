@@ -89,7 +89,7 @@ namespace HostingTest    {
         [Negative]
         [ExpectedException(typeof(ArgumentTypeException))]
         public void Call_NullObject() {
-            object[] parameters = new object[]{"-a", "-b", "-c",  "foo.py"};
+            object[] parameters = ["-a", "-b", "-c",  "foo.py"];
             _testEng.Operations.Invoke((object)null,parameters);
         }
 
@@ -240,7 +240,7 @@ namespace HostingTest    {
         [Test]
         public void GetCallSignature_PassValidMethodObject() {
             string varName = "concat";
-            string[] expectedResult = new string[] { "concat(a, b, c)" };
+            string[] expectedResult = ["concat(a, b, c)"];
 
             object concat = GetVariableValue(_codeSnippets[CodeType.MethodWithThreeArgs],
                                                            varName);
@@ -671,8 +671,7 @@ namespace HostingTest    {
             src.Execute(scope);
             
             object FooClass = scope.GetVariable("TC");
-            object[] param = new object[] { };
-            object newObjectInstance = engine.Operations.CreateInstance(FooClass, param); // create new FooClass
+            object newObjectInstance = engine.Operations.CreateInstance(FooClass, []); // create new FooClass
 
             var what = engine.Operations.GetMember<Func<int>>(newObjectInstance, "what");
             int n = what();
@@ -699,9 +698,8 @@ namespace HostingTest    {
             object FooClass = scope.GetVariable("TC");
             
 
-            object[] param = new object[] {  };
-            object testClassInstance0 = engine.Operations.CreateInstance(FooClass, param); // create new FooClass
-            object testClassInstance1 = engine.Operations.CreateInstance(FooClass, param); // create new FooClass
+            object testClassInstance0 = engine.Operations.CreateInstance(FooClass, []); // create new FooClass
+            object testClassInstance1 = engine.Operations.CreateInstance(FooClass, []); // create new FooClass
 
 
             Assert.AreNotEqual(testClassInstance0, testClassInstance1);

@@ -99,10 +99,10 @@ namespace HostingTest {
         [Test]
         public void ReadConfiguration_Multi_SameTypeDifferentName() {
             LangSetup py1 = LangSetup.Python;
-            LangSetup py2 = new LangSetup( new[]{"NewPython"}, py1.Extensions, py1.DisplayName,
+            LangSetup py2 = new LangSetup( ["NewPython"], py1.Extensions, py1.DisplayName,
                                 py1.TypeName, py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py1, py2 });
+            string configFile = GetTempConfigFile([py1, py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(1, srs.LanguageSetups.Count);
 
@@ -160,7 +160,7 @@ namespace HostingTest {
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void ReadConfiguration_MissingAssembly() {
-            LangSetup lang = new LangSetup(new[]{"SomeName"}, new[]{".sn"}, "Somename",
+            LangSetup lang = new LangSetup(["SomeName"], [".sn"], "Somename",
                     "SomeLang.Runtime.LangContext", 
                     "SomeLang, Version=8.0.0.5050, Culture=neutral, PublicKeyToken=31345fgsd4344e35");
 
@@ -207,7 +207,7 @@ namespace HostingTest {
         [Test]
         public void ReadConfiguration_EmptyExtensions() {
             LangSetup py1 = LangSetup.Python;
-            LangSetup py2 = new LangSetup(py1.Names, new[]{"",""}, py1.DisplayName,
+            LangSetup py2 = new LangSetup(py1.Names, ["",""], py1.DisplayName,
                                 py1.TypeName, py1.AssemblyString);
 
             string configFile = GetTempConfigFile(new[] { py2 });
@@ -221,10 +221,10 @@ namespace HostingTest {
         [RequiresRuby]
         public void ReadConfiguration_DuplicateEmptyExtensions() {
 
-            LangSetup rb1 = new LangSetup(LangSetup.Ruby.Names, new[] { "", "" }, LangSetup.Ruby.DisplayName,
+            LangSetup rb1 = new LangSetup(LangSetup.Ruby.Names, ["", ""], LangSetup.Ruby.DisplayName,
                     LangSetup.Ruby.TypeName, LangSetup.Ruby.AssemblyString);
 
-            LangSetup py2 = new LangSetup(LangSetup.Python.Names, new[] { "", "" }, LangSetup.Python.DisplayName,
+            LangSetup py2 = new LangSetup(LangSetup.Python.Names, ["", ""], LangSetup.Python.DisplayName,
                                 LangSetup.Python.TypeName, LangSetup.Python.AssemblyString);
 
             string configFile = GetTempConfigFile(new[] { rb1, py2 });
@@ -271,13 +271,13 @@ namespace HostingTest {
         [Test]
         [RequiresRuby]
         public void Configuration_MutateAndCheck2() {
-            string configFile = GetTempConfigFile(new[] { LangSetup.Python });
+            string configFile = GetTempConfigFile([LangSetup.Python]);
 
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var sr = new ScriptRuntime(srs);
 
             var config1 = sr.Setup;
-            var config2 = new ScriptRuntime(ScriptRuntimeSetup.ReadConfiguration(GetTempConfigFile(new[] { LangSetup.Ruby }))).Setup;
+            var config2 = new ScriptRuntime(ScriptRuntimeSetup.ReadConfiguration(GetTempConfigFile([LangSetup.Ruby]))).Setup;
 
             Assert.AreEqual(LangSetup.Python.DisplayName, config1.LanguageSetups[0].DisplayName);
             TestHelpers.AreEqualArrays(LangSetup.Python.Names, config1.LanguageSetups[0].Names);
@@ -285,7 +285,7 @@ namespace HostingTest {
 
         [Test]
         public void Configuration_MutateAndCheck3() {
-            string configFile = GetTempConfigFile(new[] { LangSetup.Python });
+            string configFile = GetTempConfigFile([LangSetup.Python]);
 
             var sr = new ScriptRuntime(ScriptRuntimeSetup.ReadConfiguration(configFile));
             var eng = sr.GetEngine("py");

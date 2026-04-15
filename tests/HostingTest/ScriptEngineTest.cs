@@ -36,21 +36,21 @@ namespace HostingTest {
         [Test]
         public void GetRegisteredIdentifiers_Test() {
             var result = _runTime.GetEngine("python").Setup.Names;
-            TestHelpers.AreEqualArrays(new string[] { "IronPython", "Python", "py" }, result);
+            TestHelpers.AreEqualArrays(["IronPython", "Python", "py"], result);
             if (IsRubyAvailable) {
                 result = _runTime.GetEngine("ruby").Setup.Names;
-                TestHelpers.AreEqualArrays(new string[] { "IronRuby", "Ruby", "rb" }, result);
+                TestHelpers.AreEqualArrays(["IronRuby", "Ruby", "rb"], result);
             }
         }
 
         [Test]
         public void GetRegisteredExtensions_Test() {
             var result = _runTime.GetEngine("python").Setup.FileExtensions;
-            TestHelpers.AreEqualArrays(new string[] { ".py" }, result);
+            TestHelpers.AreEqualArrays([".py"], result);
 
             if (IsRubyAvailable) {
                 result = _runTime.GetEngine("ruby").Setup.FileExtensions;
-                TestHelpers.AreEqualArrays(new string[] { ".rb" }, result);
+                TestHelpers.AreEqualArrays([".rb"], result);
             }
         }
         
@@ -552,14 +552,14 @@ def f(arg):
         
         [Test]
         public void GetRegisteredIdentifiers_LangWithNoIDs_Test() {
-            ScriptRuntime runtime = ScriptRuntimeTest.CreatePythonOnlyRuntime(new string[] { }, new string[]{".py"});
+            ScriptRuntime runtime = ScriptRuntimeTest.CreatePythonOnlyRuntime([], [".py"]);
             ScriptEngine engine = runtime.GetEngineByFileExtension("py");
             Assert.IsTrue(0 == engine.Setup.Names.Count);
         }
 
         [Test]
         public void GetRegisteredExtensions_LangWithNoExt() {
-            ScriptRuntime runtime = ScriptRuntimeTest.CreatePythonOnlyRuntime(new string[] {"py" }, new string[] { });
+            ScriptRuntime runtime = ScriptRuntimeTest.CreatePythonOnlyRuntime(["py"], []);
             ScriptEngine engine = runtime.GetEngine("py");
             Assert.IsTrue(0 == engine.Setup.FileExtensions.Count);
         }
@@ -701,8 +701,8 @@ def f(arg):
             // Probably dont' need each of these tests since 
             // they invalid path's are probably tested else where!
 
-            string[] wrongPath = {"c:\\lsslsl\\slslslsl\\lslslsa/a/a/ssswww/foo.py",
-                                     "c:\\tmp\\foo.py"};
+            string[] wrongPath = ["c:\\lsslsl\\slslslsl\\lslslsa/a/a/ssswww/foo.py",
+                                     "c:\\tmp\\foo.py"];
             foreach (string i in wrongPath) {
                 Assert.IsNull(_testEng.GetScope(i), "This should always return null");
             }

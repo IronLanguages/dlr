@@ -306,7 +306,7 @@ namespace HostingTest    {
             setup.HostType = typeof(ScriptHostBasicSubTest);
             // Are HostArgs ment to be arguments to a loaded script i.e. 
             // passing paramters to argv?
-            setup.HostArguments = new object[] { "-f foo" };
+            setup.HostArguments = ["-f foo"];
             // This throws exception 
             ScriptRuntime aRuntime = ScriptRuntime.Create(setup);
             ScriptHostBasicSubTest host = (ScriptHostBasicSubTest)aRuntime.Host;
