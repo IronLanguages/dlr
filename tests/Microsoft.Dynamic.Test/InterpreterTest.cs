@@ -25,7 +25,6 @@ namespace Microsoft.Dynamic.Test {
         }
 
         [Test]
-        [Platform(Exclude="Mono")]
         public void PopTest() {
             // Equal gets converted to an EqualReference instruction which does two pops and a push.
             // If pop doesn't clear the stack one of the two TestGc objects should remain alive.
