@@ -53,7 +53,7 @@ namespace HostingTest {
         }
 
 
-        [Ignore]
+        [Ignore("unspecified ignore reason")]
         [Test]
         public void Execute_ManyTimesUsingDelegate() {
 
@@ -111,7 +111,7 @@ namespace HostingTest {
         /// Note      : A new test case based on spec for compiledcode
         /// </summary>
         [Test]
-        [Ignore]
+        [Ignore("Not implemented yet")]
         public void Execute_ValidateFileIsReReadOnExecute() {
             throw new NotImplementedException();
 

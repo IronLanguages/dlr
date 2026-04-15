@@ -119,8 +119,7 @@ namespace HostingTest    {
         [Test]
         [Negative]
         [ExpectedException(typeof(InvalidOperationException))]
-        [Ignore] // BUG - Currently blocked by lack of documentation for ScriptHost|PAL 
-                 // (Investigate | file bug)
+        [Ignore("BUG - Currently blocked by lack of documentation for ScriptHost|PAL (Investigate | file bug)")]
         public void Host_UninitializedPALProperty() {
 
             // Setup test values
@@ -293,7 +292,7 @@ namespace HostingTest    {
 
             string tempFile = Path.GetTempFileName();
             string newFile = Path.ChangeExtension(tempFile, ".py");
-            File.WriteAllText(newFile, "print \"Hello\"");
+            File.WriteAllText(newFile, "print(\"Hello\")");
 
             //e.g., 'foo.py' string in dlrpath
             string fileNameWithExtension = Path.GetFileName(newFile);

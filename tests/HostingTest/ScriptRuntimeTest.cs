@@ -117,7 +117,7 @@ namespace HostingTest{
         [Test]
         [Negative]
         [ExpectedException(typeof(ArgumentException))]
-        [Ignore] //bug ID : 446714
+        [Ignore("bug ID : 446714")]
         public void ExecuteFile_InvalidPath(){
             ScriptRuntime runTime = CreateRuntime();
 
@@ -174,7 +174,7 @@ namespace HostingTest{
         }
 
         [Test]
-        [Ignore]//Test not yet implemented
+        [Ignore("Test not yet implemented")]
         public void ExecuteFile_CallFromMultipleThreads(){
             Assert.Inconclusive("Test not yet implemented");
         }
@@ -431,8 +431,10 @@ namespace HostingTest{
         public void GetEngine_PassAllRegisteredLanguages(){
             Dictionary<ScriptEngine, string[]> idDict = new Dictionary<ScriptEngine, string[]>() {
                 {_PYEng, new string[]{ "py", "python", "ironpython" }},
-                {_RBEng, new string[]{ "rb", "ruby", "ironruby" }},
             };
+            if (IsRubyAvailable) {
+                idDict.Add(_RBEng, new string[]{ "rb", "ruby", "ironruby" });
+            }
 
             foreach (var key in idDict.Keys) {
                 foreach (var id in idDict[key]) {
@@ -479,8 +481,10 @@ namespace HostingTest{
         public void GetEngineByFileExtension_AllRegisteredExtensions(){
             Dictionary<ScriptEngine, string[]> fileExtDict = new Dictionary<ScriptEngine, string[]>() {
                 {_PYEng, new string[] { ".py" } },
-                {_RBEng, new string[] { ".rb" }},
             };
+            if (IsRubyAvailable) {
+                fileExtDict.Add(_RBEng, new string[] { ".rb" });
+            }
 
             foreach (var key in fileExtDict.Keys) {
                 foreach (var id in fileExtDict[key]) {
@@ -490,7 +494,7 @@ namespace HostingTest{
         }
 
         [Test]
-        [Ignore]//Unregistering a language is not supported. So this test may have to be removed
+        [Ignore("Unregistering a language is not supported. So this test may have to be removed")]
         public void GetEngineByFileExtension_UnRegisteredExtensions(){
             ScriptRuntime runtime = ScriptRuntimeTest.CreatePythonOnlyRuntime( new[]{"py"}, new[]{".py"});
 
@@ -514,6 +518,7 @@ namespace HostingTest{
         }
 
         [Test]
+        [RequiresRuby]
         public void Configuration_ManyRegisteredLanguages() {
             //the default runtime should have more than 1 registered languages
             Assert.IsTrue(_runtime.Setup.LanguageSetups.Count > 1);

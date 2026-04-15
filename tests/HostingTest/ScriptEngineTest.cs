@@ -37,8 +37,10 @@ namespace HostingTest {
         public void GetRegisteredIdentifiers_Test() {
             var result = _runTime.GetEngine("python").Setup.Names;
             TestHelpers.AreEqualArrays(new string[] { "IronPython", "Python", "py" }, result);
-            result = _runTime.GetEngine("ruby").Setup.Names;
-            TestHelpers.AreEqualArrays(new string[] { "IronRuby", "Ruby", "rb" }, result);
+            if (IsRubyAvailable) {
+                result = _runTime.GetEngine("ruby").Setup.Names;
+                TestHelpers.AreEqualArrays(new string[] { "IronRuby", "Ruby", "rb" }, result);
+            }
         }
 
         [Test]
@@ -46,8 +48,10 @@ namespace HostingTest {
             var result = _runTime.GetEngine("python").Setup.FileExtensions;
             TestHelpers.AreEqualArrays(new string[] { ".py" }, result);
 
-            result = _runTime.GetEngine("ruby").Setup.FileExtensions;
-            TestHelpers.AreEqualArrays(new string[] { ".rb" }, result);
+            if (IsRubyAvailable) {
+                result = _runTime.GetEngine("ruby").Setup.FileExtensions;
+                TestHelpers.AreEqualArrays(new string[] { ".rb" }, result);
+            }
         }
         
         [Test]
@@ -437,7 +441,7 @@ namespace HostingTest {
             scope.SetVariable("modulevar", 5);
 
             //Compile and execute a normal statement
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print 2+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(2+2)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "4");
         }
 
@@ -459,7 +463,7 @@ namespace HostingTest {
             ScriptScope scope = _runTime.CreateScope();
 
             //Compile a statement referencing an unbound variable, which generates a runtime error
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print unbound+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(unbound+2)", SourceCodeKind.Statements).Compile();
             e1.Execute(scope);
             
         }
@@ -470,7 +474,7 @@ namespace HostingTest {
             scope.SetVariable("modulevar", 5);
 
             //Compile a statement referencing a module bound variable
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print modulevar+2", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(modulevar+2)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "7");
         }
 
@@ -480,7 +484,7 @@ namespace HostingTest {
 
             //Bind a module variable in a statement and then reference it
             _testEng.CreateScriptSourceFromString("pythonvar='This is a python variable'", SourceCodeKind.Statements).Execute(scope);
-            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print pythonvar", SourceCodeKind.Statements).Compile();
+            CompiledCode e1 = _testEng.CreateScriptSourceFromString("print(pythonvar)", SourceCodeKind.Statements).Compile();
             TestHelpers.AssertOutput(_runTime, delegate() { e1.Execute(scope); }, "This is a python variable");
             Assert.IsTrue(scope.ContainsVariable("pythonvar"), "Bound variable isn't visible in the module dict");
 
@@ -506,7 +510,7 @@ namespace HostingTest {
             //Define methods in the module we'll use for code
             _testEng.CreateScriptSourceFromString(@"
 def f(arg):
-    print arg
+    print(arg)
 ", SourceCodeKind.Statements).Execute(scope);
 
             //Compile and execute valid code
@@ -521,7 +525,7 @@ def f(arg):
 
             _testEng.CreateScriptSourceFromString(@"
 def f(arg):
-    print arg
+    print(arg)
 ", SourceCodeKind.Statements).Execute(scope);
         }
 
@@ -568,7 +572,9 @@ def f(arg):
         public void Operations_InvokeIsNotNull_Test() {
             
             Assert.IsNotNull(_testEng.Operations);
-            Assert.IsNotNull(_RBEng.Operations);
+            if (IsRubyAvailable) {
+                Assert.IsNotNull(_RBEng.Operations);
+            }
             Assert.IsNotNull(_runTime.Operations);
         }
 
@@ -677,7 +683,9 @@ def f(arg):
         public void GetScope_InvalidPath() {
             string wrongPath = "~//root/blah/blah";
             Assert.IsNull(_testEng.GetScope(wrongPath));
-            Assert.IsNull(_RBEng.GetScope(wrongPath));
+            if (IsRubyAvailable) {
+                Assert.IsNull(_RBEng.GetScope(wrongPath));
+            }
         }
 
         /// <summary>
@@ -878,7 +886,7 @@ def f(arg):
         }
 
         [Test]
-        [Ignore]// BUG # 446911
+        [Ignore("BUG # 446911")]
         public void SourceSearchPaths_SpecificPathsCheck() {
             //_testEng.SetSearchPaths
             Assert.Fail("Missing Property definition");

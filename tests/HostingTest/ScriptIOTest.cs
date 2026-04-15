@@ -66,7 +66,7 @@ namespace HostingTest    {
         /// Test    : Set stream to a valid object; set writer to a valid object
         /// Result  : The output stream receives the proper values in proper format
         /// </summary>
-        [Ignore]// bug #466678 - this issue doesn't happen in ruby
+        [Ignore("bug # 466678 - this issue doesn't happen in ruby")]
         [Test]
         public void SetOutput_TextWriterValidateOutputCloseStreamAndVerifyEngineStability() {
 
@@ -78,7 +78,7 @@ namespace HostingTest    {
             _runTime.IO.SetOutput((Stream)stream, streamWriter);
 
             // Get a scope and execute some simple code
-            _testEng.Execute("print \'" + expectedOutput + "\'");
+            _testEng.Execute("print(\'" + expectedOutput + "\')");
 
             // Release the stream
             stream.Close();
@@ -91,7 +91,7 @@ namespace HostingTest    {
             stream = new FileStream(testFile, FileMode.Create, FileAccess.ReadWrite);
             _runTime.IO.SetOutput((Stream)stream, streamWriter);
 
-            _testEng.Execute("print \'" + newOutput + "\'");
+            _testEng.Execute("print(\'" + newOutput + "\')");
 
 
             // Validate that output stream has not been updated - no side effects
@@ -114,7 +114,7 @@ namespace HostingTest    {
             _runTime.IO.SetOutput((Stream)stream, streamWriter);
 
             ScriptScope scope = _testEng.CreateScope();
-            ScriptSource source = scope.Engine.CreateScriptSourceFromString("print \"" + expectedOutput + "\"", Microsoft.Scripting.SourceCodeKind.Statements);
+            ScriptSource source = scope.Engine.CreateScriptSourceFromString("print(\"" + expectedOutput + "\")", Microsoft.Scripting.SourceCodeKind.Statements);
             source.Execute(scope);
             stream.Close();
 
@@ -136,7 +136,7 @@ namespace HostingTest    {
             _runTime.IO.SetOutput((Stream)stream, Encoding.ASCII);
 
             ScriptScope scope = _testEng.CreateScope();
-            ScriptSource source = _testEng.CreateScriptSourceFromString("print \'" + expectedOutput + "\'", Microsoft.Scripting.SourceCodeKind.Statements);
+            ScriptSource source = _testEng.CreateScriptSourceFromString("print(\'" + expectedOutput + "\')", Microsoft.Scripting.SourceCodeKind.Statements);
             source.Execute(scope);
 
             _runTime.IO.OutputStream.Close();
@@ -158,7 +158,7 @@ namespace HostingTest    {
             _runTime.IO.SetOutput((Stream)stream, Encoding.ASCII);
 
             ScriptScope scope = _testEng.CreateScope();
-            ScriptSource source = _testEng.CreateScriptSourceFromString("print 'something'", Microsoft.Scripting.SourceCodeKind.Statements);
+            ScriptSource source = _testEng.CreateScriptSourceFromString("print('something')", Microsoft.Scripting.SourceCodeKind.Statements);
 
             source.Execute(scope);   
             stream.Close();
@@ -253,7 +253,7 @@ namespace HostingTest    {
         /// Test     : Invoke the method
         /// Results  : Errors, input and output is redirected to console overriding any pervious setting
         /// </summary>
-        [Ignore]//This is easy to do as a manual test. Consider that option too
+        [Ignore("This is easy to do as a manual test. Consider that option too")]
         [Test]
         public void RedirectToConsole_Invoke() {
             _runTime.IO.RedirectToConsole();

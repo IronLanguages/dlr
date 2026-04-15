@@ -19,6 +19,41 @@ namespace HostingTest {
     internal class TestHelpers {
 
         /// <summary>
+        /// A stream that wraps a TextWriter, converting byte writes to text.
+        /// </summary>
+        private sealed class TextWriterStream : Stream {
+            private readonly TextWriter _writer;
+            private readonly Encoding _encoding;
+
+            public TextWriterStream(TextWriter writer, Encoding encoding = null) {
+                _writer = writer;
+                _encoding = encoding ?? Encoding.UTF8;
+            }
+
+            public override bool CanRead => false;
+            public override bool CanSeek => false;
+            public override bool CanWrite => true;
+            public override long Length => throw new NotSupportedException();
+            public override long Position {
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
+            }
+
+            public override void Flush() => _writer.Flush();
+
+            public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+            public override void SetLength(long value) => throw new NotSupportedException();
+
+            public override void Write(byte[] buffer, int offset, int count) {
+                var text = _encoding.GetString(buffer, offset, count);
+                _writer.Write(text);
+            }
+        }
+
+        /// <summary>
         /// Config file containing the tested languages - py,rb,ts
         /// </summary>
         public static string StandardConfigFile { get; private set; }
@@ -28,13 +63,46 @@ namespace HostingTest {
         /// </summary>
         public static string BinDirectory { get; private set; }
 
+        /// <summary>
+        /// Path to IronPython's standard library, or empty if not found.
+        /// </summary>
+        public static string IronPythonPath { get; private set; }
+
         static TestHelpers() {
-            BinDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(new Uri(typeof(HAPITestBase).Assembly.CodeBase).AbsolutePath));
+            BinDirectory = Path.GetDirectoryName(typeof(HAPITestBase).Assembly.Location);
             StandardConfigFile = GetStandardConfigFile();
+            IronPythonPath = GetIronPythonPath();
+        }
+
+        /// <summary>
+        /// Finds the root of the IronPython repository by walking up from the assembly location.
+        /// </summary>
+        private static string FindIronPythonRepositoryRoot() {
+            // We start at the current assembly location and look up until we find the "src/core/IronPython.StdLib/lib" directory
+            var current = typeof(HAPITestBase).Assembly.Location;
+            while (!string.IsNullOrEmpty(current)) {
+                var test = Path.Combine(current, "src", "core", "IronPython.StdLib", "lib");
+                if (Directory.Exists(test)) {
+                    return current;
+                }
+                current = Path.GetDirectoryName(current);
+            }
+            return string.Empty;
+        }
+
+        private static string GetIronPythonPath() {
+            var root = FindIronPythonRepositoryRoot();
+            if (!string.IsNullOrEmpty(root)) {
+                var path = Path.Combine(root, "src", "core", "IronPython.StdLib", "lib");
+                if (Directory.Exists(path)) {
+                    return path;
+                }
+            }
+            return string.Empty;
         }
 
         private static string GetStandardConfigFile() {
-            var configFile = Path.GetFullPath(Uri.UnescapeDataString(new Uri(typeof(HAPITestBase).Assembly.CodeBase).AbsolutePath)) + ".config";
+            var configFile = typeof(HAPITestBase).Assembly.Location + ".config";
             Debug.Assert(File.Exists(configFile), configFile);
             return configFile;
         }
@@ -52,8 +120,9 @@ namespace HostingTest {
         }
 
         internal static void RedirectOutput(ScriptRuntime runTime, TextWriter output, System.Action f) {
-            runTime.IO.SetOutput(Stream.Null, output);
-            runTime.IO.SetErrorOutput(Stream.Null, output);
+            var stream = new TextWriterStream(output);
+            runTime.IO.SetOutput(stream, output);
+            runTime.IO.SetErrorOutput(stream, output);
 
             try {
                 f();
@@ -135,7 +204,12 @@ namespace HostingTest {
 
 
         public static AppDomain CreateAppDomain(string name) {
-            return AppDomain.CreateDomain(name, null, BinDirectory, BinDirectory, false);
+            var setup = new AppDomainSetup {
+                ApplicationBase = BinDirectory,
+                PrivateBinPath = BinDirectory,
+                ConfigurationFile = StandardConfigFile
+            };
+            return AppDomain.CreateDomain(name, null, setup);
         }
 
         public class EnvSetupTearDown {
