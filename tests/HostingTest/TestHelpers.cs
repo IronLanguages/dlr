@@ -64,7 +64,7 @@ namespace HostingTest {
         public static string BinDirectory { get; private set; }
 
         /// <summary>
-        /// Path to IronPython's standard library, or empty if not found.
+        /// Path to IronPython's standard library, or null if not found.
         /// </summary>
         public static string IronPythonPath { get; private set; }
 
@@ -74,31 +74,9 @@ namespace HostingTest {
             IronPythonPath = GetIronPythonPath();
         }
 
-        /// <summary>
-        /// Finds the root of the IronPython repository by walking up from the assembly location.
-        /// </summary>
-        private static string FindIronPythonRepositoryRoot() {
-            // We start at the current assembly location and look up until we find the "src/core/IronPython.StdLib/lib" directory
-            var current = typeof(HAPITestBase).Assembly.Location;
-            while (!string.IsNullOrEmpty(current)) {
-                var test = Path.Combine(current, "src", "core", "IronPython.StdLib", "lib");
-                if (Directory.Exists(test)) {
-                    return current;
-                }
-                current = Path.GetDirectoryName(current);
-            }
-            return string.Empty;
-        }
-
         private static string GetIronPythonPath() {
-            var root = FindIronPythonRepositoryRoot();
-            if (!string.IsNullOrEmpty(root)) {
-                var path = Path.Combine(root, "src", "core", "IronPython.StdLib", "lib");
-                if (Directory.Exists(path)) {
-                    return path;
-                }
-            }
-            return string.Empty;
+            var path = Path.Combine(Path.GetDirectoryName(typeof(HAPITestBase).Assembly.Location), "lib");
+            return Directory.Exists(path) ? path : null;
         }
 
         private static string GetStandardConfigFile() {
