@@ -28,7 +28,7 @@ namespace HostingTest {
         }
 
         public override string[] GetExtraKeys() {
-            return new string[] { };
+            return [];
         }
 
 

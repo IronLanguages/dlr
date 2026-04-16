@@ -8,7 +8,7 @@ namespace HostingTest {
 
         internal PythonCodeSnippets() {
 
-            AllSnippets = new CodeSnippet[]{
+            AllSnippets = [
                      new CodeSnippet(
                         CodeType.Null, "Null Code",
                         null),
@@ -230,8 +230,7 @@ test1 = abs(test1)"),
                         CodeType.ImportDotNetAssemblyDateTimeModule, "Import .Net DateTime for an individual assembly",
                         "import clr\nfrom System import DateTime\nDotNetDate=DateTime")
 
-
-            };
+            ];
         }
     }
 

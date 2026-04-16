@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 namespace HostingTest {
 
     public class CodeSnippet {
@@ -18,7 +20,7 @@ namespace HostingTest {
         internal CodeSnippet[] AllSnippets = null;
         internal CodeSnippet GetCodeSnippetByID(string id) {
             foreach (CodeSnippet cs in AllSnippets) {
-                if (cs.ID.ToLower() == id.ToLower()) {
+                if (cs.ID.Equals(id, StringComparison.OrdinalIgnoreCase)) {
                     return cs;
                 }
             }

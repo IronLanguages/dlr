@@ -65,7 +65,7 @@ namespace HostingTest
         private ScriptRuntimeSetup/*!*/ CreateHostTypeScriptRuntimeSetup(Type HostType, string/*!*/ testPath) {
            ScriptRuntimeSetup setup = CreateSetup();            
             setup.HostType = HostType;
-            setup.HostArguments = new object[] { testPath };
+            setup.HostArguments = [testPath];
             return setup;
         }
 

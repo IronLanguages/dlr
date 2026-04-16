@@ -9,7 +9,7 @@ namespace HostingTest {
 
         internal RubyCodeSnippets(){
 
-            AllSnippets = new CodeSnippet[]{
+            AllSnippets = [
                      new CodeSnippet(
                         CodeType.Null, "Null Code",
                         null),
@@ -189,8 +189,7 @@ test1 = abs(test1)"),
                      new CodeSnippet(
                         CodeType.IsEvenFunction, "A function that returns true or false depending on if a number is even or not",
                         "def iseven(n): return 1 != n % 2")
-            };
+            ];
         }
     }
 }
-

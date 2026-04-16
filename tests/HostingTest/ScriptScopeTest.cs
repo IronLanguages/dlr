@@ -618,8 +618,7 @@ namespace HostingTest {
         public void GetItems_EmptyScope() {
             ScriptScope scope = _runtime.CreateScope();
 
-            KeyValuePair<string, object>[] dict = { };
-            TestHelpers.AreEqualCollections<KeyValuePair<string, object>>(dict, scope.GetItems());
+            TestHelpers.AreEqualCollections<KeyValuePair<string, object>>([], scope.GetItems());
         }
 
         [Test]
