@@ -6,33 +6,20 @@ using System;
 
 namespace HostingTest {
 
-    public class CodeSnippet {
-        public string ID;
-        public string Code;
-        public string Description;
-
-        public CodeSnippet(string id, string description, string code) {
-            ID = id ; Code = code;
-            Description = description;
-        }
+    public class CodeSnippet(string id, string description, string code)
+    {
+        public string ID = id;
+        public string Code = code;
+        public string Description = description;
     }
-    internal class CodeSnippetCollection {
-        internal CodeSnippet[] AllSnippets = null;
-        internal CodeSnippet GetCodeSnippetByID(string id) {
-            foreach (CodeSnippet cs in AllSnippets) {
-                if (cs.ID.Equals(id, StringComparison.OrdinalIgnoreCase)) {
-                    return cs;
-                }
-            }
-            return null;
-        }
 
-        internal string this[string id] {
-            get {
-                CodeSnippet cs = GetCodeSnippetByID( id );
-                return cs == null ? null : cs.Code;
-            }
-        }
+    internal class CodeSnippetCollection {
+        internal CodeSnippet[] AllSnippets;
+
+        internal CodeSnippet GetCodeSnippetByID(string id) =>
+            Array.Find(AllSnippets, cs => cs.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
+
+        internal string this[string id] => GetCodeSnippetByID(id)?.Code;
     }
 
     internal class PreDefinedCodeSnippets {
@@ -40,32 +27,20 @@ namespace HostingTest {
         internal CodeSnippetCollection langCollection;
 
         internal PreDefinedCodeSnippets() {
-            string lang = GetLanguage();
-            if (lang == "python") {//check if lang is python)
-                langCollection = new PythonCodeSnippets();
-            }
-            else if (lang == "ironruby"){
-                langCollection = new RubyCodeSnippets();
-            }
-
+            langCollection = GetLanguage() switch {
+                "python" => new PythonCodeSnippets(),
+                "ironruby" => new RubyCodeSnippets(),
+                _ => null
+            };
         }
 
         private string GetLanguage() {
             return "python";
         }
 
-        public string this[string id] {
-            get {
-                return langCollection[id];
-            }
-        }
+        public string this[string id] => langCollection[id];
 
-        internal CodeSnippet[] AllSnippets {
-            get {
-                return langCollection.AllSnippets;
-            }
-        }
+        internal CodeSnippet[] AllSnippets => langCollection.AllSnippets;
     }
 
 }
-
