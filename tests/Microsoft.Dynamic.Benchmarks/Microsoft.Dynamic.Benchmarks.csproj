@@ -7,6 +7,9 @@
     <!-- Add .NET Framework 4.6.2 on Windows -->
     <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">$(TargetFrameworks);net462</TargetFrameworks>
 
+    <!-- Output to local bin directory to avoid conflicts with other projects -->
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+
     <!-- Benchmarks need optimized builds; Debug config would distort results -->
     <Optimize>true</Optimize>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
