@@ -6,8 +6,7 @@ using System;
 
 namespace HostingTest {
 
-    public class CodeSnippet(string id, string description, string code)
-    {
+    public class CodeSnippet(string id, string description, string code) {
         public string ID = id;
         public string Code = code;
         public string Description = description;

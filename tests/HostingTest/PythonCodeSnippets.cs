@@ -192,23 +192,23 @@ namespace HostingTest {
 
                 new CodeSnippet(
                     CodeType.SevenLinesOfAssignemtStatements, "Very simple code example to be used for testing ScriptSource CodeReader method",
-                        """
-                        a1=1
-                        a2=2
-                        a3=3
-                        a4=4
-                        a5=5
-                        a6=6
-                        a7=7
-                        """),
+                    """
+                    a1=1
+                    a2=2
+                    a3=3
+                    a4=4
+                    a5=5
+                    a6=6
+                    a7=7
+                    """),
 
                 new CodeSnippet(
                     CodeType.UpdateVarWithAbsValue, "Give a variable set to a negative number -1 and then re-assign abs value of itself",
-                        """
+                    """
 
-                        test1 = -10
-                        test1 = abs(test1)
-                        """),
+                    test1 = -10
+                    test1 = abs(test1)
+                    """),
 
                 new CodeSnippet(
                     CodeType.SimpleExpressionOnePlusOne, "A very simple expression 1 + 1",
