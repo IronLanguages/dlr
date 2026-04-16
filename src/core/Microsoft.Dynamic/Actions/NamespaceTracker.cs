@@ -109,12 +109,11 @@ namespace Microsoft.Scripting.Actions {
             typeNames.AddTypeName(typeName);
 
             string normalizedTypeName = ReflectionUtils.GetNormalizedTypeName(typeName);
-            if (_dict.ContainsKey(normalizedTypeName)) {
+            if (_dict.TryGetValue(normalizedTypeName, out MemberTracker existingValue)) {
                 // A similarly named type, namespace, or module already exists.
                 Type newType = LoadType(assem, GetFullChildName(typeName));
 
                 if (newType is not null) {
-                    object existingValue = _dict[normalizedTypeName];
                     if (existingValue is not TypeTracker existingTypeEntity) {
                         // Replace the existing namespace or module with the new type
                         Debug.Assert(existingValue is NamespaceTracker);
@@ -268,8 +267,7 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public bool ContainsKey(string name) {
-            object dummy;
-            return TryGetValue(name, out dummy);
+            return TryGetValue(name, out MemberTracker _);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]

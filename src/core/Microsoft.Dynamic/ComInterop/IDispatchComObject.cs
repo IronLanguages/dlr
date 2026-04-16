@@ -429,7 +429,7 @@ namespace Microsoft.Scripting.ComInterop {
                     // adding new events and putting them on new interfaces while keeping the
                     // old interfaces around. This may cause name collisioning which we are
                     // resolving by keeping only the first event with the same name.
-                    if (events.ContainsKey(name) == false) {
+                    if (!events.ContainsKey(name)) {
                         ComEventDesc eventDesc = new ComEventDesc();
                         eventDesc.dispid = funcDesc.memid;
                         eventDesc.sourceIID = sourceTypeAttribute.guid;
