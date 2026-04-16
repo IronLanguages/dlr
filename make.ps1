@@ -9,6 +9,8 @@ Param(
     [switch] $runIgnored
 )
 
+$ErrorActionPreference="Continue"
+
 [int] $global:Result = 0
 
 $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
@@ -148,6 +150,36 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks,
     }
 }
 
+function Purge() {
+    Main "Clean" "Release"
+    Main "Clean" "Debug"
+
+    Write-Verbose "Deleting ""obj"" directories..."
+    Get-ChildItem -Name "obj" -Directory -Path $_BASEDIR -Recurse | Remove-Item -Force -Recurse
+
+    Write-Verbose "Deleting ""bin"" directories..."
+    foreach ($dir in @("", "src/samples/sympl/csharp")) {
+        if (Test-Path (Join-Path $_BASEDIR $dir "bin" -OutVariable targetPath)) {
+            Remove-Item -Path $targetPath -Force -Recurse
+        }
+    }
+
+    Write-Verbose "Deleting "".binlog"" files..."
+    Remove-Item -Path (Join-Path $_BASEDIR "*.binlog")
+
+    Write-Verbose "Deleting packaging artifacts..."
+    foreach ($dir in @("Release", "Debug")) {
+        if (Test-Path (Join-Path $_BASEDIR "dist" $dir -OutVariable targetPath)) {
+            Remove-Item -Path $targetPath -Force -Recurse
+        }
+    }
+
+    Write-Verbose "Deleting test run settings..."
+    Get-ChildItem -Filter "runsettings*.xml" -Path (Join-Path $_BASEDIR "tests") -Recurse | Remove-Item
+
+    Write-Information "Done. Consider restoring dependencies." -InformationAction Continue
+}
+
 switch -wildcard ($target) {
     # debug targets
     "restore-debug" { Main "RestoreReferences" "Debug" }
@@ -170,6 +202,8 @@ switch -wildcard ($target) {
     "test-*"        { Test $target.Substring(5) $configuration $frameworks $platform; break }
     "test"          { Test "all" $configuration $frameworks $platform; break }
 
+    # utility targets
+    "purge"         { Purge }
 
     default { Write-Error "No target '$target'" ; Exit -1 }
 }
