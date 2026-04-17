@@ -37,6 +37,7 @@
     <Project Path="tests/ClrAssembly/ClrAssembly.csproj">
       <BuildDependency Project="src/core/Microsoft.Dynamic/Microsoft.Dynamic.csproj" />
     </Project>
+    <Project Path="tests/HostingTest/HostingTest.csproj" />
     <Project Path="tests/Metadata/Metadata.csproj" />
     <Project Path="tests/Microsoft.Dynamic.Test/Microsoft.Dynamic.Test.csproj" />
     <Project Path="tests/Microsoft.Scripting.Test/Microsoft.Scripting.Test.csproj" />
