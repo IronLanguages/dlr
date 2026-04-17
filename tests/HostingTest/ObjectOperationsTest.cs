@@ -191,7 +191,7 @@ namespace HostingTest    {
             string[] result = (string[])_testEng.Operations.GetCallSignatures((object)null);
             
             // Should be empty array of Length zero
-            Assert.AreEqual(result.Length, expectedResult);
+            Assert.AreEqual(expectedResult, result.Length);
         }
 
       
@@ -233,7 +233,7 @@ namespace HostingTest    {
 
             object fooClass = _testEng.Operations.Invoke(objectVar); // create new FooClass
             string[] result = (string[])_testEng.Operations.GetCallSignatures(fooClass);
-            Assert.AreEqual(result.Length, expectedResult.Length);
+            Assert.AreEqual(expectedResult.Length, result.Length);
         }
 
         

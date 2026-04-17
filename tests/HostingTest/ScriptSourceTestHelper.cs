@@ -92,12 +92,12 @@ namespace HostingTest {
         internal void ValidateKind(string InputCode, SourceCodeKind input, SourceCodeKind ExpectedValue) {
             ScriptSource ss = CreateScriptSource(InputCode, input);
             
-            Assert.AreEqual(ss.Kind, ExpectedValue);
+            Assert.AreEqual(ExpectedValue, ss.Kind);
         }
 
         internal void ValidateKindAsFile(string InputCode) {
             ScriptSource ss = CreateFileBasedScriptSource(InputCode);
-            Assert.AreEqual(ss.Kind, SourceCodeKind.File);
+            Assert.AreEqual(SourceCodeKind.File, ss.Kind);
         }
 
         internal void ValidateGetCodeProperties(string InputCode, ScriptCodeParseResult ExpectedValue) {

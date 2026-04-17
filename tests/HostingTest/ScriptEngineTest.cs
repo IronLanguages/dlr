@@ -23,13 +23,13 @@ namespace HostingTest {
         [Test]
         public void Runtime_Test() {
             //@TODO - Custom language
-            Assert.AreEqual(_runTime.GetEngine("python").Runtime, _runTime);
+            Assert.AreEqual(_runTime, _runTime.GetEngine("python").Runtime);
         }
 
 
         [Test]
         public void LanguageDisplayName_Test() {
-            Assert.AreEqual(_runTime.GetEngine("python").Setup.DisplayName, "IronPython 3.0");
+            Assert.AreEqual("IronPython 3.0", _runTime.GetEngine("python").Setup.DisplayName);
         }
 
 
@@ -58,9 +58,9 @@ namespace HostingTest {
         public void LanguageVersion_Test() {
             //LanguageVersion
             Version ver = _runTime.GetEngine("python").LanguageVersion;
-            Assert.AreEqual(ver, typeof(PythonContext).Assembly.GetName().Version);
+            Assert.AreEqual(typeof(PythonContext).Assembly.GetName().Version, ver);
             //ver = _runTime.GetEngine("ruby").LanguageVersion;
-            //Assert.AreEqual(ver, Ruby.Runtime.RubyContext.IronRubyVersion);
+            //Assert.AreEqual(Ruby.Runtime.RubyContext.IronRubyVersion, ver);
         }
 
         [Test]
@@ -339,7 +339,7 @@ namespace HostingTest {
             scope.SetVariable("x", 1);
             scope.SetVariable("y", 1);
             var result = _PYEng.Execute<int>("x+y", scope);
-            Assert.AreEqual(result, 2);
+            Assert.AreEqual(2, result);
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace HostingTest {
 
             ScriptScope result = _testEng.ExecuteFile(tmpFile);
             var x = result.GetVariable<int>("x");
-            Assert.AreEqual(x, 4);
+            Assert.AreEqual(4, x);
 
             // resulting scope should be associated with the engine that executed the code:
             Assert.AreEqual(_testEng, result.Engine);
@@ -364,10 +364,10 @@ namespace HostingTest {
             scope.SetVariable("y", 1);
             
             ScriptScope result = _testEng.ExecuteFile(tmpFile, scope);
-            Assert.AreEqual(result, scope);
+            Assert.AreEqual(scope, result);
 
             var x = scope.GetVariable<int>("x");
-            Assert.AreEqual(x, 2);
+            Assert.AreEqual(2, x);
         }
         
         //TODO : these tests should move to script source. 
@@ -639,7 +639,7 @@ def f(arg):
             
             object result = source.Execute(futureScope);
             object r2 = futureScope.GetVariable("r");
-            Assert.AreEqual((double)r2, 0.5);
+            Assert.AreEqual(0.5, (double)r2);
 
         }
 
@@ -661,7 +661,7 @@ def f(arg):
 
             object result = source.Execute(globalScope);
             object r2 = globalScope.GetVariable("r");
-            Assert.AreEqual((double)r2, 0.5);
+            Assert.AreEqual(0.5, (double)r2);
 
         }
         
@@ -750,7 +750,7 @@ def f(arg):
             object excResult = source.Execute(scope);
 
             // A couple of sanity checks
-            //Assert.AreEqual(scope.GetVariable("x"), expResult);
+            //Assert.AreEqual(expResult, scope.GetVariable("x"));
             Assert.IsTrue(File.Exists(tmpFilePath));
 
             // Get the scope associated with the current engine from the existing file script

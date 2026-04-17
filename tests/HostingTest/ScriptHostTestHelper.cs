@@ -111,21 +111,21 @@ namespace HostingTest
        /// ValidateProperties associated with Host -- compare test and expected PAL value(s)
        /// </summary>
        internal void ValidateProperties(PlatformAdaptationLayer testHostPAL, PlatformAdaptationLayer expectedPAL) {
-           Assert.AreEqual(testHostPAL, expectedPAL);
+           Assert.AreEqual(expectedPAL, testHostPAL);
        }
 
        /// <summary>
        /// ValidateProperties associated with Host -- Maybe blocked by bug 462717
        /// </summary>
        internal void ValidateProperties(PlatformAdaptationLayer testHostPAL, string expectedPath) {
-           Assert.AreEqual(testHostPAL.CurrentDirectory, expectedPath);
+           Assert.AreEqual(expectedPath, testHostPAL.CurrentDirectory);
        }
 
        /// <summary>
        /// ValidateProperties associated with Host -- compare test and expected Runtime values
        /// </summary>
        internal void ValidateProperties(ScriptRuntime testHostRuntime, ScriptRuntime expectedRuntime) {
-           Assert.AreEqual(testHostRuntime, expectedRuntime);
+           Assert.AreEqual(expectedRuntime, testHostRuntime);
        }
         /// <summary>
         ///  host.GetSourceFileSearchPath() calls the protected virtual function but - it may
@@ -134,7 +134,7 @@ namespace HostingTest
         /// <param name="testPaths"></param>
         /// <param name="expectedPaths"></param>
        internal void ValidateSourceFileSearchPathValues(IList<string> testPaths, IList<string> expectedPaths) {
-           Assert.AreEqual(testPaths.Count, expectedPaths.Count);
+           Assert.AreEqual(expectedPaths.Count, testPaths.Count);
            Assert.IsTrue(testPaths.Count > 0);
            Assert.IsTrue(expectedPaths.Contains(testPaths[0]));
        }

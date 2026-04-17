@@ -345,7 +345,7 @@ namespace HostingTest{
             dict[key] = editDict;
             attachedScope.SetVariable(key, editScope);
 
-            Assert.AreEqual(dict[key], editScope);
+            Assert.AreEqual(editScope, dict[key]);
 
             dict[key] = editDict;
             Assert.AreEqual(editDict, attachedScope.GetVariable(key));
@@ -582,7 +582,7 @@ namespace HostingTest{
             var setup = new ScriptRuntimeSetup();
             setup.LanguageSetups.Add(new("IronPython.Runtime.PythonContext,IronPython", "IronPython", ["py"], ["py"]));
             var python = new ScriptRuntime(setup).GetEngine("py");
-            Assert.AreEqual(python.Setup.DisplayName, "IronPython");
+            Assert.AreEqual("IronPython", python.Setup.DisplayName);
         }
 
         [Test]

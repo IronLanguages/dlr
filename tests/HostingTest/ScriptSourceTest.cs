@@ -105,7 +105,7 @@ namespace HostingTest {
             // This should the line of code input during CreateScriptSourceFromString
             int actualCode = 1;
             string codeLine = sSrc.GetCodeLine(actualCode);
-            Assert.AreEqual(codeLine, _codeSnippets[CodeType.OneLineAssignmentStatement]);
+            Assert.AreEqual(_codeSnippets[CodeType.OneLineAssignmentStatement], codeLine);
         }
         
         /// <summary>
@@ -126,7 +126,7 @@ namespace HostingTest {
             // Get the second line 
             string codeLine = sSrc.GetCodeLine(expectedCodeLine);
             // Check the expected value
-            Assert.AreEqual(codeLine, strExpectedTestLine);
+            Assert.AreEqual(strExpectedTestLine, codeLine);
         }
 
         [Test]
@@ -245,7 +245,7 @@ namespace HostingTest {
         {
             string srcPath = TestHelpers.CreateTempSourceFile(_codeSnippets[CodeType.ValidMultiLineMixedType], ".py");
             ScriptSource source = _testEng.CreateScriptSourceFromFile(srcPath);
-            Assert.AreEqual(source.Path, srcPath, "'The Path is null if not set explicitly on construction.'");
+            Assert.AreEqual(srcPath, source.Path, "'The Path is null if not set explicitly on construction.'");
         }
 
         [Test]
@@ -494,7 +494,7 @@ namespace HostingTest {
             source.Execute(scope);
 
             Func<string> sayHello = scope.GetVariable<Func<string>>("bar");
-            Assert.AreEqual(sayHello(), "Hello World");
+            Assert.AreEqual("Hello World", sayHello());
         }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace HostingTest {
 
             // Now call fooTest's object member function 'f'
             string result = sayHello();
-            Assert.AreEqual(result, expResult);
+            Assert.AreEqual(expResult, result);
             
         }
         /// <summary>
@@ -553,7 +553,7 @@ namespace HostingTest {
             Func<object, string> sayHello = _testEng.Operations.GetMember<Func<object, string>>(FooClass, "f");
             string result = sayHello(fooTest);
 
-            Assert.AreEqual(result, expResult);
+            Assert.AreEqual(expResult, result);
         }
 
         /// <summary>
@@ -612,7 +612,7 @@ test1 = abs(test1)";
             
             // Check affect of Execution
             object testResult = scope.GetVariable("test1");
-            Assert.AreEqual(testResult, 10);
+            Assert.AreEqual(10, testResult);
         }
 
 
@@ -677,7 +677,7 @@ test1 = abs(test1)";
 
             // Create second unit reader
             SourceCodeReader srcSecondUnitReader = source.GetReader();
-            Assert.AreEqual(srcSecondUnitReader.ReadLine(), expValue);
+            Assert.AreEqual(expValue, srcSecondUnitReader.ReadLine());
 
         }
 
@@ -718,7 +718,7 @@ test1 = abs(test1)";
                 cnt++;
             }
 
-            Assert.AreEqual(cnt, testInput.Length);
+            Assert.AreEqual(testInput.Length, cnt);
             Assert.AreEqual(testInput, strBuffer.ToString());
         }
 
