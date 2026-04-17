@@ -158,7 +158,7 @@ function Purge() {
     Get-ChildItem -Name "obj" -Directory -Path $_BASEDIR -Recurse | Remove-Item -Force -Recurse
 
     Write-Verbose "Deleting ""bin"" directories..."
-    foreach ($dir in @("", "src/samples/sympl/csharp")) {
+    foreach ($dir in @("", "src/samples/sympl/csharp", "tests/Microsoft.Dynamic.Benchmarks")) {
         if (Test-Path (Join-Path $_BASEDIR $dir "bin" -OutVariable targetPath)) {
             Remove-Item -Path $targetPath -Force -Recurse
         }
