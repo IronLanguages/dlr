@@ -17,7 +17,7 @@ $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 $_defaultFrameworkSettings = @{
     "runner" = "dotnet";
-    "tests" = @{ "Microsoft.Dynamic.Test" = "tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "tests/Microsoft.Scripting.Test"; "Metadata" = "tests/Metadata" };
+    "tests" = @{ "Microsoft.Dynamic.Test" = "tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "tests/Microsoft.Scripting.Test"; "Metadata" = "tests/Metadata"; "HostingTest" = "tests/HostingTest" };
     "args" = @('test', '__BASEDIR__/__TESTFOLDER__', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
     "filterArg" = '--filter="__FILTER__"';
     "filters" = @{
@@ -93,6 +93,10 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks,
         if ($null -eq $frameworkSettings) { $frameworkSettings = $_defaultFrameworkSettings }
 
         foreach ($testdesc in $frameworkSettings["tests"].Keys) {
+            if ($testdesc -eq "HostingTest" -and ($framework -ne "net462" -or -not $IsWindows)) {
+                continue
+            }
+
             $testname = "";
             $filtername = $target
 
