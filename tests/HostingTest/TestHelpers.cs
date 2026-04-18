@@ -16,7 +16,7 @@ using System.Diagnostics;
 namespace HostingTest {
     using Assert = NUnit.Framework.Assert;
 
-    internal class TestHelpers {
+    internal static class TestHelpers {
 
         /// <summary>
         /// A stream that wraps a TextWriter, converting byte writes to text.

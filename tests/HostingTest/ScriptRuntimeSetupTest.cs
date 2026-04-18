@@ -214,7 +214,7 @@ namespace HostingTest {
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var runtime = new ScriptRuntime(srs);
 
-            Assert.AreEqual(5, runtime.GetEngine("py").Execute("2+3"));
+            Assert.That(runtime.GetEngine("py").Execute("2+3"), Is.EqualTo(5));
         }
 
         [Test]
@@ -234,7 +234,7 @@ namespace HostingTest {
             var eng = sr.GetEngine("py");
             var eng2 = sr.GetEngine("rb");
 
-            Assert.AreEqual(5, eng.Execute("2+3"));
+            Assert.That(eng.Execute("2+3"), Is.EqualTo(5));
         }
 
         [Test]
