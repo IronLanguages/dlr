@@ -82,7 +82,7 @@ namespace Microsoft.Scripting {
             _perfStats = GetOption(options, "PerfStats", false);
             _noAdaptiveCompilation = GetOption(options, "NoAdaptiveCompilation", false);
             _compilationThreshold = GetOption(options, "CompilationThreshold", -1);
-            _searchPaths = GetSearchPathsOption(options) ?? EmptyReadOnlyCollection<string>.Instance;
+            _searchPaths = GetSearchPathsOption(options) ?? ReadOnlyCollection<string>.Empty;
         }
 
         public static T GetOption<T>(IDictionary<string, object> options, string name, T defaultValue) {
@@ -128,6 +128,6 @@ namespace Microsoft.Scripting {
             return GetStringCollectionOption(options, "SearchPaths", Path.PathSeparator);
         }
 
-        protected static readonly ReadOnlyCollection<string> EmptyStringCollection = new(ArrayUtils.EmptyStrings);
+        protected static readonly ReadOnlyCollection<string> EmptyStringCollection = ReadOnlyCollection<string>.Empty;
     }
 }
