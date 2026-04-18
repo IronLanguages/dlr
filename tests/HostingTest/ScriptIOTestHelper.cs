@@ -48,7 +48,7 @@ namespace HostingTest
 
            string[] lines = File.ReadAllLines(fname);
            int n = lines.Length;
-           Assert.AreEqual(lines[n - 1], expectedOutput);
+           Assert.AreEqual(expectedOutput, lines[n - 1]);
 
        }
     

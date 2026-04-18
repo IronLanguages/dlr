@@ -207,8 +207,8 @@ namespace HostingTest {
             int expectedResult = 2;
 
             // Verify value and type are as expected
-            Assert.AreEqual(testResult0, expectedResult);
-            Assert.AreEqual(testResult1, expectedResult);
+            Assert.AreEqual(expectedResult, testResult0);
+            Assert.AreEqual(expectedResult, testResult1);
         }
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace HostingTest {
         [Test]
         public void Execute_ValidExpressionResult()
         {
-            Assert.AreEqual((int)(_testEng.Execute("1 + 1")), 2);
+            Assert.AreEqual(2, (int)(_testEng.Execute("1 + 1")));
         }
        
         // Bug # 482429 validation
@@ -645,7 +645,7 @@ namespace HostingTest {
         [Test]
         public void ExecuteGeneric_ValidExpressionResult()
         {
-            Assert.AreEqual((int)(_testEng.Execute<int>("1 + 1")), 2);
+            Assert.AreEqual(2, (int)(_testEng.Execute<int>("1 + 1")));
         }
 
         // Bug # 485727
@@ -656,7 +656,7 @@ namespace HostingTest {
             scope.SetVariable("var1", 1);
             int expected1;
             Assert.IsTrue(scope.TryGetVariable<int>("var1", out expected1));
-            Assert.AreEqual(expected1, 1);
+            Assert.AreEqual(1, expected1);
             
         }
 
@@ -667,7 +667,7 @@ namespace HostingTest {
             ScriptScope scope = _runtime.CreateScope();
             string expected1;
             Assert.IsFalse(scope.TryGetVariable<string>("var1", out expected1));
-            Assert.AreEqual(expected1, null);
+            Assert.AreEqual(null, expected1);
             
         }
 
@@ -765,7 +765,7 @@ namespace HostingTest {
             ObjectHandle obj = scope.GetVariableHandle("two");
 
             int two = (int)obj.Unwrap();
-            Assert.AreEqual(two, 2);
+            Assert.AreEqual(2, two);
 
         }
 

@@ -140,9 +140,9 @@ namespace HostingTest {
         }
         
         internal static void AreEqualArrays<T>(IList<T> expected, IList<T> actual) {
-            Assert.AreEqual(actual.Count, expected.Count);
+            Assert.AreEqual(expected.Count, actual.Count);
             for (int i = 0; i < actual.Count; i++) {
-                Assert.AreEqual(actual[i], expected[i]);
+                Assert.AreEqual(expected[i], actual[i]);
             }
         }
 

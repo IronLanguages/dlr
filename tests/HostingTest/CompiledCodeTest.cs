@@ -97,9 +97,9 @@ namespace HostingTest {
             compiled.Execute(scope);
 
             object result = scope.GetVariable("x");
-            Assert.AreEqual(result, (object)3);
+            Assert.AreEqual((object)3, result);
             result = scope.GetVariable("w");
-            Assert.AreEqual(result, (object)4);
+            Assert.AreEqual((object)4, result);
 
         }
 
@@ -138,7 +138,7 @@ namespace HostingTest {
             ScriptEngine engine = compiled.Engine;
             object result = scope.GetVariable("x");
             // Verify that engine has the same scope?
-            Assert.AreEqual(engine, _testEng);
+            Assert.AreEqual(_testEng, engine);
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace HostingTest {
             Assert.IsTrue(errorListen._message == null);
             // ScriptScope scope = _PYEng.CreateScope();
             // double result =  compiled.Execute<double>(scope);
-            // Assert.AreEqual(result, (double)2);
+            // Assert.AreEqual((double)2, result);
 
         }
 
@@ -164,10 +164,10 @@ namespace HostingTest {
             object result;
             // This works as spec'd
             result = source.Execute(scope);
-            Assert.AreEqual(result, (object)2);
+            Assert.AreEqual((object)2, result);
 
             result = _PYEng.Execute("2+2", scope);
-            Assert.AreEqual(result, (object)4);
+            Assert.AreEqual((object)4, result);
         }
 
 
@@ -189,7 +189,7 @@ namespace HostingTest {
             Assert.IsTrue(errorListen._message == null);
             ScriptScope scope = _testEng.CreateScope();
             result = compiled.Execute(scope);
-            Assert.AreEqual(result, (object)expectedResult);
+            Assert.AreEqual((object)expectedResult, result);
 
         }
 
@@ -237,7 +237,7 @@ namespace HostingTest {
             for (int i = 0; i < testLoops; i++) {
 
                 result = compiled.Execute(scope);
-                Assert.AreEqual(result, (object)expectedResult);
+                Assert.AreEqual((object)expectedResult, result);
             }
 
         }
@@ -255,7 +255,7 @@ namespace HostingTest {
             CompiledCode compiled = source.Compile(errorListen);
             Assert.IsTrue(errorListen._message == null);
             object result = compiled.Execute();
-            Assert.AreEqual(result, (object)2);
+            Assert.AreEqual((object)2, result);
 
         }
 
@@ -279,7 +279,7 @@ namespace HostingTest {
 
             for (int i = 0; i < testLoops; i++) {
                 result = compiled.Execute();
-                Assert.AreEqual(result, (object)expectedResult);
+                Assert.AreEqual((object)expectedResult, result);
             }
 
         }
@@ -295,7 +295,7 @@ namespace HostingTest {
             compiled.Execute();
             // ScriptScope scope = compiled.DefaultScope();
             // object result = scope.GetVariable("x");
-            // Assert.AreEqual(result, (object)2);
+            // Assert.AreEqual((object)2, result);
 
         }
 
