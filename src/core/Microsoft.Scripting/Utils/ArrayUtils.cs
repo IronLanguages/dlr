@@ -9,9 +9,9 @@ using System.Text;
 
 namespace Microsoft.Scripting.Utils {
     internal static class ArrayUtils {
-        public static readonly string[] EmptyStrings = EmptyArray<string>.Instance;
+        public static readonly string[] EmptyStrings = Array.Empty<string>();
 
-        public static readonly object[] EmptyObjects = EmptyArray<object>.Instance;
+        public static readonly object[] EmptyObjects = Array.Empty<object>();
 
         internal sealed class FunctorComparer<T> : IComparer<T> {
             private readonly Comparison<T> _comparison;
@@ -60,7 +60,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] MakeArray<T>(ICollection<T> list) {
             if (list.Count == 0) {
-                return EmptyArray<T>.Instance;
+                return [];
             }
 
             T[] res = new T[list.Count];

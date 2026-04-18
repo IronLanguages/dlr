@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 
@@ -280,7 +281,7 @@ namespace Microsoft.Scripting.Hosting {
             }
 
             // Didn't find the file, throw
-            string allPaths = searchPaths.Aggregate((x, y) => x + ", " + y);
+            string allPaths = searchPaths.Aggregate(static (x, y) => x + ", " + y);
             throw new FileNotFoundException($"File '{path}' not found in language's search path: {allPaths}");
         }
 
