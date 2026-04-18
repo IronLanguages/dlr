@@ -466,7 +466,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             public override DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
-                return ErrorMetaObject(ReturnType, target, args.AddFirst(target), errorSuggestion);
+                return ErrorMetaObject(ReturnType, target, [target, ..args], errorSuggestion);
             }
 
             private static Expression[] GetArgs(DynamicMetaObject target, DynamicMetaObject[] args) {
@@ -543,17 +543,17 @@ namespace Microsoft.Scripting.Runtime {
         public virtual IList<string> GetMemberNames(object obj) {
             if (obj is IDynamicMetaObjectProvider ido) {
                 var mo = ido.GetMetaObject(Expression.Parameter(typeof(object), null));
-                return mo.GetDynamicMemberNames().ToReadOnly();
+                return mo.GetDynamicMemberNames().ToReadOnlyCollection();
             }
-            return EmptyArray<string>.Instance;
+            return Array.Empty<string>();
         }
 
         public virtual string GetDocumentation(object obj) {
-            return String.Empty;
+            return string.Empty;
         }
 
         public virtual IList<string> GetCallSignatures(object obj) {
-            return EmptyArray<string>.Instance;
+            return Array.Empty<string>();
         }
 
         public virtual bool IsCallable(object obj) => obj is Delegate;

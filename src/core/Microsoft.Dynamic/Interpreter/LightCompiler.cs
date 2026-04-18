@@ -1162,7 +1162,7 @@ namespace Microsoft.Scripting.Interpreter {
             // force compilation for now for ref types
             // also could be a mutable value type, Delegate.CreateDelegate and MethodInfo.Invoke both can't handle this, we
             // need to generate code.
-            if (!CollectionUtils.TrueForAll(parameters, (p) => !p.ParameterType.IsByRef) ||
+            if (!parameters.All(static p => !p.ParameterType.IsByRef) ||
                 (!node.Method.IsStatic && node.Method.DeclaringType.IsValueType && !node.Method.DeclaringType.IsPrimitive)) {
                 _forceCompile = true;
             }
@@ -1207,7 +1207,7 @@ namespace Microsoft.Scripting.Interpreter {
 
             if (node.Constructor is not null) {
                 var parameters = node.Constructor.GetParameters();
-                if (!CollectionUtils.TrueForAll(parameters, (p) => !p.ParameterType.IsByRef)
+                if (!parameters.All(static p => !p.ParameterType.IsByRef)
 #if FEATURE_LCG
                      || node.Constructor.DeclaringType == typeof(DynamicMethod)
 #endif

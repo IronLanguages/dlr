@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -134,12 +135,12 @@ namespace Microsoft.Scripting.Runtime {
             IDictionary<string, object> options, string paramName) {
             ContractUtils.Requires(!_frozen, "Configuration cannot be modified once the runtime is initialized");
             ContractUtils.Requires(
-                names.TrueForAll((id) => !String.IsNullOrEmpty(id) && !_languageNames.ContainsKey(id)),
+                names.All(id => !String.IsNullOrEmpty(id) && !_languageNames.ContainsKey(id)),
                 paramName ?? "names",
                 "Language name should not be null, empty or duplicated between languages"
             );
             ContractUtils.Requires(
-                fileExtensions.TrueForAll((ext) => !String.IsNullOrEmpty(ext) && !_languageExtensions.ContainsKey(ext)),
+                fileExtensions.All(ext => !String.IsNullOrEmpty(ext) && !_languageExtensions.ContainsKey(ext)),
                 paramName ?? "fileExtensions",
                 "File extension should not be null, empty or duplicated between languages"
             );
