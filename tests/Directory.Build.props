@@ -1,0 +1,12 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Import per-TFM feature flags (e.g. FEATURE_REMOTING for net462) -->
+  <Import Project="$(DlrBuildDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
+
+  <PropertyGroup>
+    <DefineConstants>$(Features);$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+</Project>

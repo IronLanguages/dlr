@@ -167,8 +167,10 @@ namespace HostingTest {
             string configFile = GetTempConfigFile(new[] { lang});
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
 
-            //this should throw..error message should be meaningful
+            // This should throw; error message should be meaningful - PublicKeyToken contains non-hex chars
             var sr = new ScriptRuntime(srs);
+            // On Mono, the exception is thrown when trying to load the assembly, not when creating the runtime
+            var eng = sr.GetEngine("sn");
             Assert.Fail("some exception should have been thrown");
         }
 

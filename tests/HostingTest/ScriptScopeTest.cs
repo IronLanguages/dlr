@@ -529,6 +529,7 @@ namespace HostingTest {
         ///    return of false
         /// 
         /// </summary>
+#if FEATURE_REMOTING
         [Test]
         public void TryGetVariableAsHandle_MultipleCases() {
 
@@ -557,6 +558,7 @@ namespace HostingTest {
             Assert.IsNull(objHVal);
 
         }
+#endif
 
         /// <summary>
         /// Name that exists, T value requiring no conversion for
@@ -604,6 +606,7 @@ namespace HostingTest {
         }
 
         //regression test for DDB:488990
+#if FEATURE_REMOTING
         [Test]
         public void GetItems_RemoteAD() {
             ScriptScope scope = _remoteRuntime.CreateScope();
@@ -613,6 +616,7 @@ namespace HostingTest {
 
             TestHelpers.AreEqualCollections<KeyValuePair<string, object>>(dict, scope.GetItems());
         }
+#endif
 
         [Test]
         public void GetItems_EmptyScope() {
@@ -628,10 +632,12 @@ namespace HostingTest {
 
 
         
+#if FEATURE_REMOTING
         [Test]
         public void GetItems_MultipleCallsRemoteRuntime() {
             ValidateGetItems(_remoteRuntime);
         }
+#endif
 
         // Bug # 482429 validation
         [Test]
@@ -686,6 +692,7 @@ namespace HostingTest {
 
 
 
+#if FEATURE_REMOTING
         /// <summary>
         /// Verify that that null name will throw exception
         /// </summary>
@@ -768,6 +775,7 @@ namespace HostingTest {
             Assert.AreEqual(2, two);
 
         }
+#endif
 
 
 

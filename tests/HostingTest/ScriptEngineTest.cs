@@ -297,6 +297,7 @@ namespace HostingTest {
             _testEng.Execute<object>("", null);
         }
 
+#if FEATURE_REMOTING
         [Negative]
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -310,6 +311,7 @@ namespace HostingTest {
         public void ExecuteAndWrap_WithNullScope() {
             _testEng.ExecuteAndWrap("", null);
         }
+#endif
 
         [Negative]
         [Test]

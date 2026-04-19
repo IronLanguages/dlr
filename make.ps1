@@ -93,9 +93,6 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks,
         if ($null -eq $frameworkSettings) { $frameworkSettings = $_defaultFrameworkSettings }
 
         foreach ($testdesc in $frameworkSettings["tests"].Keys) {
-            if ($testdesc -eq "HostingTest" -and ($framework -ne "net462" -or -not $IsWindows)) {
-                continue
-            }
 
             $testname = "";
             $filtername = $target

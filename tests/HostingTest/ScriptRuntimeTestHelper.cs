@@ -24,9 +24,11 @@ namespace HostingTest
             }
         }
 
+#if FEATURE_REMOTING
         internal static ScriptRuntime CreateRuntime(AppDomain appDomain) {
             return ScriptRuntime.CreateRemote(appDomain, CreateSetup());
         }
+#endif
 
         internal static ScriptRuntime CreatePythonOnlyRuntime(string[] ids, string[] exts) {
             ScriptRuntimeSetup srs = new ScriptRuntimeSetup();
