@@ -51,7 +51,7 @@ namespace HostingTest {
 
         [Test]
         public void ReadConfiguration_1Lang() {
-            string configFile = GetTempConfigFile(new[]{LangSetup.Python});
+            string configFile = GetTempConfigFile([LangSetup.Python]);
 
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(1, srs.LanguageSetups.Count);
@@ -66,7 +66,7 @@ namespace HostingTest {
         [Test]
         [RequiresRuby]
         public void ReadConfiguration_Multiple() {
-            string configFile = GetTempConfigFile(new[] { LangSetup.Python });
+            string configFile = GetTempConfigFile([LangSetup.Python]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(1, srs.LanguageSetups.Count);
 
@@ -74,7 +74,7 @@ namespace HostingTest {
             Assert.AreEqual(1, sr.Setup.LanguageSetups.Count);
 
             //create a config file, srs and runtime with 2 langsetups
-            configFile = GetTempConfigFile(new[] { LangSetup.Python, LangSetup.Ruby });
+            configFile = GetTempConfigFile([LangSetup.Python, LangSetup.Ruby]);
             var srs2 = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(2, srs2.LanguageSetups.Count);
 
@@ -88,7 +88,7 @@ namespace HostingTest {
 
         [Test]
         public void ReadConfiguration_DuplicateLang() {
-            string configFile = GetTempConfigFile(new[] { LangSetup.Python, LangSetup.Python });
+            string configFile = GetTempConfigFile([LangSetup.Python, LangSetup.Python]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(1, srs.LanguageSetups.Count);
 
@@ -118,7 +118,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup( py1.Names, py1.Extensions, py1.DisplayName, 
                                 LangSetup.Ruby.TypeName, LangSetup.Ruby.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py1, py2 });
+            string configFile = GetTempConfigFile([py1, py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(2, srs.LanguageSetups.Count);
 
@@ -133,7 +133,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(py1.Names, LangSetup.Ruby.Extensions, py1.DisplayName,
                                 py1.TypeName, py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2, LangSetup.Ruby });
+            string configFile = GetTempConfigFile([py2, LangSetup.Ruby]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(2, srs.LanguageSetups.Count);
 
@@ -149,7 +149,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(LangSetup.Ruby.Names, py1.Extensions, py1.DisplayName,
                                 py1.TypeName, py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2, LangSetup.Ruby });
+            string configFile = GetTempConfigFile([py2, LangSetup.Ruby]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             Assert.AreEqual(2, srs.LanguageSetups.Count);
 
@@ -164,7 +164,7 @@ namespace HostingTest {
                     "SomeLang.Runtime.LangContext", 
                     "SomeLang, Version=8.0.0.5050, Culture=neutral, PublicKeyToken=31345fgsd4344e35");
 
-            string configFile = GetTempConfigFile(new[] { lang});
+            string configFile = GetTempConfigFile([lang]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
 
             // This should throw; error message should be meaningful - PublicKeyToken contains non-hex chars
@@ -182,7 +182,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(py1.Names, py1.Extensions, py1.DisplayName,
                                 LangSetup.Ruby.TypeName, py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2});
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             
             var sr = new ScriptRuntime(srs);
@@ -197,7 +197,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(py1.Names, py1.Extensions, py1.DisplayName,
                                 "IronPython.Runtime.PythonBuffer", py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2 });
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
 
             var sr = new ScriptRuntime(srs);
@@ -212,7 +212,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(py1.Names, ["",""], py1.DisplayName,
                                 py1.TypeName, py1.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2 });
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var runtime = new ScriptRuntime(srs);
 
@@ -229,7 +229,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(LangSetup.Python.Names, ["", ""], LangSetup.Python.DisplayName,
                                 LangSetup.Python.TypeName, LangSetup.Python.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { rb1, py2 });
+            string configFile = GetTempConfigFile([rb1, py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
 
             var sr = new ScriptRuntime(srs);
@@ -242,7 +242,7 @@ namespace HostingTest {
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void ReadConfiguration_EmptyConfigEntries() {
-            string configFile = GetTempConfigFile(new[]{new LangSetup()});
+            string configFile = GetTempConfigFile([new LangSetup()]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
 
             var sr = new ScriptRuntime(srs);
@@ -261,7 +261,7 @@ namespace HostingTest {
 
         [Test]
         public void Configuration_MutateAndCheck() {
-            string configFile = GetTempConfigFile(new[] { LangSetup.Python });
+            string configFile = GetTempConfigFile([LangSetup.Python]);
 
             var sr = new ScriptRuntime(ScriptRuntimeSetup.ReadConfiguration(configFile));
             var config1 = sr.Setup;
@@ -303,7 +303,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(LangSetup.Python.Names, LangSetup.Python.Extensions, null,
                                 LangSetup.Python.TypeName, LangSetup.Python.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2 });
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var eng = new ScriptRuntime(srs).GetEngine("py");
 
@@ -315,7 +315,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(LangSetup.Python.Names, LangSetup.Python.Extensions, "",
                                 LangSetup.Python.TypeName, LangSetup.Python.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2 });
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var eng = new ScriptRuntime(srs).GetEngine("py");
 
@@ -328,7 +328,7 @@ namespace HostingTest {
             LangSetup py2 = new LangSetup(LangSetup.Python.Names, LangSetup.Python.Extensions, LangSetup.Python.DisplayName,
                                 "", LangSetup.Python.AssemblyString);
 
-            string configFile = GetTempConfigFile(new[] { py2 });
+            string configFile = GetTempConfigFile([py2]);
             var srs = ScriptRuntimeSetup.ReadConfiguration(configFile);
             var eng = new ScriptRuntime(srs).GetEngine("py");
 
