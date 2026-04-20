@@ -99,6 +99,7 @@ namespace HostingTest
            return new ScriptRuntime(CreateScriptRuntimeSetup(path));
        }
 
+#if FEATURE_REMOTING
        private ScriptRuntime CreateRemoteAppDomain(string/*!*/ testPath) {
            AppDomain newAppDomain;
            ScriptRuntime newScriptRuntime;
@@ -106,6 +107,7 @@ namespace HostingTest
            newScriptRuntime = ScriptRuntime.CreateRemote(newAppDomain, CreateScriptRuntimeSetup(testPath));
            return newScriptRuntime;
        }
+#endif
 
        /// <summary>
        /// ValidateProperties associated with Host -- compare test and expected PAL value(s)

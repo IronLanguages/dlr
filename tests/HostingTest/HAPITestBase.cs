@@ -19,7 +19,10 @@ namespace HostingTest {
         //Don't use this member. Use _runtime instead. 
         //This will be deleted once all the files are switched over to the id with correct casing
         protected ScriptRuntime _runTime;
-        protected ScriptRuntime _runtime, _remoteRuntime;
+        protected ScriptRuntime _runtime;
+#if FEATURE_REMOTING
+        protected ScriptRuntime _remoteRuntime;
+#endif
 
         protected ScriptEngine _testEng;
 
@@ -33,7 +36,9 @@ namespace HostingTest {
             var ses = CreateSetup();
             ses.HostType = typeof(TestHost);
             _runtime = new ScriptRuntime(ses);
+#if FEATURE_REMOTING
             _remoteRuntime = ScriptRuntime.CreateRemote(TestHelpers.CreateAppDomain("Alternate"), ses);
+#endif
 
             _runTime = _runtime;// _remoteRuntime;
 
@@ -68,9 +73,11 @@ namespace HostingTest {
             return new ScriptRuntime(CreateSetup());
         }
 
+#if FEATURE_REMOTING
         public static ScriptRuntime CreateRemoteRuntime(AppDomain domain) {
             return ScriptRuntime.CreateRemote(domain, CreateSetup());
         }
+#endif
 
         public static ScriptRuntimeSetup CreateSetup() {
             var configFile = TestHelpers.StandardConfigFile;

@@ -35,12 +35,14 @@ namespace HostingTest    {
             _testEng.Operations.IsCallable((object)null);
         }
 
+#if FEATURE_REMOTING
         [Test]
         [Negative]
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsCallable_NullObjectHandleArgument() {
             _testEng.Operations.IsCallable((ObjectHandle)null);
         }
+#endif
 
 
         /// <summary>

@@ -181,6 +181,7 @@ namespace HostingTest {
         }
 
 
+#if FEATURE_REMOTING
         public static AppDomain CreateAppDomain(string name) {
             var setup = new AppDomainSetup {
                 ApplicationBase = BinDirectory,
@@ -189,6 +190,7 @@ namespace HostingTest {
             };
             return AppDomain.CreateDomain(name, null, setup);
         }
+#endif
 
         public class EnvSetupTearDown {
             string _envName;

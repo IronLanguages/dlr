@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+#if FEATURE_REMOTING
 using System.Security;
 using System.Security.Policy;
+#endif
 using System.Text;
 using IronPython.Runtime;
 using Microsoft.Scripting;
@@ -15,6 +17,7 @@ namespace HostingTest{
     [TestFixture]
     public partial class ScriptRuntimeTest : HAPITestBase
     {
+#if FEATURE_REMOTING
         [Test]
         public void Create_WithCurrentAppDomain(){
             ScriptRuntime currentSR = CreateRemoteRuntime(AppDomain.CurrentDomain);
@@ -94,6 +97,7 @@ namespace HostingTest{
         }
 
         [Test]
+        [Platform(Exclude="Mono", Reason="No CAS on Mono.")]
         public void Create_PartialTrust() {
             // basic check of running a host in partial trust
             AppDomainSetup info = new AppDomainSetup();
@@ -113,6 +117,7 @@ namespace HostingTest{
 
             AppDomain.Unload(newDomain);
         }
+#endif
         
         [Test]
         [Negative]
@@ -179,6 +184,7 @@ namespace HostingTest{
             Assert.Inconclusive("Test not yet implemented");
         }
 
+#if FEATURE_REMOTING
         [ExpectedException(typeof(SyntaxErrorException))]
         [Test]//regression test for DDB 488971
         public void ExecuteFile_RemoteADAndSyntaxError() {
@@ -189,6 +195,7 @@ namespace HostingTest{
 
             runtime.ExecuteFile(tmpFile); //throws 'SourceUnit not serializable exception'
         }
+#endif
 
 
         [Test]
