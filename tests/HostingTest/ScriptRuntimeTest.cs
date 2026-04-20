@@ -276,12 +276,12 @@ namespace HostingTest{
             dict[key] = 1;
             
             _runtime.Globals = _testEng.CreateScope(new ObjectDictionaryExpando(dict));
-            Assert.AreEqual(1, _runtime.Globals.GetVariable( key));
+            Assert.That(_runtime.Globals.GetVariable(key), Is.EqualTo(1));
 
             dict[key] = 2;
             _runtime.Globals = _testEng.CreateScope(new ObjectDictionaryExpando(dict));
 
-            Assert.AreEqual(2, _runtime.Globals.GetVariable(key));
+            Assert.That(_runtime.Globals.GetVariable(key), Is.EqualTo(2));
         }
 
         [Test]
@@ -348,7 +348,7 @@ namespace HostingTest{
             Assert.AreEqual(editScope, dict[key]);
 
             dict[key] = editDict;
-            Assert.AreEqual(editDict, attachedScope.GetVariable(key));
+            Assert.That(attachedScope.GetVariable(key), Is.EqualTo(editDict));
         }
 
         [Test]

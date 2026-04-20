@@ -71,7 +71,7 @@ namespace HostingTest {
             KeyValuePair<string, object> testVar = new KeyValuePair<string, object>(string.Empty, 1);
             scope.SetVariable(testVar.Key, testVar.Value);
 
-            Assert.AreEqual(testVar.Value, scope.GetVariable(testVar.Key));
+            Assert.That(scope.GetVariable(testVar.Key), Is.EqualTo(testVar.Value));
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace HostingTest {
             var testVar = new KeyValuePair<string, object>("one", 1);
             scope.SetVariable(testVar.Key, testVar.Value);
 
-            Assert.AreEqual(testVar.Value, scope.GetVariable(testVar.Key));
+            Assert.That(scope.GetVariable(testVar.Key), Is.EqualTo(testVar.Value));
         }
 
 
@@ -122,7 +122,7 @@ namespace HostingTest {
             var testPair = new KeyValuePair<string, object>("", 1);
             scope.SetVariable(testPair.Key, testPair.Value);
 
-            Assert.AreEqual(testPair.Value, scope.GetVariable(testPair.Key));
+            Assert.That(scope.GetVariable(testPair.Key), Is.EqualTo(testPair.Value));
         }
 
         /// <summary>
@@ -137,13 +137,13 @@ namespace HostingTest {
             var testPair = new KeyValuePair<string, object>("SomeVar", 1);
             scope.SetVariable(testPair.Key, testPair.Value);
 
-            Assert.AreEqual(testPair.Value, scope.GetVariable(testPair.Key));
+            Assert.That(scope.GetVariable(testPair.Key), Is.EqualTo(testPair.Value));
 
             var newCaseVar = new KeyValuePair<string, object>("someVar", "abc");
             scope.SetVariable(newCaseVar.Key, newCaseVar.Value);
 
-            Assert.AreEqual(newCaseVar.Value, scope.GetVariable(newCaseVar.Key));
-            Assert.AreEqual(testPair.Value, scope.GetVariable(testPair.Key));
+            Assert.That(scope.GetVariable(newCaseVar.Key), Is.EqualTo(newCaseVar.Value));
+            Assert.That(scope.GetVariable(testPair.Key), Is.EqualTo(testPair.Value));
         }
 
         /// <summary>
@@ -157,13 +157,13 @@ namespace HostingTest {
             var testVar = new KeyValuePair<string, object>("SomeVar", 1);
             scope.SetVariable(testVar.Key, testVar.Value);
 
-            Assert.AreEqual(testVar.Value, scope.GetVariable(testVar.Key));
+            Assert.That(scope.GetVariable(testVar.Key), Is.EqualTo(testVar.Value));
 
             // New value
             var expectedVar = new KeyValuePair<string, object>("SomeVar", 2);
             scope.SetVariable(expectedVar.Key, expectedVar.Value);
 
-            Assert.AreEqual(expectedVar.Value, scope.GetVariable(expectedVar.Key));
+            Assert.That(scope.GetVariable(expectedVar.Key), Is.EqualTo(expectedVar.Value));
             Assert.AreEqual(1, scope.GetVariableCount());
         }
 
@@ -179,10 +179,10 @@ namespace HostingTest {
             var testVar = new KeyValuePair<string, object>("var1", 1);
             scope.SetVariable(testVar.Key, testVar.Value);
 
-            Assert.AreEqual(testVar.Value, scope.GetVariable(testVar.Key));
+            Assert.That(scope.GetVariable(testVar.Key), Is.EqualTo(testVar.Value));
 
             scope.SetVariable(testVar.Key, "HelloWorld");
-            Assert.AreEqual("HelloWorld", scope.GetVariable(testVar.Key));
+            Assert.That(scope.GetVariable(testVar.Key), Is.EqualTo("HelloWorld"));
         }
 
         [Test]
@@ -794,13 +794,13 @@ namespace HostingTest {
             // Greate a new Scope and or get default scope...
             ScriptScope testScope = _testEng.Runtime.CreateScope(new ObjectDictionaryExpando(global));
             foreach (string str in testScope.GetVariableNames()) {
-                Assert.AreEqual(global[str], testScope.GetVariable(str));
+                Assert.That(testScope.GetVariable(str), Is.EqualTo(global[str]));
             }
 
             // Now verify that changes to the TestScope are reflected in the global scope.
             string updateTestKey = "Four";
             testScope.SetVariable(updateTestKey, 4);
-            Assert.AreEqual(global[updateTestKey], testScope.GetVariable(updateTestKey));
+            Assert.That(testScope.GetVariable(updateTestKey), Is.EqualTo(global[updateTestKey]));
 
         }
 

@@ -72,7 +72,7 @@ namespace HostingTest {
 
                 //Exec the code in a new scope
                 ScriptScope scope = _runTime.CreateScope();
-                Assert.AreEqual(null, src.Execute(scope));
+                Assert.That(src.Execute(scope), Is.Null);
                 Assert.AreEqual(_codeSnippets[CodeType.Valid1], src.GetCode());
 
                 //Verify the scope's contents after execution
@@ -760,7 +760,7 @@ def f(arg):
             Assert.IsNotNull(fileScope);
 
             // If we get a valid scope check the expected contents. 
-            Assert.AreEqual(expResult, fileScope.GetVariable("x"));
+            Assert.That(fileScope.GetVariable("x"), Is.EqualTo(expResult));
         }
 
         /// <summary>
