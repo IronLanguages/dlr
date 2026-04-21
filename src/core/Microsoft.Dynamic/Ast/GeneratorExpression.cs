@@ -172,7 +172,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.Requires(delegateType.IsSubclassOf(typeof(MulticastDelegate)), "Lambda type parameter must be derived from System.Delegate");
             Type generatorType = delegateType.GetMethod("Invoke").GetReturnType();
 
-            var paramList = parameters.ToReadOnly();
+            var paramList = parameters.ToReadOnlyCollection();
             if (IsEnumerableType(generatorType)) {
                 // rewrite body
                 body = TransformEnumerable(body, paramList);

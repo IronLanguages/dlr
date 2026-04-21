@@ -6,39 +6,32 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.Scripting.Utils {
     internal static class CollectionExtensions {
         /// <summary>
-        /// Wraps the provided enumerable into a ReadOnlyCollection{T}
-        /// 
-        /// Copies all of the data into a new array, so the data can't be
-        /// changed after creation. The exception is if the enumerable is
-        /// already a ReadOnlyCollection{T}, in which case we just return it.
+        /// Materlializes the provided enumerable if needed and wraps it in a ReadOnlyCollection{T}
         /// </summary>
-        internal static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> enumerable) {
-            if (enumerable is null) {
-                return EmptyReadOnlyCollection<T>.Instance;
-            }
-
-            if (enumerable is ReadOnlyCollection<T> roCollection) {
-                return roCollection;
-            }
-
-            if (enumerable is ICollection<T> collection) {
-                int count = collection.Count;
-                if (count == 0) {
-                    return EmptyReadOnlyCollection<T>.Instance;
-                }
-
-                T[] array = new T[count];
-                collection.CopyTo(array, 0);
-                return new ReadOnlyCollection<T>(array);
-            }
-
-            // ToArray trims the excess space and speeds up access
-            return new ReadOnlyCollection<T>(new List<T>(enumerable).ToArray());
+        /// <remarks>
+        /// Copies all of the data into a new array, so the data can't be
+        /// accidentally changed after creation. The exception is if the enumerable is
+        /// already a ReadOnlyCollection{T} (or its subclass), in which case we just return it.
+        /// </remarks>
+        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable) {
+            // Copy of Microsoft.Scripting.Utils.CollectionExtensions.ToReadOnlyCollection, which is internal.
+            return enumerable switch {
+                null => ReadOnlyCollection<T>.Empty,
+                ReadOnlyCollection<T> roc => roc,
+                ReadOnlyCollectionBuilder<T> builder => builder.ToReadOnlyCollection(),
+                _ => enumerable.ToArray() switch {  // ToArray does all necessary casting, copying, and possible optimizations
+                    { Length: 0 } => ReadOnlyCollection<T>.Empty,
+                    var array => new ReadOnlyCollection<T>(array),
+                },
+            };
         }
+
 
         // We could probably improve the hashing here
         internal static int ListHashCode<T>(this IEnumerable<T> list) {
@@ -134,12 +127,23 @@ namespace Microsoft.Scripting.Utils {
             Array.Copy(array, sizeOfShiftedArray, result, 0, count);
             return result;
         }
+
+#if !NET8_0_OR_GREATER
+        // Emulates ReadOnlyCollection<T>.Empty form .NET 8.0+ with what is available in .NET Framework et al.
+        // See also Microsoft.Scripting.Utils.CollectionExtensions
+        extension<T>(ReadOnlyCollection<T>) {
+            internal static ReadOnlyCollection<T> Empty => EmptyReadOnlyCollection<T>.Instance;
+        }
+
+        // CS9282: Extension declarations can include only methods or properties
+        // so a readonly field must be in a separate static class.
+        private static class EmptyReadOnlyCollection<T> {
+            internal static readonly ReadOnlyCollection<T> Instance = new(Array.Empty<T>());
+        }
+#endif
+
     }
 
-
-    internal static class EmptyReadOnlyCollection<T> {
-        internal static readonly ReadOnlyCollection<T> Instance = new(Array.Empty<T>());
-    }
 
     internal static class EmptyReadOnlyDictionary<TKey, TValue> {
         internal static readonly IReadOnlyDictionary<TKey, TValue> Instance
