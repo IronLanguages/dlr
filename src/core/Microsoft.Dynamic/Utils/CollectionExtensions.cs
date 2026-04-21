@@ -130,27 +130,23 @@ namespace Microsoft.Scripting.Utils {
 
 #if !NET8_0_OR_GREATER
         // Emulates ReadOnlyCollection<T>.Empty form .NET 8.0+ with what is available in .NET Framework et al.
-        // See also Microsoft.Scripting.Utils.CollectionExtensions
+        // See also polyfill in Microsoft.Scripting.Utils.CollectionExtensions
         extension<T>(ReadOnlyCollection<T>) {
             internal static ReadOnlyCollection<T> Empty => EmptyReadOnlyCollection<T>.Instance;
         }
 
-        // CS9282: Extension declarations can include only methods or properties
-        // so a readonly field must be in a separate static class.
         private static class EmptyReadOnlyCollection<T> {
             internal static readonly ReadOnlyCollection<T> Instance = new(Array.Empty<T>());
         }
-#endif
 
-    }
+        // Emulates ReadOnlyDictionary<TKey,TValue>.Empty from .NET 8.0+ with what is available in .NET Framework et al.
+        extension<TKey, TValue>(ReadOnlyDictionary<TKey, TValue>) {
+            internal static ReadOnlyDictionary<TKey, TValue> Empty => EmptyReadOnlyDictionary<TKey, TValue>.Instance;
+        }
 
-
-    internal static class EmptyReadOnlyDictionary<TKey, TValue> {
-        internal static readonly IReadOnlyDictionary<TKey, TValue> Instance
-#if NETCOREAPP
-            = System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>();
-#else
-            = new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+        private static class EmptyReadOnlyDictionary<TKey, TValue> {
+            internal static readonly ReadOnlyDictionary<TKey, TValue> Instance = new(new Dictionary<TKey, TValue>());
+        }
 #endif
     }
 
