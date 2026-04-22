@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
+using System.Linq;
 
 namespace Microsoft.Scripting.Interpreter {
     using InterpretedFrameThreadLocal = Microsoft.Scripting.Utils.ThreadLocal<InterpretedFrame>;
@@ -145,7 +146,7 @@ namespace Microsoft.Scripting.Interpreter {
 
         internal void SaveTraceToException(Exception exception) {
             if (exception.GetData(typeof(InterpretedFrameInfo)) is null) {
-                exception.SetData(typeof(InterpretedFrameInfo), new List<InterpretedFrameInfo>(GetStackTraceDebugInfo()).ToArray());
+                exception.SetData(typeof(InterpretedFrameInfo), GetStackTraceDebugInfo().ToArray());
             }
         }
 

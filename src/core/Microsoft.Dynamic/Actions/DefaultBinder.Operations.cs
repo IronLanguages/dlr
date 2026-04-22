@@ -551,7 +551,7 @@ namespace Microsoft.Scripting.Actions {
                 }
             }
 
-            return new List<MethodInfo>(dict.Values).ToArray();
+            return dict.Values.ToArray();
         }
 
         #endregion
