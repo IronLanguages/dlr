@@ -19,7 +19,7 @@ namespace Microsoft.Scripting.Ast {
                 throw new ArgumentException("Argument type cannot be System.Void.");
             }
 
-            ReadOnlyCollection<Expression> initializerList = initializers.ToReadOnly();
+            ReadOnlyCollection<Expression> initializerList = initializers.ToReadOnlyCollection();
 
             Expression[] clone = null;
             for (int i = 0; i < initializerList.Count; i++) {

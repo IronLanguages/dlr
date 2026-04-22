@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -50,7 +51,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object[] values) {
             if (names.Length == 0) {
-                return EmptyReadOnlyDictionary<TKey, TValue>.Instance;
+                return ReadOnlyDictionary<TKey, TValue>.Empty;
             }
             return MakeDictionary<TKey, TValue>(names, values);
         }

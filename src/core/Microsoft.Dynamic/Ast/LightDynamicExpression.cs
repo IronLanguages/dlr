@@ -509,7 +509,7 @@ namespace Microsoft.Scripting.Ast {
 
         public override Expression Reduce() {
             Debug.Assert(_args.Count > 0);
-            return DynamicExpression.Dynamic(Binder, Type, _args.ToReadOnly());
+            return DynamicExpression.Dynamic(Binder, Type, _args.ToReadOnlyCollection());
         }
 
         protected sealed override int ArgumentCount {
