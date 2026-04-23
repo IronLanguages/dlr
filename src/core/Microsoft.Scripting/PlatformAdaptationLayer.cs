@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -195,19 +197,19 @@ namespace Microsoft.Scripting {
             return Path.Combine(path1, path2);
         }
 
-        public virtual string GetFileName(string path) {
+        public virtual string? GetFileName(string? path) {
             return Path.GetFileName(path);
         }
 
-        public virtual string GetDirectoryName(string path) {
+        public virtual string? GetDirectoryName(string? path) {
             return Path.GetDirectoryName(path);
         }
 
-        public virtual string GetExtension(string path) {
+        public virtual string? GetExtension(string? path) {
             return Path.GetExtension(path);
         }
 
-        public virtual string GetFileNameWithoutExtension(string path) {
+        public virtual string? GetFileNameWithoutExtension(string? path) {
             return Path.GetFileNameWithoutExtension(path);
         }
 
@@ -222,8 +224,8 @@ namespace Microsoft.Scripting {
             if (IsSingleRootFileSystem) {
                 return Path.IsPathRooted(path);
             }
-            var root = Path.GetPathRoot(path);
-            return root.EndsWith(@":\", StringComparison.Ordinal) || root.EndsWith(@":/", StringComparison.Ordinal);
+            string? root = Path.GetPathRoot(path);
+            return root is not null && (root.EndsWith(@":\", StringComparison.Ordinal) || root.EndsWith(@":/", StringComparison.Ordinal));
 #else
             throw new NotImplementedException();
 #endif
@@ -274,7 +276,7 @@ namespace Microsoft.Scripting {
 
         #region Environmental Variables
 
-        public virtual string GetEnvironmentVariable(string key) {
+        public virtual string? GetEnvironmentVariable(string key) {
 #if FEATURE_PROCESS
             return Environment.GetEnvironmentVariable(key);
 #else
@@ -283,7 +285,7 @@ namespace Microsoft.Scripting {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-        public virtual void SetEnvironmentVariable(string key, string value) {
+        public virtual void SetEnvironmentVariable(string key, string? value) {
 #if FEATURE_PROCESS
             if (value is not null && value.Length == 0) {
                 SetEmptyEnvironmentVariable(key);
@@ -316,7 +318,7 @@ namespace Microsoft.Scripting {
 
             foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables())
             {
-                result.Add((string)entry.Key, (string)entry.Value);
+                result.Add((string)entry.Key, (entry.Value is string value) ? value : string.Empty);
             }
 
             return result;

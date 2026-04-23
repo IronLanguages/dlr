@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Globalization;
 
@@ -156,7 +158,7 @@ namespace Microsoft.Scripting {
         public bool Equals(SourceLocation other) =>
             other.Index == Index && other.Line == Line && other.Column == Column;
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is SourceLocation other && Equals(other);
 
         public override int GetHashCode() {

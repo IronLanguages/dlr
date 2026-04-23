@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 
 using Microsoft.Scripting.Utils;
@@ -33,7 +35,7 @@ namespace Microsoft.Scripting {
             return Length.GetHashCode() ^ Start.GetHashCode();
         }
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is IndexSpan span && Equals(span);
 
         public static bool operator ==(IndexSpan self, IndexSpan other) => self.Equals(other);

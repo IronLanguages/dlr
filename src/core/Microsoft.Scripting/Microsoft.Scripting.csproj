@@ -6,6 +6,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
     <MeziantouPolyfill_IncludedPolyfills>
+      T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute;
+      T:System.Diagnostics.CodeAnalysis.NotNullAttribute;
       P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
     </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>

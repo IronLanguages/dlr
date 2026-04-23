@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Reflection;
 
@@ -11,12 +13,12 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [Serializable]
     public class DynamicStackFrame {
-        private readonly string _funcName;
-        private readonly string _filename;
+        private readonly string? _funcName;
+        private readonly string? _filename;
         private readonly int _lineNo;
-        private readonly MethodBase _method;
+        private readonly MethodBase? _method;
 
-        public DynamicStackFrame(MethodBase method, string funcName, string filename, int line) {
+        public DynamicStackFrame(MethodBase? method, string? funcName, string? filename, int line) {
             _funcName = funcName;
             _filename = filename;
             _lineNo = line;
@@ -24,17 +26,17 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public MethodBase GetMethod() {
+        public MethodBase? GetMethod() {
             return _method;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetMethodName() {
+        public string? GetMethodName() {
             return _funcName;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetFileName() {
+        public string? GetFileName() {
             return _filename;
         }
 
