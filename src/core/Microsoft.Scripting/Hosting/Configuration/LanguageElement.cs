@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_CONFIGURATION
 
 using System;
@@ -28,24 +30,24 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         protected override ConfigurationPropertyCollection Properties => _Properties;
 
-        public string Names {
-            get => (string)this[_Names];
+        public string? Names {
+            get => (string?)this[_Names];
             set => this[_Names] = value;
         }
 
-        public string Extensions {
-            get => (string)this[_Extensions];
+        public string? Extensions {
+            get => (string?)this[_Extensions];
             set => this[_Extensions] = value;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
-        public string Type {
-            get => (string)this[_Type];
+        public string? Type {
+            get => (string?)this[_Type];
             set => this[_Type] = value;
         }
 
-        public string DisplayName {
-            get => (string)this[_DisplayName];
+        public string? DisplayName {
+            get => (string?)this[_DisplayName];
             set => this[_DisplayName] = value;
         }
 
@@ -53,7 +55,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         public string[] GetExtensionsArray() => Split(Extensions);
 
-        private static string[] Split(string str) =>
+        private static string[] Split(string? str) =>
             str is not null
                 ? str.Split(new[] {';', ','}, StringSplitOptions.RemoveEmptyEntries)
                 : ArrayUtils.EmptyStrings;

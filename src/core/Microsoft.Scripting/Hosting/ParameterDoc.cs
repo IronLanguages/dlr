@@ -1,6 +1,8 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
+
+#nullable enable
 
 using System;
 
@@ -20,15 +22,15 @@ namespace Microsoft.Scripting.Hosting {
             : this(name, null, null, paramFlags) {
         }
 
-        public ParameterDoc(string name, string typeName)
+        public ParameterDoc(string name, string? typeName)
             : this(name, typeName, null, ParameterFlags.None) {
         }
 
-        public ParameterDoc(string name, string typeName, string documentation)
+        public ParameterDoc(string name, string? typeName, string? documentation)
             : this(name, typeName, documentation, ParameterFlags.None) {
         }
 
-        public ParameterDoc(string name, string typeName, string documentation, ParameterFlags paramFlags) {
+        public ParameterDoc(string name, string? typeName, string? documentation, ParameterFlags paramFlags) {
             ContractUtils.RequiresNotNull(name, nameof(name));
 
             Name = name;
@@ -45,7 +47,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// The type name of the parameter or null if no type information is available.
         /// </summary>
-        public string TypeName { get; }
+        public string? TypeName { get; }
 
         /// <summary>
         /// Provides addition information about the parameter such as if it's a parameter array.
@@ -55,6 +57,6 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Gets the documentation string for this parameter or null if no documentation is available.
         /// </summary>
-        public string Documentation { get; }
+        public string? Documentation { get; }
     }
 }

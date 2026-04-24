@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Threading;
@@ -30,8 +33,8 @@ namespace Microsoft.Scripting {
         ///
         /// If the named value is not present an InvalidOperationException is raised.
         /// </summary>
-        public dynamic GetValue(string name, bool ignoreCase) {
-            if (GetScopeVariable(name, ignoreCase).TryGetValue(out object res)) {
+        public dynamic? GetValue(string name, bool ignoreCase) {
+            if (GetScopeVariable(name, ignoreCase).TryGetValue(out object? res)) {
                 return res;
             }
             throw new KeyNotFoundException("no value");
@@ -41,11 +44,12 @@ namespace Microsoft.Scripting {
         /// Attempts to get the named value from the scope optionally ignoring the case.
         ///
         /// Returns true if the value is present, false if it is not.
+        /// The <see cref="value"/> may be null if the value is present but set to null.
         /// </summary>
-        public bool TryGetValue(string name, bool ignoreCase, out dynamic value) {
-            bool TryGetScopeVariable(out IScopeVariable scopeVariable) {
+        public bool TryGetValue(string name, bool ignoreCase, out dynamic? value) {
+            bool TryGetScopeVariable([NotNullWhen(true)] out IScopeVariable? scopeVariable) {
                 lock(_storage) {
-                    if (_storage.TryGetValue(name, out ScopeVariableIgnoreCase storageInfo)) {
+                    if (_storage.TryGetValue(name, out ScopeVariableIgnoreCase? storageInfo)) {
                         scopeVariable = ignoreCase
                             ? storageInfo
                             : storageInfo.GetCaseSensitiveStorage(name);
@@ -58,7 +62,7 @@ namespace Microsoft.Scripting {
             }
 
             if (TryGetScopeVariable(out var storage)
-                && storage.TryGetValue(out object objValue)) {
+                && storage.TryGetValue(out object? objValue)) {
                 value = objValue;
                 return true;
             }
@@ -70,7 +74,7 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Sets the named value in the scope optionally ignoring the case.
         /// </summary>
-        public void SetValue(string name, bool ignoreCase, object value) {
+        public void SetValue(string name, bool ignoreCase, object? value) {
             GetScopeVariable(name, ignoreCase).SetValue(value);
         }
 
@@ -125,7 +129,7 @@ namespace Microsoft.Scripting {
         /// </summary>
         public ScopeVariableIgnoreCase GetScopeVariableIgnoreCase(string name) {
             lock (_storage) {
-                if (!_storage.TryGetValue(name, out ScopeVariableIgnoreCase storageInfo)) {
+                if (!_storage.TryGetValue(name, out ScopeVariableIgnoreCase? storageInfo)) {
                     _storage[name] = storageInfo = new ScopeVariableIgnoreCase(name);
                 }
                 return storageInfo;
@@ -134,9 +138,9 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Provides convenient case-sensitive value access.
         /// </summary>
-        public dynamic this[string index] {
+        public dynamic? this[string index] {
             get => GetValue(index, false);
-            set => SetValue(index, false, (object)value);
+            set => SetValue(index, false, (object?)value);
         }
 
         /// <summary>
@@ -145,7 +149,7 @@ namespace Microsoft.Scripting {
         /// The list contains all available casings.
         /// </summary>
         public IList<string> GetMemberNames() {
-            List<string> res = new List<string>();
+            var res = new List<string>();
             lock (_storage) {
                 foreach (var storage in _storage.Values) {
                     storage.AddNames(res);
@@ -159,8 +163,8 @@ namespace Microsoft.Scripting {
         ///
         /// The list contains all available casings.
         /// </summary>
-        public IList<KeyValuePair<string, dynamic>> GetItems() {
-            List<KeyValuePair<string, dynamic>> res = new List<KeyValuePair<string, dynamic>>();
+        public IList<KeyValuePair<string, dynamic?>> GetItems() {
+            var res = new List<KeyValuePair<string, dynamic?>>();
             lock (_storage) {
                 foreach (var storage in _storage.Values) {
                     storage.AddItems(res);
@@ -209,7 +213,7 @@ namespace Microsoft.Scripting {
                         Expression.Condition(
                             Expression.Call(
                                 Variable(variable),
-                                variable.GetType().GetMethod(nameof(IScopeVariable.TryGetValue)),
+                                variable.GetType().GetMethod(nameof(IScopeVariable.TryGetValue))!,
                                 tmp
                             ),
                             ExpressionUtils.Convert(resultOp(tmp), typeof(object)),
@@ -224,7 +228,7 @@ namespace Microsoft.Scripting {
                 return Expression.Convert(
                     Expression.Property(
                         Expression.Constant(((IWeakReferencable)variable).WeakReference),
-                        typeof(WeakReference).GetProperty(nameof(WeakReference.Target))
+                        typeof(WeakReference).GetProperty(nameof(WeakReference.Target))!
                     ),
                     variable.GetType()
                 );
@@ -238,7 +242,7 @@ namespace Microsoft.Scripting {
                     Expression.Block(
                         Expression.Call(
                             Variable(variable),
-                            variable.GetType().GetMethod(nameof(IScopeVariable.SetValue)),
+                            variable.GetType().GetMethod(nameof(IScopeVariable.SetValue))!,
                             objExpression
                         ),
                         objExpression
@@ -253,7 +257,7 @@ namespace Microsoft.Scripting {
                     Expression.Condition(
                         Expression.Call(
                             Variable(variable),
-                            variable.GetType().GetMethod(nameof(IScopeVariable.DeleteValue))
+                            variable.GetType().GetMethod(nameof(IScopeVariable.DeleteValue))!
                         ),
                         Expression.Default(binder.ReturnType),
                         binder.FallbackDeleteMember(this).Expression
@@ -266,7 +270,7 @@ namespace Microsoft.Scripting {
                 return Value.GetMemberNames();
             }
 
-            public new ScopeStorage Value => (ScopeStorage)base.Value;
+            public new ScopeStorage Value => (ScopeStorage)base.Value!;  // Value always initialized by the constructor
         }
 
         #endregion
@@ -288,12 +292,12 @@ namespace Microsoft.Scripting {
         /// Atempts to get the value. If a value is assigned it returns true otherwise
         /// it returns false.
         /// </summary>
-        bool TryGetValue(out dynamic value);
+        bool TryGetValue(out object? value);
 
         /// <summary>
         /// Sets the current value in the scope.
         /// </summary>
-        void SetValue(object value);
+        void SetValue(object? value);
 
         /// <summary>
         /// Removes the current value from the scope.
@@ -315,8 +319,8 @@ namespace Microsoft.Scripting {
     /// ScopeVariables are case sensitive and will only refer to a single value.
     /// </summary>
     public sealed class ScopeVariable : IScopeVariable, IWeakReferencable {
-        private object _value;
-        private WeakReference _weakref;
+        private object? _value;
+        private WeakReference? _weakref;
         private static readonly object _novalue = new();
 
         internal ScopeVariable() {
@@ -334,9 +338,9 @@ namespace Microsoft.Scripting {
         /// Atempts to get the value. If a value is assigned it returns true otherwise
         /// it returns false.
         /// </summary>
-        public bool TryGetValue(out dynamic value) {
+        public bool TryGetValue(out object? value) {
             value = _value;
-            if ((object)value != _novalue) {
+            if (value != _novalue) {
                 return true;
             }
             value = null;
@@ -346,7 +350,7 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Sets the current value in the scope.
         /// </summary>
-        public void SetValue(object value) {
+        public void SetValue(object? value) {
             _value = value;
         }
 
@@ -377,8 +381,8 @@ namespace Microsoft.Scripting {
     public sealed class ScopeVariableIgnoreCase : IScopeVariable, IWeakReferencable {
         private readonly string _firstCasing;
         private readonly ScopeVariable _firstVariable;
-        private WeakReference _weakref;
-        private Dictionary<string, ScopeVariable> _overflow;
+        private WeakReference? _weakref;
+        private Dictionary<string, ScopeVariable>? _overflow;
 
         internal ScopeVariableIgnoreCase(string casing) {
             _firstCasing = casing;
@@ -415,16 +419,14 @@ namespace Microsoft.Scripting {
         /// Atempts to get the value. If a value is assigned it returns true otherwise
         /// it returns false.
         /// </summary>
-        public bool TryGetValue(out dynamic value) {
-            if (_firstVariable.TryGetValue(out object objValue)) {
-                value = objValue;
+        public bool TryGetValue(out object? value) {
+            if (_firstVariable.TryGetValue(out value)) {
                 return true;
             }
             if (_overflow is not null) {
                 lock (_overflow) {
                     foreach (var entry in _overflow) {
-                        if (entry.Value.TryGetValue(out objValue)) {
-                            value = objValue;
+                        if (entry.Value.TryGetValue(out value)) {
                             return true;
                         }
                     }
@@ -437,7 +439,7 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Sets the current value in the scope.
         /// </summary>
-        public void SetValue(object value) {
+        public void SetValue(object? value) {
             _firstVariable.SetValue(value);
         }
 
@@ -485,9 +487,9 @@ namespace Microsoft.Scripting {
             }
         }
 
-        internal void AddItems(List<KeyValuePair<string, object>> list) {
-            if (_firstVariable.TryGetValue(out object value)) {
-                list.Add(new KeyValuePair<string, object>(_firstCasing, value));
+        internal void AddItems(List<KeyValuePair<string, object?>> list) {
+            if (_firstVariable.TryGetValue(out object? value)) {
+                list.Add(new KeyValuePair<string, object?>(_firstCasing, value));
             }
 
             if (_overflow is null)
@@ -496,7 +498,7 @@ namespace Microsoft.Scripting {
             lock (_overflow) {
                 foreach (var element in _overflow) {
                     if (element.Value.TryGetValue(out value)) {
-                        list.Add(new KeyValuePair<string, object>(element.Key, value));
+                        list.Add(new KeyValuePair<string, object?>(element.Key, value));
                     }
                 }
             }
@@ -508,7 +510,7 @@ namespace Microsoft.Scripting {
             }
 
             lock (_overflow) {
-                if (!_overflow.TryGetValue(name, out ScopeVariable res)) {
+                if (!_overflow.TryGetValue(name, out ScopeVariable? res)) {
                     _overflow[name] = res = new ScopeVariable();
                 }
                 return res;

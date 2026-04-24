@@ -1,6 +1,8 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
+
+#nullable enable
 
 using System;
 using System.Reflection;
@@ -8,7 +10,7 @@ using System.Reflection;
 namespace Microsoft.Scripting.Utils {
     [Serializable]
     internal readonly struct AssemblyQualifiedTypeName : IEquatable<AssemblyQualifiedTypeName> {
-        public readonly string TypeName;
+        public readonly string? TypeName;
         public readonly AssemblyName AssemblyName;
 
         public AssemblyQualifiedTypeName(string typeName, AssemblyName assemblyName) {
@@ -47,7 +49,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static AssemblyQualifiedTypeName ParseArgument(string str, string argumentName) {
-            Assert.NotEmpty(argumentName);           
+            Assert.NotEmpty(argumentName);
             try {
                 return new AssemblyQualifiedTypeName(str);
             } catch (ArgumentException e) {
@@ -58,11 +60,11 @@ namespace Microsoft.Scripting.Utils {
         public bool Equals(AssemblyQualifiedTypeName other) =>
             TypeName == other.TypeName && AssemblyName.FullName == other.AssemblyName.FullName;
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is AssemblyQualifiedTypeName name && Equals(name);
 
         public override int GetHashCode() {
-            return TypeName.GetHashCode() ^ AssemblyName.FullName.GetHashCode();
+            return (TypeName?.GetHashCode() ?? 0) ^ (AssemblyName.FullName?.GetHashCode() ?? 0);
         }
 
         public override string ToString() {

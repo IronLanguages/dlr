@@ -2,13 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Microsoft.Scripting.Utils;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Threading;
-using System.Globalization;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
 
@@ -28,8 +32,8 @@ namespace Microsoft.Scripting {
         /// </summary>
         public bool NoAdaptiveCompilation {
             get { return _noAdaptiveCompilation; }
-        } 
-        
+        }
+
         /// <summary>
         /// The number of iterations before the interpreter starts compiling.
         /// </summary>
@@ -71,11 +75,11 @@ namespace Microsoft.Scripting {
             get { return _searchPaths; }
         }
 
-        public LanguageOptions() 
+        public LanguageOptions()
             : this(null) {
         }
 
-        public LanguageOptions(IDictionary<string, object> options) {
+        public LanguageOptions(IDictionary<string, object>? options) {
             _interpretedMode = GetOption(options, "InterpretedMode", false);
             _exceptionDetail = GetOption(options, "ExceptionDetail", false);
             _showClrExceptions = GetOption(options, "ShowClrExceptions", false);
@@ -85,8 +89,9 @@ namespace Microsoft.Scripting {
             _searchPaths = GetSearchPathsOption(options) ?? ReadOnlyCollection<string>.Empty;
         }
 
-        public static T GetOption<T>(IDictionary<string, object> options, string name, T defaultValue) {
-            if (options is not null && options.TryGetValue(name, out object value)) {
+        [return: MaybeNull]
+        public static T GetOption<T>(IDictionary<string, object>? options, string name, T defaultValue) {
+            if (options is not null && options.TryGetValue(name, out object? value)) {
                 if (value is T variable) {
                     return variable;
                 }
@@ -94,13 +99,13 @@ namespace Microsoft.Scripting {
             }
             return defaultValue;
         }
-        
+
         /// <summary>
         /// Reads an option whose value is expected to be a collection of non-null strings.
         /// Reaturns a read-only copy of the option's value.
         /// </summary>
-        public static ReadOnlyCollection<string> GetStringCollectionOption(IDictionary<string, object> options, string name, params char[] separators) {
-            if (options is null || !options.TryGetValue(name, out object value)) {
+        public static ReadOnlyCollection<string>? GetStringCollectionOption(IDictionary<string, object>? options, string name, params char[] separators) {
+            if (options is null || !options.TryGetValue(name, out object? value)) {
                 return null;
             }
 
@@ -124,7 +129,7 @@ namespace Microsoft.Scripting {
             throw new ArgumentException($"Invalid value for option {name}");
         }
 
-        public static ReadOnlyCollection<string> GetSearchPathsOption(IDictionary<string, object> options) {
+        public static ReadOnlyCollection<string>? GetSearchPathsOption(IDictionary<string, object>? options) {
             return GetStringCollectionOption(options, "SearchPaths", Path.PathSeparator);
         }
 
