@@ -6,10 +6,21 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
+    <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
+    <MeziantouPolyfill_IncludedPolyfills>
+      None
+    </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Meziantou.Polyfill" Version="1.0.116">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(AfterTargetFiles)" />
