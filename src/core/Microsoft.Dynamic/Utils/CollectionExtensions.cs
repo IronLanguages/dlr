@@ -127,27 +127,6 @@ namespace Microsoft.Scripting.Utils {
             Array.Copy(array, sizeOfShiftedArray, result, 0, count);
             return result;
         }
-
-#if !NET8_0_OR_GREATER
-        // Emulates ReadOnlyCollection<T>.Empty form .NET 8.0+ with what is available in .NET Framework et al.
-        // See also polyfill in Microsoft.Scripting.Utils.CollectionExtensions
-        extension<T>(ReadOnlyCollection<T>) {
-            internal static ReadOnlyCollection<T> Empty => EmptyReadOnlyCollection<T>.Instance;
-        }
-
-        private static class EmptyReadOnlyCollection<T> {
-            internal static readonly ReadOnlyCollection<T> Instance = new(Array.Empty<T>());
-        }
-
-        // Emulates ReadOnlyDictionary<TKey,TValue>.Empty from .NET 8.0+ with what is available in .NET Framework et al.
-        extension<TKey, TValue>(ReadOnlyDictionary<TKey, TValue>) {
-            internal static ReadOnlyDictionary<TKey, TValue> Empty => EmptyReadOnlyDictionary<TKey, TValue>.Instance;
-        }
-
-        private static class EmptyReadOnlyDictionary<TKey, TValue> {
-            internal static readonly ReadOnlyDictionary<TKey, TValue> Instance = new(new Dictionary<TKey, TValue>());
-        }
-#endif
     }
 
     internal static class EmptyArray<T> {

@@ -32,19 +32,5 @@ namespace Microsoft.Scripting.Utils {
                 },
             };
         }
-
-
-#if !NET8_0_OR_GREATER
-        // Emulates ReadOnlyCollection<T>.Empty form .NET 8.0+ with what is available in .NET Framework et al.
-        extension<T>(ReadOnlyCollection<T>) {
-            internal static ReadOnlyCollection<T> Empty => EmptyReadOnlyCollection<T>.Instance;
-        }
-
-        // CS9282: Extension declarations can include only methods or properties
-        // so a readonly field must be in a separate static class.
-        private static class EmptyReadOnlyCollection<T> {
-            internal static readonly ReadOnlyCollection<T> Instance = new(Array.Empty<T>());
-        }
-#endif
     }
 }

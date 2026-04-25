@@ -8,7 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
     <MeziantouPolyfill_IncludedPolyfills>
-      None
+      P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
+      P:System.Collections.ObjectModel.ReadOnlyDictionary`2.Empty;
     </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>
 
