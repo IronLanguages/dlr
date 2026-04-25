@@ -6,7 +6,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
     <MeziantouPolyfill_IncludedPolyfills>
-      None
+      P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
     </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>
 
