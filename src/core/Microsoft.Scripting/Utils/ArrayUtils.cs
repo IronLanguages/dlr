@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +23,12 @@ namespace Microsoft.Scripting.Utils {
                 _comparison = comparison;
             }
 
-            public int Compare(T x, T y) {
+            public int Compare(T? x, T? y) {
+                if (x is null) {
+                    return (y is null) ? 0 : -1;
+                } else if (y is null) {
+                    return 1;
+                }
                 return _comparison(x, y);
             }
         }
@@ -68,7 +75,7 @@ namespace Microsoft.Scripting.Utils {
             return res;
         }
 
-        public static T[] MakeArray<T>(ICollection<T> elements, int reservedSlotsBefore, int reservedSlotsAfter) {
+        public static T[] MakeArray<T>(ICollection<T>? elements, int reservedSlotsBefore, int reservedSlotsAfter) {
             if (reservedSlotsAfter < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsAfter));
             if (reservedSlotsBefore < 0) throw new ArgumentOutOfRangeException(nameof(reservedSlotsBefore));
 
@@ -192,7 +199,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static void SwapLastTwo<T>(T[] array) {
-            Debug.Assert(array is not null && array.Length >= 2);
+            Debug.Assert(array.Length >= 2);
 
             T temp = array[array.Length - 1];
             array[array.Length - 1] = array[array.Length - 2];

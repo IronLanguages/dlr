@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -15,18 +18,20 @@ namespace Microsoft.Scripting.Utils {
             _buffered = buffered;
         }
 
-        public abstract Encoding  Encoding { get; }
-        public abstract TextReader Reader { get; }
-        public abstract TextWriter Writer { get; }
+        public abstract Encoding Encoding { get; }
+        public abstract TextReader? Reader { get; }
+        public abstract TextWriter? Writer { get; }
 
         public sealed override bool CanSeek {
             get { return false; }
         }
 
+        [MemberNotNullWhen(true, nameof(Writer))]
         public sealed override bool CanWrite {
             get { return Writer is not null; }
         }
 
+        [MemberNotNullWhen(true, nameof(Reader))]
         public sealed override bool CanRead {
             get { return Reader is not null; }
         }
@@ -36,7 +41,7 @@ namespace Microsoft.Scripting.Utils {
             Writer.Flush();
         }
 
-        public sealed override int Read(byte[]  buffer, int offset, int count) {
+        public sealed override int Read(byte[] buffer, int offset, int count) {
             if (!CanRead) throw new InvalidOperationException();
             ContractUtils.RequiresArrayRange(buffer, offset, count, "offset", "count");
 
@@ -45,7 +50,8 @@ namespace Microsoft.Scripting.Utils {
             return Encoding.GetBytes(charBuffer, 0, realCount, buffer, offset);
         }
 
-        public sealed override void Write(byte[]  buffer, int offset, int count) {
+        public sealed override void Write(byte[] buffer, int offset, int count) {
+            if (!CanWrite) throw new InvalidOperationException();
             ContractUtils.RequiresArrayRange(buffer, offset, count, "offset", "count");
             char[] charBuffer = Encoding.GetChars(buffer, offset, count);
             Writer.Write(charBuffer, 0, charBuffer.Length);
@@ -82,19 +88,19 @@ namespace Microsoft.Scripting.Utils {
 
     internal sealed class TextStream : TextStreamBase {
 
-        private readonly TextReader _reader;
-        private readonly TextWriter _writer;
-        private readonly Encoding  _encoding;
+        private readonly TextReader? _reader;
+        private readonly TextWriter? _writer;
+        private readonly Encoding _encoding;
 
         public override Encoding Encoding {
             get { return _encoding; }
         }
 
-        public override TextReader Reader {
+        public override TextReader? Reader {
             get { return _reader; }
         }
 
-        public override TextWriter Writer {
+        public override TextWriter? Writer {
             get { return _writer; }
         }
 

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 
 using System;
@@ -15,8 +17,8 @@ using System.Threading;
 
 namespace Microsoft.Scripting.Utils {
     internal static class DelegateUtils {
-        private static AssemblyBuilder _assembly;
-        private static ModuleBuilder _modBuilder;
+        private static AssemblyBuilder? _assembly;
+        private static ModuleBuilder? _modBuilder;
         private static int _typeCount;
         private static readonly Type[] _DelegateCtorSignature = new Type[] { typeof(object), typeof(IntPtr) };
 
@@ -39,7 +41,7 @@ namespace Microsoft.Scripting.Utils {
                 }
             }
 
-            return _modBuilder.DefineType(
+            return _modBuilder!.DefineType(
                 name + Interlocked.Increment(ref _typeCount),
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,                
                 typeof(MulticastDelegate)
@@ -64,7 +66,7 @@ namespace Microsoft.Scripting.Utils {
                 MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
                 CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
             tb.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, typeof(object), paramTypes).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-            return tb.CreateTypeInfo();
+            return tb.CreateTypeInfo()!;
         }
     }
 }

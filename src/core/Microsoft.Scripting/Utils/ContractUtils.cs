@@ -2,14 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Utils {
     internal static class ContractUtils {
-        public static void RequiresNotNull(object value, string paramName) {
+        public static void RequiresNotNull([NotNull] object? value, string paramName) {
             Assert.NotEmpty(paramName);
 
             if (value is null) {
@@ -39,14 +42,14 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void RequiresNotEmpty(string str, string paramName) {
+        public static void RequiresNotEmpty([NotNull] string? str, string paramName) {
             RequiresNotNull(str, paramName);
             if (str.Length == 0) {
                 throw new ArgumentException(Strings.NonEmptyStringRequired, paramName);
             }
         }
 
-        public static void RequiresNotEmpty<T>(ICollection<T> collection, string paramName) {
+        public static void RequiresNotEmpty<T>([NotNull] ICollection<T>? collection, string paramName) {
             RequiresNotNull(collection, paramName);
             if (collection.Count == 0) {
                 throw new ArgumentException(Strings.NonEmptyCollectionRequired, paramName);
@@ -78,7 +81,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Requires the array and all its items to be non-null.
         /// </summary>
-        public static void RequiresNotNullItems<T>(IList<T> array, string arrayName) {
+        public static void RequiresNotNullItems<T>([NotNull] IList<T>? array, string arrayName) {
             Assert.NotNull(arrayName);
             RequiresNotNull(array, arrayName);
 
@@ -92,7 +95,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Requires the enumerable collection and all its items to be non-null.
         /// </summary>
-        public static void RequiresNotNullItems<T>(IEnumerable<T> collection, string collectionName) {
+        public static void RequiresNotNullItems<T>([NotNull] IEnumerable<T>? collection, string collectionName) {
             Assert.NotNull(collectionName);
             RequiresNotNull(collection, collectionName);
 

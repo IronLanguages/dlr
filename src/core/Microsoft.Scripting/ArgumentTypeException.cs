@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.Serialization;
 
@@ -12,11 +14,11 @@ namespace Microsoft.Scripting {
             : base() {
         }
 
-        public ArgumentTypeException(string message)
+        public ArgumentTypeException(string? message)
             : base(message) {
         }
 
-        public ArgumentTypeException(string message, Exception innerException)
+        public ArgumentTypeException(string? message, Exception? innerException)
             : base(message, innerException) {
         }
 

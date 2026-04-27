@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +23,7 @@ namespace Microsoft.Scripting.Utils {
         /// already a ReadOnlyCollection{T} (or its subclass), in which case we just return it.
         /// </remarks>
         /// <seealso href="https://github.com/dotnet/runtime/blob/b70c35ed8a2e7ae0d91de76f4f5d26c2e7d2c6cd/src/libraries/System.Linq.Expressions/src/System/Dynamic/Utils/CollectionExtensions.cs#L58"/>
-        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable) {
+        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable) {
             return enumerable switch {
                 null => ReadOnlyCollection<T>.Empty,
                 ReadOnlyCollection<T> roc => roc,
