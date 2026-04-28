@@ -2,6 +2,8 @@
 
 It is hard to separate language implementation concepts from the runtime concepts with dynamic languages. However, we try to do so by defining the runtime aspects of the DLR as DynamicSites, SiteBinders, and Rules for fast dynamic invocation. We include higher-level objects as helpers for library authors who want their objects to participate well in dynamic operations -- DynamicObject and ExpandoObject. We also include utilities, default binding helpers, and COM IDispatch interoperability.
 
+NOTE: Many classes described here have been migrated directly to .NET runtime and are no longer provided by the DLR.
+
 <h2 id="dynamic-call-sites">4.1 Dynamic Call Sites</h2>
 
 Dynamic call sites allow dynamic language code to run fast. They manage the method caching for performing specific operations on specific types of objects. The dynamic sites mechanism the DLR uses is based on research and experience with tried-and-true dynamic language implementations. For deeper discussion than provided here search the web for dynamic language method caching or polymorphic inline method caching.
@@ -136,7 +138,7 @@ As it takes time to generate the dynamic methods needed for the L0 cache, we don
 
 <h4 id="l2-cache-combined-rule-sets-of-all-equivalent-callsites">4.4.2.1 L2 Cache: Combined Rule Sets of All Equivalent CallSites</h4>
 
-Each individual dynamic call site has a delegate type and a specific binder instance. The **L2 cache** is maintained across dynamic call sites with the same binder instance. The L2 cache allows the sitesto share rules via the binder instance.. The L2 cache helps eliminate startup costs for call sites that perform operations similar to those already performed elsewhere. Since the L2 cache currently holds 100 delegates, it also helps improve the performance of highly polymorphic sites that encounter many various types. Producers of binders must put canonical binder instances for a set of given metadata so that semantically equivalent call sties have the same binder instance on them.
+Each individual dynamic call site has a delegate type and a specific binder instance. The **L2 cache** is maintained across dynamic call sites with the same binder instance. The L2 cache allows the sites to share rules via the binder instance.. The L2 cache helps eliminate startup costs for call sites that perform operations similar to those already performed elsewhere. Since the L2 cache currently holds 100 delegates, it also helps improve the performance of highly polymorphic sites that encounter many various types. Producers of binders must put canonical binder instances for a set of given metadata so that semantically equivalent call sties have the same binder instance on them.
 
 Upon an L1 cache miss the binder would otherwise be required to generate a new dynamic method, either because this particular call site has not yet bound that operation, or because it has fallen off the end of this site’s L1 cache. The shared L2 cache solves both of these problems by providing a larger cache that retains the rules seen by all equivalent call sites. An L2 hit means that the rule can be added back to the site’s L1 cache and L0 target delegate without regenerating the dynamic method.
 
@@ -154,59 +156,34 @@ The simplest way to give your own class custom dynamic dispatch semantics is to 
 
 DynamicObject provides a set of 12 virtual methods, each corresponding to a Bind... method defined on DynamicMetaObject. These methods represent the dynamic operations others may perform on your objects:
 
+```C#
 public abstract class DynamicObject : IDynamicMetaObjectProvider {
 
-public virtual bool TryGetMember(GetMemberBinder binder,
+    public virtual bool TryGetMember(GetMemberBinder binder, out object? result);
 
-out object result)
+    public virtual bool TrySetMember(SetMemberBinder binder, object? value);
 
-public virtual bool TrySetMember(SetMemberBinder binder,
+    public virtual bool TryDeleteMember(DeleteMemberBinder binder);
 
-object value)
+    public virtual bool TryConvert(ConvertBinder binder, out object? result);
 
-public virtual bool TryDeleteMember(DeleteMemberBinder binder)
+    public virtual bool TryUnaryOperation(UnaryOperationBinder binder, out object? result);
 
-public virtual bool TryConvert(ConvertBinder binder,
+    public virtual bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object? result);
 
-out object result)
+    public virtual bool TryInvoke(InvokeBinder binder, object?[]? args, out object? result);
 
-public virtual bool TryUnaryOperation
+    public virtual bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result);
 
-(UnaryOperationBinder binder, out object result)
+    public virtual bool TryCreateInstance(CreateInstanceBinder binder, object?[]? args, [NotNullWhen(true)] out object? result);
 
-public virtual bool TryBinaryOperation
+    public virtual bool TryGetIndex(GetIndexBinder binder, object[] args, out object? result);
 
-(BinaryOperationBinder binder, object arg,
+    public virtual bool TrySetIndex(SetIndexBinder binder, object[] indexes, object? value);
 
-out object result)
-
-public virtual bool TryInvoke
-
-(InvokeBinder binder, object\[\] args, out object result)
-
-public virtual bool TryInvokeMember
-
-(InvokeMemberBinder binder, object\[\] args,
-
-out object result)
-
-public virtual bool TryCreateInstance
-
-(CreateInstanceBinder binder, object\[\] args,
-
-out object result)
-
-public virtual bool TryGetIndex
-
-(GetIndexBinder binder, object\[\] args, out object result)
-
-public virtual bool TrySetIndex
-
-(SetIndexBinder binder, object\[\] indexes, object value)
-
-public virtual bool TryDeleteIndex
-
-(DeleteIndexBinder binder, object\[\] indexes)
+    public virtual bool TryDeleteIndex(DeleteIndexBinder binder, object[] indexes);
+}
+```
 
 You could have your own TryGetMember implementation look up “Foo” in a dictionary, crawl through a dynamic model like XML, make a web request for a value, or some other custom operation. To do so, you would override the TryGetMember method and just implement whatever custom action you want to expose through member evaluation syntax. You return true from the method to indicate that your implementation has handled this situation, and supply the value you want returned as the out parameter, result.
 
