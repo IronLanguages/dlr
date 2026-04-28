@@ -135,6 +135,7 @@ namespace Microsoft.Scripting.Actions {
         /// ExpressionType.  If the operation cannot be completed a MetaObject which indicates an
         /// error will be returned.
         /// </summary>
+        [Obsolete("You should use the overload which takes ExpressionType instead")]
         private DynamicMetaObject MakeGeneralOperatorRule(string operation, OverloadResolverFactory resolverFactory, DynamicMetaObject[] args) {
             OperatorInfo info = OperatorInfo.GetOperatorInfo(operation);
             return MakeGeneratorOperatorRule(resolverFactory, args, info);
