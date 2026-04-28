@@ -23,6 +23,20 @@ Possible filters:
  * `*ReadOnly*` — a given number of key/value pairs, only read, so good at testing `FrozenDictionary` and `FrozenSet`.
  * `*WriteOnly*` — single-threaded sequential writes.
  * `*SWMR*` — _Single Writer, Multiple Readers_: this is the scenario `Hastable` was intended for.
+ * `*OperatorBenchmarks*` — reading-speed benchmarks for `OperatorInfo.MakeOperatorTable` (.NET 8+ only).
+
+Project-specific shortcut flags (resolved before the arguments are handed to BenchmarkDotNet):
+ * `--operator` — equivalent to `--filter *OperatorBenchmarks*`.
+ * `--dictionary` — equivalent to `--filter *DictionaryBenchmarks*`.
+
+Example — run only the operator-table reading benchmarks:
+
+```powershell
+dotnet run --configuration Release `
+           --project tests/Microsoft.Dynamic.Benchmarks `
+           --framework net10.0 `
+           -- --operator
+```
 
 Remove attributes `SimpleJob` and/or provide additional runtimes with `--runtimes` attribute if more tailored tests are needed.
 

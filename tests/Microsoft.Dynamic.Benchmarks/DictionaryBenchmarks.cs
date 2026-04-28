@@ -420,7 +420,7 @@ public class DictionaryBenchmarks {
     /// <summary>
     /// Runs one writer task and <see cref="ReaderCount"/> reader tasks concurrently.
     /// A <see cref="CountdownEvent"/> is used so that all threads start executing
-    /// their hot loop at the same time, minimising ramp-up skew.
+    /// their hot loop at the same time, minimizing ramp-up skew.
     /// </summary>
     private void RunSingleWriterMultipleReaders(Action<int> readerOp, Action<int> writerOp) {
         int totalThreads = ReaderCount + 1; // readers + 1 writer
