@@ -2,20 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.IO;
-using Microsoft.Scripting.Utils;
-using System.Text;
+#nullable enable
+
 using System;
+using System.IO;
+using System.Text;
+
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting {
 
     /// <summary>
     /// Source code reader.
-    /// </summary>    
+    /// </summary>
     public class SourceCodeReader : TextReader {
         public static new readonly SourceCodeReader Null = new(TextReader.Null, null);
 
-        public SourceCodeReader(TextReader textReader, Encoding encoding) {
+        public SourceCodeReader(TextReader textReader, Encoding? encoding) {
             ContractUtils.RequiresNotNull(textReader, nameof(textReader));
 
             Encoding = encoding;
@@ -26,11 +29,11 @@ namespace Microsoft.Scripting {
         /// Gets the encoding that is used by the reader to convert binary data read from an underlying binary stream.
         /// <c>Null</c> if the reader is reading from a textual source (not performing any byte to character transcoding).
         /// </summary>
-        public Encoding Encoding { get; }
+        public Encoding? Encoding { get; }
 
         public TextReader BaseReader { get; }
 
-        public override string ReadLine() {
+        public override string? ReadLine() {
             return BaseReader.ReadLine();
         }
 

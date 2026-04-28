@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -69,27 +72,27 @@ namespace Microsoft.Scripting.Runtime {
         #endregion
 
         // lazily initialized to Console by default:
-        private Stream _inputStream;
-        private Stream _outputStream;
-        private Stream _errorStream;
+        private Stream? _inputStream;
+        private Stream? _outputStream;
+        private Stream? _errorStream;
 
-        private TextReader _inputReader;
-        private TextWriter _outputWriter;
-        private TextWriter _errorWriter;
+        private TextReader? _inputReader;
+        private TextWriter? _outputWriter;
+        private TextWriter? _errorWriter;
 
-        private Encoding _inputEncoding;
+        private Encoding? _inputEncoding;
 
-        public Stream InputStream { get { InitializeInput(); return _inputStream; } }
-        public Stream OutputStream { get { InitializeOutput(); return _outputStream; } }
-        public Stream ErrorStream { get { InitializeErrorOutput(); return _errorStream; } }
+        public Stream InputStream { get { InitializeInput(); return _inputStream!; } }
+        public Stream OutputStream { get { InitializeOutput(); return _outputStream!; } }
+        public Stream ErrorStream { get { InitializeErrorOutput(); return _errorStream!; } }
 
-        public TextReader InputReader { get { InitializeInput(); return _inputReader; } }
-        public TextWriter OutputWriter { get { InitializeOutput(); return _outputWriter; } }
-        public TextWriter ErrorWriter { get { InitializeErrorOutput(); return _errorWriter; } }
+        public TextReader InputReader { get { InitializeInput(); return _inputReader!; } }
+        public TextWriter OutputWriter { get { InitializeOutput(); return _outputWriter!; } }
+        public TextWriter ErrorWriter { get { InitializeErrorOutput(); return _errorWriter!; } }
 
-        public Encoding InputEncoding { get { InitializeInput(); return _inputEncoding; } }
-        public Encoding OutputEncoding { get { InitializeOutput(); return _outputWriter.Encoding; } }
-        public Encoding ErrorEncoding { get { InitializeErrorOutput(); return _errorWriter.Encoding; } }
+        public Encoding InputEncoding { get { InitializeInput(); return _inputEncoding!; } }
+        public Encoding OutputEncoding { get { InitializeOutput(); return _outputWriter!.Encoding; } }
+        public Encoding ErrorEncoding { get { InitializeErrorOutput(); return _errorWriter!.Encoding; } }
 
         public SupportLevel ConsoleSupportLevel { get; set; } = SupportLevel.Full;
 
