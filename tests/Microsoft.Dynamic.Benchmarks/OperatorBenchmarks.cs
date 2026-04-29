@@ -45,6 +45,7 @@ public class OperatorBenchmarks {
 
     private FrozenDictionary<ExpressionType, object> _frozen     = null!;
     private Dictionary<ExpressionType, object> _dictionary       = null!;
+    private KeyValuePair<ExpressionType, object>[] _array        = null!;
 
     // Cached key array for the all-keys scan (avoids enumerator allocation in the hot loop).
     private ExpressionType[] _keys = null!;
@@ -85,6 +86,8 @@ public class OperatorBenchmarks {
 
         _frozen = _dictionary.ToFrozenDictionary();
 
+        _array = _dictionary.ToArray();
+
         _keys = _dictionary.Keys.ToArray();
 
         if (_frozen.ContainsKey(MissingKey))
@@ -111,6 +114,16 @@ public class OperatorBenchmarks {
         return value!;
     }
 
+    [Benchmark(Description = "Hit – Array")]
+    [BenchmarkCategory("Operator-Hit")]
+    public object Hit_Array() {
+        var array = _array;
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i].Key == ExistingKey) return array[i].Value;
+        }
+        return null!;
+    }
+
     // ════════════════════════════════════════════════════════════════════════
     // Scenario 2 — single-key lookup (key absent)
     // ════════════════════════════════════════════════════════════════════════
@@ -125,6 +138,16 @@ public class OperatorBenchmarks {
     [BenchmarkCategory("Operator-Miss")]
     public bool Miss_FrozenDictionary() {
         return _frozen.TryGetValue(MissingKey, out _);
+    }
+
+    [Benchmark(Description = "Miss – Array")]
+    [BenchmarkCategory("Operator-Miss")]
+    public bool Miss_Array() {
+        var array = _array;
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i].Key == MissingKey) return true;
+        }
+        return false;
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -149,6 +172,24 @@ public class OperatorBenchmarks {
         var keys = _keys;
         for (int i = 0; i < keys.Length; i++) {
             if (_frozen.TryGetValue(keys[i], out _)) hits++;
+        }
+        return hits;
+    }
+
+    [Benchmark(Description = "All – Array")]
+    [BenchmarkCategory("Operator-All")]
+    public int All_Array() {
+        int hits = 0;
+        var array = _array;
+        var keys = _keys;
+        for (int k = 0; k < keys.Length; k++) {
+            ExpressionType key = keys[k];
+            for (int i = 0; i < array.Length; i++) {
+                if (array[i].Key == key) {
+                    hits++;
+                    break;
+                }
+            }
         }
         return hits;
     }
