@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-#if NET8_0_OR_GREATER
+#if NET10_0_OR_GREATER
 using System.Collections.Frozen;
 using OperatorDictionary = System.Collections.Frozen.FrozenDictionary<System.Linq.Expressions.ExpressionType, Microsoft.Scripting.Actions.OperatorInfo>;
 #else
@@ -70,8 +70,6 @@ namespace Microsoft.Scripting.Actions {
 
 #if NET10_0_OR_GREATER
             ReadOnlySpan<KeyValuePair<ExpressionType, OperatorInfo>> data = [
-#elif NET8_0_OR_GREATER
-            var data = new KeyValuePair<ExpressionType, OperatorInfo>[] {
 #else
             var data = new KvpDictionary<ExpressionType, OperatorInfo>() {
 #endif
@@ -125,9 +123,6 @@ namespace Microsoft.Scripting.Actions {
 #if NET10_0_OR_GREATER
             ];
             return FrozenDictionary.Create(data);
-#elif NET8_0_OR_GREATER
-            };
-            return data.ToFrozenDictionary();
 #else
             };
             return data;

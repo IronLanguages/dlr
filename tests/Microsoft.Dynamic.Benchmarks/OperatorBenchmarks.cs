@@ -57,12 +57,11 @@ public class OperatorBenchmarks {
     [GlobalSetup]
     public void Setup() {
 
-        // Using IDictionary so the benchmark is independent of the concrete type returned by MakeOperatorTable
-        var entries = (IDictionary)OperatorInfo.MakeOperatorTable();
+        var entries = (IDictionary<ExpressionType, OperatorInfo>)OperatorInfo.MakeOperatorTable();
 
         _dictionary = new Dictionary<ExpressionType, OperatorInfo>(entries.Count);
-        foreach (DictionaryEntry entry in entries) {
-            _dictionary[(ExpressionType)entry.Key] = (OperatorInfo)entry.Value!;
+        foreach (var entry in entries) {
+            _dictionary[entry.Key] = entry.Value!;
         }
 
         _frozen = _dictionary.ToFrozenDictionary();
