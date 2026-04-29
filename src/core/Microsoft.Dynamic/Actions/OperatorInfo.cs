@@ -65,7 +65,8 @@ namespace Microsoft.Scripting.Actions {
         public string AlternateName { get; }
 
 
-        private static OperatorDictionary MakeOperatorTable() {
+        // This method is internal for benchmarking purposes only; not intended for use outside of this class.
+        internal static OperatorDictionary MakeOperatorTable() {
 
 #if NET10_0_OR_GREATER
             ReadOnlySpan<KeyValuePair<ExpressionType, OperatorInfo>> data = [

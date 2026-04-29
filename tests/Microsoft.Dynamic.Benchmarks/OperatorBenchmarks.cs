@@ -10,28 +10,24 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
-using Microsoft.Scripting.Utils;
+using Microsoft.Scripting.Actions;
 
 namespace Microsoft.Dynamic.Benchmarks;
 
 /// <summary>
-/// Reading-speed benchmarks for the dictionary built by the private static method
-/// Microsoft.Scripting.Actions.OperatorInfo.MakeOperatorTable.
+/// Reading-speed benchmarks for the dictionary built by Microsoft.Scripting.Actions.OperatorInfo.MakeOperatorTable.
 /// </summary>
 ///
 /// <remarks>
 /// On .NET 8+ the production type is FrozenDictionary&lt;ExpressionType, OperatorInfo&gt;.
-/// The method is private and OperatorInfo is internal, so the dictionary is reached via
-/// reflection. IReadOnlyDictionary&lt;TKey, TValue&gt; is invariant in TValue (TryGetValue
-/// exposes TValue through an out parameter), so we enumerate the result through the
-/// non-generic IDictionary interface and rebuild a FrozenDictionary&lt;ExpressionType, object&gt;
-/// alongside a Dictionary&lt;ExpressionType, object&gt; with the same content. Both sides are
-/// then accessed as concrete generic types in the hot path.
+/// OperatorInfo is internal to Microsoft.Dynamic and MakeOperatorTable is internal as well; both
+/// are reached directly through the InternalsVisibleTo grant declared in Microsoft.Dynamic's
+/// AssemblyInfo. A Dictionary&lt;ExpressionType, OperatorInfo&gt; with the same content is built for
+/// comparison. Both sides are accessed as their concrete generic types in the hot path.
 /// </remarks>
 
 [SimpleJob(RuntimeMoniker.Net80)]
@@ -43,9 +39,9 @@ namespace Microsoft.Dynamic.Benchmarks;
 public class OperatorBenchmarks {
     // ── collections under test ──────────────────────────────────────────────
 
-    private FrozenDictionary<ExpressionType, object> _frozen     = null!;
-    private Dictionary<ExpressionType, object> _dictionary       = null!;
-    private KeyValuePair<ExpressionType, object>[] _array        = null!;
+    private FrozenDictionary<ExpressionType, OperatorInfo> _frozen     = null!;
+    private Dictionary<ExpressionType, OperatorInfo> _dictionary       = null!;
+    private KeyValuePair<ExpressionType, OperatorInfo>[] _array        = null!;
 
     // Cached key array for the all-keys scan (avoids enumerator allocation in the hot loop).
     private ExpressionType[] _keys = null!;
@@ -60,28 +56,13 @@ public class OperatorBenchmarks {
 
     [GlobalSetup]
     public void Setup() {
-        // Reach OperatorInfo (internal) via reflection on a public neighbour from the same assembly.
-        Assembly assembly = typeof(SynchronizedDictionary<,>).Assembly;
-        Type operatorInfoType = assembly.GetType("Microsoft.Scripting.Actions.OperatorInfo")
-            ?? throw new InvalidOperationException("Microsoft.Scripting.Actions.OperatorInfo not found");
 
-        MethodInfo makeMethod = operatorInfoType.GetMethod(
-            "MakeOperatorTable",
-            BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new InvalidOperationException("MakeOperatorTable not found");
+        // Using IDictionary so the benchmark is independent of the concrete type returned by MakeOperatorTable
+        var entries = (IDictionary)OperatorInfo.MakeOperatorTable();
 
-        object table = makeMethod.Invoke(null, null)
-            ?? throw new InvalidOperationException("MakeOperatorTable returned null");
-
-        // IReadOnlyDictionary<TKey, TValue> is invariant in TValue, so we cannot cast to
-        // IReadOnlyDictionary<ExpressionType, object>. FrozenDictionary<,> also implements the
-        // non-generic IDictionary, which lets us enumerate without knowing the (internal)
-        // OperatorInfo type at compile time.
-        var entries = (IDictionary)table;
-
-        _dictionary = new Dictionary<ExpressionType, object>(entries.Count);
+        _dictionary = new Dictionary<ExpressionType, OperatorInfo>(entries.Count);
         foreach (DictionaryEntry entry in entries) {
-            _dictionary[(ExpressionType)entry.Key] = entry.Value!;
+            _dictionary[(ExpressionType)entry.Key] = (OperatorInfo)entry.Value!;
         }
 
         _frozen = _dictionary.ToFrozenDictionary();
@@ -103,14 +84,14 @@ public class OperatorBenchmarks {
     [Benchmark(Description = "Hit – Dictionary", Baseline = true)]
     [BenchmarkCategory("Operator-Hit")]
     public object Hit_Dictionary() {
-        _dictionary.TryGetValue(ExistingKey, out object? value);
+        _dictionary.TryGetValue(ExistingKey, out OperatorInfo? value);
         return value!;
     }
 
     [Benchmark(Description = "Hit – FrozenDictionary")]
     [BenchmarkCategory("Operator-Hit")]
     public object Hit_FrozenDictionary() {
-        _frozen.TryGetValue(ExistingKey, out object? value);
+        _frozen.TryGetValue(ExistingKey, out OperatorInfo? value);
         return value!;
     }
 
