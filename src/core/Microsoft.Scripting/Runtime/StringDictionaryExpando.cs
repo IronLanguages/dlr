@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,23 +18,23 @@ namespace Microsoft.Scripting.Runtime {
     /// into accesses on the underlying dictionary.
     /// </summary>
     public sealed class StringDictionaryExpando : IDynamicMetaObjectProvider {
-        private readonly IDictionary<string, object> _data;
+        private readonly IDictionary<string, object?> _data;
         internal static readonly object _getFailed = new();
 
-        public StringDictionaryExpando(IDictionary<string, object> data) {
+        public StringDictionaryExpando(IDictionary<string, object?> data) {
             _data = data;
         }
 
-        public IDictionary<string, object> Dictionary => _data;
+        public IDictionary<string, object?> Dictionary => _data;
 
-        private static object TryGetMember(object adapter, string name) {
-            if (((StringDictionaryExpando)adapter)._data.TryGetValue(name, out object result)) {
+        private static object? TryGetMember(object adapter, string name) {
+            if (((StringDictionaryExpando)adapter)._data.TryGetValue(name, out object? result)) {
                 return result;
             }
             return _getFailed;
         }
 
-        private static void TrySetMember(object adapter, string name, object value) {
+        private static void TrySetMember(object adapter, string name, object? value) {
             ((StringDictionaryExpando)adapter)._data[name] = value;
         }
 
@@ -51,12 +53,12 @@ namespace Microsoft.Scripting.Runtime {
 
 
     internal sealed class DictionaryExpandoMetaObject : DynamicMetaObject {
-        private readonly Func<object, string, object> _getMember;
-        private readonly Action<object, string, object> _setMember;
+        private readonly Func<object, string, object?> _getMember;
+        private readonly Action<object, string, object?> _setMember;
         private readonly Func<object, string, bool> _deleteMember;
         private readonly IEnumerable _keys;
 
-        public DictionaryExpandoMetaObject(Expression parameter, object storage, IEnumerable keys, Func<object, string, object> getMember, Action<object, string, object> setMember, Func<object, string, bool> deleteMember)
+        public DictionaryExpandoMetaObject(Expression parameter, object storage, IEnumerable keys, Func<object, string, object?> getMember, Action<object, string, object?> setMember, Func<object, string, bool> deleteMember)
             : base(parameter, BindingRestrictions.Empty, storage) {
             _getMember = getMember;
             _setMember = setMember;
@@ -104,7 +106,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private BindingRestrictions GetRestrictions() {
-            return BindingRestrictions.GetTypeRestriction(Expression, Value.GetType());
+            return BindingRestrictions.GetTypeRestriction(Expression, Value!.GetType());
         }
 
         public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value) {

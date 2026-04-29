@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_CONFIGURATION
 
 using System;
@@ -43,16 +45,16 @@ namespace Microsoft.Scripting.Hosting.Configuration {
 
         internal sealed class Key : IEquatable<Key> {
             public string Option { get; }
-            public string Language { get; }
+            public string? Language { get; }
 
-            public Key(string option, string language) {
+            public Key(string option, string? language) {
                 Option = option;
                 Language = language;
             }
 
-            public override bool Equals(object obj) => Equals(obj as Key);
+            public override bool Equals(object? obj) => Equals(obj as Key);
 
-            public bool Equals(Key other) =>
+            public bool Equals(Key? other) =>
                 other is not null &&
                 DlrConfiguration.OptionNameComparer.Equals(Option, other.Option) &&
                 DlrConfiguration.LanguageNameComparer.Equals(Language, other.Language);

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -56,7 +58,7 @@ namespace Microsoft.Scripting {
 
 #if FEATURE_REMOTING
             // TODO: Figure out what is the right lifetime
-            public override object InitializeLifetimeService() {
+            public override object? InitializeLifetimeService() {
                 return null;
             }
 #endif

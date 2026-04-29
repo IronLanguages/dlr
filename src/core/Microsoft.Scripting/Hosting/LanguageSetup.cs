@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 using Microsoft.Scripting.Utils;
@@ -56,8 +59,9 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Gets an option as a strongly typed value.
         /// </summary>
+        [return: MaybeNull]
         public T GetOption<T>(string name, T defaultValue) {
-            if (Options is not null && Options.TryGetValue(name, out object value)) {
+            if (Options is not null && Options.TryGetValue(name, out object? value)) {
                 if (value is T variable) {
                     return variable;
                 }
