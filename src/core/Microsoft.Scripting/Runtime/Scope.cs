@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -14,11 +16,11 @@ namespace Microsoft.Scripting.Runtime {
     /// Represents a host-provided variables for executable code.  The variables are
     /// typically backed by a host-provided dictionary. Languages can also associate per-language
     /// information with the context by using scope extensions.  This can be used for tracking
-    /// state which is used across multiple executions, for providing custom forms of 
+    /// state which is used across multiple executions, for providing custom forms of
     /// storage (for example object keyed access), or other language specific semantics.
-    /// 
+    ///
     /// Scope objects are thread-safe as long as their underlying storage is thread safe.
-    /// 
+    ///
     /// Script hosts can choose to use thread safe or thread unsafe modules but must be sure
     /// to constrain the code they right to be single-threaded if using thread unsafe
     /// storage.
@@ -29,14 +31,14 @@ namespace Microsoft.Scripting.Runtime {
         private readonly IDynamicMetaObjectProvider _storage;
 
         /// <summary>
-        /// Creates a new scope with a new empty thread-safe dictionary.  
+        /// Creates a new scope with a new empty thread-safe dictionary.
         /// </summary>
         public Scope() {
             _extensions = ScopeExtension.EmptyArray;
             _storage = new ScopeStorage();
         }
 
-        public Scope(IDictionary<string, object> dictionary) {
+        public Scope(IDictionary<string, object?> dictionary) {
             _extensions = ScopeExtension.EmptyArray;
             _storage = new StringDictionaryExpando(dictionary);
         }
@@ -53,13 +55,13 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Gets the ScopeExtension associated with the provided ContextId.
         /// </summary>
-        public ScopeExtension GetExtension(ContextId languageContextId) {
+        public ScopeExtension? GetExtension(ContextId languageContextId) {
             return (languageContextId.Id < _extensions.Length) ? _extensions[languageContextId.Id] : null;
         }
-        
+
         /// <summary>
-        /// Sets the ScopeExtension to the provided value for the given ContextId.  
-        /// 
+        /// Sets the ScopeExtension to the provided value for the given ContextId.
+        ///
         /// The extension can only be set once.  The returned value is either the new ScopeExtension
         /// if no value was previously set or the previous value.
         /// </summary>
@@ -90,7 +92,7 @@ namespace Microsoft.Scripting.Runtime {
                 return Restrict(StorageMetaObject.BindInvokeMember(binder, args));
             }
 
-            public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value) {                
+            public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value) {
                 return Restrict(StorageMetaObject.BindSetMember(binder, value));
             }
 
@@ -112,14 +114,14 @@ namespace Microsoft.Scripting.Runtime {
 
             private MemberExpression StorageExpression => Expression.Property(
                 Expression.Convert(Expression, typeof(Scope)),
-                typeof(Scope).GetProperty(nameof(Scope.Storage))
+                typeof(Scope).GetProperty(nameof(Scope.Storage))!
             );
 
             public override IEnumerable<string> GetDynamicMemberNames() {
                 return StorageMetaObject.GetDynamicMemberNames();
             }
 
-            public new Scope Value => (Scope)base.Value;
+            public new Scope Value => (Scope)base.Value!;  // Initialized in constructor, never null
         }
 
         #region IDynamicMetaObjectProvider Members

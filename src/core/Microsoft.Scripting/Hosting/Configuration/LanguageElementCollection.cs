@@ -1,8 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_CONFIGURATION
+
+#nullable enable
 
 using System.Configuration;
 
@@ -20,7 +22,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
         protected override string ElementName => "language";
 
         protected override object GetElementKey(ConfigurationElement element) =>
-            ((LanguageElement)element).Type;
+            ((LanguageElement)element).Type ?? throw new ConfigurationErrorsException("Language element must have a type attribute");
     }
 }
 
