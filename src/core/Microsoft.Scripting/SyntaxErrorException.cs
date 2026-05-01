@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.Serialization;
 using System.Dynamic;
@@ -14,9 +16,9 @@ namespace Microsoft.Scripting {
     public class SyntaxErrorException : Exception {
         private readonly SourceSpan _span;
 
-        private readonly string _sourceCode;
-        private readonly string _sourceLine;
-        private readonly string _sourcePath;
+        private readonly string? _sourceCode;
+        private readonly string? _sourceLine;
+        private readonly string? _sourcePath;
 
         private readonly Severity _severity;
         private readonly int _errorCode;
@@ -29,7 +31,7 @@ namespace Microsoft.Scripting {
             : base(message, innerException) {
         }
 
-        public SyntaxErrorException(string message, SourceUnit sourceUnit, SourceSpan span, int errorCode, Severity severity)
+        public SyntaxErrorException(string message, SourceUnit? sourceUnit, SourceSpan span, int errorCode, Severity severity)
             : base(message) {
             ContractUtils.RequiresNotNull(message, nameof(message));
 
@@ -47,7 +49,7 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public SyntaxErrorException(string message, string path, string code, string line, SourceSpan span, int errorCode, Severity severity)
+        public SyntaxErrorException(string message, string? path, string? code, string? line, SourceSpan span, int errorCode, Severity severity)
             : base(message) {
             ContractUtils.RequiresNotNull(message, nameof(message));
 
@@ -64,10 +66,10 @@ namespace Microsoft.Scripting {
         protected SyntaxErrorException(SerializationInfo info, StreamingContext context)
             : base(info, context) {
 
-            _span = (SourceSpan)info.GetValue("Span", typeof(SourceSpan));
+            _span = (SourceSpan)info.GetValue("Span", typeof(SourceSpan))!;
             _sourceCode = info.GetString("SourceCode");
             _sourcePath = info.GetString("SourcePath");
-            _severity = (Severity)info.GetValue("Severity", typeof(Severity));
+            _severity = (Severity)info.GetValue("Severity", typeof(Severity))!;
             _errorCode = info.GetInt32("ErrorCode");
         }
 
@@ -91,11 +93,11 @@ namespace Microsoft.Scripting {
             get { return _span; }
         }
 
-        public string SourceCode {
+        public string? SourceCode {
             get { return _sourceCode; }
         }
 
-        public string SourcePath {
+        public string? SourcePath {
             get { return _sourcePath; }
         }
 
@@ -117,13 +119,13 @@ namespace Microsoft.Scripting {
 
         // TODO: fix
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetSymbolDocumentName() {
+        public string? GetSymbolDocumentName() {
             return _sourcePath;
         }
 
         // TODO: fix
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetCodeLine() {
+        public string? GetCodeLine() {
             return _sourceLine;
         }
     }

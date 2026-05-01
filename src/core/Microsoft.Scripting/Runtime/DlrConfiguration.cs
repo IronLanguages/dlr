@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -17,9 +20,9 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     internal sealed class LanguageConfiguration {
         private readonly IDictionary<string, object> _options;
-        private LanguageContext _context;
+        private LanguageContext? _context;
 
-        public LanguageContext LanguageContext => _context;
+        public LanguageContext? LanguageContext => _context;
 
         public AssemblyQualifiedTypeName ProviderName { get; }
 
@@ -41,32 +44,32 @@ namespace Microsoft.Scripting.Runtime {
                 // Let assembly load errors bubble out
                 var assembly = domainManager.Platform.LoadAssembly(ProviderName.AssemblyName.FullName);
 
-                Type type = assembly.GetType(ProviderName.TypeName);
+                Type? type = assembly.GetType(ProviderName.TypeName);
                 if (type is null) {
                     throw new InvalidOperationException(
                         String.Format(
                             "Failed to load language '{0}': assembly '{1}' does not contain type '{2}'",
-                            DisplayName, 
+                            DisplayName,
 #if FEATURE_FILESYSTEM
                             assembly.Location,
 #else
                             assembly.FullName,
 #endif
-                             ProviderName.TypeName
+                            ProviderName.TypeName
                     ));
                 }
 
                 if (!type.IsSubclassOf(typeof(LanguageContext))) {
                     throw new InvalidOperationException(
-                        $"Failed to load language '{DisplayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext"); 
+                        $"Failed to load language '{DisplayName}': type '{type}' is not a valid language provider because it does not inherit from LanguageContext");
                 }
 
                 LanguageContext context;
                 try {
-                    context = (LanguageContext)Activator.CreateInstance(type, new object[] { domainManager, _options });
+                    context = (LanguageContext)Activator.CreateInstance(type, new object[] { domainManager, _options })!;
                 } catch (TargetInvocationException e) {
                     throw new TargetInvocationException(
-                        $"Failed to load language '{DisplayName}': {e.InnerException.Message}", 
+                        $"Failed to load language '{DisplayName}': {e.InnerException?.Message}",
                         e.InnerException
                     );
                 } catch (Exception e) {
@@ -131,8 +134,8 @@ namespace Microsoft.Scripting.Runtime {
             AddLanguage(languageTypeName, displayName, names, fileExtensions, options, null);
         }
 
-        internal void AddLanguage(string languageTypeName, string displayName, IList<string> names, IList<string> fileExtensions, 
-            IDictionary<string, object> options, string paramName) {
+        internal void AddLanguage(string languageTypeName, string displayName, IList<string> names, IList<string> fileExtensions,
+            IDictionary<string, object> options, string? paramName) {
             ContractUtils.Requires(!_frozen, "Configuration cannot be modified once the runtime is initialized");
             ContractUtils.Requires(
                 names.All(id => !String.IsNullOrEmpty(id) && !_languageNames.ContainsKey(id)),
@@ -187,10 +190,10 @@ namespace Microsoft.Scripting.Runtime {
             _frozen = true;
         }
 
-        internal bool TryLoadLanguage(ScriptDomainManager manager, in AssemblyQualifiedTypeName providerName, out LanguageContext language) {
+        internal bool TryLoadLanguage(ScriptDomainManager manager, in AssemblyQualifiedTypeName providerName, [NotNullWhen(true)] out LanguageContext? language) {
             Assert.NotNull(manager);
 
-            if (_languageConfigurations.TryGetValue(providerName, out LanguageConfiguration config)) {
+            if (_languageConfigurations.TryGetValue(providerName, out LanguageConfiguration? config)) {
                 language = LoadLanguageContext(manager, config);
                 return true;
             }
@@ -199,12 +202,12 @@ namespace Microsoft.Scripting.Runtime {
             return false;
         }
 
-        internal bool TryLoadLanguage(ScriptDomainManager manager, string str, bool isExtension, out LanguageContext language) {
+        internal bool TryLoadLanguage(ScriptDomainManager manager, string str, bool isExtension, [NotNullWhen(true)] out LanguageContext? language) {
             Assert.NotNull(manager, str);
 
             var dict = isExtension ? _languageExtensions : _languageNames;
 
-            if (dict.TryGetValue(str, out LanguageConfiguration config)) {
+            if (dict.TryGetValue(str, out LanguageConfiguration? config)) {
                 language = LoadLanguageContext(manager, config);
                 return true;
             }
@@ -222,7 +225,7 @@ namespace Microsoft.Scripting.Runtime {
                 // The check takes place after config.LoadLanguageContext is called to avoid calling user code while holding a lock.
                 lock (_loadedProviderTypes) {
                     Type type = language.GetType();
-                    if (_loadedProviderTypes.TryGetValue(type, out LanguageConfiguration existingConfig)) {
+                    if (_loadedProviderTypes.TryGetValue(type, out LanguageConfiguration? existingConfig)) {
                         throw new InvalidOperationException(
                             $"Language implemented by type '{config.ProviderName}' has already been loaded using name '{existingConfig.ProviderName}'");
                     }
@@ -289,7 +292,7 @@ namespace Microsoft.Scripting.Runtime {
             return ArrayUtils.MakeArray<string>(_languageExtensions.Keys);
         }
 
-        internal LanguageConfiguration GetLanguageConfig(LanguageContext context) {
+        internal LanguageConfiguration? GetLanguageConfig(LanguageContext context) {
             foreach (var config in _languageConfigurations.Values) {
                 if (config.LanguageContext == context) {
                     return config;

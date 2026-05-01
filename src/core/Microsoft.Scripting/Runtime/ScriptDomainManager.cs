@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
@@ -51,40 +54,61 @@ namespace Microsoft.Scripting.Runtime {
             return new ContextId(Interlocked.Increment(ref _lastContextId));
         }
 
+        /// <summary>
+        ///   Loads (if necessary) and returns the <see cref="LanguageContext"/> registered under the
+        ///   assembly-qualified name of <paramref name="providerType"/>.
+        /// </summary>
+        /// <param name="providerType">
+        ///   A closed, loaded <see cref="Type"/> that must derive from <see cref="LanguageContext"/>
+        ///   and have been registered via 
+        ///   <see cref="DlrConfiguration.AddLanguage(string, string, IList{string}, IList{string}, IDictionary{string, object})"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">No language is registered for the given type.</exception>
         public LanguageContext GetLanguage(Type providerType) {
             ContractUtils.RequiresNotNull(providerType, nameof(providerType));
-            return GetLanguageByTypeName(providerType.AssemblyQualifiedName);
+            return GetLanguageByTypeName(providerType.AssemblyQualifiedName!);
         }
 
+        /// <summary>
+        ///   Loads (if necessary) and returns the <see cref="LanguageContext"/> registered under the
+        ///   given assembly-qualified type name.
+        /// </summary>
+        /// <param name="providerAssemblyQualifiedTypeName">
+        ///   The assembly-qualified name of a type that derives from <see cref="LanguageContext"/> and
+        ///   was registered via <see cref="DlrConfiguration.AddLanguage(string, string, IList{string}, IList{string}, IDictionary{string, object})"/>.
+        ///   The name is parsed and the referenced assembly is loaded on first access; the resolved type must inherit from
+        ///   <see cref="LanguageContext"/> or an <see cref="InvalidOperationException"/> is thrown during loading.
+        /// </param>
+        /// <exception cref="ArgumentException">No language is registered for the given type name.</exception>
         public LanguageContext GetLanguageByTypeName(string providerAssemblyQualifiedTypeName) {
             ContractUtils.RequiresNotNull(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
             var aqtn = AssemblyQualifiedTypeName.ParseArgument(providerAssemblyQualifiedTypeName, nameof(providerAssemblyQualifiedTypeName));
 
-            if (!Configuration.TryLoadLanguage(this, aqtn, out LanguageContext language)) {
+            if (!Configuration.TryLoadLanguage(this, aqtn, out LanguageContext? language)) {
                 throw Error.UnknownLanguageProviderType();
             }
             return language;
         }
 
-        public bool TryGetLanguage(string languageName, out LanguageContext language) {
+        public bool TryGetLanguage(string languageName, [NotNullWhen(true)] out LanguageContext? language) {
             ContractUtils.RequiresNotNull(languageName, nameof(languageName));
             return Configuration.TryLoadLanguage(this, languageName, false, out language);
         }
 
         public LanguageContext GetLanguageByName(string languageName) {
-            if (!TryGetLanguage(languageName, out LanguageContext language)) {
+            if (!TryGetLanguage(languageName, out LanguageContext? language)) {
                 throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
             return language;
         }
 
-        public bool TryGetLanguageByFileExtension(string fileExtension, out LanguageContext language) {
+        public bool TryGetLanguageByFileExtension(string fileExtension, [NotNullWhen(true)] out LanguageContext? language) {
             ContractUtils.RequiresNotEmpty(fileExtension, nameof(fileExtension));
             return Configuration.TryLoadLanguage(this, DlrConfiguration.NormalizeExtension(fileExtension), true, out language);
         }
 
         public LanguageContext GetLanguageByExtension(string fileExtension) {
-            if (!TryGetLanguageByFileExtension(fileExtension, out LanguageContext language)) {
+            if (!TryGetLanguageByFileExtension(fileExtension, out LanguageContext? language)) {
                 throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
             return language;
@@ -103,7 +127,7 @@ namespace Microsoft.Scripting.Runtime {
         /// get any assemblies which were loaded before the language was
         /// loaded.
         /// </summary>
-        public event EventHandler<AssemblyLoadedEventArgs> AssemblyLoaded;
+        public event EventHandler<AssemblyLoadedEventArgs>? AssemblyLoaded;
 
         public bool LoadAssembly(Assembly assembly) {
             ContractUtils.RequiresNotNull(assembly, nameof(assembly));
@@ -116,7 +140,7 @@ namespace Microsoft.Scripting.Runtime {
                 _loadedAssemblies.Add(assembly);
             }
 
-            EventHandler<AssemblyLoadedEventArgs> assmLoaded = AssemblyLoaded;
+            EventHandler<AssemblyLoadedEventArgs>? assmLoaded = AssemblyLoaded;
             assmLoaded?.Invoke(this, new AssemblyLoadedEventArgs(assembly));
 
             return true;

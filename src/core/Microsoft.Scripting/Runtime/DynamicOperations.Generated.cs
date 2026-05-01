@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 //
 // To regenerate code in this file run:
 // ir Languages/Ruby/Scripts/CodeGenerator.rb DynamicOperations.Generated.cs
@@ -17,8 +19,8 @@ namespace Microsoft.Scripting.Runtime {
     public sealed partial class DynamicOperations {
         private const int /*$$*/PregeneratedInvokerCount = 14;
 
-        private Func<DynamicOperations, CallSiteBinder, object, object[], object> GetInvoker(int paramCount) {
-            Func<DynamicOperations, CallSiteBinder, object, object[], object> invoker;
+        private Func<DynamicOperations, CallSiteBinder, object?, object?[], object?> GetInvoker(int paramCount) {
+            Func<DynamicOperations, CallSiteBinder, object?, object?[], object?>? invoker;
             lock (_invokers) {
                 if (!_invokers.TryGetValue(paramCount, out invoker)) {
                     _invokers[paramCount] = invoker = GetPregeneratedInvoker(paramCount) ?? EmitInvoker(paramCount);
@@ -28,7 +30,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private Func<DynamicOperations, CallSiteBinder, object, object[], object> EmitInvoker(int paramCount) {
+        private Func<DynamicOperations, CallSiteBinder, object?, object?[], object?> EmitInvoker(int paramCount) {
 #if !FEATURE_REFEMIT
             throw new NotSupportedException();
 #else
@@ -46,7 +48,7 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             var getOrCreateSiteFunc = new Func<CallSiteBinder, CallSite<Func<object>>>(GetOrCreateSite<Func<object>>).GetMethodInfo().GetGenericMethodDefinition();
-            return Expression.Lambda<Func<DynamicOperations, CallSiteBinder, object, object[], object>>(
+            return Expression.Lambda<Func<DynamicOperations, CallSiteBinder, object?, object?[], object?>>(
                 Expression.Block(
                     new[] { site },
                     Expression.Assign(
@@ -56,7 +58,7 @@ namespace Microsoft.Scripting.Runtime {
                     Expression.Invoke(
                         Expression.Field(
                             site,
-                            site.Type.GetField("Target")
+                            site.Type.GetField("Target")!
                         ),
                         siteArgs
                     )
@@ -66,89 +68,89 @@ namespace Microsoft.Scripting.Runtime {
 #endif
         }
 
-        private static Func<DynamicOperations, CallSiteBinder, object, object[], object> GetPregeneratedInvoker(int paramCount) {
+        private static Func<DynamicOperations, CallSiteBinder, object?, object?[], object?>? GetPregeneratedInvoker(int paramCount) {
             switch (paramCount) {
 #if GENERATOR 
                 def generate; $PregeneratedInvokerCount.times { |n| @n = n + 1; super }; end
                 def n; @n; end
-                def objects; "object, " * @n; end
+                def objects; "object?, " * @n; end
                 def args; (0..@n-1).map { |i| ", args[#{i}]" }.join; end
 #else
                 case /*$n{*/0/*}*/:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, /*$objects*/object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, /*$objects*/object?>>(binder);
                         return site.Target(site, target/*$args*/);
                     };
 #endif
                 #region Generated
                 case 1:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0]);
                     };
                 case 2:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1]);
                     };
                 case 3:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2]);
                     };
                 case 4:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3]);
                     };
                 case 5:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4]);
                     };
                 case 6:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5]);
                     };
                 case 7:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
                     };
                 case 8:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
                     };
                 case 9:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
                     };
                 case 10:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
                     };
                 case 11:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]);
                     };
                 case 12:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
                     };
                 case 13:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12]);
                     };
                 case 14:
                     return (ops, binder, target, args) => {
-                        var site = ops.GetOrCreateSite<Func<CallSite, object, object, object, object, object, object, object, object, object, object, object, object, object, object, object, object>>(binder);
+                        var site = ops.GetOrCreateSite<Func<CallSite, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?, object?>>(binder);
                         return site.Target(site, target, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12], args[13]);
                     };
                 #endregion

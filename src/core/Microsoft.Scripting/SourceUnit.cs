@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -21,14 +23,14 @@ namespace Microsoft.Scripting {
         // SourceUnit is serializable => updated parse result is transmitted
         // back to the host unless the unit is passed by-ref
         private ScriptCodeParseResult? _parseResult;
-        private KeyValuePair<int, int>[] _lineMap;
+        private KeyValuePair<int, int>[]? _lineMap;
 
         /// <summary>
-        /// Identification of the source unit. Assigned by the host. 
+        /// Identification of the source unit. Assigned by the host.
         /// The format and semantics is host dependent (could be a path on file system or URL).
         /// Empty string for anonymous source units.
         /// </summary>
-        public string Path { get; }
+        public string? Path { get; }
 
         private string DebugString => Path ?? "<anonymous>";
 
@@ -36,7 +38,7 @@ namespace Microsoft.Scripting {
 
         public SourceCodeKind Kind { get; }
 
-        public SymbolDocumentInfo Document {
+        public SymbolDocumentInfo? Document {
             get {
                 // _path is valid to be null. In that case we cannot create a valid SymbolDocumentInfo.
                 return Path is null ? null : Expression.SymbolDocument(Path, _language.LanguageGuid, _language.VendorGuid);
@@ -68,7 +70,7 @@ namespace Microsoft.Scripting {
             set { _parseResult = value; }
         }
 
-        public SourceUnit(LanguageContext context, TextContentProvider contentProvider, string path, SourceCodeKind kind) {
+        public SourceUnit(LanguageContext context, TextContentProvider contentProvider, string? path, SourceCodeKind kind) {
             Assert.NotNull(context, contentProvider);
             Debug.Assert(context.CanCreateSourceCode);
 
@@ -84,7 +86,7 @@ namespace Microsoft.Scripting {
         }
 
         /// <summary>
-        /// Reads specified range of lines (or less) from the source unit. 
+        /// Reads specified range of lines (or less) from the source unit.
         /// Line numbers starts with 1.
         /// </summary>
         public string[] GetCodeLines(int start, int count) {
@@ -96,7 +98,7 @@ namespace Microsoft.Scripting {
             using (SourceCodeReader reader = GetReader()) {
                 reader.SeekLine(start);
                 while (count > 0) {
-                    string line = reader.ReadLine();
+                    string? line = reader.ReadLine();
                     if (line is null) break;
                     result.Add(line);
                     count--;
@@ -107,7 +109,7 @@ namespace Microsoft.Scripting {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetCodeLine(int line) {
+        public string? GetCodeLine(int line) {
             string[] lines = GetCodeLines(line, 1);
             return (lines.Length > 0) ? lines[0] : null;
         }
@@ -148,7 +150,7 @@ namespace Microsoft.Scripting {
         }
 
         private static int BinarySearch<T>(KeyValuePair<int, T>[] array, int line) {
-            int match = Array.BinarySearch(array, new KeyValuePair<int, T>(line, default(T)), new KeyComparer<T>());
+            int match = Array.BinarySearch(array, new KeyValuePair<int, T>(line, default(T)!), new KeyComparer<T>());
             if (match < 0) {
                 // If we couldn't find an exact match for this line number, get the nearest
                 // matching line number less than this one
@@ -180,19 +182,19 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public ScriptCode Compile() {
+        public ScriptCode? Compile() {
             return Compile(ErrorSink.Default);
         }
 
-        public ScriptCode Compile(ErrorSink errorSink) {
+        public ScriptCode? Compile(ErrorSink errorSink) {
             return Compile(_language.GetCompilerOptions(), errorSink);
         }
 
         /// <summary>
-        /// Errors are reported to the specified sink. 
+        /// Errors are reported to the specified sink.
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </summary>
-        public ScriptCode Compile(CompilerOptions options, ErrorSink errorSink) {
+        public ScriptCode? Compile(CompilerOptions options, ErrorSink errorSink) {
             ContractUtils.RequiresNotNull(errorSink, nameof(errorSink));
             ContractUtils.RequiresNotNull(options, nameof(options));
 
@@ -202,17 +204,17 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Executes against a specified scope.
         /// </summary>
-        public object Execute(Scope scope) {
+        public object? Execute(Scope scope) {
             return Execute(scope, ErrorSink.Default);
         }
 
         /// <summary>
         /// Executes against a specified scope and reports errors to the given error sink.
         /// </summary>
-        public object Execute(Scope scope, ErrorSink errorSink) {
+        public object? Execute(Scope scope, ErrorSink errorSink) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
 
-            ScriptCode compiledCode = Compile(_language.GetCompilerOptions(scope), errorSink);
+            ScriptCode? compiledCode = Compile(_language.GetCompilerOptions(scope), errorSink);
 
             if (compiledCode is null) {
                 throw new SyntaxErrorException();
@@ -224,22 +226,22 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Executes in a new scope created by the language.
         /// </summary>
-        public object Execute() {
-            return Compile().Run();
+        public object? Execute() {
+            return Compile()?.Run();
         }
 
         /// <summary>
         /// Executes in a new scope created by the language.
         /// </summary>
-        public object Execute(ErrorSink errorSink) {
-            return Compile(errorSink).Run();
+        public object? Execute(ErrorSink errorSink) {
+            return Compile(errorSink)?.Run();
         }
 
         /// <summary>
         /// Executes in a new scope created by the language.
         /// </summary>
-        public object Execute(CompilerOptions options, ErrorSink errorSink) {
-            return Compile(options, errorSink).Run();
+        public object? Execute(CompilerOptions options, ErrorSink errorSink) {
+            return Compile(options, errorSink)?.Run();
         }
 
         public int ExecuteProgram() {
@@ -248,7 +250,7 @@ namespace Microsoft.Scripting {
 
         #endregion
 
-        public void SetLineMapping(KeyValuePair<int, int>[] lineMap) {
+        public void SetLineMapping(KeyValuePair<int, int>[]? lineMap) {
             _lineMap = (lineMap is null || lineMap.Length == 0) ? null : lineMap;
         }
     }
