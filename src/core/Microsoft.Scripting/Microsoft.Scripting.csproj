@@ -6,6 +6,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
     <MeziantouPolyfill_IncludedPolyfills>
+      T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute;
       T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute;
       T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute;
       T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute;

@@ -48,7 +48,7 @@ namespace Microsoft.Scripting.Hosting {
             var exceptionObj = exception.Unwrap() as Exception;
             ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
-            return _context.FormatException(exceptionObj!);
+            return _context.FormatException(exceptionObj);
         }
 
         public void GetExceptionMessage(ObjectHandle exception, out string message, out string errorTypeName) {
