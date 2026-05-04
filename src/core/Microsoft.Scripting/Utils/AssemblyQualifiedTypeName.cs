@@ -10,7 +10,7 @@ using System.Reflection;
 namespace Microsoft.Scripting.Utils {
     [Serializable]
     internal readonly struct AssemblyQualifiedTypeName : IEquatable<AssemblyQualifiedTypeName> {
-        public readonly string? TypeName;
+        public readonly string TypeName;
         public readonly AssemblyName AssemblyName;
 
         public AssemblyQualifiedTypeName(string typeName, AssemblyName assemblyName) {
@@ -22,7 +22,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public AssemblyQualifiedTypeName(Type type) {
-            TypeName = type.FullName;
+            TypeName = type.FullName
+                ?? throw new ArgumentException($"Type '{type}' does not have a full name and cannot be used to create an {nameof(AssemblyQualifiedTypeName)}");
             AssemblyName = type.Assembly.GetName();
         }
 

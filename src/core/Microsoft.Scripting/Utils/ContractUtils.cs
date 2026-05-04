@@ -20,13 +20,13 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void Requires(bool precondition) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition) {
             if (!precondition) {
                 throw new ArgumentException(Strings.MethodPreconditionViolated);
             }
         }
 
-        public static void Requires(bool precondition, string paramName) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition, string paramName) {
             Assert.NotEmpty(paramName);
 
             if (!precondition) {
@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void Requires(bool precondition, string paramName, string message) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition, string paramName, string message) {
             Assert.NotEmpty(paramName);
 
             if (!precondition) {

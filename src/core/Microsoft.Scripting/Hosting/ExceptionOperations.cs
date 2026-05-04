@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -54,7 +56,7 @@ namespace Microsoft.Scripting.Hosting {
             var exceptionObj = exception.Unwrap() as Exception;
             ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
-            _context.GetExceptionMessage(exceptionObj, out message, out errorTypeName);
+            _context.GetExceptionMessage(exceptionObj!, out message, out errorTypeName);
         }
 
         public bool HandleException(ObjectHandle exception) {
@@ -69,12 +71,11 @@ namespace Microsoft.Scripting.Hosting {
             var exceptionObj = exception.Unwrap() as Exception;
             ContractUtils.Requires(exceptionObj is not null, nameof(exception), "ObjectHandle must be to Exception object");
 
-            return _context.GetStackFrames(exceptionObj);
+            return _context.GetStackFrames(exceptionObj!);
         }
 
-        // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
-            return null;
+            return base.InitializeLifetimeService();
         }
 #endif
     }

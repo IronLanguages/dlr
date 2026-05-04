@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.IO;
 using System.Linq.Expressions;
@@ -18,7 +21,7 @@ namespace Microsoft.Scripting.Runtime {
     /// Provides language specific facilities which are typically called by the runtime.
     /// </summary>
     public abstract class LanguageContext {
-        private DynamicOperations _operations;
+        private DynamicOperations? _operations;
 
         protected LanguageContext(ScriptDomainManager domainManager) {
             ContractUtils.RequiresNotNull(domainManager, nameof(domainManager));
@@ -49,7 +52,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Gets the scope associated with a file, or null if none was available
         /// </summary>
-        public virtual Scope GetScope(string path) {
+        public virtual Scope? GetScope(string path) {
             return null;
         }
 
@@ -65,7 +68,7 @@ namespace Microsoft.Scripting.Runtime {
         /// 
         /// Accesses to the ScriptScope will turn into get,set, and delete members against this dictionary
         /// </summary>
-        public virtual Scope CreateScope(IDictionary<string, object> dictionary) {
+        public virtual Scope CreateScope(IDictionary<string, object?> dictionary) {
             return new Scope(dictionary);
         }
         
@@ -81,7 +84,7 @@ namespace Microsoft.Scripting.Runtime {
         // TODO: remove
         public ScopeExtension EnsureScopeExtension(Scope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
-            ScopeExtension extension = scope.GetExtension(ContextId);
+            ScopeExtension? extension = scope.GetExtension(ContextId);
 
             if (extension is not null)
                 return extension;
@@ -108,7 +111,7 @@ namespace Microsoft.Scripting.Runtime {
         /// types for that language.  Typically this includes ScopeStorage and any other 
         /// classes which the language themselves uses for backing of a Scope.
         /// </summary>
-        public virtual void ScopeSetVariable(Scope scope, string name, object value) {
+        public virtual void ScopeSetVariable(Scope scope, string name, object? value) {
             Operations.SetMember(scope, name, value);
         }
 
@@ -121,7 +124,7 @@ namespace Microsoft.Scripting.Runtime {
         /// types for that language.  Typically this includes ScopeStorage and any other 
         /// classes which the language themselves uses for backing of a Scope.
         /// </summary>
-        public virtual bool ScopeTryGetVariable(Scope scope, string name, out dynamic value) {
+        public virtual bool ScopeTryGetVariable(Scope scope, string name, out dynamic? value) {
             return Operations.TryGetMember(scope, name, out value);
         }
 
@@ -134,6 +137,7 @@ namespace Microsoft.Scripting.Runtime {
         /// types for that language.  Typically this includes ScopeStorage and any other 
         /// classes which the language themselves uses for backing of a Scope.
         /// </summary>
+        [return: MaybeNull]
         public virtual T ScopeGetVariable<T>(Scope scope, string name) {
             return Operations.GetMember<T>(scope, name);
         }
@@ -147,7 +151,7 @@ namespace Microsoft.Scripting.Runtime {
         /// types for that language.  Typically this includes ScopeStorage and any other 
         /// classes which the language themselves uses for backing of a Scope.
         /// </summary>
-        public virtual dynamic ScopeGetVariable(Scope scope, string name) {
+        public virtual dynamic? ScopeGetVariable(Scope scope, string name) {
             return Operations.GetMember(scope, name);
         }
 
@@ -163,7 +167,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="path">the path of the source unit if available</param>
         /// <returns>The reader.</returns>
         /// <exception cref="IOException">An I/O error occurs.</exception>
-        public virtual SourceCodeReader GetSourceReader(Stream stream, Encoding defaultEncoding, string path) {
+        public virtual SourceCodeReader GetSourceReader(Stream stream, Encoding defaultEncoding, string? path) {
             ContractUtils.RequiresNotNull(stream, nameof(stream));
             ContractUtils.RequiresNotNull(defaultEncoding, nameof(defaultEncoding));
             ContractUtils.Requires(stream.CanRead && stream.CanSeek, nameof(stream), "The stream must support reading and seeking");
@@ -195,16 +199,16 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <returns><b>null</b> on failure.</returns>
         /// <remarks>Could also set the code properties and line/file mappings on the source unit.</remarks>
-        public abstract ScriptCode CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink);
+        public abstract ScriptCode? CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink);
 
-        public virtual ScriptCode LoadCompiledCode(Delegate method, string path, string customData) {
+        public virtual ScriptCode? LoadCompiledCode(Delegate method, string path, string customData) {
             throw new NotSupportedException();
         }
 
         public virtual int ExecuteProgram(SourceUnit program) {
             ContractUtils.RequiresNotNull(program, nameof(program));
 
-            object returnValue = program.Execute();
+            object? returnValue = program.Execute();
 
             if (returnValue is null) {
                 return 0;
@@ -238,7 +242,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 #endif
 
-        public virtual TService GetService<TService>(params object[] args) where TService : class {
+        public virtual TService? GetService<TService>(params object?[] args) where TService : class {
             return null;
         }
 
@@ -267,7 +271,7 @@ namespace Microsoft.Scripting.Runtime {
             return CreateSnippet(code, null, kind);
         }
 
-        public SourceUnit CreateSnippet(string code, string id, SourceCodeKind kind) {
+        public SourceUnit CreateSnippet(string code, string? id, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(code, nameof(code));
 
             return CreateSourceUnit(new SourceStringContentProvider(code), id, kind);
@@ -297,7 +301,7 @@ namespace Microsoft.Scripting.Runtime {
             return CreateSourceUnit(provider, path, SourceCodeKind.File);
         }
 
-        public SourceUnit CreateSourceUnit(StreamContentProvider contentProvider, string path, Encoding encoding, SourceCodeKind kind) {
+        public SourceUnit CreateSourceUnit(StreamContentProvider contentProvider, string? path, Encoding encoding, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
@@ -306,7 +310,7 @@ namespace Microsoft.Scripting.Runtime {
             return new SourceUnit(this, new LanguageBoundTextContentProvider(this, contentProvider, encoding, path), path, kind);
         }
 
-        public SourceUnit CreateSourceUnit(TextContentProvider contentProvider, string path, SourceCodeKind kind) {
+        public SourceUnit CreateSourceUnit(TextContentProvider contentProvider, string? path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
             ContractUtils.Requires(CanCreateSourceCode);
@@ -327,7 +331,7 @@ namespace Microsoft.Scripting.Runtime {
         
         #region Object Operations Support
 
-        internal static DynamicMetaObject ErrorMetaObject(Type resultType, DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
+        internal static DynamicMetaObject ErrorMetaObject(Type resultType, DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion) {
             return errorSuggestion ?? new DynamicMetaObject(
                 Expression.Throw(Expression.New(typeof(NotImplementedException)), resultType),
                 target.Restrictions.Merge(BindingRestrictions.Combine(args))
@@ -343,7 +347,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(operation) {
             }
 
-            public override DynamicMetaObject FallbackUnaryOperation(DynamicMetaObject target, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackUnaryOperation(DynamicMetaObject target, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, target, new[] { target }, errorSuggestion);
             }
         }
@@ -357,7 +361,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(operation) {
             }
 
-            public override DynamicMetaObject FallbackBinaryOperation(DynamicMetaObject target, DynamicMetaObject arg, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackBinaryOperation(DynamicMetaObject target, DynamicMetaObject arg, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, target, new[] { target, arg }, errorSuggestion);
             }
         }
@@ -367,7 +371,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(type, @explicit) {
             }
 
-            public override DynamicMetaObject FallbackConvert(DynamicMetaObject self, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackConvert(DynamicMetaObject self, DynamicMetaObject? errorSuggestion) {
                 if (Type.IsAssignableFrom(self.LimitType)) {
                     return new DynamicMetaObject(
                         Expression.Convert(self.Expression, Type),
@@ -409,11 +413,11 @@ namespace Microsoft.Scripting.Runtime {
                 : base(name, ignoreCase) {
             }
 
-            public override DynamicMetaObject FallbackGetMember(DynamicMetaObject self, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackGetMember(DynamicMetaObject self, DynamicMetaObject? errorSuggestion) {
                 return errorSuggestion ?? new DynamicMetaObject(
                     Expression.Throw(
                         Expression.New(
-                            typeof(MissingMemberException).GetConstructor(new[] { typeof(string) }),
+                            typeof(MissingMemberException).GetConstructor(new[] { typeof(string) })!,
                             Expression.Constant($"unknown member: {Name}")
                         ),
                         typeof(object)
@@ -434,7 +438,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(name, ignoreCase) {
             }
 
-            public override DynamicMetaObject FallbackSetMember(DynamicMetaObject self, DynamicMetaObject value, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackSetMember(DynamicMetaObject self, DynamicMetaObject value, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, self, new DynamicMetaObject[] { value }, errorSuggestion);
             }
         }
@@ -448,7 +452,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(name, ignoreCase) {
             }
 
-            public override DynamicMetaObject FallbackDeleteMember(DynamicMetaObject self, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackDeleteMember(DynamicMetaObject self, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, self, DynamicMetaObject.EmptyMetaObjects, errorSuggestion);
             }
         }
@@ -465,7 +469,7 @@ namespace Microsoft.Scripting.Runtime {
                 _context = context;
             }
 
-            public override DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, target, [target, ..args], errorSuggestion);
             }
 
@@ -479,7 +483,7 @@ namespace Microsoft.Scripting.Runtime {
                 return res;
             }
 
-            public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion) {
                 return new DynamicMetaObject(
                     DynamicExpression.Dynamic(
                         _context.CreateInvokeBinder(CallInfo),
@@ -500,7 +504,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(callInfo) {
             }
 
-            public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, target, args, errorSuggestion);
             }
         }
@@ -514,7 +518,7 @@ namespace Microsoft.Scripting.Runtime {
                 : base(callInfo) {
             }
 
-            public override DynamicMetaObject FallbackCreateInstance(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion) {
+            public override DynamicMetaObject FallbackCreateInstance(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion) {
                 return ErrorMetaObject(ReturnType, target, args, errorSuggestion);
             }
         }
@@ -529,7 +533,7 @@ namespace Microsoft.Scripting.Runtime {
                     Interlocked.CompareExchange(ref _operations, new DynamicOperations(this), null);
                 }
 
-                return _operations;
+                return _operations!;
             }
         }
         #endregion
@@ -540,7 +544,7 @@ namespace Microsoft.Scripting.Runtime {
         /// Gets the member names associated with the object
         /// By default, only returns IDO names
         /// </summary>
-        public virtual IList<string> GetMemberNames(object obj) {
+        public virtual IList<string> GetMemberNames(object? obj) {
             if (obj is IDynamicMetaObjectProvider ido) {
                 var mo = ido.GetMetaObject(Expression.Parameter(typeof(object), null));
                 return mo.GetDynamicMemberNames().ToReadOnlyCollection();
@@ -548,15 +552,15 @@ namespace Microsoft.Scripting.Runtime {
             return Array.Empty<string>();
         }
 
-        public virtual string GetDocumentation(object obj) {
+        public virtual string GetDocumentation(object? obj) {
             return string.Empty;
         }
 
-        public virtual IList<string> GetCallSignatures(object obj) {
+        public virtual IList<string> GetCallSignatures(object? obj) {
             return Array.Empty<string>();
         }
 
-        public virtual bool IsCallable(object obj) => obj is Delegate;
+        public virtual bool IsCallable(object? obj) => obj is Delegate;
 
         #endregion
 
@@ -568,8 +572,8 @@ namespace Microsoft.Scripting.Runtime {
         /// <param name="operations">Dynamic sites container that could be used for any dynamic dispatches necessary for formatting.</param>
         /// <param name="obj">Object to format.</param>
         /// <returns>A string representation of object.</returns>
-        public virtual string FormatObject(DynamicOperations operations, object obj) {
-            return obj is null ? "null" : obj.ToString();
+        public virtual string FormatObject(DynamicOperations operations, object? obj) {
+            return obj?.ToString() ?? "null";
         }
 
         public virtual void GetExceptionMessage(Exception exception, out string message, out string errorTypeName) {

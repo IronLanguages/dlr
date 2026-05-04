@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -54,43 +57,43 @@ namespace Microsoft.Scripting.Runtime {
 
         #region Basic Operations
 
-        private readonly Dictionary<int, Func<DynamicOperations, CallSiteBinder, object, object[], object>> _invokers = new();
+        private readonly Dictionary<int, Func<DynamicOperations, CallSiteBinder, object?, object?[], object?>> _invokers = new();
 
         /// <summary>
         /// Calls the provided object with the given parameters and returns the result.
-        /// 
-        /// The prefered way of calling objects is to convert the object to a strongly typed delegate 
+        ///
+        /// The prefered way of calling objects is to convert the object to a strongly typed delegate
         /// using the ConvertTo methods and then invoking that delegate.
         /// </summary>
-        public object Invoke(object obj, params object[] parameters) {
+        public object? Invoke(object? obj, params object?[] parameters) {
             return GetInvoker(parameters.Length)(this, _lc.CreateInvokeBinder(new CallInfo(parameters.Length)), obj, parameters);
         }
-        
+
         /// <summary>
         /// Invokes a member on the provided object with the given parameters and returns the result.
         /// </summary>
-        public object InvokeMember(object obj, string memberName, params object[] parameters) {
+        public object? InvokeMember(object? obj, string memberName, params object?[] parameters) {
             return InvokeMember(obj, memberName, false, parameters);
         }
 
         /// <summary>
         /// Invokes a member on the provided object with the given parameters and returns the result.
         /// </summary>
-        public object InvokeMember(object obj, string memberName, bool ignoreCase, params object[] parameters) {
+        public object? InvokeMember(object? obj, string memberName, bool ignoreCase, params object?[] parameters) {
             return GetInvoker(parameters.Length)(this, _lc.CreateCallBinder(memberName, ignoreCase, new CallInfo(parameters.Length)), obj, parameters);
         }
 
         /// <summary>
         /// Creates a new instance from the provided object using the given parameters, and returns the result.
         /// </summary>
-        public object CreateInstance(object obj, params object[] parameters) {
+        public object? CreateInstance(object? obj, params object?[] parameters) {
             return GetInvoker(parameters.Length)(this, _lc.CreateCreateBinder(new CallInfo(parameters.Length)), obj, parameters);
         }
 
         /// <summary>
         /// Gets the member name from the object obj.  Throws an exception if the member does not exist or is write-only.
         /// </summary>
-        public object GetMember(object obj, string name) {
+        public object? GetMember(object? obj, string name) {
             return GetMember(obj, name, false);
         }
 
@@ -98,36 +101,37 @@ namespace Microsoft.Scripting.Runtime {
         /// Gets the member name from the object obj and converts it to the type T.  Throws an exception if the
         /// member does not exist, is write-only, or cannot be converted.
         /// </summary>
-        public T GetMember<T>(object obj, string name) {
+        [return: MaybeNull]
+        public T GetMember<T>(object? obj, string name) {
             return GetMember<T>(obj, name, false);
         }
 
         /// <summary>
-        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and 
+        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and
         /// stores the value in the value out param.
         /// </summary>
-        public bool TryGetMember(object obj, string name, out object value) {
+        public bool TryGetMember(object? obj, string name, out object? value) {
             return TryGetMember(obj, name, false, out value);
         }
 
         /// <summary>
         /// Returns true if the object has a member named name, false if the member does not exist.
         /// </summary>
-        public bool ContainsMember(object obj, string name) {
+        public bool ContainsMember(object? obj, string name) {
             return ContainsMember(obj, name, false);
         }
 
         /// <summary>
         /// Removes the member name from the object obj.
         /// </summary>
-        public void RemoveMember(object obj, string name) {
+        public void RemoveMember(object? obj, string name) {
             RemoveMember(obj, name, false);
         }
 
         /// <summary>
         /// Sets the member name on object obj to value.
         /// </summary>
-        public void SetMember(object obj, string name, object value) {
+        public void SetMember(object? obj, string name, object? value) {
             SetMember(obj, name, value, false);
         }
 
@@ -135,15 +139,15 @@ namespace Microsoft.Scripting.Runtime {
         /// Sets the member name on object obj to value.  This overload can be used to avoid
         /// boxing and casting of strongly typed members.
         /// </summary>
-        public void SetMember<T>(object obj, string name, T value) {
+        public void SetMember<T>(object? obj, string name, T value) {
             SetMember<T>(obj, name, value, false);
         }
 
         /// <summary>
         /// Gets the member name from the object obj.  Throws an exception if the member does not exist or is write-only.
         /// </summary>
-        public object GetMember(object obj, string name, bool ignoreCase) {
-            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateGetMemberBinder(name, ignoreCase));
+        public object? GetMember(object? obj, string name, bool ignoreCase) {
+            CallSite<Func<CallSite, object?, object?>> site = GetOrCreateSite<object?, object?>(_lc.CreateGetMemberBinder(name, ignoreCase));
             return site.Target(site, obj);
         }
 
@@ -151,17 +155,18 @@ namespace Microsoft.Scripting.Runtime {
         /// Gets the member name from the object obj and converts it to the type T. The conversion will be explicit or implicit
         /// depending on what the langauge prefers. Throws an exception if the member does not exist, is write-only, or cannot be converted.
         /// </summary>
-        public T GetMember<T>(object obj, string name, bool ignoreCase) {
-            CallSite<Func<CallSite, object, T>> convertSite = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), null));
-            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateGetMemberBinder(name, ignoreCase));
+        [return: MaybeNull]
+        public T GetMember<T>(object? obj, string name, bool ignoreCase) {
+            CallSite<Func<CallSite, object?, T>> convertSite = GetOrCreateSite<object?, T>(_lc.CreateConvertBinder(typeof(T), null));
+            CallSite<Func<CallSite, object?, object?>> site = GetOrCreateSite<object?, object?>(_lc.CreateGetMemberBinder(name, ignoreCase));
             return convertSite.Target(convertSite, site.Target(site, obj));
         }
 
         /// <summary>
-        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and 
+        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and
         /// stores the value in the value out param.
         /// </summary>
-        public bool TryGetMember(object obj, string name, bool ignoreCase, out object value) {
+        public bool TryGetMember(object? obj, string name, bool ignoreCase, out object? value) {
             try {
                 value = GetMember(obj, name, ignoreCase);
                 return true;
@@ -174,7 +179,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Returns true if the object has a member named name, false if the member does not exist.
         /// </summary>
-        public bool ContainsMember(object obj, string name, bool ignoreCase) {
+        public bool ContainsMember(object? obj, string name, bool ignoreCase) {
             return TryGetMember(obj, name, ignoreCase, out _);
         }
 
@@ -182,16 +187,16 @@ namespace Microsoft.Scripting.Runtime {
         /// Removes the member name from the object obj.  Returns true if the member was successfully removed
         /// or false if the member does not exist.
         /// </summary>
-        public void RemoveMember(object obj, string name, bool ignoreCase) {
-            CallSite<Action<CallSite, object>> site = GetOrCreateActionSite<object>(_lc.CreateDeleteMemberBinder(name, ignoreCase));
+        public void RemoveMember(object? obj, string name, bool ignoreCase) {
+            CallSite<Action<CallSite, object?>> site = GetOrCreateActionSite<object?>(_lc.CreateDeleteMemberBinder(name, ignoreCase));
             site.Target(site, obj);
         }
 
         /// <summary>
         /// Sets the member name on object obj to value.
         /// </summary>
-        public void SetMember(object obj, string name, object value, bool ignoreCase) {
-            CallSite<Func<CallSite, object, object, object>> site = GetOrCreateSite<object, object, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
+        public void SetMember(object? obj, string name, object? value, bool ignoreCase) {
+            CallSite<Func<CallSite, object?, object?, object?>> site = GetOrCreateSite<object?, object?, object?>(_lc.CreateSetMemberBinder(name, ignoreCase));
             site.Target(site, obj, value);
         }
 
@@ -199,8 +204,8 @@ namespace Microsoft.Scripting.Runtime {
         /// Sets the member name on object obj to value.  This overload can be used to avoid
         /// boxing and casting of strongly typed members.
         /// </summary>
-        public void SetMember<T>(object obj, string name, T value, bool ignoreCase) {
-            CallSite<Func<CallSite, object, T, object>> site = GetOrCreateSite<object, T, object>(_lc.CreateSetMemberBinder(name, ignoreCase));
+        public void SetMember<T>(object? obj, string name, T value, bool ignoreCase) {
+            CallSite<Func<CallSite, object?, T, object?>> site = GetOrCreateSite<object?, T, object?>(_lc.CreateSetMemberBinder(name, ignoreCase));
             site.Target(site, obj, value);
         }
 
@@ -208,18 +213,19 @@ namespace Microsoft.Scripting.Runtime {
         /// Converts the object obj to the type T.  The conversion will be explicit or implicit
         /// depending on what the langauge prefers.
         /// </summary>
-        public T ConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), null));
+        [return: MaybeNull]
+        public T ConvertTo<T>(object? obj) {
+            CallSite<Func<CallSite, object?, T>> site = GetOrCreateSite<object?, T>(_lc.CreateConvertBinder(typeof(T), null));
             return site.Target(site, obj);
         }
 
-        /// <summary> 
+        /// <summary>
         /// Converts the object obj to the type type.  The conversion will be explicit or implicit
         /// depending on what the langauge prefers.
         /// </summary>
-        public object ConvertTo(object obj, Type type) {
+        public object? ConvertTo(object? obj, Type type) {
             if (type.IsInterface || type.IsClass) {
-                CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, null));
+                CallSite<Func<CallSite, object?, object?>> site = GetOrCreateSite<object?, object?>(_lc.CreateConvertBinder(type, null));
                 return site.Target(site, obj);
             }
 
@@ -227,9 +233,9 @@ namespace Microsoft.Scripting.Runtime {
             foreach (MethodInfo mi in typeof(DynamicOperations).GetDeclaredMethods("ConvertTo")) {
                 if (mi.IsGenericMethod) {
                     try {
-                        return mi.MakeGenericMethod(type).Invoke(this, new object[] { obj });
+                        return mi.MakeGenericMethod(type).Invoke(this, new object?[] { obj });
                     } catch(TargetInvocationException tie) {
-                        throw tie.InnerException;
+                        throw tie.InnerException!;
                     }
                 }
             }
@@ -239,28 +245,28 @@ namespace Microsoft.Scripting.Runtime {
 
         /// <summary>
         /// Converts the object obj to the type T.  Returns true if the value can be converted, false if it cannot.
-        /// 
+        ///
         /// The conversion will be explicit or implicit depending on what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo<T>(object obj, out T result) {
+        public bool TryConvertTo<T>(object? obj, [MaybeNull] out T result) {
             try {
                 result = ConvertTo<T>(obj);
                 return true;
             } catch (ArgumentTypeException) {
-                result = default(T);
+                result = default;
                 return false;
             } catch (InvalidCastException) {
-                result = default(T);
+                result = default;
                 return false;
             }
         }
 
         /// <summary>
         /// Converts the object obj to the type type.  Returns true if the value can be converted, false if it cannot.
-        /// 
+        ///
         /// The conversion will be explicit or implicit depending on what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo(object obj, Type type, out object result) {
+        public bool TryConvertTo(object? obj, Type type, out object? result) {
             try {
                 result = ConvertTo(obj, type);
                 return true;
@@ -276,25 +282,26 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Convers the object obj to the type T including explicit conversions which may lose information.
         /// </summary>
-        public T ExplicitConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), true));
+        [return: MaybeNull]
+        public T ExplicitConvertTo<T>(object? obj) {
+            CallSite<Func<CallSite, object?, T>> site = GetOrCreateSite<object?, T>(_lc.CreateConvertBinder(typeof(T), true));
             return site.Target(site, obj);
         }
 
         /// <summary>
         /// Converts the object obj to the type type including explicit conversions which may lose information.
         /// </summary>
-        public object ExplicitConvertTo(object obj, Type type) {
-            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, true));
+        public object? ExplicitConvertTo(object? obj, Type type) {
+            CallSite<Func<CallSite, object?, object?>> site = GetOrCreateSite<object?, object?>(_lc.CreateConvertBinder(type, true));
             return site.Target(site, obj);
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including explicit conversions which may lose information.  
-        /// 
+        /// Converts the object obj to the type type including explicit conversions which may lose information.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo(object obj, Type type, out object result) {
+        public bool TryExplicitConvertTo(object? obj, Type type, out object? result) {
             try {
                 result = ExplicitConvertTo(obj, type);
                 return true;
@@ -310,15 +317,15 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Converts the object obj to the type T.  Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo<T>(object obj, out T result) {
+        public bool TryExplicitConvertTo<T>(object? obj, [MaybeNull] out T result) {
             try {
                 result = ExplicitConvertTo<T>(obj);
                 return true;
             } catch (ArgumentTypeException) {
-                result = default(T);
+                result = default;
                 return false;
             } catch (InvalidCastException) {
-                result = default(T);
+                result = default;
                 return false;
             }
         }
@@ -326,25 +333,26 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Convers the object obj to the type T including implicit conversions.
         /// </summary>
-        public T ImplicitConvertTo<T>(object obj) {
-            CallSite<Func<CallSite, object, T>> site = GetOrCreateSite<object, T>(_lc.CreateConvertBinder(typeof(T), false));
+        [return: MaybeNull]
+        public T ImplicitConvertTo<T>(object? obj) {
+            CallSite<Func<CallSite, object?, T>> site = GetOrCreateSite<object?, T>(_lc.CreateConvertBinder(typeof(T), false));
             return site.Target(site, obj);
         }
 
         /// <summary>
         /// Converts the object obj to the type type including implicit conversions.
         /// </summary>
-        public object ImplicitConvertTo(object obj, Type type) {
-            CallSite<Func<CallSite, object, object>> site = GetOrCreateSite<object, object>(_lc.CreateConvertBinder(type, false));
+        public object? ImplicitConvertTo(object? obj, Type type) {
+            CallSite<Func<CallSite, object?, object?>> site = GetOrCreateSite<object?, object?>(_lc.CreateConvertBinder(type, false));
             return site.Target(site, obj);
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including implicit conversions. 
-        /// 
+        /// Converts the object obj to the type type including implicit conversions.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo(object obj, Type type, out object result) {
+        public bool TryImplicitConvertTo(object? obj, Type type, out object? result) {
             try {
                 result = ImplicitConvertTo(obj, type);
                 return true;
@@ -360,15 +368,15 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Converts the object obj to the type T.  Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo<T>(object obj, out T result) {
+        public bool TryImplicitConvertTo<T>(object? obj, [MaybeNull] out T result) {
             try {
                 result = ImplicitConvertTo<T>(obj);
                 return true;
             } catch (ArgumentTypeException) {
-                result = default(T);
+                result = default;
                 return false;
             } catch (InvalidCastException) {
-                result = default(T);
+                result = default;
                 return false;
             }
         }
@@ -376,6 +384,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Performs a generic unary operation on the strongly typed target and returns the value as the specified type
         /// </summary>
+        [return: MaybeNull]
         public TResult DoOperation<TTarget, TResult>(ExpressionType operation, TTarget target) {
             var site = GetOrCreateSite<TTarget, TResult>(_lc.CreateUnaryOperationBinder(operation));
             return site.Target(site, target);
@@ -385,34 +394,35 @@ namespace Microsoft.Scripting.Runtime {
         /// Peforms the generic binary operation on the specified strongly typed targets and returns
         /// the strongly typed result.
         /// </summary>
+        [return: MaybeNull]
         public TResult DoOperation<TTarget, TOther, TResult>(ExpressionType operation, TTarget target, TOther other) {
             var site = GetOrCreateSite<TTarget, TOther, TResult>(_lc.CreateBinaryOperationBinder(operation));
             return site.Target(site, target, other);
         }
-        
-        public string GetDocumentation(object o) {
+
+        public string GetDocumentation(object? o) {
             return _lc.GetDocumentation(o);
         }
 
-        public IList<string> GetCallSignatures(object o) {
+        public IList<string> GetCallSignatures(object? o) {
             return _lc.GetCallSignatures(o);
         }
 
-        public bool IsCallable(object o) {
+        public bool IsCallable(object? o) {
             return _lc.IsCallable(o);
         }
-        
+
         /// <summary>
         /// Returns a list of strings which contain the known members of the object.
         /// </summary>
-        public IList<string> GetMemberNames(object obj) {
+        public IList<string> GetMemberNames(object? obj) {
             return _lc.GetMemberNames(obj);
         }
 
         /// <summary>
         /// Returns a string representation of the object in a language specific object display format.
         /// </summary>
-        public string Format(object obj) {
+        public string Format(object? obj) {
             return _lc.FormatObject(this, obj);
         }
 
@@ -482,7 +492,7 @@ namespace Microsoft.Scripting.Runtime {
             SiteKey sk = new SiteKey(typeof(T), siteBinder);
 
             lock (_sites) {
-                if (!_sites.TryGetValue(sk, out SiteKey old)) {
+                if (!_sites.TryGetValue(sk, out SiteKey? old)) {
                     SitesCreated++;
                     if (SitesCreated < 0) {
                         // overflow, just reset back to zero...
@@ -500,7 +510,7 @@ namespace Microsoft.Scripting.Runtime {
                 CleanupNoLock();
             }
 
-            return (T)sk.Site;
+            return (T)sk.Site!;
         }
 
         /// <summary>
@@ -524,7 +534,7 @@ namespace Microsoft.Scripting.Runtime {
                     return;
                 }
 
-                List<SiteKey> toRemove = null;
+                List<SiteKey>? toRemove = null;
                 foreach (SiteKey sk in _sites.Keys) {
                     if (sk.HitCount < (avgUse - RemoveThreshold)) {
                         toRemove ??= new List<SiteKey>();
@@ -568,17 +578,14 @@ namespace Microsoft.Scripting.Runtime {
 
             // not used for equality, used for caching strategy
             public int HitCount;
-            public CallSite Site;
+            public CallSite? Site;
 
             public SiteKey(Type siteType, CallSiteBinder siteBinder) {
-                Debug.Assert(siteType is not null);
-                Debug.Assert(siteBinder is not null);
-
                 SiteBinder = siteBinder;
                 _siteType = siteType;
             }
 
-            public override bool Equals(object obj) => Equals(obj as SiteKey);
+            public override bool Equals(object? obj) => Equals(obj as SiteKey);
 
             public override int GetHashCode() {
                 return SiteBinder.GetHashCode() ^ _siteType.GetHashCode();
@@ -586,7 +593,7 @@ namespace Microsoft.Scripting.Runtime {
 
             #region IEquatable<SiteKey> Members
 
-            public bool Equals(SiteKey other) {
+            public bool Equals(SiteKey? other) {
                 if (other is null) return false;
 
                 return other.SiteBinder.Equals(SiteBinder) &&

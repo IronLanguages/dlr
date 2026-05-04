@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.IO;
 using System.Text;
 
@@ -16,9 +18,9 @@ namespace Microsoft.Scripting.Runtime {
         private readonly LanguageContext _context;
         private readonly StreamContentProvider _streamProvider;
         private readonly Encoding _defaultEncoding;
-        private readonly string _path;
+        private readonly string? _path;
 
-        public LanguageBoundTextContentProvider(LanguageContext context, StreamContentProvider streamProvider, Encoding defaultEncoding, string path) {
+        public LanguageBoundTextContentProvider(LanguageContext context, StreamContentProvider streamProvider, Encoding defaultEncoding, string? path) {
             Assert.NotNull(context, streamProvider, defaultEncoding);
             _context = context;
             _streamProvider = streamProvider;

@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
@@ -16,13 +19,14 @@ namespace Microsoft.Scripting.Runtime {
 
         public override bool CanCreateSourceCode => false;
 
-        public override ScriptCode CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink) {
+        public override ScriptCode? CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink) {
             // invariant language doesn't have a grammar:
             throw new NotSupportedException();
         }
 
+        [return: MaybeNull]
         public override T ScopeGetVariable<T>(Scope scope, string name) {
-            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object res)) {
+            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object? res)) {
                 return Operations.ConvertTo<T>(res);
             }
 
@@ -34,8 +38,8 @@ namespace Microsoft.Scripting.Runtime {
             return base.ScopeGetVariable<T>(scope, name);
         }
 
-        public override dynamic ScopeGetVariable(Scope scope, string name) {
-            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object res)) {
+        public override dynamic? ScopeGetVariable(Scope scope, string name) {
+            if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out object? res)) {
                 return res;
             }
 
@@ -47,7 +51,7 @@ namespace Microsoft.Scripting.Runtime {
             return base.ScopeGetVariable(scope, name);
         }
 
-        public override void ScopeSetVariable(Scope scope, string name, object value) {
+        public override void ScopeSetVariable(Scope scope, string name, object? value) {
             if (scope.Storage is ScopeStorage storage) {
                 storage.SetValue(name, false, value);
                 return;
@@ -61,7 +65,7 @@ namespace Microsoft.Scripting.Runtime {
             base.ScopeSetVariable(scope, name, value);
         }
 
-        public override bool ScopeTryGetVariable(Scope scope, string name, out dynamic value) {
+        public override bool ScopeTryGetVariable(Scope scope, string name, out dynamic? value) {
             if (scope.Storage is ScopeStorage storage && storage.TryGetValue(name, false, out value)) {
                 return true;
             }
