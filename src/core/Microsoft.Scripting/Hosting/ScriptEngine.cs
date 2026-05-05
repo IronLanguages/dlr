@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -12,6 +14,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Text;
 using System.Threading;
@@ -27,12 +30,11 @@ namespace Microsoft.Scripting.Hosting {
     /// </summary>
     [DebuggerDisplay("{Setup.DisplayName}")]
     public sealed class ScriptEngine : MarshalByRefObject {
-        private LanguageSetup _config;
-        private ObjectOperations _operations;
+        private LanguageSetup? _config;
+        private ObjectOperations? _operations;
 
         internal ScriptEngine(ScriptRuntime runtime, LanguageContext context) {
-            Debug.Assert(runtime is not null);
-            Debug.Assert(context is not null);
+            Assert.NotNull(runtime, context);
 
             Runtime = runtime;
             LanguageContext = context;
@@ -94,10 +96,10 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="NotSupportedException">The engine doesn't support code execution.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="expression"/> is a <c>null</c> reference.</exception>
-        public dynamic Execute(string expression) {
-            // The host doesn't need the scope so do not create it here. 
+        public dynamic? Execute(string expression) {
+            // The host doesn't need the scope so do not create it here.
             // The language can treat the code as not bound to a DLR scope and change global lookup semantics accordingly.
-            return CreateScriptSourceFromString(expression).Execute(); 
+            return CreateScriptSourceFromString(expression).Execute();
         }
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <exception cref="NotSupportedException">The engine doesn't support code execution.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="expression"/> is a <c>null</c> reference.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="scope"/> is a <c>null</c> reference.</exception>
-        public dynamic Execute(string expression, ScriptScope scope) {
+        public dynamic? Execute(string expression, ScriptScope scope) {
             return CreateScriptSourceFromString(expression).Execute(scope);
         }
 
@@ -115,18 +117,20 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="NotSupportedException">The engine doesn't support code execution.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="expression"/> is a <c>null</c> reference.</exception>
+        [return: MaybeNull]
         public T Execute<T>(string expression) {
-            return Operations.ConvertTo<T>((object)Execute(expression));
+            return Operations.ConvertTo<T>((object?)Execute(expression));
         }
-        
+
         /// <summary>
         /// Executes an expression within the specified scope and converts result to the given type.
         /// </summary>
         /// <exception cref="NotSupportedException">The engine doesn't support code execution.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="expression"/> is a <c>null</c> reference.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="scope"/> is a <c>null</c> reference.</exception>
+        [return: MaybeNull]
         public T Execute<T>(string expression, ScriptScope scope) {
-            return Operations.ConvertTo<T>((object)Execute(expression, scope));
+            return Operations.ConvertTo<T>((object?)Execute(expression, scope));
         }
 
         /// <summary>
@@ -153,37 +157,37 @@ namespace Microsoft.Scripting.Hosting {
 #if FEATURE_REMOTING
         /// <summary>
         /// Executes the expression in the specified scope and return a result.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap(string expression, ScriptScope scope) {
-            return new ObjectHandle((object)Execute(expression, scope));
+            return new ObjectHandle((object?)Execute(expression, scope));
         }
 
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap(string expression) {
-            return new ObjectHandle((object)Execute(expression));
+            return new ObjectHandle((object?)Execute(expression));
         }
 
         /// <summary>
         /// Executes the expression in the specified scope and return a result.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API in case the exception is not serializable (for example, due to security restrictions) or its serialization 
+        /// Use this API in case the exception is not serializable (for example, due to security restrictions) or its serialization
         /// loses information that you need to access.
         /// </remarks>
         [Obsolete("Use ScriptSource.ExecuteAndWrap instead")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(string expression, ScriptScope scope, out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(string expression, ScriptScope scope, out ObjectHandle? exception) {
             exception = null;
             try {
-                return new ObjectHandle((object)Execute(expression, scope));
+                return new ObjectHandle((object?)Execute(expression, scope));
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
@@ -192,21 +196,21 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API in case the exception is not serializable (for example, due to security restrictions) or its serialization 
+        /// Use this API in case the exception is not serializable (for example, due to security restrictions) or its serialization
         /// loses information that you need to access.
         /// </remarks>
         [Obsolete("Use ScriptSource.ExecuteAndWrap instead")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(string expression, out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(string expression, out ObjectHandle? exception) {
             exception = null;
             try {
-                return new ObjectHandle((object)Execute(expression));
+                return new ObjectHandle((object?)Execute(expression));
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
@@ -230,7 +234,7 @@ namespace Microsoft.Scripting.Hosting {
         /// 
         /// Accesses to the ScriptScope will turn into get,set, and delete members against this dictionary
         /// </summary>
-        public ScriptScope CreateScope(IDictionary<string, object> dictionary)
+        public ScriptScope CreateScope(IDictionary<string, object?> dictionary)
         {
             ContractUtils.RequiresNotNull(dictionary, nameof(dictionary));
             return new ScriptScope(this, LanguageContext.CreateScope(dictionary));
@@ -260,9 +264,9 @@ namespace Microsoft.Scripting.Hosting {
         /// The tool would need to find Bar's ScriptScope for setting the appropriate context in its interpreter window. 
         /// This method helps with this scenario.
         /// </summary>
-        public ScriptScope GetScope(string path) {
+        public ScriptScope? GetScope(string path) {
             ContractUtils.RequiresNotNull(path, nameof(path));
-            Scope scope = LanguageContext.GetScope(path);
+            Scope? scope = LanguageContext.GetScope(path);
             return (scope is not null) ? new ScriptScope(this, scope) : null;
         }
 
@@ -300,7 +304,7 @@ namespace Microsoft.Scripting.Hosting {
         /// 
         /// The default SourceCodeKind is AutoDetect.
         /// </summary>
-        public ScriptSource CreateScriptSourceFromString(string expression, string path) {
+        public ScriptSource CreateScriptSourceFromString(string expression, string? path) {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
 
             return CreateScriptSource(new SourceStringContentProvider(expression), path, SourceCodeKind.AutoDetect);
@@ -309,7 +313,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Return a ScriptSource object from string contents.  These are helpers for creating ScriptSources' with the right language binding.
         /// </summary>
-        public ScriptSource CreateScriptSourceFromString(string code, string path, SourceCodeKind kind) {
+        public ScriptSource CreateScriptSourceFromString(string code, string? path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(code, nameof(code));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
 
@@ -365,12 +369,12 @@ namespace Microsoft.Scripting.Hosting {
 
 #if FEATURE_CODEDOM
         /// <summary>
-        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.  
+        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.
         /// This is a factory method for creating a ScriptSources with this language binding.
-        /// 
-        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.  
-        /// 
-        /// Languages may do more, but hosts should only expect CodeMemberMethod support, 
+        ///
+        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.
+        ///
+        /// Languages may do more, but hosts should only expect CodeMemberMethod support,
         /// and only sub nodes consisting of the following:
         ///     CodeSnippetStatement
         ///     CodeSnippetExpression
@@ -383,12 +387,12 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         /// <summary>
-        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.  
+        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.
         /// This is a factory method for creating a ScriptSources with this language binding.
-        /// 
-        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.  
-        /// 
-        /// Languages may do more, but hosts should only expect CodeMemberMethod support, 
+        ///
+        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.
+        ///
+        /// Languages may do more, but hosts should only expect CodeMemberMethod support,
         /// and only sub nodes consisting of the following:
         ///     CodeSnippetStatement
         ///     CodeSnippetExpression
@@ -396,17 +400,17 @@ namespace Microsoft.Scripting.Hosting {
         ///     CodeMethodInvokeExpression
         ///     CodeExpressionStatement (for holding MethodInvoke)
         /// </summary>
-        public ScriptSource CreateScriptSource(CodeObject content, string path) {
+        public ScriptSource CreateScriptSource(CodeObject content, string? path) {
             return CreateScriptSource(content, path, SourceCodeKind.File);
         }
 
         /// <summary>
-        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.  
+        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.
         /// This is a factory method for creating a ScriptSources with this language binding.
-        /// 
-        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.  
-        /// 
-        /// Languages may do more, but hosts should only expect CodeMemberMethod support, 
+        ///
+        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.
+        ///
+        /// Languages may do more, but hosts should only expect CodeMemberMethod support,
         /// and only sub nodes consisting of the following:
         ///     CodeSnippetStatement
         ///     CodeSnippetExpression
@@ -419,12 +423,12 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         /// <summary>
-        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.  
+        /// This method returns a ScriptSource object from a System.CodeDom.CodeObject.
         /// This is a factory method for creating a ScriptSources with this language binding.
-        /// 
-        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.  
-        /// 
-        /// Languages may do more, but hosts should only expect CodeMemberMethod support, 
+        ///
+        /// The expected CodeDom support is extremely minimal for syntax-independent expression of semantics.
+        ///
+        /// Languages may do more, but hosts should only expect CodeMemberMethod support,
         /// and only sub nodes consisting of the following:
         ///     CodeSnippetStatement
         ///     CodeSnippetExpression
@@ -432,7 +436,7 @@ namespace Microsoft.Scripting.Hosting {
         ///     CodeMethodInvokeExpression
         ///     CodeExpressionStatement (for holding MethodInvoke)
         /// </summary>
-        public ScriptSource CreateScriptSource(CodeObject content, string path, SourceCodeKind kind) {
+        public ScriptSource CreateScriptSource(CodeObject content, string? path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(content, nameof(content));
             if (!LanguageContext.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
 
@@ -441,24 +445,24 @@ namespace Microsoft.Scripting.Hosting {
 #endif
 
         /// <summary>
-        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.  
-        /// 
+        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.
+        ///
         /// The default SourceCodeKind is File.
-        /// 
+        ///
         /// The encoding defaults to the default encoding of the language.
         /// </summary>
-        public ScriptSource CreateScriptSource(StreamContentProvider content, string path) {
+        public ScriptSource CreateScriptSource(StreamContentProvider content, string? path) {
             ContractUtils.RequiresNotNull(content, nameof(content));
 
             return CreateScriptSource(content, path, LanguageContext.DefaultEncoding, SourceCodeKind.File);
         }
 
         /// <summary>
-        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.  
-        /// 
+        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.
+        ///
         /// The default SourceCodeKind is File.
         /// </summary>
-        public ScriptSource CreateScriptSource(StreamContentProvider content, string path, Encoding encoding) {
+        public ScriptSource CreateScriptSource(StreamContentProvider content, string? path, Encoding encoding) {
             ContractUtils.RequiresNotNull(content, nameof(content));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
 
@@ -466,11 +470,11 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         /// <summary>
-        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.  
-        /// 
+        /// These methods return ScriptSource objects from stream contents with the current engine as the language binding.
+        ///
         /// The encoding defaults to Encoding.Default.
         /// </summary>
-        public ScriptSource CreateScriptSource(StreamContentProvider content, string path, Encoding encoding, SourceCodeKind kind) {
+        public ScriptSource CreateScriptSource(StreamContentProvider content, string? path, Encoding encoding, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(content, nameof(content));
             ContractUtils.RequiresNotNull(encoding, nameof(encoding));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
@@ -480,10 +484,10 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// This method returns a ScriptSource with the content provider supplied with the current engine as the language binding.
-        /// 
+        ///
         /// This helper lets you own the content provider so that you can implement a stream over internal host data structures, such as an editor's text representation.
         /// </summary>
-        public ScriptSource CreateScriptSource(TextContentProvider contentProvider, string path, SourceCodeKind kind) {
+        public ScriptSource CreateScriptSource(TextContentProvider contentProvider, string? path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(contentProvider, nameof(contentProvider));
             ContractUtils.Requires(kind.IsValid(), nameof(kind));
             if (!LanguageContext.CanCreateSourceCode) throw new NotSupportedException("Invariant engine cannot create scripts");
@@ -506,22 +510,22 @@ namespace Microsoft.Scripting.Hosting {
         ///         Provides standardized tokenization of source code
         ///     ExceptionOperations
         ///         Provides formatting of exception objects.
-        ///     DocumentationProvidera
+        ///     DocumentationProvider
         ///         Provides documentation for live object.
         /// </summary>
-        public TService GetService<TService>(params object[] args) where TService : class {
+        public TService? GetService<TService>(params object?[] args) where TService : class {
             if (typeof(TService) == typeof(TokenCategorizer)) {
-                TokenizerService service = LanguageContext.GetService<TokenizerService>(ArrayUtils.Insert((object)LanguageContext, args));
+                TokenizerService? service = LanguageContext.GetService<TokenizerService>(ArrayUtils.Insert((object?)LanguageContext, args));
                 return (service is not null) ? (TService)(object)new TokenCategorizer(service) : null;
             }
 
             if (typeof(TService) == typeof(ExceptionOperations)) {
-                ExceptionOperations service = LanguageContext.GetService<ExceptionOperations>();
+                ExceptionOperations? service = LanguageContext.GetService<ExceptionOperations>();
                 return (service is not null) ? (TService)(object)service : (TService)(object)new ExceptionOperations(LanguageContext);
             }
 
             if (typeof(TService) == typeof(DocumentationOperations)) {
-                DocumentationProvider service = LanguageContext.GetService<DocumentationProvider>(args);
+                DocumentationProvider? service = LanguageContext.GetService<DocumentationProvider>(args);
                 return (service is not null) ? (TService)(object)new DocumentationOperations(service) : null;
             }
 
@@ -546,14 +550,15 @@ namespace Microsoft.Scripting.Hosting {
                     Debug.Assert(LanguageContext is not InvariantContext);
 
                     // Find the matching language configuration
-                    LanguageConfiguration config = Runtime.Manager.Configuration.GetLanguageConfig(LanguageContext);
-                    Debug.Assert(config is not null);
+                    LanguageConfiguration config = Runtime.Manager.Configuration.GetLanguageConfig(LanguageContext)!;
+                    Debug.Assert(config as object is not null);
 
                     foreach (var language in Runtime.Setup.LanguageSetups) {
                         if (config.ProviderName == new AssemblyQualifiedTypeName(language.TypeName)) {
                             return _config = language;
                         }
                     }
+                    throw new InvalidOperationException($"LanguageContext '{LanguageContext.GetType().FullName}' is not properly registered in DlrConfiguration");
                 }
                 return _config;
             }
@@ -614,9 +619,8 @@ namespace Microsoft.Scripting.Hosting {
         #region Remote API
 
 #if FEATURE_REMOTING
-        // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
-            return null;
+            return base.InitializeLifetimeService();
         }
 #endif
 

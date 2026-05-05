@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -9,8 +11,9 @@ using MarshalByRefObject = System.Object;
 #endif
 
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
 
 using Microsoft.Scripting.Utils;
@@ -25,12 +28,12 @@ namespace Microsoft.Scripting.Hosting {
         internal SourceUnit SourceUnit { get; }
 
         /// <summary>
-        /// Identification of the source unit. Assigned by the host. 
+        /// Identification of the source unit. Assigned by the host.
         /// The format and semantics is host dependent (could be a path on file system or URL).
         /// <c>null</c> for anonymous script source.
         /// Cannot be an empty string.
         /// </summary>
-        public string Path => SourceUnit.Path;
+        public string? Path => SourceUnit.Path;
 
         private string DebugString => Path ?? "<anonymous>";
 
@@ -47,48 +50,48 @@ namespace Microsoft.Scripting.Hosting {
         #region Compilation and Execution
 
         /// <summary>
-        /// Compile the ScriptSource into CompileCode object that can be executed 
+        /// Compile the ScriptSource into CompileCode object that can be executed
         /// repeatedly in its default scope or in other scopes without having to recompile the code.
         /// </summary>
         /// <exception cref="SyntaxErrorException">Code cannot be compiled.</exception>
-        public CompiledCode Compile() {
+        public CompiledCode? Compile() {
             return CompileInternal(null, null);
         }
 
         /// <remarks>
-        /// Errors are reported to the specified listener. 
+        /// Errors are reported to the specified listener.
         /// Returns <c>null</c> if the parser cannot compile the code due to errors.
         /// </remarks>
-        public CompiledCode Compile(ErrorListener errorListener) {
+        public CompiledCode? Compile(ErrorListener errorListener) {
             ContractUtils.RequiresNotNull(errorListener, nameof(errorListener));
 
             return CompileInternal(null, errorListener);
         }
 
         /// <remarks>
-        /// Errors are reported to the specified listener. 
+        /// Errors are reported to the specified listener.
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </remarks>
-        public CompiledCode Compile(CompilerOptions compilerOptions) {
+        public CompiledCode? Compile(CompilerOptions compilerOptions) {
             ContractUtils.RequiresNotNull(compilerOptions, nameof(compilerOptions));
 
             return CompileInternal(compilerOptions, null);
         }
 
         /// <remarks>
-        /// Errors are reported to the specified listener. 
+        /// Errors are reported to the specified listener.
         /// Returns <c>null</c> if the parser cannot compile the code due to error(s).
         /// </remarks>
-        public CompiledCode Compile(CompilerOptions compilerOptions, ErrorListener errorListener) {
+        public CompiledCode? Compile(CompilerOptions compilerOptions, ErrorListener errorListener) {
             ContractUtils.RequiresNotNull(errorListener, nameof(errorListener));
             ContractUtils.RequiresNotNull(compilerOptions, nameof(compilerOptions));
 
             return CompileInternal(compilerOptions, errorListener);
         }
 
-        private CompiledCode CompileInternal(CompilerOptions compilerOptions, ErrorListener errorListener) {
+        private CompiledCode? CompileInternal(CompilerOptions? compilerOptions, ErrorListener? errorListener) {
             ErrorSink errorSink = new ErrorListenerProxySink(this, errorListener);
-            ScriptCode code = compilerOptions is not null ? SourceUnit.Compile(compilerOptions, errorSink) : SourceUnit.Compile(errorSink);
+            ScriptCode? code = compilerOptions is not null ? SourceUnit.Compile(compilerOptions, errorSink) : SourceUnit.Compile(errorSink);
 
             return (code is not null) ? new CompiledCode(Engine, code) : null;
         }
@@ -103,7 +106,7 @@ namespace Microsoft.Scripting.Hosting {
         /// based may return null.
         /// </summary>
         /// <exception cref="SyntaxErrorException">Code cannot be compiled.</exception>
-        public dynamic Execute(ScriptScope scope) {
+        public dynamic? Execute(ScriptScope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
 
             return SourceUnit.Execute(scope.Scope);
@@ -112,8 +115,8 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Executes the source code. The execution is not bound to any particular scope.
         /// </summary>
-        public dynamic Execute() {
-            // The host doesn't need the scope so do not create it here. 
+        public dynamic? Execute() {
+            // The host doesn't need the scope so do not create it here.
             // The language can treat the code as not bound to a DLR scope and change global lookup semantics accordingly.
             return SourceUnit.Execute();
         }
@@ -122,51 +125,53 @@ namespace Microsoft.Scripting.Hosting {
         /// Executes the code in a specified scope and converts the result to the specified type.
         /// The conversion is language specific.
         /// </summary>
+        [return: MaybeNull]
         public T Execute<T>(ScriptScope scope) {
-            return Engine.Operations.ConvertTo<T>((object)Execute(scope));
+            return Engine.Operations.ConvertTo<T>((object?)Execute(scope));
         }
 
         /// <summary>
         /// Executes the code in an empty scope and converts the result to the specified type.
         /// The conversion is language specific.
         /// </summary>
+        [return: MaybeNull]
         public T Execute<T>() {
-            return Engine.Operations.ConvertTo<T>((object)Execute());
+            return Engine.Operations.ConvertTo<T>((object?)Execute());
         }
 
 #if FEATURE_REMOTING
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap() {
-            return new ObjectHandle((object)Execute());
+            return new ObjectHandle((object?)Execute());
         }
 
         /// <summary>
         /// Executes the code in the specified scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap(ScriptScope scope) {
-            return new ObjectHandle((object)Execute(scope));
+            return new ObjectHandle((object?)Execute(scope));
         }
 
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions) 
+        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions)
         /// or if an exception serialization loses information.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(out ObjectHandle? exception) {
             exception = null;
             try {
-                return new ObjectHandle((object)Execute());
+                return new ObjectHandle((object?)Execute());
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
@@ -175,20 +180,20 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Executes the expression in the specified scope and return a result.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions) 
+        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions)
         /// or if an exception serialization loses information.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(ScriptScope scope, out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(ScriptScope scope, out ObjectHandle? exception) {
             exception = null;
             try {
-                return new ObjectHandle((object)Execute(scope));
+                return new ObjectHandle((object?)Execute(scope));
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
@@ -213,7 +218,7 @@ namespace Microsoft.Scripting.Hosting {
 
         #endregion
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public ScriptCodeParseResult GetCodeProperties() {
             return SourceUnit.GetCodeProperties();
         }
@@ -222,7 +227,7 @@ namespace Microsoft.Scripting.Hosting {
             return SourceUnit.GetCodeProperties(options);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public SourceCodeReader GetReader() {
             return SourceUnit.GetReader();
         }
@@ -235,12 +240,12 @@ namespace Microsoft.Scripting.Hosting {
         /// <c>Null</c> if the content is already textual and no transcoding is performed.
         /// </returns>
         /// <remarks>
-        /// Note that the default encoding specified when the script source is created could be overridden by 
+        /// Note that the default encoding specified when the script source is created could be overridden by
         /// an encoding that is found in the content preamble (Unicode BOM or a language specific encoding preamble).
         /// In that case the preamble encoding is returned. Otherwise, the default encoding is returned.
         /// </remarks>
         /// <exception cref="IOException">An I/O error occurs.</exception>
-        public Encoding DetectEncoding() {
+        public Encoding? DetectEncoding() {
             using (var reader = SourceUnit.GetReader()) {
                 return reader.Encoding;
             }
@@ -270,8 +275,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Which character sequences are considered line separators is language specific.
         /// If language doesn't specify otherwise "\r", "\n", "\r\n" are recognized line separators.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public string GetCodeLine(int line) {
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public string? GetCodeLine(int line) {
             return SourceUnit.GetCodeLine(line);
         }
 
@@ -281,11 +286,11 @@ namespace Microsoft.Scripting.Hosting {
         /// <returns>Entire content.</returns>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         /// <remarks>
-        /// The result includes language specific preambles (e.g. "#coding:UTF-8" encoding preamble recognized by Ruby), 
+        /// The result includes language specific preambles (e.g. "#coding:UTF-8" encoding preamble recognized by Ruby),
         /// but not the preamble defined by the content encoding (e.g. BOM).
         /// The entire content of the source unit is encoded by single encoding (if it is read from binary stream).
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public string GetCode() {
             return SourceUnit.GetCode();
         }
@@ -307,17 +312,16 @@ namespace Microsoft.Scripting.Hosting {
 
         // TODO: remove this? we don't support file mapping
         // (but it's still in the hosting spec)
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "line")]
-        public string MapLinetoFile(int line) {
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "line")]
+        public string? MapLinetoFile(int line) {
             return SourceUnit.Path;
         }
 
         #endregion
 
 #if FEATURE_REMOTING
-        // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
-            return null;
+            return base.InitializeLifetimeService();
         }
 #endif
     }

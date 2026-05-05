@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
+#nullable enable
 
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
@@ -13,21 +13,26 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
+
+using NotNull = Microsoft.Scripting.Runtime.NotNullAttribute;
 
 namespace Microsoft.Scripting.Hosting {
 
     /// <summary>
     /// ObjectOperations provide a large catalogue of object operations such as member access, conversions, 
     /// indexing, and things like addition.  There are several introspection and tool support services available
-    /// for more advanced hosts.  
-    /// 
+    /// for more advanced hosts.
+    /// </summary>
+    /// <remarks>
     /// You get ObjectOperation instances from ScriptEngine, and they are bound to their engines for the semantics 
     /// of the operations.  There is a default instance of ObjectOperations you can share across all uses of the 
     /// engine.  However, very advanced hosts can create new instances.
-    /// </summary>
+    /// </remarks>
     public sealed class ObjectOperations : MarshalByRefObject {
         private readonly DynamicOperations _ops;
 
@@ -46,42 +51,42 @@ namespace Microsoft.Scripting.Hosting {
         #region Local Operations
 
         /// <summary>
-        /// Returns true if the object can be called, false if it cannot.  
-        /// 
+        /// Returns true if the object can be called, false if it cannot.
+        ///
         /// Even if an object is callable Call may still fail if an incorrect number of arguments or type of arguments are provided.
         /// </summary>
-        public bool IsCallable(object obj) {
+        public bool IsCallable(object? obj) {
             return _ops.IsCallable(obj);
         }
 
         /// <summary>
         /// Invokes the provided object with the given parameters and returns the result.
-        /// 
-        /// The prefered way of calling objects is to convert the object to a strongly typed delegate 
+        ///
+        /// The prefered way of calling objects is to convert the object to a strongly typed delegate
         /// using the ConvertTo methods and then invoking that delegate.
         /// </summary>
-        public dynamic Invoke(object obj, params object[] parameters) {
+        public dynamic? Invoke(object? obj, params object?[] parameters) {
             return _ops.Invoke(obj, parameters);
         }
 
         /// <summary>
         /// Invokes a member on the provided object with the given parameters and returns the result.
         /// </summary>
-        public dynamic InvokeMember(object obj, string memberName, params object[] parameters) {
+        public dynamic? InvokeMember(object? obj, string memberName, params object?[] parameters) {
             return _ops.InvokeMember(obj, memberName, parameters);
         }
 
         /// <summary>
         /// Creates a new instance from the provided object using the given parameters, and returns the result.
         /// </summary>
-        public dynamic CreateInstance(object obj, params object[] parameters) {
+        public dynamic? CreateInstance(object? obj, params object?[] parameters) {
             return _ops.CreateInstance(obj, parameters);
         }
 
         /// <summary>
         /// Gets the member name from the object obj.  Throws an exception if the member does not exist or is write-only.
         /// </summary>
-        public dynamic GetMember(object obj, string name) {
+        public dynamic? GetMember(object? obj, string name) {
             return _ops.GetMember(obj, name);
         }
 
@@ -89,36 +94,37 @@ namespace Microsoft.Scripting.Hosting {
         /// Gets the member name from the object obj and converts it to the type T.  Throws an exception if the
         /// member does not exist, is write-only, or cannot be converted.
         /// </summary>
-        public T GetMember<T>(object obj, string name) {
+        [return: MaybeNull]
+        public T GetMember<T>(object? obj, string name) {
             return _ops.GetMember<T>(obj, name);
         }
 
         /// <summary>
-        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and 
+        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and
         /// stores the value in the value out param.
         /// </summary>
-        public bool TryGetMember(object obj, string name, out object value) {
+        public bool TryGetMember(object? obj, string name, out object? value) {
             return _ops.TryGetMember(obj, name, out value);
         }
 
         /// <summary>
         /// Returns true if the object has a member named name, false if the member does not exist.
         /// </summary>
-        public bool ContainsMember(object obj, string name) {
+        public bool ContainsMember(object? obj, string name) {
             return _ops.ContainsMember(obj, name);
         }
 
         /// <summary>
-        /// Removes the member name from the object obj.  
+        /// Removes the member name from the object obj.
         /// </summary>
-        public void RemoveMember(object obj, string name) {
+        public void RemoveMember(object? obj, string name) {
             _ops.RemoveMember(obj, name);
         }
 
         /// <summary>
         /// Sets the member name on object obj to value.
         /// </summary>
-        public void SetMember(object obj, string name, object value) {
+        public void SetMember(object? obj, string name, object? value) {
             _ops.SetMember(obj, name, value);
         }
 
@@ -126,14 +132,14 @@ namespace Microsoft.Scripting.Hosting {
         /// Sets the member name on object obj to value.  This overload can be used to avoid
         /// boxing and casting of strongly typed members.
         /// </summary>
-        public void SetMember<T>(object obj, string name, T value) {
+        public void SetMember<T>(object? obj, string name, T value) {
             _ops.SetMember<T>(obj, name, value);
         }
 
         /// <summary>
         /// Gets the member name from the object obj.  Throws an exception if the member does not exist or is write-only.
         /// </summary>
-        public dynamic GetMember(object obj, string name, bool ignoreCase) {
+        public dynamic? GetMember(object? obj, string name, bool ignoreCase) {
             return _ops.GetMember(obj, name, ignoreCase);
         }
 
@@ -141,36 +147,37 @@ namespace Microsoft.Scripting.Hosting {
         /// Gets the member name from the object obj and converts it to the type T.  Throws an exception if the
         /// member does not exist, is write-only, or cannot be converted.
         /// </summary>
-        public T GetMember<T>(object obj, string name, bool ignoreCase) {
+        [return: MaybeNull]
+        public T GetMember<T>(object? obj, string name, bool ignoreCase) {
             return _ops.GetMember<T>(obj, name, ignoreCase);
         }
 
         /// <summary>
-        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and 
+        /// Gets the member name from the object obj.  Returns true if the member is successfully retrieved and
         /// stores the value in the value out param.
         /// </summary>
-        public bool TryGetMember(object obj, string name, bool ignoreCase, out object value) {
+        public bool TryGetMember(object? obj, string name, bool ignoreCase, out object? value) {
             return _ops.TryGetMember(obj, name, ignoreCase, out value);
         }
 
         /// <summary>
         /// Returns true if the object has a member named name, false if the member does not exist.
         /// </summary>
-        public bool ContainsMember(object obj, string name, bool ignoreCase) {
+        public bool ContainsMember(object? obj, string name, bool ignoreCase) {
             return _ops.ContainsMember(obj, name, ignoreCase);
         }
 
         /// <summary>
-        /// Removes the member name from the object obj.  
+        /// Removes the member name from the object obj.
         /// </summary>
-        public void RemoveMember(object obj, string name, bool ignoreCase) {
+        public void RemoveMember(object? obj, string name, bool ignoreCase) {
             _ops.RemoveMember(obj, name, ignoreCase);
         }
 
         /// <summary>
         /// Sets the member name on object obj to value.
         /// </summary>
-        public void SetMember(object obj, string name, object value, bool ignoreCase) {
+        public void SetMember(object? obj, string name, object? value, bool ignoreCase) {
             _ops.SetMember(obj, name, value, ignoreCase);
         }
 
@@ -178,23 +185,24 @@ namespace Microsoft.Scripting.Hosting {
         /// Sets the member name on object obj to value.  This overload can be used to avoid
         /// boxing and casting of strongly typed members.
         /// </summary>
-        public void SetMember<T>(object obj, string name, T value, bool ignoreCase) {
+        public void SetMember<T>(object? obj, string name, T value, bool ignoreCase) {
             _ops.SetMember<T>(obj, name, value, ignoreCase);
         }
 
         /// <summary>
-        /// Converts the object obj to the type T.  The conversion will be explicit or implicit depending on 
+        /// Converts the object obj to the type T.  The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
-        public T ConvertTo<T>(object obj) {
+        [return: MaybeNull]
+        public T ConvertTo<T>(object? obj) {
             return _ops.ConvertTo<T>(obj);
         }
 
         /// <summary>
-        /// Converts the object obj to the type type. The conversion will be explicit or implicit depending on 
+        /// Converts the object obj to the type type. The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
-        public object ConvertTo(object obj, Type type) {
+        public object? ConvertTo(object? obj, Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ConvertTo(obj, type);
@@ -202,33 +210,34 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the object obj to the type T.  Returns true if the value can be converted, false if it cannot.
-        /// 
+        ///
         /// The conversion will be explicit or implicit depending on what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo<T>(object obj, out T result) {
+        public bool TryConvertTo<T>(object? obj, [MaybeNull] out T result) {
             return _ops.TryConvertTo<T>(obj, out result);
         }
 
         /// <summary>
         /// Converts the object obj to the type type.  Returns true if the value can be converted, false if it cannot.
-        /// 
+        ///
         /// The conversion will be explicit or implicit depending on what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo(object obj, Type type, out object result) {
+        public bool TryConvertTo(object? obj, Type type, out object? result) {
             return _ops.TryConvertTo(obj, type, out result);
         }
 
         /// <summary>
         /// Converts the object obj to the type T including explicit conversions which may lose information.
         /// </summary>
-        public T ExplicitConvertTo<T>(object obj) {
+        [return: MaybeNull]
+        public T ExplicitConvertTo<T>(object? obj) {
             return _ops.ExplicitConvertTo<T>(obj);
         }
 
         /// <summary>
         /// Converts the object obj to the type type including explicit conversions which may lose information.
         /// </summary>
-        public object ExplicitConvertTo(object obj, Type type) {
+        public object? ExplicitConvertTo(object? obj, Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ExplicitConvertTo(obj, type);
@@ -236,19 +245,19 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the object obj to the type T including explicit conversions which may lose information.
-        /// 
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo<T>(object obj, out T result) {
+        public bool TryExplicitConvertTo<T>(object? obj, [MaybeNull] out T result) {
             return _ops.TryExplicitConvertTo<T>(obj, out result);
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including explicit conversions which may lose information.  
-        /// 
+        /// Converts the object obj to the type type including explicit conversions which may lose information.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo(object obj, Type type, out object result) {
+        public bool TryExplicitConvertTo(object? obj, Type type, out object? result) {
             return _ops.TryExplicitConvertTo(obj, type, out result);
         }
 
@@ -256,14 +265,15 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Converts the object obj to the type T including implicit conversions.
         /// </summary>
-        public T ImplicitConvertTo<T>(object obj) {
+        [return: MaybeNull]
+        public T ImplicitConvertTo<T>(object? obj) {
             return _ops.ImplicitConvertTo<T>(obj);
         }
 
         /// <summary>
         /// Converts the object obj to the type type including implicit conversions.
         /// </summary>
-        public object ImplicitConvertTo(object obj, Type type) {
+        public object? ImplicitConvertTo(object? obj, Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             return _ops.ImplicitConvertTo(obj, type);
@@ -271,32 +281,33 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the object obj to the type T including implicit conversions.
-        /// 
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo<T>(object obj, out T result) {
+        public bool TryImplicitConvertTo<T>(object? obj, [MaybeNull] out T result) {
             return _ops.TryImplicitConvertTo<T>(obj, out result);
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including implicit conversions.  
-        /// 
+        /// Converts the object obj to the type type including implicit conversions.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo(object obj, Type type, out object result) {
+        public bool TryImplicitConvertTo(object? obj, Type type, out object? result) {
             return _ops.TryImplicitConvertTo(obj, type, out result);
         }
 
         /// <summary>
         /// Performs a generic unary operation on the specified target and returns the result.
         /// </summary>
-        public dynamic DoOperation(ExpressionType operation, object target) {
-            return _ops.DoOperation<object, object>(operation, target);
+        public dynamic? DoOperation(ExpressionType operation, object? target) {
+            return _ops.DoOperation<object?, object?>(operation, target);
         }
 
         /// <summary>
         /// Performs a generic unary operation on the strongly typed target and returns the value as the specified type
         /// </summary>
+        [return: MaybeNull]
         public TResult DoOperation<TTarget, TResult>(ExpressionType operation, TTarget target) {
             return _ops.DoOperation<TTarget, TResult>(operation, target);
         }
@@ -304,14 +315,15 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Performs the generic binary operation on the specified targets and returns the result.
         /// </summary>
-        public dynamic DoOperation(ExpressionType operation, object target, object other) {
-            return _ops.DoOperation<object, object, object>(operation, target, other);
+        public dynamic? DoOperation(ExpressionType operation, object? target, object? other) {
+            return _ops.DoOperation<object?, object?, object?>(operation, target, other);
         }
 
         /// <summary>
         /// Peforms the generic binary operation on the specified strongly typed targets and returns
         /// the strongly typed result.
         /// </summary>
+        [return: MaybeNull]
         public TResult DoOperation<TTarget, TOther, TResult>(ExpressionType operation, TTarget target, TOther other) {
             return _ops.DoOperation<TTarget, TOther, TResult>(operation, target, other);
         }
@@ -320,7 +332,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Performs addition on the specified targets and returns the result.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Add(object self, object other) {
+        public dynamic? Add(object? self, object? other) {
             return DoOperation(ExpressionType.Add, self, other);
         }
 
@@ -328,7 +340,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Performs subtraction on the specified targets and returns the result.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Subtract(object self, object other) {
+        public dynamic? Subtract(object? self, object? other) {
             return DoOperation(ExpressionType.Subtract, self, other);
         }
 
@@ -336,7 +348,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Raises the first object to the power of the second object.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Power(object self, object other) {
+        public dynamic? Power(object? self, object? other) {
             return DoOperation(ExpressionType.Power, self, other);
         }
 
@@ -344,7 +356,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Multiplies the two objects.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Multiply(object self, object other) {
+        public dynamic? Multiply(object? self, object? other) {
             return DoOperation(ExpressionType.Multiply, self, other);
         }
 
@@ -352,7 +364,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Divides the first object by the second object.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Divide(object self, object other) {
+        public dynamic? Divide(object? self, object? other) {
             return DoOperation(ExpressionType.Divide, self, other);
         }
 
@@ -360,14 +372,14 @@ namespace Microsoft.Scripting.Hosting {
         /// Performs modulus of the 1st object by the second object.  Throws an exception
         /// if the operation cannot be performed.
         /// </summary>
-        public dynamic Modulo(object self, object other) {
+        public dynamic? Modulo(object? self, object? other) {
             return DoOperation(ExpressionType.Modulo, self, other);
         }
         /// <summary>
         /// Shifts the left object left by the right object.  Throws an exception if the
         /// operation cannot be performed.
         /// </summary>
-        public dynamic LeftShift(object self, object other) {
+        public dynamic? LeftShift(object? self, object? other) {
             return DoOperation(ExpressionType.LeftShift, self, other);
         }
 
@@ -375,31 +387,31 @@ namespace Microsoft.Scripting.Hosting {
         /// Shifts the left object right by the right object.  Throws an exception if the
         /// operation cannot be performed.
         /// </summary>
-        public dynamic RightShift(object self, object other) {
+        public dynamic? RightShift(object? self, object? other) {
             return DoOperation(ExpressionType.RightShift, self, other);
         }
 
         /// <summary>
-        /// Performs a bitwise-and of the two operands.  Throws an exception if the operation 
+        /// Performs a bitwise-and of the two operands.  Throws an exception if the operation
         /// cannot be performed.
         /// </summary>
-        public dynamic BitwiseAnd(object self, object other) {
+        public dynamic? BitwiseAnd(object? self, object? other) {
             return DoOperation(ExpressionType.And, self, other);
         }
 
         /// <summary>
-        /// Performs a bitwise-or of the two operands.  Throws an exception if the operation 
+        /// Performs a bitwise-or of the two operands.  Throws an exception if the operation
         /// cannot be performed.
         /// </summary>
-        public dynamic BitwiseOr(object self, object other) {
+        public dynamic? BitwiseOr(object? self, object? other) {
             return DoOperation(ExpressionType.Or, self, other);
         }
 
         /// <summary>
-        /// Performs a exclusive-or of the two operands.  Throws an exception if the operation 
+        /// Performs a exclusive-or of the two operands.  Throws an exception if the operation
         /// cannot be performed.
         /// </summary>
-        public dynamic ExclusiveOr(object self, object other) {
+        public dynamic? ExclusiveOr(object? self, object? other) {
             return DoOperation(ExpressionType.ExclusiveOr, self, other);
         }
 
@@ -407,55 +419,55 @@ namespace Microsoft.Scripting.Hosting {
         /// Compares the two objects and returns true if the left object is less than the right object.
         /// Throws an exception if hte comparison cannot be performed.
         /// </summary>
-        public bool LessThan(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.LessThan, self, other));
+        public bool LessThan(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.LessThan, self, other));
         }
 
         /// <summary>
         /// Compares the two objects and returns true if the left object is greater than the right object.
         /// Throws an exception if hte comparison cannot be performed.
         /// </summary>
-        public bool GreaterThan(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.GreaterThan, self, other));
+        public bool GreaterThan(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.GreaterThan, self, other));
         }
 
         /// <summary>
         /// Compares the two objects and returns true if the left object is less than or equal to the right object.
         /// Throws an exception if hte comparison cannot be performed.
         /// </summary>
-        public bool LessThanOrEqual(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.LessThanOrEqual, self, other));
+        public bool LessThanOrEqual(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.LessThanOrEqual, self, other));
         }
 
         /// <summary>
         /// Compares the two objects and returns true if the left object is greater than or equal to the right object.
         /// Throws an exception if hte comparison cannot be performed.
         /// </summary>
-        public bool GreaterThanOrEqual(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.GreaterThanOrEqual, self, other));
+        public bool GreaterThanOrEqual(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.GreaterThanOrEqual, self, other));
         }
 
         /// <summary>
         /// Compares the two objects and returns true if the left object is equal to the right object.
         /// Throws an exception if the comparison cannot be performed.
         /// </summary>
-        public bool Equal(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.Equal, self, other));
+        public bool Equal(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.Equal, self, other));
         }
 
         /// <summary>
         /// Compares the two objects and returns true if the left object is not equal to the right object.
         /// Throws an exception if hte comparison cannot be performed.
         /// </summary>
-        public bool NotEqual(object self, object other) {
-            return ConvertTo<bool>(_ops.DoOperation<object, object, object>(ExpressionType.NotEqual, self, other));
+        public bool NotEqual(object? self, object? other) {
+            return ConvertTo<bool>(_ops.DoOperation<object?, object?, object?>(ExpressionType.NotEqual, self, other));
         }
 
         /// <summary>
         /// Returns a string which describes the object as it appears in source code
         /// </summary>
         [Obsolete("Use Format method instead.")]
-        public string GetCodeRepresentation(object obj) {
+        public string? GetCodeRepresentation(object obj) {
             return obj.ToString();
             //return _ops.DoOperation<object, string>(StandardOperators.CodeRepresentation, obj);
         }
@@ -463,28 +475,28 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Returns a string representation of the object in a language specific object display format.
         /// </summary>
-        public string Format(object obj) {
+        public string Format(object? obj) {
             return _ops.Format(obj);
         }
 
         /// <summary>
         /// Returns a list of strings which contain the known members of the object.
         /// </summary>
-        public IList<string> GetMemberNames(object obj) {
+        public IList<string> GetMemberNames(object? obj) {
             return _ops.GetMemberNames(obj);
         }
 
         /// <summary>
         /// Returns a string providing documentation for the specified object.
         /// </summary>
-        public string GetDocumentation(object obj) {
+        public string GetDocumentation(object? obj) {
             return _ops.GetDocumentation(obj);
         }
 
         /// <summary>
         /// Returns a list of signatures applicable for calling the specified object in a form displayable to the user.
         /// </summary>
-        public IList<string> GetCallSignatures(object obj) {
+        public IList<string> GetCallSignatures(object? obj) {
             return _ops.GetCallSignatures(obj);
         }
 
@@ -507,35 +519,35 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Invokes the specified remote object with the specified remote parameters.
-        /// 
+        ///
         /// Though delegates are preferable for calls they may not always be usable for remote objects.
         /// </summary>
         public ObjectHandle Invoke([NotNull]ObjectHandle obj, params ObjectHandle[] parameters) {
             ContractUtils.RequiresNotNull(parameters, nameof(parameters));
 
-            return new ObjectHandle((object)Invoke(GetLocalObject(obj), GetLocalObjects(parameters)));
+            return new ObjectHandle((object?)Invoke(GetLocalObject(obj), GetLocalObjects(parameters)));
         }
 
         /// <summary>
         /// Invokes the specified remote object with the local parameters which will be serialized
         /// to the remote app domain.
         /// </summary>
-        public ObjectHandle Invoke([NotNull]ObjectHandle obj, params object[] parameters) {
-            return new ObjectHandle((object)Invoke(GetLocalObject(obj), parameters));
+        public ObjectHandle Invoke([NotNull]ObjectHandle obj, params object?[] parameters) {
+            return new ObjectHandle((object?)Invoke(GetLocalObject(obj), parameters));
         }
 
         /// <summary>
         /// Creates a new remote instance from the provided remote object using the given parameters, and returns the result.
         /// </summary>
         public ObjectHandle CreateInstance([NotNull]ObjectHandle obj, [NotNull]params ObjectHandle[] parameters) {
-            return new ObjectHandle((object)CreateInstance(GetLocalObject(obj), GetLocalObjects(parameters)));
+            return new ObjectHandle((object?)CreateInstance(GetLocalObject(obj), GetLocalObjects(parameters)));
         }
 
         /// <summary>
         /// Creates a new remote instance from the provided remote object using the given parameters, and returns the result.
         /// </summary>
-        public ObjectHandle CreateInstance([NotNull]ObjectHandle obj, params object[] parameters) {
-            return new ObjectHandle((object)CreateInstance(GetLocalObject(obj), parameters));
+        public ObjectHandle CreateInstance([NotNull]ObjectHandle obj, params object?[] parameters) {
+            return new ObjectHandle((object?)CreateInstance(GetLocalObject(obj), parameters));
         }
 
         /// <summary>
@@ -558,13 +570,14 @@ namespace Microsoft.Scripting.Hosting {
         /// is write-only.
         /// </summary>
         public ObjectHandle GetMember([NotNull]ObjectHandle obj, string name) {
-            return new ObjectHandle((object)GetMember(GetLocalObject(obj), name));
+            return new ObjectHandle((object?)GetMember(GetLocalObject(obj), name));
         }
 
         /// <summary>
         /// Gets the member name on the remote object.  Throws an exception if the member is not defined or
         /// is write-only.
         /// </summary>
+        [return: MaybeNull]
         public T GetMember<T>([NotNull]ObjectHandle obj, string name) {
             return GetMember<T>(GetLocalObject(obj), name);
         }
@@ -573,8 +586,8 @@ namespace Microsoft.Scripting.Hosting {
         /// Gets the member name on the remote object.  Returns false if the member is not defined or
         /// is write-only.
         /// </summary>
-        public bool TryGetMember([NotNull]ObjectHandle obj, string name, out ObjectHandle value) {
-            if (TryGetMember(GetLocalObject(obj), name, out object val)) {
+        public bool TryGetMember([NotNull]ObjectHandle obj, string name, [NotNullWhen(true)] out ObjectHandle? value) {
+            if (TryGetMember(GetLocalObject(obj), name, out object? val)) {
                 value = new ObjectHandle(val);
                 return true;
             }
@@ -584,7 +597,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         /// <summary>
-        /// Tests to see if the member name is defined on the remote object.  
+        /// Tests to see if the member name is defined on the remote object.
         /// </summary>
         public bool ContainsMember([NotNull]ObjectHandle obj, string name) {
             return ContainsMember(GetLocalObject(obj), name);
@@ -599,7 +612,7 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the remote object into the specified type returning a handle to
-        /// the new remote object. The conversion will be explicit or implicit depending on 
+        /// the new remote object. The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
         public ObjectHandle ConvertTo<T>([NotNull]ObjectHandle obj) {
@@ -608,7 +621,7 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the remote object into the specified type returning a handle to
-        /// the new remote object. The conversion will be explicit or implicit depending on 
+        /// the new remote object. The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
         public ObjectHandle ConvertTo([NotNull]ObjectHandle obj, Type type) {
@@ -618,11 +631,11 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Converts the remote object into the specified type returning a handle to
         /// the new remote object. Returns true if the value can be converted,
-        /// false if it cannot. The conversion will be explicit or implicit depending on 
+        /// false if it cannot. The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            if (TryConvertTo<T>(GetLocalObject(obj), out T resultObj)) {
+        public bool TryConvertTo<T>([NotNull]ObjectHandle obj, [NotNullWhen(true)] out ObjectHandle? result) {
+            if (TryConvertTo<T>(GetLocalObject(obj), out var resultObj)) {
                 result = new ObjectHandle(resultObj);
                 return true;
             }
@@ -633,11 +646,11 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Converts the remote object into the specified type returning a handle to
         /// the new remote object. Returns true if the value can be converted,
-        /// false if it cannot. The conversion will be explicit or implicit depending on 
+        /// false if it cannot. The conversion will be explicit or implicit depending on
         /// what the langauge prefers.
         /// </summary>
-        public bool TryConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            if (TryConvertTo(GetLocalObject(obj), type, out object resultObj)) {
+        public bool TryConvertTo([NotNull]ObjectHandle obj, Type type, [NotNullWhen(true)] out ObjectHandle? result) {
+            if (TryConvertTo(GetLocalObject(obj), type, out object? resultObj)) {
                 result = new ObjectHandle(resultObj);
                 return true;
             }
@@ -663,22 +676,22 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the object obj to the type T including explicit conversions which may lose information.
-        /// 
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            bool res = _ops.TryExplicitConvertTo<T>(GetLocalObject(obj), out T _);
+        public bool TryExplicitConvertTo<T>([NotNull]ObjectHandle obj, [NotNullWhen(true)] out ObjectHandle? result) {
+            bool res = _ops.TryExplicitConvertTo<T>(GetLocalObject(obj), out _);
             result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including explicit conversions which may lose information.  
-        /// 
+        /// Converts the object obj to the type type including explicit conversions which may lose information.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryExplicitConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            bool res = _ops.TryExplicitConvertTo(GetLocalObject(obj), type, out object _);
+        public bool TryExplicitConvertTo([NotNull]ObjectHandle obj, Type type, [NotNullWhen(true)] out ObjectHandle? result) {
+            bool res = _ops.TryExplicitConvertTo(GetLocalObject(obj), type, out object? _);
             result = res ? new ObjectHandle(obj) : null;
             return res;
         }
@@ -701,22 +714,22 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Converts the object obj to the type T including implicit conversions.
-        /// 
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo<T>([NotNull]ObjectHandle obj, out ObjectHandle result) {
-            bool res = _ops.TryImplicitConvertTo<T>(GetLocalObject(obj), out T _);
+        public bool TryImplicitConvertTo<T>([NotNull]ObjectHandle obj, [NotNullWhen(true)] out ObjectHandle? result) {
+            bool res = _ops.TryImplicitConvertTo<T>(GetLocalObject(obj), out _);
             result = res ? new ObjectHandle(obj) : null;
             return res;
         }
 
         /// <summary>
-        /// Converts the object obj to the type type including implicit conversions.  
-        /// 
+        /// Converts the object obj to the type type including implicit conversions.
+        ///
         /// Returns true if the value can be converted, false if it cannot.
         /// </summary>
-        public bool TryImplicitConvertTo([NotNull]ObjectHandle obj, Type type, out ObjectHandle result) {
-            bool res = _ops.TryImplicitConvertTo(GetLocalObject(obj), type, out object _);
+        public bool TryImplicitConvertTo([NotNull]ObjectHandle obj, Type type, [NotNullWhen(true)] out ObjectHandle? result) {
+            bool res = _ops.TryImplicitConvertTo(GetLocalObject(obj), type, out object? _);
             result = res ? new ObjectHandle(obj) : null;
             return res;
         }
@@ -725,6 +738,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Unwraps the remote object and converts it into the specified type before
         /// returning it.
         /// </summary>
+        [return: MaybeNull]
         public T Unwrap<T>([NotNull]ObjectHandle obj) {
             return ConvertTo<T>(GetLocalObject(obj));
         }
@@ -733,91 +747,91 @@ namespace Microsoft.Scripting.Hosting {
         /// Performs the specified unary operator on the remote object.
         /// </summary>
         public ObjectHandle DoOperation(ExpressionType op, [NotNull]ObjectHandle target) {
-            return new ObjectHandle((object)DoOperation(op, GetLocalObject(target)));
+            return new ObjectHandle((object?)DoOperation(op, GetLocalObject(target)));
         }
 
         /// <summary>
         /// Performs the specified binary operator on the remote object.
         /// </summary>
         public ObjectHandle DoOperation(ExpressionType op, ObjectHandle target, ObjectHandle other) {
-            return new ObjectHandle((object)DoOperation(op, GetLocalObject(target), GetLocalObject(other)));
+            return new ObjectHandle((object?)DoOperation(op, GetLocalObject(target), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Adds the two remote objects.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle Add([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Add(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Add(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Subtracts the 1st remote object from the second.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle Subtract([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Subtract(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Subtract(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Raises the 1st remote object to the power of the 2nd.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle Power([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Power(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Power(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Multiplies the two remote objects.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle Multiply([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Multiply(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Multiply(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Divides the 1st remote object by the 2nd. Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle Divide([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Divide(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Divide(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Performs modulus on the 1st remote object by the 2nd.  Throws an exception if the operation cannot be performed.
-        /// </summary>        
+        /// </summary>
         public ObjectHandle Modulo([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)Modulo(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)Modulo(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Shifts the 1st remote object left by the 2nd remote object.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle LeftShift([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)LeftShift(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)LeftShift(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Shifts the 1st remote  object right by the 2nd remote object.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle RightShift([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)RightShift(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)RightShift(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Performs bitwise-and on the two remote objects.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle BitwiseAnd([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)BitwiseAnd(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)BitwiseAnd(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Performs bitwise-or on the two remote objects.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle BitwiseOr([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)BitwiseOr(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)BitwiseOr(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
         /// Performs exclusive-or on the two remote objects.  Throws an exception if the operation cannot be performed.
         /// </summary>
         public ObjectHandle ExclusiveOr([NotNull]ObjectHandle self, [NotNull]ObjectHandle other) {
-            return new ObjectHandle((object)ExclusiveOr(GetLocalObject(self), GetLocalObject(other)));
+            return new ObjectHandle((object?)ExclusiveOr(GetLocalObject(self), GetLocalObject(other)));
         }
 
         /// <summary>
@@ -893,7 +907,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Helper to unwrap an object - in the future maybe we should validate the current app domain.
         /// </summary>
-        private static object GetLocalObject([NotNull]ObjectHandle obj) {
+        private static object? GetLocalObject([NotNull]ObjectHandle obj) {
             ContractUtils.RequiresNotNull(obj, nameof(obj));
 
             return obj.Unwrap();
@@ -902,10 +916,10 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Helper to unwrap multiple objects
         /// </summary>
-        private static object[] GetLocalObjects(ObjectHandle[] ohs) {
-            Debug.Assert(ohs is not null);
+        private static object?[] GetLocalObjects(ObjectHandle[] ohs) {
+            Assert.NotNull(ohs);
 
-            object[] res = new object[ohs.Length];
+            object?[] res = new object?[ohs.Length];
             for (int i = 0; i < res.Length; i++) {
                 res[i] = GetLocalObject(ohs[i]);
             }
@@ -913,9 +927,8 @@ namespace Microsoft.Scripting.Hosting {
             return res;
         }
 
-        // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
-            return null;
+            return base.InitializeLifetimeService();
         }
 #endif
 

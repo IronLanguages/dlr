@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -11,6 +13,7 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
@@ -50,7 +53,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="MissingMemberException">The specified name is not defined in the scope.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
-        public dynamic GetVariable(string name) {
+        public dynamic? GetVariable(string name) {
             return Engine.LanguageContext.ScopeGetVariable(Scope, name);
         }
 
@@ -61,6 +64,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="MissingMemberException">The specified name is not defined in the scope.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
+        [return: MaybeNull]
         public T GetVariable<T>(string name) {
             return Engine.LanguageContext.ScopeGetVariable<T>(Scope, name);
         }
@@ -69,7 +73,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Tries to get a value stored in the scope under the given name.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
-        public bool TryGetVariable(string name, out dynamic value) {
+        public bool TryGetVariable(string name, out dynamic? value) {
             return Engine.LanguageContext.ScopeTryGetVariable(Scope, name, out value);
         }
 
@@ -79,8 +83,8 @@ namespace Microsoft.Scripting.Hosting {
         /// If no language is associated with the scope, the default CLR conversion is attempted.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
-        public bool TryGetVariable<T>(string name, out T value) {
-            if(Engine.LanguageContext.ScopeTryGetVariable(Scope, name, out object result)) {
+        public bool TryGetVariable<T>(string name, [MaybeNull] out T value) {
+            if (Engine.LanguageContext.ScopeTryGetVariable(Scope, name, out object? result)) {
                 value = Engine.Operations.ConvertTo<T>(result);
                 return true;
             }
@@ -92,7 +96,7 @@ namespace Microsoft.Scripting.Hosting {
         /// Sets the name to the specified value.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
-        public void SetVariable(string name, object value) {
+        public void SetVariable(string name, object? value) {
             Engine.LanguageContext.ScopeSetVariable(Scope, name, value);
         }
 
@@ -103,16 +107,16 @@ namespace Microsoft.Scripting.Hosting {
         /// <exception cref="MissingMemberException">The specified name is not defined in the scope.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public ObjectHandle GetVariableHandle(string name) {
-            return new ObjectHandle((object)GetVariable(name));
+            return new ObjectHandle((object?)GetVariable(name));
         }
 
         /// <summary>
         /// Tries to get a handle for a value stored in the scope under the given name.
-        /// Returns <c>true</c> if there is such name, <c>false</c> otherwise. 
+        /// Returns <c>true</c> if there is such name, <c>false</c> otherwise.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
-        public bool TryGetVariableHandle(string name, out ObjectHandle handle) {
-            if (TryGetVariable(name, out object value)) {
+        public bool TryGetVariableHandle(string name, [NotNullWhen(true)] out ObjectHandle? handle) {
+            if (TryGetVariable(name, out object? value)) {
                 handle = new ObjectHandle(value);
                 return true;
             }
@@ -139,8 +143,7 @@ namespace Microsoft.Scripting.Hosting {
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is a <c>null</c> reference.</exception>
         public bool ContainsVariable(string name) {
-            object dummy;
-            return TryGetVariable(name, out dummy);
+            return TryGetVariable(name, out object? _);
         }
 
         /// <summary>
@@ -160,7 +163,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Gets a list of variable names stored in the scope.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<string> GetVariableNames() {
             // Remoting: we eagerly enumerate all variables to avoid cross domain calls for each item.
             return Engine.Operations.GetMemberNames((object)Scope.Storage);
@@ -169,13 +172,13 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Gets an array of variable names and their values stored in the scope.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<KeyValuePair<string, dynamic>> GetItems() {
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public IEnumerable<KeyValuePair<string, dynamic?>> GetItems() {
             // Remoting: we eagerly enumerate all variables to avoid cross domain calls for each item.
-            var result = new List<KeyValuePair<string, object>>();
-            
+            var result = new List<KeyValuePair<string, dynamic?>>();
+
             foreach (string name in GetVariableNames()) {
-                result.Add(new KeyValuePair<string, object>(name, (object)Engine.Operations.GetMember((object)Scope.Storage, name)));
+                result.Add(new KeyValuePair<string, dynamic?>(name, (object?)Engine.Operations.GetMember((object)Scope.Storage, name)));
             }
 
             result.TrimExcess();
@@ -198,7 +201,7 @@ namespace Microsoft.Scripting.Hosting {
                 get {
                     System.Collections.Hashtable result = new System.Collections.Hashtable();
                     foreach (var variable in _scope.GetItems()) {
-                        result[variable.Key] = (object)variable.Value;
+                        result[variable.Key] = (object?)variable.Value;
                     }
                     return result;
                 }
@@ -229,7 +232,7 @@ namespace Microsoft.Scripting.Hosting {
                         Expression.Condition(
                             Expression.Call(
                                 Expression.Convert(Expression, typeof(ScriptScope)),
-                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() }),
+                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() })!,
                                 Expression.Constant(action.Name),
                                 result
                             ),
@@ -248,7 +251,7 @@ namespace Microsoft.Scripting.Hosting {
                     Expression.Block(
                         Expression.Call(
                             Expression.Convert(Expression, typeof(ScriptScope)),
-                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.SetVariable), new[] { typeof(string), typeof(object) }),
+                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.SetVariable), new[] { typeof(string), typeof(object) })!,
                             Expression.Constant(action.Name),
                             objValue
                         ),
@@ -265,7 +268,7 @@ namespace Microsoft.Scripting.Hosting {
                     Expression.IfThenElse(
                         Expression.Call(
                             Expression.Convert(Expression, typeof(ScriptScope)),
-                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.RemoveVariable)),
+                            typeof(ScriptScope).GetMethod(nameof(ScriptScope.RemoveVariable))!,
                             Expression.Constant(action.Name)
                         ),
                         Expression.Empty(),
@@ -288,7 +291,7 @@ namespace Microsoft.Scripting.Hosting {
                         Expression.Condition(
                             Expression.Call(
                                 Expression.Convert(Expression, typeof(ScriptScope)),
-                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() }),
+                                typeof(ScriptScope).GetMethod(nameof(ScriptScope.TryGetVariable), new[] { typeof(string), typeof(object).MakeByRefType() })!,
                                 Expression.Constant(action.Name),
                                 result
                             ),
@@ -301,16 +304,15 @@ namespace Microsoft.Scripting.Hosting {
             }
 
             public override IEnumerable<string> GetDynamicMemberNames() {
-                return ((ScriptScope)Value).GetVariableNames();
+                return ((ScriptScope)Value!).GetVariableNames();  // Value initialized in the base constructor to non-null ScriptScope
             }
         }
 
         #endregion
 
 #if FEATURE_REMOTING
-        // TODO: Figure out what is the right lifetime
         public override object InitializeLifetimeService() {
-            return null;
+            return base.InitializeLifetimeService();
         }
 #endif
     }
