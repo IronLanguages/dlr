@@ -72,8 +72,8 @@ namespace Microsoft.Scripting.Hosting {
         #endregion
 
 #if FEATURE_REMOTING
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
     }

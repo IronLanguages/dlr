@@ -29,8 +29,8 @@ namespace Microsoft.Scripting.Hosting {
         public abstract void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity);
 
 #if FEATURE_REMOTING
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
     }

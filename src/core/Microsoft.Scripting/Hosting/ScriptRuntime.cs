@@ -112,8 +112,8 @@ namespace Microsoft.Scripting.Hosting {
             )!;
         }
 
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
         #endregion

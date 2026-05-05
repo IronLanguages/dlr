@@ -619,8 +619,8 @@ namespace Microsoft.Scripting.Hosting {
         #region Remote API
 
 #if FEATURE_REMOTING
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
 

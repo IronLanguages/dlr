@@ -74,8 +74,8 @@ namespace Microsoft.Scripting.Hosting {
             return _context.GetStackFrames(exceptionObj!);
         }
 
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
     }
