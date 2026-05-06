@@ -237,7 +237,7 @@ namespace Microsoft.Scripting.Runtime {
 
 #if FEATURE_CODEDOM
         // Convert a CodeDom to source code, and output the generated code and the line number mappings (if any)
-        public virtual SourceUnit GenerateSourceCode(System.CodeDom.CodeObject codeDom, string path, SourceCodeKind kind) {
+        public virtual SourceUnit GenerateSourceCode(System.CodeDom.CodeObject codeDom, string? path, SourceCodeKind kind) {
             throw new NotImplementedException();
         }
 #endif

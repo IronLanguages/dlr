@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -11,9 +13,10 @@ using MarshalByRefObject = System.Object;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using Microsoft.Scripting.Runtime;
@@ -29,8 +32,8 @@ namespace Microsoft.Scripting.Hosting {
         private readonly InvariantContext _invariantContext;
         private readonly Lock _lock = new();
         private ScriptScope _globals;
-        private Scope _scopeGlobals;
-        private ScriptEngine _invariantEngine;
+        private Scope? _scopeGlobals;
+        private ScriptEngine? _invariantEngine;
 
         /// <summary>
         /// Creates ScriptRuntime in the current app-domain and initialized according to the the specified settings.
@@ -45,9 +48,9 @@ namespace Microsoft.Scripting.Hosting {
             Setup = setup;
 
             try {
-                Host = (ScriptHost)Activator.CreateInstance(setup.HostType, setup.HostArguments.ToArray<object>());
+                Host = (ScriptHost)Activator.CreateInstance(setup.HostType, setup.HostArguments.ToArray<object>())!;
             } catch (TargetInvocationException e) {
-                throw new InvalidImplementationException(Strings.InvalidCtorImplementation(setup.HostType, e.InnerException.Message), e.InnerException);
+                throw new InvalidImplementationException(Strings.InvalidCtorImplementation(setup.HostType, e.InnerException?.Message ?? string.Empty), e.InnerException);
             } catch (Exception e) {
                 throw new InvalidImplementationException(Strings.InvalidCtorImplementation(setup.HostType, e.Message), e);
             }
@@ -66,7 +69,7 @@ namespace Microsoft.Scripting.Hosting {
 
             Host.SetRuntime(this);
 
-            if (!setup.Options.TryGetValue("NoDefaultReferences", out object noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
+            if (!setup.Options.TryGetValue("NoDefaultReferences", out object? noDefaultRefs) || Convert.ToBoolean(noDefaultRefs) == false) {
                 LoadAssembly(typeof(string).Assembly);
                 LoadAssembly(typeof(Debug).Assembly);
             }
@@ -98,19 +101,18 @@ namespace Microsoft.Scripting.Hosting {
         public static ScriptRuntime CreateRemote(AppDomain domain, ScriptRuntimeSetup setup) {
             ContractUtils.RequiresNotNull(domain, nameof(domain));
             return (ScriptRuntime)domain.CreateInstanceAndUnwrap(
-                typeof(ScriptRuntime).Assembly.FullName, 
-                typeof(ScriptRuntime).FullName, 
-                false, 
-                BindingFlags.Default, 
-                null, 
-                new object[] { setup }, 
+                typeof(ScriptRuntime).Assembly.FullName!,
+                typeof(ScriptRuntime).FullName!,
+                false,
+                BindingFlags.Default,
+                null,
+                new object[] { setup },
                 null,
                 null
-            );
+            )!;
         }
 
-        // TODO: Figure out what is the right lifetime
-        public override object InitializeLifetimeService() {
+        public override object? InitializeLifetimeService() {
             return null;
         }
 #endif
@@ -123,7 +125,7 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptEngine GetEngine(string languageName) {
             ContractUtils.RequiresNotNull(languageName, nameof(languageName));
 
-            if (!TryGetEngine(languageName, out ScriptEngine engine)) {
+            if (!TryGetEngine(languageName, out ScriptEngine? engine)) {
                 throw new ArgumentException($"Unknown language name: '{languageName}'");
             }
 
@@ -140,15 +142,15 @@ namespace Microsoft.Scripting.Hosting {
         public ScriptEngine GetEngineByFileExtension(string fileExtension) {
             ContractUtils.RequiresNotNull(fileExtension, nameof(fileExtension));
 
-            if (!TryGetEngineByFileExtension(fileExtension, out ScriptEngine engine)) {
+            if (!TryGetEngineByFileExtension(fileExtension, out ScriptEngine? engine)) {
                 throw new ArgumentException($"Unknown file extension: '{fileExtension}'");
             }
 
             return engine;
         }
 
-        public bool TryGetEngine(string languageName, out ScriptEngine engine) {
-            if (!Manager.TryGetLanguage(languageName, out LanguageContext language)) {
+        public bool TryGetEngine(string languageName, [NotNullWhen(true)] out ScriptEngine? engine) {
+            if (!Manager.TryGetLanguage(languageName, out LanguageContext? language)) {
                 engine = null;
                 return false;
             }
@@ -157,8 +159,8 @@ namespace Microsoft.Scripting.Hosting {
             return true;
         }
 
-        public bool TryGetEngineByFileExtension(string fileExtension, out ScriptEngine engine) {
-            if (!Manager.TryGetLanguageByFileExtension(fileExtension, out LanguageContext language)) {
+        public bool TryGetEngineByFileExtension(string fileExtension, [NotNullWhen(true)] out ScriptEngine? engine) {
+            if (!Manager.TryGetLanguageByFileExtension(fileExtension, out LanguageContext? language)) {
                 engine = null;
                 return false;
             }
@@ -191,11 +193,14 @@ namespace Microsoft.Scripting.Hosting {
         /// The method doesn't lock nor send notifications to the host.
         /// </summary>
         private ScriptEngine GetEngineNoLockNoNotification(LanguageContext language, out bool freshEngineCreated) {
-            Debug.Assert(_engines is not null, "Invalid ScriptRuntime initialization order");
+            Assert.NotNull(_engines);
 
-            if (freshEngineCreated = !_engines.TryGetValue(language, out ScriptEngine engine)) {
+            if (!_engines.TryGetValue(language, out ScriptEngine? engine)) {
                 engine = new ScriptEngine(this, language);
                 _engines.Add(language, engine);
+                freshEngineCreated = true;
+            } else {
+                freshEngineCreated = false;
             }
             return engine;
         }
@@ -220,11 +225,11 @@ namespace Microsoft.Scripting.Hosting {
             return GetEngine(languageId).CreateScope(storage);
         }
 
-        public ScriptScope CreateScope(IDictionary<string, object> dictionary) {
+        public ScriptScope CreateScope(IDictionary<string, object?> dictionary) {
             return InvariantEngine.CreateScope(dictionary);
         }
 
-        public ScriptScope CreateScope(string languageId, IDictionary<string, object> storage) {
+        public ScriptScope CreateScope(string languageId, IDictionary<string, object?> storage) {
             return GetEngine(languageId).CreateScope(storage);
         }
 
@@ -238,7 +243,7 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
-            if (!TryGetEngineByFileExtension(extension, out ScriptEngine engine)) {
+            if (!TryGetEngineByFileExtension(extension, out ScriptEngine? engine)) {
                 throw new ArgumentException($"File extension '{extension}' is not associated with any language.");
             }
 
@@ -253,7 +258,7 @@ namespace Microsoft.Scripting.Hosting {
             ContractUtils.RequiresNotEmpty(path, nameof(path));
             string extension = Path.GetExtension(path);
 
-            if (!TryGetEngineByFileExtension(extension, out ScriptEngine engine)) {
+            if (!TryGetEngineByFileExtension(extension, out ScriptEngine? engine)) {
                 throw new ArgumentException($"File extension '{extension}' is not associated with any language.");
             }
 
@@ -266,7 +271,7 @@ namespace Microsoft.Scripting.Hosting {
             // See if the file is already loaded, if so return the scope
             foreach (string searchPath in searchPaths) {
                 string filePath = Path.Combine(searchPath, path);
-                ScriptScope scope = engine.GetScope(filePath);
+                ScriptScope? scope = engine.GetScope(filePath);
                 if (scope is not null) {
                     return scope;
                 }
@@ -347,6 +352,6 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         internal ScriptEngine InvariantEngine =>
-            _invariantEngine ?? (_invariantEngine = GetEngine(_invariantContext));
+            _invariantEngine ??= GetEngine(_invariantContext);
     }
 }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -160,7 +162,7 @@ namespace Microsoft.Scripting.Hosting {
 
 
 #if FEATURE_CONFIGURATION
-        private static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream configFileStream) {
+        private static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream? configFileStream) {
             try {
                 LoadRuntimeSetupImpl(setup, configFileStream);
             } catch (FileNotFoundException) {
@@ -169,7 +171,7 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void LoadRuntimeSetupImpl(ScriptRuntimeSetup setup, Stream configFileStream) {
+        private static void LoadRuntimeSetupImpl(ScriptRuntimeSetup setup, Stream? configFileStream) {
             Configuration.Section.LoadRuntimeSetup(setup, configFileStream);
         }
 

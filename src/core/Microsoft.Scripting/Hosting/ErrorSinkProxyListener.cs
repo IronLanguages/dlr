@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Microsoft.Scripting.Hosting {
     /// <summary>
     /// Bridges ErrorListener and ErrorSink. It provides the reverse functionality as ErrorSinkProxyListener
@@ -14,11 +16,11 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity) {
-            // Note that we cannot use "source.SourceUnit" since "source" may be a proxy object, and we will not be able to marshall 
+            // Note that we cannot use "source.SourceUnit" since "source" may be a proxy object, and we will not be able to marshall
             // "source.SourceUnit" to the current AppDomain
 
-            string code = null;
-            string line = null;
+            string? code = null;
+            string? line = null;
             try {
                 code = source.GetCode();
                 line = source.GetCodeLine(span.Start.Line);

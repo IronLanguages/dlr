@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_CONFIGURATION
-
 #nullable enable
+
+#if FEATURE_CONFIGURATION
 
 using System.Configuration;
 

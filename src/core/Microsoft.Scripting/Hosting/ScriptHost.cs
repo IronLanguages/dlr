@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -30,9 +32,9 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// The runtime the host is attached to.
         /// </summary>
-        private ScriptRuntime _runtime;
-        
-        // Called by ScriptRuntime when it is completely initialized. 
+        private ScriptRuntime? _runtime;
+
+        // Called by ScriptRuntime when it is completely initialized.
         // Notifies the host implementation that the runtime is available now.
         internal void SetRuntime(ScriptRuntime runtime) {
             Assert.NotNull(runtime);
@@ -70,8 +72,7 @@ namespace Microsoft.Scripting.Hosting {
         #endregion
 
 #if FEATURE_REMOTING
-        // TODO: Figure out what is the right lifetime
-        public override object InitializeLifetimeService() {
+        public override object? InitializeLifetimeService() {
             return null;
         }
 #endif

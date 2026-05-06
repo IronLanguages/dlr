@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_CONFIGURATION
 
 using System;
@@ -83,7 +85,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             }
         }
 
-        private static Section LoadFromFile(Stream configFileStream) {
+        private static Section? LoadFromFile(Stream configFileStream) {
             var result = new Section();
             using (var reader = XmlReader.Create(configFileStream)) {
                 if (reader.ReadToDescendant("configuration") && reader.ReadToDescendant(SectionName)) {
@@ -95,7 +97,7 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             return result;
         }
 
-        internal static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream configFileStream) {
+        internal static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream? configFileStream) {
             var config = configFileStream is not null
                 ? LoadFromFile(configFileStream)
                 : System.Configuration.ConfigurationManager.GetSection(SectionName) as Section;
@@ -112,10 +114,10 @@ namespace Microsoft.Scripting.Hosting.Configuration {
             }
 
             foreach (var languageConfig in config.GetLanguages()) {
-                var provider = languageConfig.Type;
-                var names = languageConfig.GetNamesArray();
-                var extensions = languageConfig.GetExtensionsArray();
-                var displayName = languageConfig.DisplayName ?? ((names.Length > 0) ? names[0] : languageConfig.Type);
+                string provider = languageConfig.Type ?? "<unknown>";
+                string[] names = languageConfig.GetNamesArray();
+                string[] extensions = languageConfig.GetExtensionsArray();
+                string displayName = languageConfig.DisplayName ?? ((names.Length > 0) ? names[0] : provider);
 
                 // Honor the latest-wins behavior of the <languages> tag for options that were already included in the setup object;
                 // Keep the options though.

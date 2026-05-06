@@ -56,8 +56,8 @@ namespace Microsoft.Scripting.Hosting {
         }
 
         // TODO: Figure out what is the right lifetime
-        public override object InitializeLifetimeService() {
-            return base.InitializeLifetimeService();
+        public override object? InitializeLifetimeService() {
+            return null;
         }
 #endif
  }

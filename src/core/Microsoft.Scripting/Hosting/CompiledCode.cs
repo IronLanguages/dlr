@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REMOTING
 using System.Runtime.Remoting;
 #else
@@ -9,6 +11,7 @@ using MarshalByRefObject = System.Object;
 #endif
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 using Microsoft.Scripting.Utils;
@@ -19,7 +22,7 @@ namespace Microsoft.Scripting.Hosting {
     /// Hosting API counterpart for <see cref="ScriptCode"/>.
     /// </summary>
     public sealed class CompiledCode : MarshalByRefObject {
-        private ScriptScope _defaultScope;
+        private ScriptScope? _defaultScope;
 
         internal ScriptCode ScriptCode { get; }
 
@@ -44,21 +47,21 @@ namespace Microsoft.Scripting.Hosting {
                 if (_defaultScope is null) {
                     Interlocked.CompareExchange(ref _defaultScope, new ScriptScope(Engine, ScriptCode.CreateScope()), null);
                 }
-                return _defaultScope; 
+                return _defaultScope;
             }
         }
 
         /// <summary>
         /// Executes code in a default scope.
         /// </summary>
-        public dynamic Execute() {
+        public dynamic? Execute() {
             return ScriptCode.Run(DefaultScope.Scope);
         }
 
         /// <summary>
         /// Execute code within a given scope and returns the result.
         /// </summary>
-        public dynamic Execute(ScriptScope scope) {
+        public dynamic? Execute(ScriptScope scope) {
             ContractUtils.RequiresNotNull(scope, nameof(scope));
             return ScriptCode.Run(scope.Scope);
         }
@@ -66,51 +69,53 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Executes code in in a default scope and converts to a given type.
         /// </summary>
+        [return: MaybeNull]
         public T Execute<T>() {
-            return Engine.Operations.ConvertTo<T>((object)Execute());
+            return Engine.Operations.ConvertTo<T>((object?)Execute());
         }
 
         /// <summary>
         /// Execute code within a given scope and converts result to a given type.
         /// </summary>
+        [return: MaybeNull]
         public T Execute<T>(ScriptScope scope) {
-            return Engine.Operations.ConvertTo<T>((object)Execute(scope));
+            return Engine.Operations.ConvertTo<T>((object?)Execute(scope));
         }
 
 
 #if FEATURE_REMOTING
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap() {
-            return new ObjectHandle((object)Execute());
+            return new ObjectHandle((object?)Execute());
         }
 
         /// <summary>
         /// Executes the code in the specified scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
         /// </summary>
         public ObjectHandle ExecuteAndWrap(ScriptScope scope) {
-            return new ObjectHandle((object)Execute(scope));
+            return new ObjectHandle((object?)Execute(scope));
         }
 
         /// <summary>
         /// Executes the code in an empty scope.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions) 
+        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions)
         /// or if an exception serialization loses information.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(out ObjectHandle? exception) {
             exception = null;
             try {
-                return new ObjectHandle((object)Execute());
+                return new ObjectHandle((object?)Execute());
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
@@ -119,28 +124,27 @@ namespace Microsoft.Scripting.Hosting {
 
         /// <summary>
         /// Executes the expression in the specified scope and return a result.
-        /// Returns an ObjectHandle wrapping the resulting value of running the code.  
-        /// 
+        /// Returns an ObjectHandle wrapping the resulting value of running the code.
+        ///
         /// If an exception is thrown the exception is caught and an ObjectHandle to
         /// the exception is provided.
         /// </summary>
         /// <remarks>
-        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions) 
+        /// Use this API to handle non-serializable exceptions (exceptions might not be serializable due to security restrictions)
         /// or if an exception serialization loses information.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ObjectHandle ExecuteAndWrap(ScriptScope scope, out ObjectHandle exception) {
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ObjectHandle? ExecuteAndWrap(ScriptScope scope, out ObjectHandle? exception) {
             exception = null;
             try{
-                return new ObjectHandle((object)Execute(scope));
+                return new ObjectHandle((object?)Execute(scope));
             } catch (Exception e) {
                 exception = new ObjectHandle(e);
                 return null;
             }
         }
 
-        // TODO: Figure out what is the right lifetime
-        public override object InitializeLifetimeService() {
+        public override object? InitializeLifetimeService() {
             return null;
         }
 #endif
