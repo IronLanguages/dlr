@@ -9,10 +9,11 @@ using System;
 namespace Microsoft.Scripting {
 
     internal static partial class Strings {
-        private static string FormatString(string format, params object[] args) {
+        private static string FormatString(string format, params object?[] args) {
             return string.Format(System.Globalization.CultureInfo.CurrentCulture, format, args);
         }
     }
+
 
     #region Generated Microsoft.Scripting Exception Factory
 
