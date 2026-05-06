@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Metadata {
         [SecurityCritical]
         internal byte* _pointer;
 
-        private SafeMemoryMappedViewHandle _handle;
+        private SafeMemoryMappedViewHandle? _handle;
         internal long _capacity;
 
         [CLSCompliant(false)]
@@ -51,11 +51,11 @@ namespace Microsoft.Scripting.Metadata {
 
         [SecuritySafeCritical]
         public static MemoryMapping Create(string path) {
-            MemoryMappedFile file = null;
-            MemoryMappedViewAccessor accessor = null;
-            SafeMemoryMappedViewHandle handle = null;
-            MemoryMapping mapping = null;
-            FileStream stream = null;
+            MemoryMappedFile? file = null;
+            MemoryMappedViewAccessor? accessor = null;
+            SafeMemoryMappedViewHandle? handle = null;
+            MemoryMapping? mapping = null;
+            FileStream? stream = null;
             byte* ptr = null;
 
             try {
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Metadata {
             // It is not safe to close the view at this point if there are any MemoryBlocks alive.
             // It's up to the user to ensure not to use them. Since you need unmanaged code priviledge to use them
             // this is not a security issue (it would be if this API was security safe critical).
-            _handle.ReleasePointer();
+            _handle!.ReleasePointer();  // _handle is guaranteed to be non-null if _pointer is non-null, since we assign them together in Create.
             _pointer = null;
         }
     }

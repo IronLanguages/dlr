@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.IO;
 
@@ -59,6 +60,7 @@ namespace Microsoft.Scripting.Metadata {
             memReader.SeekRelative(1 * 2 * sizeof(uint));
         }
 
+        [MemberNotNull(nameof(_sectionHeaders))]
         private void ReadSectionHeaders(MemoryReader memReader) {
             if (memReader.RemainingBytes < _numberOfSections * PEFileConstants.SizeofSectionHeader) {
                 throw new BadImageFormatException();
@@ -83,6 +85,7 @@ namespace Microsoft.Scripting.Metadata {
             }
         }
 
+        [MemberNotNull(nameof(_sectionHeaders))]
         private void ReadPEFileLevelData() {
             if (_image.Length < PEFileConstants.BasicPEHeaderSize) {
                 throw new BadImageFormatException();
@@ -150,7 +153,7 @@ namespace Microsoft.Scripting.Metadata {
             throw new BadImageFormatException();
         }
 
-        private MemoryBlock DirectoryToMemoryBlock(DirectoryEntry directory) {
+        private MemoryBlock? DirectoryToMemoryBlock(DirectoryEntry directory) {
             if (directory.RelativeVirtualAddress == 0 || directory.Size == 0) {
                 return null;
             }
@@ -166,9 +169,9 @@ namespace Microsoft.Scripting.Metadata {
         private StreamHeader[] _streamHeaders;
 
         private MemoryBlock _stringStream;
-        private MemoryBlock _blobStream;
+        private MemoryBlock? _blobStream;
         private MemoryBlock _guidStream;
-        private MemoryBlock _userStringStream;
+        private MemoryBlock? _userStringStream;
 
         private MetadataStreamKind _metadataStreamKind;
         private MemoryBlock _metadataTableStream;
@@ -176,7 +179,7 @@ namespace Microsoft.Scripting.Metadata {
         // private MemoryBlock _strongNameSignatureBlock;
 
         private void ReadCOR20Header() {
-            MemoryBlock memBlock = DirectoryToMemoryBlock(_optionalHeaderDirectoryEntries.COR20HeaderTableDirectory);
+            MemoryBlock? memBlock = DirectoryToMemoryBlock(_optionalHeaderDirectoryEntries.COR20HeaderTableDirectory);
             if (memBlock is null || memBlock.Length < _optionalHeaderDirectoryEntries.COR20HeaderTableDirectory.Size) {
                 throw new BadImageFormatException();
             }
@@ -230,6 +233,7 @@ namespace Microsoft.Scripting.Metadata {
             _storageHeader.NumberOfStreams = memReader.ReadUInt16();
         }
 
+        [MemberNotNull(nameof(_streamHeaders))]
         private void ReadStreamHeaders(MemoryReader memReader) {
             int numberOfStreams = _storageHeader.NumberOfStreams;
             _streamHeaders = new StreamHeader[numberOfStreams];
@@ -246,6 +250,9 @@ namespace Microsoft.Scripting.Metadata {
             }
         }
 
+        [MemberNotNull(nameof(_stringStream))]
+        [MemberNotNull(nameof(_guidStream))]
+        [MemberNotNull(nameof(_metadataTableStream))]
         private void ProcessAndCacheStreams(MemoryBlock metadataRoot) {
             _metadataStreamKind = MetadataStreamKind.Illegal;
 
@@ -310,15 +317,19 @@ namespace Microsoft.Scripting.Metadata {
             }
 
             // mandatory streams:
-            if (_stringStream is null || _guidStream is null || _metadataStreamKind == MetadataStreamKind.Illegal) {
+            if (_stringStream is null || _guidStream is null || _metadataTableStream is null || _metadataStreamKind == MetadataStreamKind.Illegal) {
                 throw new BadImageFormatException();
             }
         }
 
+        [MemberNotNull(nameof(_streamHeaders))]
+        [MemberNotNull(nameof(_stringStream))]
+        [MemberNotNull(nameof(_guidStream))]
+        [MemberNotNull(nameof(_metadataTableStream))]
         private void ReadCORModuleLevelData() {
             ReadCOR20Header();
 
-            MemoryBlock metadataRoot = DirectoryToMemoryBlock(_cor20Header.MetaDataDirectory);
+            MemoryBlock? metadataRoot = DirectoryToMemoryBlock(_cor20Header.MetaDataDirectory);
             if (metadataRoot is null || metadataRoot.Length < _cor20Header.MetaDataDirectory.Size) {
                 throw new BadImageFormatException();
             }
@@ -339,53 +350,56 @@ namespace Microsoft.Scripting.Metadata {
         #region Metadata
 
         private MetadataTableHeader _metadataTableHeader;
-        private int[] _tableRowCounts;
 
-        internal ModuleTable ModuleTable;
-        internal TypeRefTable TypeRefTable;
-        internal TypeDefTable TypeDefTable;
-        internal FieldPtrTable FieldPtrTable;
-        internal FieldTable FieldTable;
-        internal MethodPtrTable MethodPtrTable;
-        internal MethodTable MethodTable;
-        internal ParamPtrTable ParamPtrTable;
-        internal ParamTable ParamTable;
-        internal InterfaceImplTable InterfaceImplTable;
-        internal MemberRefTable MemberRefTable;
-        internal ConstantTable ConstantTable;
-        internal CustomAttributeTable CustomAttributeTable;
-        internal FieldMarshalTable FieldMarshalTable;
-        internal DeclSecurityTable DeclSecurityTable;
-        internal ClassLayoutTable ClassLayoutTable;
-        internal FieldLayoutTable FieldLayoutTable;
-        internal StandAloneSigTable StandAloneSigTable;
-        internal EventMapTable EventMapTable;
-        internal EventPtrTable EventPtrTable;
-        internal EventTable EventTable;
-        internal PropertyMapTable PropertyMapTable;
-        internal PropertyPtrTable PropertyPtrTable;
-        internal PropertyTable PropertyTable;
-        internal MethodSemanticsTable MethodSemanticsTable;
-        internal MethodImplTable MethodImplTable;
-        internal ModuleRefTable ModuleRefTable;
-        internal TypeSpecTable TypeSpecTable;
-        internal ImplMapTable ImplMapTable;
-        internal FieldRVATable FieldRVATable;
-        internal EnCLogTable EnCLogTable;
-        internal EnCMapTable EnCMapTable;
-        internal AssemblyTable AssemblyTable;
-        internal AssemblyProcessorTable AssemblyProcessorTable;
-        internal AssemblyOSTable AssemblyOSTable;
-        internal AssemblyRefTable AssemblyRefTable;
-        internal AssemblyRefProcessorTable AssemblyRefProcessorTable;
-        internal AssemblyRefOSTable AssemblyRefOSTable;
-        internal FileTable FileTable;
-        internal ExportedTypeTable ExportedTypeTable;
-        internal ManifestResourceTable ManifestResourceTable;
-        internal NestedClassTable NestedClassTable;
-        internal GenericParamTable GenericParamTable;
-        internal MethodSpecTable MethodSpecTable;
-        internal GenericParamConstraintTable GenericParamConstraintTable;
+        // all non-nullable fields assigned null! here below are unconditionally initialized to non-null by
+        // MetadataImport ctor -> ReadMetadataLevelData -> ProcessAndCacheMetadataTableBlocks
+        private int[] _tableRowCounts = null!;
+
+        internal ModuleTable ModuleTable = null!;
+        internal TypeRefTable TypeRefTable = null!;
+        internal TypeDefTable TypeDefTable = null!;
+        internal FieldPtrTable FieldPtrTable = null!;
+        internal FieldTable FieldTable = null!;
+        internal MethodPtrTable MethodPtrTable = null!;
+        internal MethodTable MethodTable = null!;
+        internal ParamPtrTable ParamPtrTable = null!;
+        internal ParamTable ParamTable = null!;
+        internal InterfaceImplTable InterfaceImplTable = null!;
+        internal MemberRefTable MemberRefTable = null!;
+        internal ConstantTable ConstantTable = null!;
+        internal CustomAttributeTable CustomAttributeTable = null!;
+        internal FieldMarshalTable FieldMarshalTable = null!;
+        internal DeclSecurityTable DeclSecurityTable = null!;
+        internal ClassLayoutTable ClassLayoutTable = null!;
+        internal FieldLayoutTable FieldLayoutTable = null!;
+        internal StandAloneSigTable StandAloneSigTable = null!;
+        internal EventMapTable EventMapTable = null!;
+        internal EventPtrTable EventPtrTable = null!;
+        internal EventTable EventTable = null!;
+        internal PropertyMapTable PropertyMapTable = null!;
+        internal PropertyPtrTable PropertyPtrTable = null!;
+        internal PropertyTable PropertyTable = null!;
+        internal MethodSemanticsTable MethodSemanticsTable = null!;
+        internal MethodImplTable MethodImplTable = null!;
+        internal ModuleRefTable ModuleRefTable = null!;
+        internal TypeSpecTable TypeSpecTable = null!;
+        internal ImplMapTable ImplMapTable = null!;
+        internal FieldRVATable FieldRVATable = null!;
+        internal EnCLogTable EnCLogTable = null!;
+        internal EnCMapTable EnCMapTable = null!;
+        internal AssemblyTable AssemblyTable = null!;
+        internal AssemblyProcessorTable AssemblyProcessorTable = null!;
+        internal AssemblyOSTable AssemblyOSTable = null!;
+        internal AssemblyRefTable AssemblyRefTable = null!;
+        internal AssemblyRefProcessorTable AssemblyRefProcessorTable = null!;
+        internal AssemblyRefOSTable AssemblyRefOSTable = null!;
+        internal FileTable FileTable = null!;
+        internal ExportedTypeTable ExportedTypeTable = null!;
+        internal ManifestResourceTable ManifestResourceTable = null!;
+        internal NestedClassTable NestedClassTable = null!;
+        internal GenericParamTable GenericParamTable = null!;
+        internal MethodSpecTable MethodSpecTable = null!;
+        internal GenericParamConstraintTable GenericParamConstraintTable = null!;
 
         internal bool IsManifestModule {
             get { return AssemblyTable.NumberOfRows == 1; }
@@ -748,6 +762,7 @@ namespace Microsoft.Scripting.Metadata {
             return _blobStream.GetRange(dataOffset, size);
         }
 
+        [MemberNotNull(nameof(_blobStream))]
         internal int GetBlobDataOffset(uint blob, out int size) {
             if (_blobStream is null || blob >= _blobStream.Length) {
                 throw new BadImageFormatException();
@@ -762,7 +777,7 @@ namespace Microsoft.Scripting.Metadata {
             return offset + bytesRead;
         }
 
-        internal object GetBlobValue(uint blob, ElementType type) {
+        internal object? GetBlobValue(uint blob, ElementType type) {
             int offset = GetBlobDataOffset(blob, out int size);
             if (size < GetMinTypeSize(type)) {
                 throw new BadImageFormatException();
@@ -1065,7 +1080,7 @@ namespace Microsoft.Scripting.Metadata {
             return _stringStream.ReadName(blob);
         }
 
-        internal object GetDefaultValue(MetadataToken token) {
+        internal object? GetDefaultValue(MetadataToken token) {
             int constantRid = ConstantTable.GetConstantRowId(token);
             if (constantRid == 0) {
                 return Missing.Value;

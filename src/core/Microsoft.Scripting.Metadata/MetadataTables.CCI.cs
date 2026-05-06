@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Security;
 using System.IO;
 using System.Diagnostics.Contracts;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Metadata {
     [Serializable]
@@ -38,7 +39,8 @@ namespace Microsoft.Scripting.Metadata {
     }
 
     public partial class MetadataTables {
-        internal MetadataTables(MetadataImport import, string path, Module module) {
+
+        internal MetadataTables(MetadataImport import, string? path, Module? module) {
             m_import = import;
             m_path = path;
             Module = module;
@@ -48,7 +50,7 @@ namespace Microsoft.Scripting.Metadata {
         /// Gets the module whose metadata tables this instance represents.
         /// Null if the tables reflect unloaded module file.
         /// </summary>
-        public Module Module { get; }
+        public Module? Module { get; }
 
         public bool IsValidToken(MetadataToken token) {
             return m_import.IsValidToken(token);
@@ -66,6 +68,15 @@ namespace Microsoft.Scripting.Metadata {
             return new MetadataTables(CreateImport(path), path, null);
         }
 
+        /// <summary>
+        ///   Opens metadata tables for a given module.
+        /// </summary>
+        /// <param name="module">
+        ///   The module whose metadata tables are to be opened. Must not be null.</param>
+        /// <returns>
+        ///   A <see cref="MetadataTables"/> instance representing the metadata tables of the specified module.
+        ///   Its <see cref="MetadataTables.Module"/> property will be set to the specified module.
+        /// </returns>
         public static MetadataTables OpenModule(Module module) {
             if (module is null) {
                 throw new ArgumentNullException(nameof(module));
@@ -268,7 +279,7 @@ namespace Microsoft.Scripting.Metadata {
         /// O(log(#fields, parameters and properties with default value)).
         /// Returns <see cref="Missing.Value"/> if the field doesn't have a default value.
         /// </summary>
-        public object GetDefaultValue() {
+        public object? GetDefaultValue() {
             return m_record.Import.GetDefaultValue(m_record.Token);
         }
 
@@ -277,7 +288,7 @@ namespace Microsoft.Scripting.Metadata {
         /// If size is 0 the memory block will span over the rest of the data section.
         /// O(log(#fields with RVAs)).
         /// </summary>
-        public MemoryBlock GetData(int size) {
+        public MemoryBlock? GetData(int size) {
             if (size < 0) {
                 throw new ArgumentOutOfRangeException(nameof(size));
             }
@@ -336,7 +347,7 @@ namespace Microsoft.Scripting.Metadata {
         /// Returns a null reference iff the method has no body.
         /// If size is 0 the memory block will span over the rest of the data section.
         /// </summary>
-        public MemoryBlock GetBody() {
+        public MemoryBlock? GetBody() {
             // TODO: calculate size, decode method header and return MetadataMethodBody.
             uint rva = m_record.Import.MethodTable.GetRVA(m_record.Rid);
             return rva != 0 ? m_record.Import.RvaToMemoryBlock(rva, 0) : null;
@@ -396,7 +407,7 @@ namespace Microsoft.Scripting.Metadata {
         /// O(log(#fields, parameters and properties with default value)).
         /// Returns <see cref="Missing.Value"/> if the field doesn't have a default value.
         /// </summary>
-        public object GetDefaultValue() {
+        public object? GetDefaultValue() {
             return m_record.Import.GetDefaultValue(m_record.Token);
         }
 
@@ -570,7 +581,7 @@ namespace Microsoft.Scripting.Metadata {
         /// O(log(#fields, parameters and properties with default value)).
         /// Returns <see cref="Missing.Value"/> if the field doesn't have a default value.
         /// </summary>
-        public object GetDefaultValue() {
+        public object? GetDefaultValue() {
             return m_record.Import.GetDefaultValue(m_record.Token);
         }
 

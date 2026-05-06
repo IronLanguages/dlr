@@ -79,7 +79,7 @@ namespace System.Reflection {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is MetadataToken token && Equals(token);
 
         // SECURITY: Nothing unsafe here.
@@ -139,16 +139,25 @@ namespace Microsoft.Scripting.Metadata {
     [DebuggerDisplay("{DebugView}")]
     public readonly partial struct MetadataRecord : IEquatable<MetadataRecord> {
         internal readonly MetadataToken m_token;
+
+        // Warning: MetadataTables is a reference type, but we want MetadataRecord to be a struct for perf reasons.
+        // This field will be null for default(MetadataRecord), e.g. element of an unpopulated array of MetadataRecord.
         internal readonly MetadataTables m_tables;
-        
+
         internal MetadataRecord(MetadataToken token, MetadataTables tables) {
-            Contract.Assert(tables is not null);
+            Contract.Assert(tables as object is not null);
             m_token = token;
             m_tables = tables;
         }
 
+        /// <summary>
+        ///   Gets the metadata tables associated with this record, provided as argument to the constructor.
+        /// </summary>
+        /// <remarks>
+        ///   Not null if the constructor has been called.
+        /// </remarks>
         public MetadataTables Tables {
-            get { return m_tables; }
+            get { return m_tables ?? throw new InvalidOperationException("MetadataRecord constructor not called."); }
         }
 
         public MetadataToken Token {
@@ -157,7 +166,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: Nothing unsafe here.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is MetadataRecord record && Equals(record);
 
         // SECURITY: Nothing unsafe here.
@@ -249,14 +258,14 @@ namespace Microsoft.Scripting.Metadata {
         internal readonly MetadataImport m_import;
 
         // path of an unloaded module, null for loaded modules and in-memory modules:
-        internal readonly string m_path;
+        internal readonly string? m_path;
 
         /// <summary>
         /// Gets the path of the module whose metadata tables this instance represents.
         /// Null for in-memory modules that are not backed by a file.
         /// </summary>
         /// <exception cref="SecurityException">The path is not accessible in partial trust.</exception>
-        public string Path {
+        public string? Path {
             get { return (Module is not null) ? Module.Assembly.Location : m_path; }
         }
 
