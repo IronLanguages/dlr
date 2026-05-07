@@ -10,6 +10,8 @@
     <MeziantouPolyfill_IncludedPolyfills>
       P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
       P:System.Collections.ObjectModel.ReadOnlyDictionary`2.Empty;
+      M:System.String.IndexOf(System.Char,System.StringComparison);
+      M:System.String.StartsWith(System.Char);
     </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>
 
