@@ -11,7 +11,7 @@ namespace Microsoft.Scripting.Metadata {
     public static class MetadataServices {
         // Stores metadata tables for each loaded non-dynamic assemblies.
         // The first module in the array is always a manifest module.
-        private static Dictionary<Assembly, MetadataTables[]> _metadataCache;
+        private static Dictionary<Assembly, MetadataTables[]>? _metadataCache;
 
         private static MetadataTables[] GetAsseblyMetadata(Assembly assembly) {
             _metadataCache ??= new Dictionary<Assembly, MetadataTables[]>();
@@ -96,7 +96,10 @@ namespace Microsoft.Scripting.Metadata {
                                 (tattrs & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPublic) &&
                                 (tattrs & TypeAttributes.Abstract) != 0 &&
                                 (tattrs & TypeAttributes.Sealed) != 0) {
-                                result.Add(new KeyValuePair<Module, int>(manifest.Module, mdef.Record.Token.Value));
+
+                                // GetAsseblyMetadata (call above) always produces MetadataTables with elements (here: manifest)
+                                // that have a defined (non-null) Module property.
+                                result.Add(new KeyValuePair<Module, int>(manifest.Module!, mdef.Record.Token.Value));
                             }
                         }
                     }

@@ -35,7 +35,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: The method is actually not safe. We must make sure that this object is not leaked to partially-trusted code.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return obj is MetadataName name && Equals(name)
                 || obj is MetadataNamePart part && Equals(part);
         }
@@ -402,7 +402,7 @@ namespace Microsoft.Scripting.Metadata {
 
         // SECURITY: The method is actually not safe. We must make sure that this object is not leaked to partially-trusted code.
         [SecuritySafeCritical]
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return obj is MetadataNamePart part && Equals(part)
                 || obj is MetadataName name && Equals(name);
         }

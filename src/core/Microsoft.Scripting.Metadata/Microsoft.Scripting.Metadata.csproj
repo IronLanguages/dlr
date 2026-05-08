@@ -7,8 +7,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);CCI</DefineConstants>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
+    <Nullable>enable</Nullable>
     <MeziantouPolyfill_IncludedPolyfills>
-      None
+      T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute;
     </MeziantouPolyfill_IncludedPolyfills>
   </PropertyGroup>
 
