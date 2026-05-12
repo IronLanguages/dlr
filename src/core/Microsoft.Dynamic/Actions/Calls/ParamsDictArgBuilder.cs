@@ -99,7 +99,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
                         MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary)).MakeGenericMethod(genArgs);
 
-                        func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
+                        func = target.CreateDelegate<Func<string[], object[], object>>();
                     }
                 } else if (dictType.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
                            dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
@@ -107,7 +107,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
                         MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeDictionary)).MakeGenericMethod(genArgs);
 
-                        func = (Func<string[], object[], object>)target.CreateDelegate(typeof(Func<string[], object[], object>));
+                        func = target.CreateDelegate<Func<string[], object[], object>>();
                     }
                 }
             } else if (dictType == typeof(IDictionary)) {

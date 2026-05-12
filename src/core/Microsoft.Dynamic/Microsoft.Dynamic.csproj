@@ -10,14 +10,11 @@
     <MeziantouPolyfill_IncludedPolyfills>
       P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
       P:System.Collections.ObjectModel.ReadOnlyDictionary`2.Empty;
+      M:System.Enum.IsDefined``1(``0);
+      M:System.Reflection.MethodInfo.CreateDelegate``1;
       M:System.String.IndexOf(System.Char,System.StringComparison);
       M:System.String.StartsWith(System.Char);
     </MeziantouPolyfill_IncludedPolyfills>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net10.0' ">
-    <!-- Suppress CA2263 for .NET 9+ - prefer to keep consistent code across all frameworks -->
-    <NoWarn>$(NoWarn);CA2263</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Meziantou.Polyfill" Version="1.0.120">
+    <PackageReference Include="Meziantou.Polyfill" Version="1.0.127">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

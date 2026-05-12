@@ -104,7 +104,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             }
 
             // Try autodetect
-            if (Enum.IsDefined(typeof(ConsoleColor), Console.BackgroundColor)) {
+            if (Enum.IsDefined(Console.BackgroundColor)) {
                 return IsDark(Console.BackgroundColor);
             }
 
