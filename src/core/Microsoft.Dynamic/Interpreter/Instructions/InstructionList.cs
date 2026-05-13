@@ -802,7 +802,7 @@ namespace Microsoft.Scripting.Interpreter {
                         return new DynamicInstructionN(delegateType, CallSite.Create(delegateType, binder));
                     }
 
-                    factory = (Func<CallSiteBinder, Instruction>)instructionType.GetMethod("Factory").CreateDelegate(typeof(Func<CallSiteBinder, Instruction>));
+                    factory = instructionType.GetMethod("Factory").CreateDelegate<Func<CallSiteBinder, Instruction>>();
                     _factories[delegateType] = factory;
                 }
             }
