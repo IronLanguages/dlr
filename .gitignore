@@ -34,3 +34,4 @@ External.LCA_RESTRICTED/Languages/IronPython/27/Lib/lib2to3/PatternGrammar2.9.9.
 *.binlog
 *.ProjectImports.zip
 *result.xml
+*.lscache
