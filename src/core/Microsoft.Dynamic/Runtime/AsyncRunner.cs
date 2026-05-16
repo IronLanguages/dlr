@@ -51,20 +51,12 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private static object? ExtractTaskResult(Task task) {
-            // The runtime type may be a Task<T> subclass (like AsyncStateMachineBox<TStateMachine,TResult>);
-            // walk up until we find Task<T>.
-            Type? t = task.GetType();
-                while (t is not null) {
-                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Task<>)) {
-                    Type arg = t.GenericTypeArguments[0];
-                    // Roslyn-emitted async Task methods carry an internal
-                    // VoidTaskResult type argument; surface that as null.
-                    if (!arg.IsVisible) return null;
-                    return t.GetProperty("Result")!.GetValue(task);
-                }
-                t = t.BaseType;
-            }
-            return null;
+            // The runtime type may be a Task<TResult> subclass (e.g. AsyncStateMachineBox<TStateMachine,TResult>, or RuntimeAsyncTask<T>);
+            // so find Task<TResult>.Result through hierarchy
+            var prop = task.GetType().GetProperty("Result");  // this may be incorrect in the unlikely (and bad) case if the subclass shadows Result (.e.g new T2 Result {...}, not in BCL/CLR)
+            if (prop is null) return null;  // non-generic Task
+            if (!prop.PropertyType.IsVisible) return null;  // Roslyn-emitted or CLR async Task uses an internal VoidTaskResult type argument; surface that as null.
+            return prop.GetValue(task);  // Task<TResult>.Result, may be null (and is null if task has not completed yet)
         }
     }
 }
