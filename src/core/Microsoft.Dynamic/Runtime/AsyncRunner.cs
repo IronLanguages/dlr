@@ -31,13 +31,10 @@ namespace Microsoft.Scripting.Runtime {
                 object yielded = states.Current;
                 if (yielded is Task task) {
                     try {
-                        await task.ConfigureAwait(false);
+                        await task;  // honor caller's SyncContext / TaskScheduler
                         resultSlot.Value = ExtractTaskResult(task);
                         exceptionSlot.Value = null;
                     } catch (Exception ex) {
-                        // The body's rewriter inserts a check after each yield
-                        // that rethrows this on the resumed thread, so a Python
-                        // try/except inside `await` can catch it.
                         resultSlot.Value = null;
                         exceptionSlot.Value = ex;
                     }
