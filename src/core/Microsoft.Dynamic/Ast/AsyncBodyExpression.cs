@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Scripting.Runtime;
@@ -39,9 +40,10 @@ namespace Microsoft.Scripting.Ast {
     public sealed class AsyncBodyExpression : Expression {
         private Expression? _reduced;
 
-        internal AsyncBodyExpression(string? name, Expression body) {
+        internal AsyncBodyExpression(string? name, Expression body, Expression cancellationToken) {
             Name = name;
             Body = body;
+            CancellationToken = cancellationToken;
         }
 
         /// <summary>Optional diagnostic name (forwarded to the inner generator).</summary>
@@ -49,6 +51,13 @@ namespace Microsoft.Scripting.Ast {
 
         /// <summary>The function body. May contain <see cref="AwaitExpression"/> nodes.</summary>
         public Expression Body { get; }
+
+        /// <summary>
+        /// Expression evaluating to a <see cref="System.Threading.CancellationToken"/>
+        /// that <see cref="AsyncRunner.Drive"/> samples between iterations and links
+        /// to each suspended task. Defaults to <c>default(CancellationToken)</c>.
+        /// </summary>
+        public Expression CancellationToken { get; }
 
         public override bool CanReduce => true;
 
@@ -107,7 +116,8 @@ namespace Microsoft.Scripting.Ast {
                 generator,
                 resultSlot,
                 returnSlot,
-                exceptionSlot);
+                exceptionSlot,
+                CancellationToken);
 
             return Expression.Block(
                 typeof(Task<object?>),
@@ -120,8 +130,9 @@ namespace Microsoft.Scripting.Ast {
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression b = visitor.Visit(Body);
-            if (b == Body) return this;
-            return new AsyncBodyExpression(Name, b);
+            Expression ct = visitor.Visit(CancellationToken);
+            if (b == Body && ct == CancellationToken) return this;
+            return new AsyncBodyExpression(Name, b, ct);
         }
 
         private sealed class AwaitToYieldRewriter : ExpressionVisitor {
@@ -173,11 +184,32 @@ namespace Microsoft.Scripting.Ast {
         /// Wraps an async-function body in an <see cref="AsyncBodyExpression"/>.
         /// The body may contain <see cref="AwaitExpression"/> suspension points
         /// and should evaluate to <see cref="object"/>; the resulting expression
-        /// evaluates to <c>Task&lt;object&gt;</c>.
+        /// evaluates to <c>Task&lt;object&gt;</c>. Cancellation defaults to
+        /// <c>default(CancellationToken)</c>; use the
+        /// <see cref="AsyncBody(string, Expression, Expression)"/> overload to
+        /// supply one.
         /// </summary>
         public static AsyncBodyExpression AsyncBody(string? name, Expression body) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            return new AsyncBodyExpression(name, body);
+            return new AsyncBodyExpression(name, body, Expression.Default(typeof(CancellationToken)));
+        }
+
+        /// <summary>
+        /// Wraps an async-function body in an <see cref="AsyncBodyExpression"/>
+        /// with a caller-provided <see cref="System.Threading.CancellationToken"/>.
+        /// The token expression is evaluated once when the body starts and is
+        /// then sampled by <see cref="AsyncRunner.Drive"/> between iterations
+        /// and at each suspended await.
+        /// </summary>
+        public static AsyncBodyExpression AsyncBody(string? name, Expression body, Expression cancellationToken) {
+            ContractUtils.RequiresNotNull(body, nameof(body));
+            ContractUtils.RequiresNotNull(cancellationToken, nameof(cancellationToken));
+            if (cancellationToken.Type != typeof(CancellationToken)) {
+                throw new ArgumentException(
+                    $"Expression must evaluate to {nameof(CancellationToken)}, got {cancellationToken.Type}.",
+                    nameof(cancellationToken));
+            }
+            return new AsyncBodyExpression(name, body, cancellationToken);
         }
     }
 }
