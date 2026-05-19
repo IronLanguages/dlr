@@ -12,17 +12,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
-using Microsoft.Scripting.Runtime;
-
 namespace Microsoft.Scripting.Ast {
     /// <summary>
     ///  Reduces an <see cref="AsyncExpression"/> to a <c>Task&lt;object&gt;</c>-valued
     ///  expression tree that yields each <see cref="AwaitExpression"/>'s operand and
-    ///  hands the resulting state machine to <see cref="AsyncRunner.Drive"/>.
+    ///  hands the resulting state machine to <see cref="Microsoft.Scripting.Runtime.AsyncHelpers.DriveAsync"/>.
     /// </summary>
     internal sealed class AsyncRewriter {
         private static readonly MethodInfo s_driveMethod
-            = typeof(AsyncRunner).GetMethod("Drive")!;
+            = typeof(Microsoft.Scripting.Runtime.AsyncHelpers).GetMethod("DriveAsync")!;
         private static readonly FieldInfo s_valueSlotField
             = typeof(StrongBox<object?>).GetField(nameof(StrongBox<object?>.Value))!;
         private static readonly FieldInfo s_exceptionSlotField
@@ -39,11 +37,11 @@ namespace Microsoft.Scripting.Ast {
         }
 
         public Expression Reduce() {
-            // valueSlot is value cell shared with AsyncRunner.Drive.
+            // valueSlot is value cell shared with AsyncHelpers.DriveAsync.
             //  - At each await: the runner writes the awaited result here just before resuming the body, and the body reads it via the
             //    `readSlot` expression the rewriter inserts after each yield.
             //  - At the end of the body: the body's final return value is written here (see captureFinalValue below). After MoveNext()
-            //    returns false, Drive reads the same slot and returns it as the Task's result.
+            //    returns false, DriveAsync reads the same slot and returns it as the Task's result.
             //
             // The two uses do not overlap — by the time captureFinalValue runs, the last per-await read has already been consumed or
             // discarded by the surrounding expression.
@@ -58,9 +56,9 @@ namespace Microsoft.Scripting.Ast {
             var rewriter = new AwaitToYieldRewriter(yieldLabel, valueSlot, exceptionSlot);
             Expression rewrittenBody = rewriter.Visit(_node.Body);
 
-            // After the body completes, the function's final value must live in valueSlot for Drive to pick up. For a value-typed body this
+            // After the body completes, the function's final value must live in valueSlot for DriveAsync to pick up. For a value-typed body this
             // is a single assignment of the body expression into the slot. For a void body, the body has no value to assign, but we still
-            // must clear the slot — otherwise Drive would return whatever the last await happened to stash there. (IronPython doesn't emit
+            // must clear the slot — otherwise DriveAsync would return whatever the last await happened to stash there. (IronPython doesn't emit
             // void async bodies today, but AsyncExpression is language-agnostic.)
             Expression valueField = Expression.Field(valueSlot, s_valueSlotField);
             Expression captureFinalValue;

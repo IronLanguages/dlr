@@ -16,7 +16,7 @@ namespace Microsoft.Scripting.Ast {
     ///   or <see cref="System.Threading.Tasks.Task{TResult}"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AsyncRunner"/> drives
+    ///   The <see cref="AsyncHelpers"/> drives
     ///   the lambda by calling its <c>GeneratorNext</c> form; each await yields the
     ///   task to the runner, which performs a real runtime-async <c>await</c> and
     ///   resumes the body with the boxed result.

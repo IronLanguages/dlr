@@ -15,7 +15,7 @@ namespace Microsoft.Scripting.Runtime {
     /// <summary>
     ///   Runtime-async orchestrator for <see cref="Microsoft.Scripting.Ast.AsyncExpression"/>.
     /// </summary>
-    public static class AsyncRunner {
+    public static class AsyncHelpers {
         /// <summary>
         ///  Drives a language function body, awaiting each yielded <see cref="Task"/> and feeding the result back through <paramref
         ///  name="valueSlot"/>. Faulted awaits are routed through <paramref name="exceptionSlot"/> so the body's try/except can observe
@@ -23,11 +23,10 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <param name="states">The body's state machine — an enumerator of yielded awaitables.</param>
         /// <param name="valueSlot">
-        ///   While the body is running, this is where the runner writes each awaited result before resuming the body (read by the body at
+        ///   While the body is running, this is where the driver writes each awaited result before resuming the body (read by the body at
         ///   the resume point of each <c>await</c>). After the body completes, this is where the body has stored its final return value,
         ///   which becomes the returned Task's result. The two uses do not overlap: the body has consumed (or discarded) any per-await
-        ///   value before its final assignment runs. Originally two separate slots; merged to save one allocation and one parameter per
-        ///   async invocation.
+        ///   value before its final assignment runs.
         /// </param>
         /// <param name="exceptionSlot">
         ///   Faulted/cancelled await is parked here so the body's rewriter can rethrow it at the resume point via <see
@@ -38,8 +37,8 @@ namespace Microsoft.Scripting.Runtime {
         ///   awaited task; see remarks for the cancellation model.
         /// </param>
         /// <remarks>
-        ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn on .NET 11+ under
-        ///   <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>, so each <c>await</c> below becomes a real .NET 11+ runtime-async
+        ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn (on .NET 11+, under feature
+        ///   <c>runtime-async=on</c>), so each <c>await</c> below becomes a real .NET 11+ runtime-async
         ///   opcode. The state machine of the language function body is delegated to a <c>GeneratorRewriter</c>-produced <see
         ///   cref="IEnumerator{T}"/> of yielded tasks. On older runtimes, the same method is compiled by Roslyn without runtime-async
         ///   support, so it compiles to a Roslyn-generated async state machine.
@@ -53,14 +52,17 @@ namespace Microsoft.Scripting.Runtime {
         ///   cancellation request unblocks an in-flight await even when the awaited task does not honor the token itself. In either case
         ///   the resulting <see cref="OperationCanceledException"/> is routed through <paramref name="exceptionSlot"/> so it surfaces at
         ///   the body's next resume point — exactly the place a body-level <c>try/except</c> around the <c>await</c> expects to observe it.
-        ///   If the body lets the exception propagate, it bubbles out of <see cref="Drive"/> and the returned Task transitions to <see
+        ///   If the body lets the exception propagate, it bubbles out of <see cref="DriveAsync"/> and the returned Task transitions to <see
         ///   cref="TaskStatus.Canceled"/> because the OCE's token matches.</para>
+        /// 
+        ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
+        ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
-        [Obsolete("Do not call this method directly from source level code", error: true)]
-        public static async Task<object?> Drive(IEnumerator<object> states,
-                                                StrongBox<object?> valueSlot,
-                                                StrongBox<Exception?> exceptionSlot,
-                                                CancellationToken cancellationToken = default) {
+        [Obsolete("do not call this method directly from source-level code", error: true)]
+        public static async Task<object?> DriveAsync(IEnumerator<object> states,
+                                                     StrongBox<object?> valueSlot,
+                                                     StrongBox<Exception?> exceptionSlot,
+                                                     CancellationToken cancellationToken = default) {
 
             while (states.MoveNext()) {
                 object yielded = states.Current;

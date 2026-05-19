@@ -28,9 +28,8 @@ namespace Microsoft.Scripting.Ast {
     ///   that value becomes the Task's result.
     ///   <br/>
     ///   State-machine splitting at await sites is delegated to <see cref="GeneratorExpression"/>
-    ///   via <see cref="AsyncRewriter"/>; the runtime-async <c>await</c> opcodes come from
-    ///   <see cref="AsyncRunner.Drive"/>, which Roslyn compiles into a runtime-async
-    ///   method when the project sets <c>runtime-async=on</c> as a feature flag on .NET 11+.
+    ///   via <see cref="AsyncRewriter"/>; the <c>await</c> handling comes from
+    ///   <see cref="AsyncHelpers.DriveAsync"/>.
     /// </remarks>
     public sealed class AsyncExpression : Expression {
         private Expression? _reduced;
@@ -52,7 +51,7 @@ namespace Microsoft.Scripting.Ast {
         public Expression Body { get; }
 
         /// <summary>
-        ///   Expression evaluating to a <see cref="System.Threading.CancellationToken"/> that <see cref="AsyncRunner.Drive"/> samples
+        ///   Expression evaluating to a <see cref="System.Threading.CancellationToken"/> that <see cref="AsyncHelpers.DriveAsync"/> samples
         ///   between iterations and links to each suspended task. Defaults to <c>default(CancellationToken)</c>.
         /// </summary>
         public Expression CancellationToken { get; }
@@ -90,12 +89,12 @@ namespace Microsoft.Scripting.Ast {
         }
 
         /// <summary>
-        ///   Wraps an async-function body in an <see cref="AsyncExpression"/>
-        ///   with a caller-provided <see cref="System.Threading.CancellationToken"/>.
+        ///   Wraps an async-function body in an <see cref="AsyncExpression"/> with a caller-provided <see
+        ///   cref="System.Threading.CancellationToken"/>.
         /// </summary>
         /// <remarks>
-        ///   The token expression is evaluated once when the body starts and is then sampled by <see cref="AsyncRunner.Drive"/> between
-        ///   iterations and at each suspended await.
+        ///   The token expression is evaluated once when the body starts and is then sampled by <see cref="AsyncHelpers.DriveAsync"/>
+        ///   between iterations and at each suspended await.
         /// </remarks>
         public static AsyncExpression Async(string? name, Expression body, Expression cancellationToken) {
             ContractUtils.RequiresNotNull(body, nameof(body));
