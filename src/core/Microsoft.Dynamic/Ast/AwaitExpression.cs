@@ -11,7 +11,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
     /// <summary>
-    ///   A suspension point inside an <see cref="AsyncLambdaExpression"/>. The
+    ///   A suspension point inside an <see cref="AsyncExpression"/>. The
     ///   <see cref="Operand"/> is expected to evaluate to a <see cref="System.Threading.Tasks.Task"/>
     ///   or <see cref="System.Threading.Tasks.Task{TResult}"/>.
     /// </summary>
@@ -21,7 +21,7 @@ namespace Microsoft.Scripting.Ast {
     ///   task to the runner, which performs a real runtime-async <c>await</c> and
     ///   resumes the body with the boxed result.
     ///   <br/>
-    ///   Standalone reduction is not supported - <see cref="AsyncLambdaExpression"/>
+    ///   Standalone reduction is not supported - <see cref="AsyncExpression"/>
     ///   rewrites these nodes into yield+resume pairs before the body is lowered.
     /// </remarks>
     public sealed class AwaitExpression : Expression {

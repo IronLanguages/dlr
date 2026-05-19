@@ -37,10 +37,10 @@ namespace Microsoft.Scripting.Ast {
     ///   method when the project sets <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>
     ///   on .NET 11+.
     /// </remarks>
-    public sealed class AsyncBodyExpression : Expression {
+    public sealed class AsyncExpression : Expression {
         private Expression? _reduced;
 
-        internal AsyncBodyExpression(string? name, Expression body, Expression cancellationToken) {
+        internal AsyncExpression(string? name, Expression body, Expression cancellationToken) {
             Name = name;
             Body = body;
             CancellationToken = cancellationToken;
@@ -95,7 +95,7 @@ namespace Microsoft.Scripting.Ast {
             // After the body completes, the function's final value must live in valueSlot for Drive to pick up. For a value-typed body this
             // is a single assignment of the body expression into the slot. For a void body, the body has no value to assign, but we still
             // must clear the slot — otherwise Drive would return whatever the last await happened to stash there. (IronPython doesn't emit
-            // void async bodies today, but AsyncBodyExpression is language-agnostic.)
+            // void async bodies today, but AsyncExpression is language-agnostic.)
             Expression valueField = Expression.Field(valueSlot, nameof(StrongBox<object?>.Value));
             Expression captureFinalValue;
             if (Body.Type == typeof(void)) {
@@ -137,7 +137,7 @@ namespace Microsoft.Scripting.Ast {
             Expression b = visitor.Visit(Body);
             Expression ct = visitor.Visit(CancellationToken);
             if (b == Body && ct == CancellationToken) return this;
-            return new AsyncBodyExpression(Name, b, ct);
+            return new AsyncExpression(Name, b, ct);
         }
 
         private sealed class AwaitToYieldRewriter : ExpressionVisitor {
@@ -186,27 +186,27 @@ namespace Microsoft.Scripting.Ast {
 
     public partial class Utils {
         /// <summary>
-        /// Wraps an async-function body in an <see cref="AsyncBodyExpression"/>.
+        /// Wraps an async-function body in an <see cref="AsyncExpression"/>.
         /// The body may contain <see cref="AwaitExpression"/> suspension points
         /// and should evaluate to <see cref="object"/>; the resulting expression
         /// evaluates to <c>Task&lt;object&gt;</c>. Cancellation defaults to
         /// <c>default(CancellationToken)</c>; use the
-        /// <see cref="AsyncBody(string, Expression, Expression)"/> overload to
+        /// <see cref="Async(string, Expression, Expression)"/> overload to
         /// supply one.
         /// </summary>
-        public static AsyncBodyExpression AsyncBody(string? name, Expression body) {
+        public static AsyncExpression Async(string? name, Expression body) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            return new AsyncBodyExpression(name, body, Expression.Default(typeof(CancellationToken)));
+            return new AsyncExpression(name, body, Expression.Default(typeof(CancellationToken)));
         }
 
         /// <summary>
-        /// Wraps an async-function body in an <see cref="AsyncBodyExpression"/>
+        /// Wraps an async-function body in an <see cref="AsyncExpression"/>
         /// with a caller-provided <see cref="System.Threading.CancellationToken"/>.
         /// The token expression is evaluated once when the body starts and is
         /// then sampled by <see cref="AsyncRunner.Drive"/> between iterations
         /// and at each suspended await.
         /// </summary>
-        public static AsyncBodyExpression AsyncBody(string? name, Expression body, Expression cancellationToken) {
+        public static AsyncExpression Async(string? name, Expression body, Expression cancellationToken) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(cancellationToken, nameof(cancellationToken));
             if (cancellationToken.Type != typeof(CancellationToken)) {
@@ -214,7 +214,7 @@ namespace Microsoft.Scripting.Ast {
                     $"Expression must evaluate to {nameof(CancellationToken)}, got {cancellationToken.Type}.",
                     nameof(cancellationToken));
             }
-            return new AsyncBodyExpression(name, body, cancellationToken);
+            return new AsyncExpression(name, body, cancellationToken);
         }
     }
 }

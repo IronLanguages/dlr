@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
-    ///   Runtime-async orchestrator for <see cref="Microsoft.Scripting.Ast.AsyncBodyExpression"/>.
+    ///   Runtime-async orchestrator for <see cref="Microsoft.Scripting.Ast.AsyncExpression"/>.
     /// </summary>
     public static class AsyncRunner {
         /// <summary>
@@ -94,7 +94,7 @@ namespace Microsoft.Scripting.Runtime {
                 }
             }
             // Body has completed: its final assignment has just written into valueSlot
-            // (see AsyncBodyExpression.BuildReduction), so the per-await role of the slot
+            // (see AsyncExpression.BuildReduction), so the per-await role of the slot
             // is over and the same slot now carries the function's return value.
             return valueSlot.Value;
         }
