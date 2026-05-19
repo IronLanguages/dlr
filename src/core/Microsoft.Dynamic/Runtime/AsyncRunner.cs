@@ -56,11 +56,11 @@ namespace Microsoft.Scripting.Runtime {
         ///   If the body lets the exception propagate, it bubbles out of <see cref="Drive"/> and the returned Task transitions to <see
         ///   cref="TaskStatus.Canceled"/> because the OCE's token matches.</para>
         /// </remarks>
-        public static async Task<object?> Drive(
-                IEnumerator<object> states,
-                StrongBox<object?> valueSlot,
-                StrongBox<Exception?> exceptionSlot,
-                CancellationToken cancellationToken = default) {
+        public static async Task<object?> Drive(IEnumerator<object> states,
+                                                StrongBox<object?> valueSlot,
+                                                StrongBox<Exception?> exceptionSlot,
+                                                CancellationToken cancellationToken = default) {
+
             while (states.MoveNext()) {
                 object yielded = states.Current;
 
@@ -101,12 +101,28 @@ namespace Microsoft.Scripting.Runtime {
 
 
         private static object? ExtractTaskResult(Task task) {
+            // Fast-track for the most common case (e.g. IronPython): all awaitables are normalized to Task<object?>.
+            if (task is Task<object?> to) return to.Result;
+
+            Type t = task.GetType();
+
+            // Non-generic Task subclass: no Result property exists. Covers Task.CompletedTask, Task.Delay's DelayPromise,
+            // Task.WhenAll's non-generic overload, etc. IsGenericType is a flag check on Type — far cheaper than GetProperty.
+            if (!t.IsGenericType) return null;
+
             // The runtime type may be a Task<TResult> subclass (e.g. AsyncStateMachineBox<TStateMachine,TResult>, or RuntimeAsyncTask<T>);
-            // so find Task<TResult>.Result through hierarchy
-            var prop = task.GetType().GetProperty("Result");  // this may be incorrect in the unlikely (and bad) case if the subclass shadows Result (.e.g new T2 Result {...}, not in BCL/CLR)
-            if (prop is null) return null;  // non-generic Task
-            if (!prop.PropertyType.IsVisible) return null;  // Roslyn-emitted or CLR async Task uses an internal VoidTaskResult type argument; surface that as null.
-            return prop.GetValue(task);  // Task<TResult>.Result, may be null (and is null if task has not completed yet)
+            // so find Task<TResult>.Result through inheritance hierarchy.
+            // This may be incorrect in the unlikely (and bad) case if the subclass shadows Result (.e.g new T2 Result {...} - not in BCL/CLR)
+            var prop = t.GetProperty("Result");
+
+            // Non-generic Task subclass that still wasn't caught above (defensive — shouldn't happen given IsGenericType).
+            if (prop is null) return null;
+
+            // Roslyn-emitted or CLR async Task uses an internal VoidTaskResult type argument; surface that as null.
+            if (!prop.PropertyType.IsVisible) return null;
+
+            // Task<TResult>.Result, may be null, which is OK (and is null if task has not completed yet; not happening here)
+            return prop.GetValue(task);
         }
     }
 }
