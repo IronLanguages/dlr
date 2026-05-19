@@ -38,6 +38,20 @@ namespace Microsoft.Scripting.Ast {
     ///   on .NET 11+.
     /// </remarks>
     public sealed class AsyncExpression : Expression {
+        // Cached reflection, looked up once at type init rather than on every Reduce().
+        // Use string literal "Drive" instead of nameof(AsyncRunner.Drive): the latter binds
+        // to the [Obsolete(error: true)] member and triggers a compile error.
+        private static readonly MethodInfo s_driveMethod
+            = typeof(AsyncRunner).GetMethod("Drive")!;
+        private static readonly FieldInfo s_valueSlotField
+            = typeof(StrongBox<object?>).GetField(nameof(StrongBox<object?>.Value))!;
+        private static readonly FieldInfo s_exceptionSlotField
+            = typeof(StrongBox<Exception?>).GetField(nameof(StrongBox<Exception?>.Value))!;
+        private static readonly ConstructorInfo s_valueSlotCtor
+            = typeof(StrongBox<object?>).GetConstructor(Type.EmptyTypes)!;
+        private static readonly ConstructorInfo s_exceptionSlotCtor
+            = typeof(StrongBox<Exception?>).GetConstructor(Type.EmptyTypes)!;
+
         private Expression? _reduced;
 
         internal AsyncExpression(string? name, Expression body, Expression cancellationToken) {
@@ -96,7 +110,7 @@ namespace Microsoft.Scripting.Ast {
             // is a single assignment of the body expression into the slot. For a void body, the body has no value to assign, but we still
             // must clear the slot — otherwise Drive would return whatever the last await happened to stash there. (IronPython doesn't emit
             // void async bodies today, but AsyncExpression is language-agnostic.)
-            Expression valueField = Expression.Field(valueSlot, nameof(StrongBox<object?>.Value));
+            Expression valueField = Expression.Field(valueSlot, s_valueSlotField);
             Expression captureFinalValue;
             if (Body.Type == typeof(void)) {
                 captureFinalValue = Expression.Block(
@@ -119,7 +133,7 @@ namespace Microsoft.Scripting.Ast {
                 rewriteAssignments: false);
 
             Expression drive = Expression.Call(
-                typeof(AsyncRunner).GetMethod(nameof(AsyncRunner.Drive))!,
+                s_driveMethod,
                 generator,
                 valueSlot,
                 exceptionSlot,
@@ -128,8 +142,8 @@ namespace Microsoft.Scripting.Ast {
             return Expression.Block(
                 typeof(Task<object?>),
                 [ valueSlot, exceptionSlot ],
-                Expression.Assign(valueSlot, Expression.New(typeof(StrongBox<object?>))),
-                Expression.Assign(exceptionSlot, Expression.New(typeof(StrongBox<Exception?>))),
+                Expression.Assign(valueSlot, Expression.New(s_valueSlotCtor)),
+                Expression.Assign(exceptionSlot, Expression.New(s_exceptionSlotCtor)),
                 drive);
         }
 
@@ -160,8 +174,8 @@ namespace Microsoft.Scripting.Ast {
                 if (node is AwaitExpression aw) {
                     Expression operand = Visit(aw.Operand);
                     Expression boxed = operand.Type == typeof(object) ? operand : Expression.Convert(operand, typeof(object));
-                    Expression readException = Expression.Field(_exceptionSlot, nameof(StrongBox<Exception?>.Value));
-                    Expression readSlot = Expression.Field(_resultSlot, nameof(StrongBox<object?>.Value));
+                    Expression readException = Expression.Field(_exceptionSlot, s_exceptionSlotField);
+                    Expression readSlot = Expression.Field(_resultSlot, s_valueSlotField);
 
                     // After the yield, if the runner stored an exception, rethrow it
                     // preserving the original stack trace (so the body's try/except

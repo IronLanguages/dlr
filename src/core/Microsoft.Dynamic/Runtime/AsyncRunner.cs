@@ -38,8 +38,8 @@ namespace Microsoft.Scripting.Runtime {
         ///   awaited task; see remarks for the cancellation model.
         /// </param>
         /// <remarks>
-        ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn on .NET 11 under
-        ///   <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>, so each <c>await</c> below becomes a real .NET 11 runtime-async
+        ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn on .NET 11+ under
+        ///   <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>, so each <c>await</c> below becomes a real .NET 11+ runtime-async
         ///   opcode. The state machine of the language function body is delegated to a <c>GeneratorRewriter</c>-produced <see
         ///   cref="IEnumerator{T}"/> of yielded tasks. On older runtimes, the same method is compiled by Roslyn without runtime-async
         ///   support, so it compiles to a Roslyn-generated async state machine.
@@ -56,6 +56,7 @@ namespace Microsoft.Scripting.Runtime {
         ///   If the body lets the exception propagate, it bubbles out of <see cref="Drive"/> and the returned Task transitions to <see
         ///   cref="TaskStatus.Canceled"/> because the OCE's token matches.</para>
         /// </remarks>
+        [Obsolete("Do not call this method directly from source level code", error: true)]
         public static async Task<object?> Drive(IEnumerator<object> states,
                                                 StrongBox<object?> valueSlot,
                                                 StrongBox<Exception?> exceptionSlot,
@@ -112,7 +113,7 @@ namespace Microsoft.Scripting.Runtime {
 
             // The runtime type may be a Task<TResult> subclass (e.g. AsyncStateMachineBox<TStateMachine,TResult>, or RuntimeAsyncTask<T>);
             // so find Task<TResult>.Result through inheritance hierarchy.
-            // This may be incorrect in the unlikely (and bad) case if the subclass shadows Result (.e.g new T2 Result {...} - not in BCL/CLR)
+            // This may be incorrect in the unlikely (and bad) case if the subclass shadows Result (e.g. new T2 Result {...} - not in BCL/CLR)
             var prop = t.GetProperty("Result");
 
             // Non-generic Task subclass that still wasn't caught above (defensive — shouldn't happen given IsGenericType).
