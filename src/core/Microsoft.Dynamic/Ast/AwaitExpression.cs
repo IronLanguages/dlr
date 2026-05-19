@@ -11,19 +11,18 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
     /// <summary>
-    /// A suspension point inside an <see cref="AsyncLambdaExpression"/>. The
-    /// <see cref="Operand"/> is expected to evaluate to a <see cref="System.Threading.Tasks.Task"/>
-    /// or <see cref="System.Threading.Tasks.Task{TResult}"/>.
+    ///   A suspension point inside an <see cref="AsyncLambdaExpression"/>. The
+    ///   <see cref="Operand"/> is expected to evaluate to a <see cref="System.Threading.Tasks.Task"/>
+    ///   or <see cref="System.Threading.Tasks.Task{TResult}"/>.
     /// </summary>
-    ///
     /// <remarks>
-    /// The <see cref="AsyncRunner"/> drives
-    /// the lambda by calling its <c>GeneratorNext</c> form; each await yields the
-    /// task to the runner, which performs a real runtime-async <c>await</c> and
-    /// resumes the body with the boxed result.
-    /// <br/>
-    /// Standalone reduction is not supported - <see cref="AsyncLambdaExpression"/>
-    /// rewrites these nodes into yield+resume pairs before the body is lowered.
+    ///   The <see cref="AsyncRunner"/> drives
+    ///   the lambda by calling its <c>GeneratorNext</c> form; each await yields the
+    ///   task to the runner, which performs a real runtime-async <c>await</c> and
+    ///   resumes the body with the boxed result.
+    ///   <br/>
+    ///   Standalone reduction is not supported - <see cref="AsyncLambdaExpression"/>
+    ///   rewrites these nodes into yield+resume pairs before the body is lowered.
     /// </remarks>
     public sealed class AwaitExpression : Expression {
         internal AwaitExpression(Expression operand) {

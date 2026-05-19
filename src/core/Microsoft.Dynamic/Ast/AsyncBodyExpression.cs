@@ -18,24 +18,24 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
     /// <summary>
-    /// Wraps an async function body (possibly containing <see cref="AwaitExpression"/>
-    /// nodes) into an expression that evaluates to <see cref="Task{TResult}"/> of
-    /// <see cref="object"/>.
+    ///   Wraps an async function body (possibly containing <see cref="AwaitExpression"/>
+    ///   nodes) into an expression that evaluates to <see cref="Task{TResult}"/> of
+    ///   <see cref="object"/>.
     /// </summary>
     /// <remarks>
-    /// Unlike <see cref="LambdaExpression"/>, this is a
-    /// sub-expression: it does not introduce a new lambda scope, so the body has
-    /// direct access to parameters and locals of the enclosing scope. Callers
-    /// typically wrap the resulting Task in their own coroutine façade type.
-    ///
-    /// The body is expected to evaluate to an <see cref="object"/> (can be null):
-    /// that value becomes the Task's result.
-    /// <br/>
-    /// State-machine splitting at await sites is delegated to <see cref="GeneratorExpression"/>;
-    /// the runtime-async <c>await</c> opcodes come from
-    /// <see cref="AsyncRunner.Drive"/>, which Roslyn compiles into a runtime-async
-    /// method when the project sets <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>
-    /// on .NET 11+.
+    ///   Unlike <see cref="LambdaExpression"/>, this is a
+    ///   sub-expression: it does not introduce a new lambda scope, so the body has
+    ///   direct access to parameters and locals of the enclosing scope. Callers
+    ///   typically wrap the resulting Task in their own coroutine façade type.
+    ///   <br/>
+    ///   The body is expected to evaluate to an <see cref="object"/> (can be null):
+    ///   that value becomes the Task's result.
+    ///   <br/>
+    ///   State-machine splitting at await sites is delegated to <see cref="GeneratorExpression"/>;
+    ///   the runtime-async <c>await</c> opcodes come from
+    ///   <see cref="AsyncRunner.Drive"/>, which Roslyn compiles into a runtime-async
+    ///   method when the project sets <c>&lt;Features&gt;runtime-async=on&lt;/Features&gt;</c>
+    ///   on .NET 11+.
     /// </remarks>
     public sealed class AsyncBodyExpression : Expression {
         private Expression? _reduced;
@@ -66,43 +66,50 @@ namespace Microsoft.Scripting.Ast {
         public override ExpressionType NodeType => ExpressionType.Extension;
 
         public override Expression Reduce() {
-            // Cache the reduction so that LabelTarget identity is preserved
-            // across the multiple Reduce() invocations the compiler may make
-            // (closure analysis, IL emission, etc.). Without this the
-            // inner GeneratorRewriter sees yields whose Target was minted on
-            // a different Reduce() call than the surrounding generator.
+            // Cache the reduction so that LabelTarget identity is preserved across the multiple Reduce() invocations the compiler may make
+            // (closure analysis, IL emission, etc.). Without this the inner GeneratorRewriter sees yields whose Target was minted on a
+            // different Reduce() call than the surrounding generator.
             return _reduced ??= BuildReduction();
         }
 
         private Expression BuildReduction() {
-            // resultSlot:    where the runner writes each awaited result before resuming.
-            // exceptionSlot: where the runner stashes a faulted-await exception so the
-            //                state machine can rethrow at the resumed position (lets
-            //                a Python try/except around `await` observe e.g.
-            //                StopAsyncIteration).
-            // returnSlot:    where the body's final value lands before the runner returns.
-            ParameterExpression resultSlot = Expression.Variable(typeof(StrongBox<object?>), "$awaitResult");
+            // valueSlot is value cell shared with AsyncRunner.Drive.
+            //  - At each await: the runner writes the awaited result here just before resuming the body, and the body reads it via the
+            //    `readSlot` expression the rewriter inserts after each yield.
+            //  - At the end of the body: the body's final return value is written here (see captureFinalValue below). After MoveNext()
+            //    returns false, Drive reads the same slot and returns it as the Task's result.
+            //
+            // The two uses do not overlap — by the time captureFinalValue runs, the last per-await read has already been consumed or
+            // discarded by the surrounding expression.
+            ParameterExpression valueSlot = Expression.Variable(typeof(StrongBox<object?>), "$asyncValue");
+
+            // exceptionSlot is where the runner stashes a faulted-await exception so the state machine can rethrow at the resumed position
+            // (lets a Python try/except around `await` observe e.g. StopAsyncIteration).
             ParameterExpression exceptionSlot = Expression.Variable(typeof(StrongBox<Exception?>), "$awaitException");
-            ParameterExpression returnSlot = Expression.Variable(typeof(StrongBox<object?>), "$asyncReturn");
             LabelTarget yieldLabel = Expression.Label(typeof(object), "$asyncYield");
 
-            // Rewrite AwaitExpression(e) -> { yield e; rethrow-if-pending; resultSlot.Value }
-            var rewriter = new AwaitToYieldRewriter(yieldLabel, resultSlot, exceptionSlot);
+            // Rewrite AwaitExpression(e) -> { yield e; rethrow-if-pending; valueSlot.Value }
+            var rewriter = new AwaitToYieldRewriter(yieldLabel, valueSlot, exceptionSlot);
             Expression rewrittenBody = rewriter.Visit(Body);
 
-            // Capture whatever the body evaluates to into returnSlot.
-            Expression captureReturn;
+            // After the body completes, the function's final value must live in valueSlot for Drive to pick up. For a value-typed body this
+            // is a single assignment of the body expression into the slot. For a void body, the body has no value to assign, but we still
+            // must clear the slot — otherwise Drive would return whatever the last await happened to stash there. (IronPython doesn't emit
+            // void async bodies today, but AsyncBodyExpression is language-agnostic.)
+            Expression valueField = Expression.Field(valueSlot, nameof(StrongBox<object?>.Value));
+            Expression captureFinalValue;
             if (Body.Type == typeof(void)) {
-                captureReturn = rewrittenBody;
+                captureFinalValue = Expression.Block(
+                    typeof(void),
+                    rewrittenBody,
+                    Expression.Assign(valueField, Expression.Constant(null, typeof(object))));
             } else {
                 Expression asObject = rewrittenBody.Type == typeof(object)
                     ? rewrittenBody
                     : Expression.Convert(rewrittenBody, typeof(object));
-                captureReturn = Expression.Assign(
-                    Expression.Field(returnSlot, nameof(StrongBox<object?>.Value)),
-                    asObject);
+                captureFinalValue = Expression.Assign(valueField, asObject);
             }
-            Expression generatorBody = Expression.Block(typeof(void), captureReturn);
+            Expression generatorBody = Expression.Block(typeof(void), captureFinalValue);
 
             Expression generator = Utils.Generator(
                 Name ?? "$async",
@@ -114,17 +121,15 @@ namespace Microsoft.Scripting.Ast {
             Expression drive = Expression.Call(
                 typeof(AsyncRunner).GetMethod(nameof(AsyncRunner.Drive))!,
                 generator,
-                resultSlot,
-                returnSlot,
+                valueSlot,
                 exceptionSlot,
                 CancellationToken);
 
             return Expression.Block(
                 typeof(Task<object?>),
-                new[] { resultSlot, exceptionSlot, returnSlot },
-                Expression.Assign(resultSlot, Expression.New(typeof(StrongBox<object?>))),
+                [ valueSlot, exceptionSlot ],
+                Expression.Assign(valueSlot, Expression.New(typeof(StrongBox<object?>))),
                 Expression.Assign(exceptionSlot, Expression.New(typeof(StrongBox<Exception?>))),
-                Expression.Assign(returnSlot, Expression.New(typeof(StrongBox<object?>))),
                 drive);
         }
 
