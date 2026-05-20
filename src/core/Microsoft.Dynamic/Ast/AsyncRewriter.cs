@@ -87,7 +87,8 @@ namespace Microsoft.Scripting.Ast {
                 generator,
                 valueSlot,
                 exceptionSlot,
-                _node.CancellationToken);
+                _node.CancellationToken,
+                _node.CancellationException);
 
             return Expression.Block(
                 typeof(Task<object?>),

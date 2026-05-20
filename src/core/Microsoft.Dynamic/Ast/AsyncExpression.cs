@@ -6,6 +6,7 @@
 
 using System;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,8 +25,10 @@ namespace Microsoft.Scripting.Ast {
     ///   direct access to parameters and locals of the enclosing scope. Callers
     ///   typically wrap the resulting Task in their own coroutine façade type.
     ///   <br/>
-    ///   The body is expected to evaluate to an <see cref="object"/> (can be null):
-    ///   that value becomes the Task's result.
+    ///   The body may evaluate to any type, including <see langword="void"/>. A
+    ///   <see langword="void"/> body produces a <see langword="null"/> Task result;
+    ///   any other type is converted to <see cref="object"/> (value types are boxed)
+    ///   and that value becomes the Task's result.
     ///   <br/>
     ///   State-machine splitting at await sites is delegated to <see cref="GeneratorExpression"/>
     ///   via <see cref="AsyncRewriter"/>; the <c>await</c> handling comes from
@@ -34,10 +37,13 @@ namespace Microsoft.Scripting.Ast {
     public sealed class AsyncExpression : Expression {
         private Expression? _reduced;
 
-        internal AsyncExpression(string? name, Expression body, Expression cancellationToken) {
+        internal AsyncExpression(string? name, Expression body,
+                                  Expression? cancellationToken = null,
+                                  Expression? cancellationException = null) {
             Name = name;
             Body = body;
-            CancellationToken = cancellationToken;
+            CancellationToken = cancellationToken ?? DefaultCancellationToken;
+            CancellationException = cancellationException ?? DefaultCancellationException;
         }
 
         /// <summary>
@@ -56,6 +62,15 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         public Expression CancellationToken { get; }
 
+        /// <summary>
+        ///   Expression evaluating to a <c>StrongBox&lt;Exception?&gt;</c> (null allowed) — see
+        ///   <see cref="AsyncHelpers.DriveAsync"/>'s <c>cancellationException</c> parameter. When the box is
+        ///   non-null and its <c>Value</c> is non-null at cancellation time, that exception is surfaced to
+        ///   the body instead of <see cref="System.OperationCanceledException"/>. Defaults to a null
+        ///   constant (the plain-cancellation behavior).
+        /// </summary>
+        public Expression CancellationException { get; }
+
         public override bool CanReduce => true;
 
         public override Type Type => typeof(Task<object?>);
@@ -69,9 +84,16 @@ namespace Microsoft.Scripting.Ast {
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression b = visitor.Visit(Body);
             Expression ct = visitor.Visit(CancellationToken);
-            if (b == Body && ct == CancellationToken) return this;
-            return new AsyncExpression(Name, b, ct);
+            Expression ce = visitor.Visit(CancellationException);
+            if (b == Body && ct == CancellationToken && ce == CancellationException) return this;
+            return new AsyncExpression(Name, b, ct, ce);
         }
+
+        private static Expression DefaultCancellationException
+            => Expression.Constant(null, typeof(StrongBox<Exception?>));
+
+        private static Expression DefaultCancellationToken
+            => Expression.Default(typeof(CancellationToken));
     }
 
     public partial class Utils {
@@ -79,32 +101,46 @@ namespace Microsoft.Scripting.Ast {
         ///   Wraps an async-function body in an <see cref="AsyncExpression"/>.
         /// </summary>
         /// <remarks>
-        ///   The body may contain <see cref="AwaitExpression"/> suspension points and should evaluate to <see cref="object"/>; the
-        ///   resulting expression evaluates to <c>Task&lt;object&gt;</c>. Cancellation defaults to <c>default(CancellationToken)</c>; use
-        ///   the <see cref="Async(string, Expression, Expression)"/> overload to supply one.
+        ///   The body may contain <see cref="AwaitExpression"/> suspension points and may evaluate to any
+        ///   type (including <see langword="void"/>): non-void values are converted to <see cref="object"/>
+        ///   — value types are boxed — and become the result of the resulting <c>Task&lt;object&gt;</c>; a
+        ///   void body produces a <see langword="null"/> result. Cancellation defaults to
+        ///   <c>default(CancellationToken)</c>.
         /// </remarks>
         public static AsyncExpression Async(string? name, Expression body) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            return new AsyncExpression(name, body, Expression.Default(typeof(CancellationToken)));
+            return new AsyncExpression(name, body);
         }
 
         /// <summary>
-        ///   Wraps an async-function body in an <see cref="AsyncExpression"/> with a caller-provided <see
-        ///   cref="System.Threading.CancellationToken"/>.
+        ///   Wraps an async-function body in an <see cref="AsyncExpression"/> with a caller-provided
+        ///   <see cref="System.Threading.CancellationToken"/> and, optionally, an exception-override box.
         /// </summary>
         /// <remarks>
-        ///   The token expression is evaluated once when the body starts and is then sampled by <see cref="AsyncHelpers.DriveAsync"/>
-        ///   between iterations and at each suspended await.
+        ///   When cancellation fires and the box's <c>Value</c> is non-null, that exception is delivered to
+        ///   the body instead of a fresh <see cref="System.OperationCanceledException"/>. This lets a host inject
+        ///   an arbitrary exception (e.g. Python's <c>coro.throw(exc)</c>) by populating the box and then
+        ///   cancelling the token. <paramref name="cancellationException"/> defaults to <c>null</c>
+        ///   — the plain OCE-on-cancellation behavior.
         /// </remarks>
-        public static AsyncExpression Async(string? name, Expression body, Expression cancellationToken) {
+        public static AsyncExpression Async(string? name, Expression body,
+                                            Expression cancellationToken,
+                                            Expression? cancellationException = null) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(cancellationToken, nameof(cancellationToken));
-            if (cancellationToken.Type != typeof(CancellationToken)) {
-                throw new ArgumentException(
-                    $"Expression must evaluate to {nameof(CancellationToken)}, got {cancellationToken.Type}.",
-                    nameof(cancellationToken));
+            RequireType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
+            if (cancellationException is not null) {
+                RequireType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
             }
-            return new AsyncExpression(name, body, cancellationToken);
+            return new AsyncExpression(name, body, cancellationToken, cancellationException);
+        }
+
+        private static void RequireType(Expression expr, Type expected, string paramName) {
+            if (expr.Type != expected) {
+                throw new ArgumentException(
+                    $"Expression must evaluate to {expected.Name}, got {expr.Type}.",
+                    paramName);
+            }
         }
     }
 }

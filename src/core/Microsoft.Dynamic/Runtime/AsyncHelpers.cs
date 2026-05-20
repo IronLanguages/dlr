@@ -36,6 +36,14 @@ namespace Microsoft.Scripting.Runtime {
         ///   Caller's cancellation token. Sampled at each loop iteration and linked to each
         ///   awaited task; see remarks for the cancellation model.
         /// </param>
+        /// <param name="cancellationException">
+        ///   Optional override for the exception surfaced when <paramref name="cancellationToken"/>
+        ///   fires. If non-null and its <c>Value</c> is non-null at the moment cancellation is
+        ///   observed, that exception is delivered into <paramref name="exceptionSlot"/> instead
+        ///   of a fresh <see cref="OperationCanceledException"/>. It lets a host inject an arbitrary
+        ///   exception (e.g. for Python's <c>coro.throw(exc)</c>) by setting the box's value and
+        ///   then cancelling the token. Default null preserves the plain-cancellation behavior.
+        /// </param>
         /// <remarks>
         ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn (on .NET 11+, under feature
         ///   <c>runtime-async=on</c>), so each <c>await</c> below becomes a real .NET 11+ runtime-async
@@ -59,21 +67,24 @@ namespace Microsoft.Scripting.Runtime {
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
         [Obsolete("do not call this method directly from source-level code", error: true)]
-        public static async Task<object?> DriveAsync(IEnumerator<object> states,
+        public static async Task<object?> DriveAsync(IEnumerator<object?> states,
                                                      StrongBox<object?> valueSlot,
                                                      StrongBox<Exception?> exceptionSlot,
-                                                     CancellationToken cancellationToken = default) {
+                                                     CancellationToken cancellationToken ,
+                                                     StrongBox<Exception?>? cancellationException = null) {
 
             while (states.MoveNext()) {
-                object yielded = states.Current;
+                object? yielded = states.Current;
 
                 // Surface cancellation at the just-yielded suspension point so the body's try/except around
                 // `await` can observe it (matches asyncio's "CancelledError raised at the await" model).
                 // Caught here as well as in the WaitAsync branch so that a stretch of synchronously-resolved
-                // yields is still cancellable.
+                // yields is still cancellable. If the host pre-populated cancellationException, deliver that
+                // instead of a fresh OCE — lets coro.throw(arbitrary) inject any exception type.
                 if (cancellationToken.IsCancellationRequested) {
                     valueSlot.Value = null;
-                    exceptionSlot.Value = new OperationCanceledException(cancellationToken);
+                    exceptionSlot.Value = cancellationException?.Value
+                                          ?? new OperationCanceledException(cancellationToken);
                     continue;
                 }
 
