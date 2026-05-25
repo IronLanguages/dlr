@@ -92,7 +92,7 @@ namespace Microsoft.Scripting.Ast {
 
             return Expression.Block(
                 typeof(Task<object?>),
-                [ valueSlot, exceptionSlot ],
+                [valueSlot, exceptionSlot],
                 Expression.Assign(valueSlot, Expression.New(s_valueSlotCtor)),
                 Expression.Assign(exceptionSlot, Expression.New(s_exceptionSlotCtor)),
                 drive);

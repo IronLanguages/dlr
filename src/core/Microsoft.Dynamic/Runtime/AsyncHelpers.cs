@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.Runtime {
         ///   the body's next resume point — exactly the place a body-level <c>try/except</c> around the <c>await</c> expects to observe it.
         ///   If the body lets the exception propagate, it bubbles out of <see cref="DriveAsync"/> and the returned Task transitions to <see
         ///   cref="TaskStatus.Canceled"/> because the OCE's token matches.</para>
-        /// 
+        ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
@@ -74,7 +74,7 @@ namespace Microsoft.Scripting.Runtime {
                                                      StrongBox<Exception?>? cancellationException = null) {
 
             while (states.MoveNext()) {
-                object? yielded = states.Current;
+                object? item = states.Current;
 
                 // Surface cancellation at the just-yielded suspension point so the body's try/except around
                 // `await` can observe it (matches asyncio's "CancelledError raised at the await" model).
@@ -88,7 +88,7 @@ namespace Microsoft.Scripting.Runtime {
                     continue;
                 }
 
-                if (yielded is Task task) {
+                if (item is Task task) {
                     try {
                         // Task.WaitAsync is BCL on net6+, polyfilled by Meziantou.Polyfill on net4x/netstandard2.0.
                         // No ConfigureAwait(false): honor caller's SyncContext / TaskScheduler.
@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Runtime {
                     }
                 } else {
                     // Synchronously-produced value forwards straight through.
-                    valueSlot.Value = yielded;
+                    valueSlot.Value = item;
                     exceptionSlot.Value = null;
                 }
             }
@@ -112,6 +112,68 @@ namespace Microsoft.Scripting.Runtime {
             // is over and the same slot now carries the function's return value.
             return valueSlot.Value;
         }
+
+
+#if NET
+        /// <summary>
+        ///   Drives a language async-generator body, producing an <see cref="IAsyncEnumerable{T}"/> of object.
+        ///   The async-enumerable version of <see cref="DriveAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   The body's state machine (an <see cref="IEnumerator{T}"/> from <c>GeneratorRewriter</c>) yields two
+        ///   kinds of items, discriminated by type:
+        ///   <list type="bullet">
+        ///     <item><see cref="AwaitPoint"/> — an internal suspension point. The driver awaits its Task and feeds
+        ///     the result back through <paramref name="valueSlot"/> (faults/cancellation through
+        ///     <paramref name="exceptionSlot"/>), exactly like <see cref="DriveAsync"/>. Not emitted to the consumer.</item>
+        ///
+        ///     <item>anything else — a value produced by a language-level <c>yield</c>; emitted to the consumer via
+        ///     <c>yield return</c>. A yielded Task is NOT an <see cref="AwaitPoint"/>, so it is surfaced as a value,
+        ///     never awaited — this is the disambiguation that lets <c>await</c> and <c>yield</c> coexist.</item>
+        ///   </list>
+        ///
+        ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
+        ///   It is made public only for internal use by the DLR.</para>
+        /// </remarks>
+        [Obsolete("do not call this method directly from source-level code", error: true)]
+        public static async IAsyncEnumerable<object?> DriveAsyncEnumerable(IEnumerator<object?> states,
+                                                                           StrongBox<object?> valueSlot,
+                                                                           StrongBox<Exception?> exceptionSlot,
+                                                                           [EnumeratorCancellation] CancellationToken cancellationToken,
+                                                                           StrongBox<Exception?>? cancellationException = null) {
+
+            while (states.MoveNext()) {
+                object? item = states.Current;
+
+                if (cancellationToken.IsCancellationRequested) {
+                    valueSlot.Value = null;
+                    exceptionSlot.Value = cancellationException?.Value
+                                          ?? new OperationCanceledException(cancellationToken);
+                    continue;
+                }
+
+                if (item is AwaitPoint awaitPoint) {
+                    // Suspension point — await internally, do not surface to the consumer.
+                    try {
+                        await awaitPoint.Task.WaitAsync(cancellationToken);
+                        valueSlot.Value = ExtractTaskResult(awaitPoint.Task);
+                        exceptionSlot.Value = null;
+                    } catch (Exception ex) {
+                        valueSlot.Value = null;
+                        exceptionSlot.Value = ex;
+                    }
+                } else {
+                    // Value from a language-level `yield` — emit it.
+                    yield return item;
+
+                    // No value flows back in for a plain `async for`;
+                    // Clear the slots so the body's resume of the yield expression observes null.
+                    valueSlot.Value = null;
+                    exceptionSlot.Value = null;
+                }
+            }
+        }
+#endif
 
 
         private static object? ExtractTaskResult(Task task) {
@@ -138,5 +200,16 @@ namespace Microsoft.Scripting.Runtime {
             // Task<TResult>.Result, may be null, which is OK (and is null if task has not completed yet; not happening here)
             return prop.GetValue(task);
         }
+    }
+
+
+    /// <summary>
+    ///   Marker wrapping a <see cref="Task"/> to flag an await-suspension point inside an async-generator body,
+    ///   distinguishing it from a value produced by a language-level <c>yield</c>. Emitted by
+    ///   <see cref="Microsoft.Scripting.Ast.AsyncEnumerableExpression"/>'s await rewrite and consumed by
+    ///   <see cref="AsyncHelpers.DriveAsyncEnumerable"/>.
+    /// </summary>
+    internal sealed class AwaitPoint(Task task) {
+        public Task Task { get; } = task;
     }
 }
