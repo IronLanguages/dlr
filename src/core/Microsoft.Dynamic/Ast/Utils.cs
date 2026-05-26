@@ -96,9 +96,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         internal static Expression DefaultCancellationException
-            => Expression.Constant(null, typeof(StrongBox<Exception>));
+            => field ??= Expression.Constant(null, typeof(StrongBox<Exception>));
 
         internal static Expression DefaultCancellationToken
-            => Expression.Default(typeof(CancellationToken));
+            => field ??= Expression.Default(typeof(CancellationToken));
     }
 }
