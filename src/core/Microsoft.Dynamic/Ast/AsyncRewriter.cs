@@ -16,11 +16,11 @@ namespace Microsoft.Scripting.Ast {
     /// <summary>
     ///  Reduces an <see cref="AsyncExpression"/> to a <c>Task&lt;object&gt;</c>-valued
     ///  expression tree that yields each <see cref="AwaitExpression"/>'s operand and
-    ///  hands the resulting state machine to <see cref="Microsoft.Scripting.Runtime.AsyncHelpers.DriveAsync"/>.
+    ///  hands the resulting state machine to <see cref="Runtime.AsyncHelpers.DriveAsync"/>.
     /// </summary>
     internal sealed class AsyncRewriter {
         private static readonly MethodInfo s_driveMethod
-            = typeof(Microsoft.Scripting.Runtime.AsyncHelpers).GetMethod("DriveAsync")!;
+            = typeof(Runtime.AsyncHelpers).GetMethod(nameof(Runtime.AsyncHelpers.DriveAsync))!;
         private static readonly FieldInfo s_valueSlotField
             = typeof(StrongBox<object?>).GetField(nameof(StrongBox<object?>.Value))!;
         private static readonly FieldInfo s_exceptionSlotField

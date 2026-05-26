@@ -42,8 +42,8 @@ namespace Microsoft.Scripting.Ast {
                                   Expression? cancellationException = null) {
             Name = name;
             Body = body;
-            CancellationToken = cancellationToken ?? DefaultCancellationToken;
-            CancellationException = cancellationException ?? DefaultCancellationException;
+            CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
+            CancellationException = cancellationException ?? Utils.DefaultCancellationException;
         }
 
         /// <summary>
@@ -88,12 +88,6 @@ namespace Microsoft.Scripting.Ast {
             if (b == Body && ct == CancellationToken && ce == CancellationException) return this;
             return new AsyncExpression(Name, b, ct, ce);
         }
-
-        private static Expression DefaultCancellationException
-            => Expression.Constant(null, typeof(StrongBox<Exception?>));
-
-        private static Expression DefaultCancellationToken
-            => Expression.Default(typeof(CancellationToken));
     }
 
     public partial class Utils {
@@ -128,19 +122,11 @@ namespace Microsoft.Scripting.Ast {
                                             Expression? cancellationException = null) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(cancellationToken, nameof(cancellationToken));
-            RequireType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
+            ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
             if (cancellationException is not null) {
-                RequireType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
+                ContractUtils.RequiresType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
             }
             return new AsyncExpression(name, body, cancellationToken, cancellationException);
-        }
-
-        private static void RequireType(Expression expr, Type expected, string paramName) {
-            if (expr.Type != expected) {
-                throw new ArgumentException(
-                    $"Expression must evaluate to {expected.Name}, got {expr.Type}.",
-                    paramName);
-            }
         }
     }
 }

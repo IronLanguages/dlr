@@ -39,8 +39,8 @@ namespace Microsoft.Scripting.Ast {
             Name = name;
             Body = body;
             YieldLabel = yieldLabel;
-            CancellationToken = cancellationToken ?? Expression.Default(typeof(CancellationToken));
-            CancellationException = cancellationException ?? Expression.Constant(null, typeof(StrongBox<Exception?>));
+            CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
+            CancellationException = cancellationException ?? Utils.DefaultCancellationException;
         }
 
         /// <summary>Optional diagnostic name (forwarded to the inner generator).</summary>
@@ -112,9 +112,9 @@ namespace Microsoft.Scripting.Ast {
                                                                 Expression? cancellationException = null) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(yieldLabel, nameof(yieldLabel));
-            RequireType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
+            ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
             if (cancellationException is not null) {
-                RequireType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
+                ContractUtils.RequiresType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
             }
             return new AsyncEnumerableExpression(name, body, yieldLabel, cancellationToken, cancellationException);
         }

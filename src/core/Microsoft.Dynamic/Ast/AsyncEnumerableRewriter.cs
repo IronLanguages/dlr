@@ -18,14 +18,14 @@ namespace Microsoft.Scripting.Ast {
     /// <summary>
     ///   Reduces an <see cref="AsyncEnumerableExpression"/> to an <c>IAsyncEnumerable&lt;object&gt;</c>-valued
     ///   expression tree that yields each <see cref="AwaitExpression"/>'s operand (wrapped in an
-    ///   <see cref="Microsoft.Scripting.Runtime.AwaitPoint"/>) alongside language-level yields, and hands
-    ///   the resulting state machine to <see cref="Microsoft.Scripting.Runtime.AsyncHelpers.DriveAsyncEnumerable"/>.
+    ///   <see cref="Runtime.AwaitPoint"/>) alongside language-level yields, and hands
+    ///   the resulting state machine to <see cref="Runtime.AsyncHelpers.DriveAsyncEnumerable"/>.
     /// </summary>
     internal sealed class AsyncEnumerableRewriter {
         private static readonly MethodInfo s_driveMethod
-            = typeof(Microsoft.Scripting.Runtime.AsyncHelpers).GetMethod("DriveAsyncEnumerable")!;
+            = typeof(Runtime.AsyncHelpers).GetMethod(nameof(Runtime.AsyncHelpers.DriveAsyncEnumerable))!;
         private static readonly ConstructorInfo s_awaitPointCtor
-            = typeof(Microsoft.Scripting.Runtime.AwaitPoint).GetConstructor([typeof(Task)])!;
+            = typeof(Runtime.AwaitPoint).GetConstructor([typeof(Task)])!;
         private static readonly FieldInfo s_valueSlotField
             = typeof(StrongBox<object?>).GetField(nameof(StrongBox<object?>.Value))!;
         private static readonly FieldInfo s_exceptionSlotField

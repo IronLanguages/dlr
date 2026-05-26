@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
 
 using System;
-using System.Reflection;
 using System.Dynamic;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
@@ -92,5 +94,11 @@ namespace Microsoft.Scripting.Ast {
 
             return false;
         }
+
+        internal static Expression DefaultCancellationException
+            => Expression.Constant(null, typeof(StrongBox<Exception>));
+
+        internal static Expression DefaultCancellationToken
+            => Expression.Default(typeof(CancellationToken));
     }
 }

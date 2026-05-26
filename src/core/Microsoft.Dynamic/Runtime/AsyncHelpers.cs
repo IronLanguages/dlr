@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -67,6 +68,7 @@ namespace Microsoft.Scripting.Runtime {
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
         [Obsolete("do not call this method directly from source-level code", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static async Task<object?> DriveAsync(IEnumerator<object?> states,
                                                      StrongBox<object?> valueSlot,
                                                      StrongBox<Exception?> exceptionSlot,
@@ -136,6 +138,7 @@ namespace Microsoft.Scripting.Runtime {
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
         [Obsolete("do not call this method directly from source-level code", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static async IAsyncEnumerable<object?> DriveAsyncEnumerable(IEnumerator<object?> states,
                                                                            StrongBox<object?> valueSlot,
                                                                            StrongBox<Exception?> exceptionSlot,
