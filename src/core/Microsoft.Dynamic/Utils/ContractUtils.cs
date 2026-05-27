@@ -182,6 +182,19 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
+
+        /// <summary>
+        /// Requires the expression to evaluate to the expected type.
+        /// </summary>
+        internal static void RequiresType(Expression expr, Type expected, string paramName) {
+            if (expr.Type != expected) {
+                throw new ArgumentException(
+                    $"Expression must evaluate to {expected.Name}, got {expr.Type}.",
+                    paramName);
+            }
+        }
+
+
         [Conditional("FALSE")]
         public static void Invariant(bool condition) {
             Debug.Assert(condition);
