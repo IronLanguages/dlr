@@ -120,6 +120,21 @@ namespace Microsoft.Scripting.Debugging {
             return node;
         }
 
+        protected override Expression VisitExtension(Expression node) {
+            // Lowered async nodes (AsyncExpression / AsyncEnumerableExpression) are opaque boundaries to the
+            // debug transform, like nested lambdas (see VisitLambda). The async body is sliced into its own
+            // state machine, against its own generator label, when the node is reduced in its own context.
+            // TODO: make async bodies traceable via dedicated support here rather than skipping them.
+            if (node is Microsoft.Scripting.Ast.AsyncExpression
+#if NET
+                or Microsoft.Scripting.Ast.AsyncEnumerableExpression
+#endif
+                ) {
+                return node;
+            }
+            return base.VisitExtension(node);
+        }
+
         // We remove all nested variables declared inside the block.
         protected override Expression VisitBlock(MSAst.BlockExpression node) {
             if (_transformToGenerator) {

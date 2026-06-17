@@ -533,6 +533,17 @@ namespace Microsoft.Scripting.Ast {
                 return VisitYield(yield);
             }
 
+            // Lowered async nodes (AsyncExpression / AsyncEnumerableExpression) carry their own generator
+            // label and are reduced — with their await/yield points rewritten — in their own context so skip here.
+            // TODO: tracing *into* async bodies will instead require dedicated support here rather than this skip.
+            if (node is AsyncExpression
+#if NET
+                or AsyncEnumerableExpression
+#endif
+                ) {
+                return node;
+            }
+
             if (node is FinallyFlowControlExpression ffc) {
                 return Visit(node.ReduceExtensions());
             }
