@@ -49,5 +49,18 @@ namespace Microsoft.Scripting.Debugging {
             // Explicitely don't walk nested lambdas.  They should already have been transformed
             return node;
         }
+
+        protected override MSAst.Expression VisitExtension(MSAst.Expression node) {
+            // Explicitely don't walk lowered async nodes (AsyncExpression / AsyncEnumerableExpression).
+            // Handle them separately (locals belong to their own context).
+            if (node is Microsoft.Scripting.Ast.AsyncExpression
+#if NET
+                or Microsoft.Scripting.Ast.AsyncEnumerableExpression
+#endif
+                ) {
+                return node;
+            }
+            return base.VisitExtension(node);
+        }
     }
 }
