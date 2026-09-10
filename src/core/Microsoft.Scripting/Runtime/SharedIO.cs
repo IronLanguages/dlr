@@ -97,13 +97,21 @@ namespace Microsoft.Scripting.Runtime {
         internal SharedIO() {
         }
 
+        private static Encoding TryGetConsoleEncoding(Func<Encoding> getter, Encoding fallback) {
+            try {
+                return getter();
+            } catch {
+                return fallback;
+            }
+        }
+
         private void InitializeInput() {
             if (_inputStream is null) {
                 lock (_mutex) {
                     if (_inputStream is null) {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
-                                _inputEncoding = Console.InputEncoding;
+                                _inputEncoding = TryGetConsoleEncoding(() => Console.InputEncoding, Encoding.UTF8);
                                 _inputStream = ConsoleInputStream.Instance;
                                 _inputReader = Console.In;
                                 break;
@@ -131,7 +139,9 @@ namespace Microsoft.Scripting.Runtime {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _outputStream = Console.OpenStandardOutput();
-                                _outputWriter = Console.Out;
+                                _outputWriter = TryGetConsoleEncoding(() => Console.Out.Encoding, Encoding.UTF8) is var enc && enc.CodePage is 1200 or 65001
+                                    ? Console.Out
+                                    : new StreamWriter(_outputStream, enc, bufferSize: 64);
                                 break;
                             case SupportLevel.Basic:
                                 _outputStream = new TextStream(Console.Out);
@@ -157,7 +167,9 @@ namespace Microsoft.Scripting.Runtime {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _errorStream = Console.OpenStandardError();
-                                _errorWriter = Console.Error;
+                                _errorWriter = TryGetConsoleEncoding(() => Console.Error.Encoding, Encoding.UTF8) is var enc && enc.CodePage is 1200 or 65001
+                                    ? Console.Error
+                                    : new StreamWriter(_errorStream, enc, bufferSize: 64);
                                 break;
                             case SupportLevel.Basic:
                                 _errorStream = new TextStream(Console.Error);
