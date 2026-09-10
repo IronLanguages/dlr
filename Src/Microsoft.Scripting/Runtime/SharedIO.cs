@@ -87,16 +87,24 @@ namespace Microsoft.Scripting.Runtime {
         internal SharedIO() {
         }
 
+        private static Encoding TryGetConsoleEncoding(Func<Encoding> getter, Encoding fallback) {
+            try {
+                return getter();
+            } catch {
+                return fallback;
+            }
+        }
+
         private void InitializeInput() {
             if (_inputStream == null) {
                 lock (_mutex) {
                     if (_inputStream == null) {
 #if FEATURE_FULL_CONSOLE
                         _inputStream = ConsoleInputStream.Instance;
-                        _inputEncoding = Console.InputEncoding;
+                        _inputEncoding = TryGetConsoleEncoding(() => Console.InputEncoding, Encoding.UTF8);
                         _inputReader = Console.In;
 #elif FEATURE_BASIC_CONSOLE
-                        _inputEncoding = Encoding.Default;
+                        _inputEncoding = TryGetConsoleEncoding(() => Encoding.Default, Encoding.UTF8);
                         _inputStream = new TextStream(Console.In, _inputEncoding);
                         _inputReader = Console.In;
 #else
@@ -115,7 +123,11 @@ namespace Microsoft.Scripting.Runtime {
                     if (_outputStream == null) {
 #if FEATURE_FULL_CONSOLE
                         _outputStream = Console.OpenStandardOutput();
-                        _outputWriter = Console.Out;
+                        try {
+                            _outputWriter = Console.Out;
+                        } catch {
+                            _outputWriter = TextWriter.Null;
+                        }
 #elif FEATURE_BASIC_CONSOLE
                         _outputStream = new TextStream(Console.Out);
                         _outputWriter = Console.Out;
@@ -134,7 +146,11 @@ namespace Microsoft.Scripting.Runtime {
                     if (_errorStream == null) {
 #if FEATURE_FULL_CONSOLE
                         _errorStream = Console.OpenStandardError();
-                        _errorWriter = Console.Error;
+                        try {
+                            _errorWriter = Console.Error;
+                        } catch {
+                            _errorWriter = TextWriter.Null;
+                        }
 #elif FEATURE_BASIC_CONSOLE
                         _errorStream =  new TextStream(Console.Error);
                         _errorWriter = Console.Error;
