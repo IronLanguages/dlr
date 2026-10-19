@@ -39,6 +39,32 @@ namespace Microsoft.Dynamic.Test {
             Scripting.Generation.CompilerHelpers.LightCompile(lambda).DynamicInvoke();
         }
 
+        [Test]
+        public void IndexAssignmentValueTest() {
+            // the value of an index assignment is the assigned value
+            var array = Expression.Parameter(typeof(int[]), "array");
+            var arrayLambda = Expression.Lambda<Func<int[], int>>(
+                Expression.Assign(Expression.ArrayAccess(array, Expression.Constant(1)), Expression.Constant(42)),
+                array
+            );
+
+            var interpretedArray = new int[3];
+            var compiledArray = new int[3];
+            Assert.That(Scripting.Generation.CompilerHelpers.LightCompile(arrayLambda)(interpretedArray), Is.EqualTo(arrayLambda.Compile()(compiledArray)));
+            Assert.That(interpretedArray, Is.EqualTo(compiledArray));
+
+            var list = Expression.Parameter(typeof(List<int>), "list");
+            var listLambda = Expression.Lambda<Func<List<int>, int>>(
+                Expression.Assign(Expression.Property(list, "Item", Expression.Constant(1)), Expression.Constant(42)),
+                list
+            );
+
+            var interpretedList = new List<int> { 0, 0, 0 };
+            var compiledList = new List<int> { 0, 0, 0 };
+            Assert.That(Scripting.Generation.CompilerHelpers.LightCompile(listLambda)(interpretedList), Is.EqualTo(listLambda.Compile()(compiledList)));
+            Assert.That(interpretedList, Is.EqualTo(compiledList));
+        }
+
         private static readonly Type[] PrimitiveTypes = {
             typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort),
             typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double),
