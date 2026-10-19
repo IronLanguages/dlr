@@ -647,6 +647,26 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
+        private void CompileUnaryBoolCheck(UnaryExpression node) {
+            Compile(node.Operand);
+            if (node.IsLifted) {
+                BranchLabel notNull = Instructions.MakeLabel();
+                BranchLabel computed = Instructions.MakeLabel();
+
+                Instructions.EmitCoalescingBranch(notNull);
+                Instructions.EmitBranch(computed);
+
+                Instructions.MarkLabel(notNull);
+                Instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
+                Instructions.EmitEqual(typeof(bool));
+
+                Instructions.MarkLabel(computed);
+            } else {
+                Instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
+                Instructions.EmitEqual(typeof(bool));
+            }
+        }
+
         private void CompileUnaryExpression(Expression expr) {
             var node = (UnaryExpression)expr;
             
@@ -657,6 +677,10 @@ namespace Microsoft.Scripting.Interpreter {
                 switch (node.NodeType) {
                     case ExpressionType.Not:
                         CompileNotExpression(node);
+                        return;
+                    case ExpressionType.IsTrue:
+                    case ExpressionType.IsFalse:
+                        CompileUnaryBoolCheck(node);
                         return;
                     case ExpressionType.TypeAs:
                         CompileTypeAsExpression(node);

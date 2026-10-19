@@ -127,11 +127,18 @@ namespace Microsoft.Scripting.Utils {
                 }
                 var binding = binder.Bind(targetMO, argsMO);
 
-                return CreateDelegate(binding, bindingInfo);
+                return CreateDelegate(binder, binding, bindingInfo);
             }
 
-            private T/*!*/ CreateDelegate(DynamicMetaObject/*!*/ binding, CachedBindingInfo<T>/*!*/ bindingInfo) {
-                return Compile(binding, bindingInfo).LightCompile(Int32.MaxValue);
+            private T/*!*/ CreateDelegate(DynamicMetaObjectBinder/*!*/ binder, DynamicMetaObject/*!*/ binding, CachedBindingInfo<T>/*!*/ bindingInfo) {
+                var lambda = Compile(binding, bindingInfo);
+                try {
+                    return lambda.LightCompile(Int32.MaxValue);
+                } catch (NotImplementedException ex) {
+                    // the interpreter doesn't support every expression, fall back to compiling the lambda
+                    PerfTrack.NoteEvent(PerfTrack.Categories.BindingSlow, $"LightBind fallback {binder.GetType().Name}: {ex.Message}");
+                    return lambda.Compile();
+                }
             }
 
             private Expression<T>/*!*/ Compile(DynamicMetaObject/*!*/ obj, CachedBindingInfo<T>/*!*/ bindingInfo) {
