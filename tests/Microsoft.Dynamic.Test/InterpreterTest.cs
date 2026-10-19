@@ -39,6 +39,44 @@ namespace Microsoft.Dynamic.Test {
             Scripting.Generation.CompilerHelpers.LightCompile(lambda).DynamicInvoke();
         }
 
+        public struct MutableStruct {
+            public int Field;
+        }
+
+        [Test]
+        public void ValueTypeFieldAssignmentTest() {
+            // assigning a field of a converted (unboxed) value type updates a copy, not the boxed value
+            var obj = Expression.Parameter(typeof(object), "obj");
+            var lambda = Expression.Lambda<Func<object, int>>(
+                Expression.Block(
+                    Expression.Assign(Expression.Field(Expression.Convert(obj, typeof(MutableStruct)), nameof(MutableStruct.Field)), Expression.Constant(42)),
+                    Expression.Field(Expression.Convert(obj, typeof(MutableStruct)), nameof(MutableStruct.Field))
+                ),
+                obj
+            );
+
+            object interpretedBox = new MutableStruct { Field = 1 };
+            object compiledBox = new MutableStruct { Field = 1 };
+            Assert.That(Scripting.Generation.CompilerHelpers.LightCompile(lambda)(interpretedBox), Is.EqualTo(lambda.Compile()(compiledBox)));
+            Assert.That(((MutableStruct)interpretedBox).Field, Is.EqualTo(((MutableStruct)compiledBox).Field));
+        }
+
+        [Test]
+        public void UnboxedValueTypeFieldAssignmentTest() {
+            // assigning a field through Unbox updates the boxed value
+            var obj = Expression.Parameter(typeof(object), "obj");
+            var lambda = Expression.Lambda<Action<object>>(
+                Expression.Assign(Expression.Field(Expression.Unbox(obj, typeof(MutableStruct)), nameof(MutableStruct.Field)), Expression.Constant(42)),
+                obj
+            );
+
+            object interpretedBox = new MutableStruct { Field = 1 };
+            object compiledBox = new MutableStruct { Field = 1 };
+            Scripting.Generation.CompilerHelpers.LightCompile(lambda)(interpretedBox);
+            lambda.Compile()(compiledBox);
+            Assert.That(((MutableStruct)interpretedBox).Field, Is.EqualTo(((MutableStruct)compiledBox).Field));
+        }
+
         [Test]
         public void IndexAssignmentValueTest() {
             // the value of an index assignment is the assigned value

@@ -464,6 +464,10 @@ namespace Microsoft.Scripting.Interpreter {
             if (member.Member is FieldInfo fi) {
                 if (member.Expression is not null) {
                     Compile(member.Expression);
+                    if (fi.DeclaringType.IsValueType && member.Expression.NodeType is not (ExpressionType.Parameter or ExpressionType.Unbox)) {
+                        // the instance is a temporary value so the store must not update the original boxed value
+                        EmitCall(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetObjectValue)));
+                    }
                 }
                 Compile(node.Right);
 
