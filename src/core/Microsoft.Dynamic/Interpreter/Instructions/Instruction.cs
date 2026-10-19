@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 
-using Microsoft.Scripting.Runtime;
-
 namespace Microsoft.Scripting.Interpreter {
     public interface IInstructionProvider {
         void AddInstructions(LightCompiler compiler);
@@ -36,19 +34,6 @@ namespace Microsoft.Scripting.Interpreter {
 
         public virtual object GetDebugCookie(LightCompiler compiler) {
             return null;
-        }
-    }
-
-    internal sealed class NotInstruction : Instruction {
-        public static readonly Instruction Instance = new NotInstruction();
-
-        private NotInstruction() { }
-        public override int ConsumedStack => 1;
-        public override int ProducedStack => 1;
-
-        public override int Run(InterpretedFrame frame) {
-            frame.Push(!(bool)frame.Pop());
-            return +1;
         }
     }
 }

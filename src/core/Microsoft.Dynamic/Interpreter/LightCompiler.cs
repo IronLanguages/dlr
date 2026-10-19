@@ -526,22 +526,53 @@ namespace Microsoft.Scripting.Interpreter {
                     case ExpressionType.Multiply:
                     case ExpressionType.MultiplyChecked:
                     case ExpressionType.Divide:
+                    case ExpressionType.Modulo:
                         CompileArithmetic(node.NodeType, node.Left, node.Right);
                         return;
 
+                    case ExpressionType.ExclusiveOr:
+                        Compile(node.Left);
+                        Compile(node.Right);
+                        Instructions.EmitExclusiveOr(node.Left.Type);
+                        return;
+
+                    case ExpressionType.Or:
+                        Compile(node.Left);
+                        Compile(node.Right);
+                        Instructions.EmitOr(node.Left.Type);
+                        return;
+
+                    case ExpressionType.And:
+                        Compile(node.Left);
+                        Compile(node.Right);
+                        Instructions.EmitAnd(node.Left.Type);
+                        return;
+
+                    case ExpressionType.LeftShift:
+                        Compile(node.Left);
+                        Compile(node.Right);
+                        Instructions.EmitLeftShift(node.Left.Type);
+                        return;
+
+                    case ExpressionType.RightShift:
+                        Compile(node.Left);
+                        Compile(node.Right);
+                        Instructions.EmitRightShift(node.Left.Type);
+                        return;
+
                     case ExpressionType.Equal:
-                        CompileEqual(node.Left, node.Right);
+                        CompileEqual(node.Left, node.Right, node.IsLiftedToNull);
                         return;
 
                     case ExpressionType.NotEqual:
-                        CompileNotEqual(node.Left, node.Right);
+                        CompileNotEqual(node.Left, node.Right, node.IsLiftedToNull);
                         return;
 
                     case ExpressionType.LessThan:
                     case ExpressionType.LessThanOrEqual:
                     case ExpressionType.GreaterThan:
                     case ExpressionType.GreaterThanOrEqual:
-                        CompileComparison(node.NodeType, node.Left, node.Right);
+                        CompileComparison(node);
                         return;
 
                     default:
@@ -550,34 +581,49 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        private void CompileEqual(Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
-            Compile(left);
-            Compile(right);
-            Instructions.EmitEqual(left.Type);
+#if DEBUG
+        private static bool IsNullComparison(Expression left, Expression right) {
+            return IsNullConstant(left)
+                ? !IsNullConstant(right) && right.Type.IsNullableType()
+                : IsNullConstant(right) && left.Type.IsNullableType();
         }
 
-        private void CompileNotEqual(Expression left, Expression right) {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+        private static bool IsNullConstant(Expression e) {
+            return e is ConstantExpression c && c.Value is null;
+        }
+#endif
+
+        private void CompileEqual(Expression left, Expression right, bool liftedToNull) {
+#if DEBUG
+            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+#endif
             Compile(left);
             Compile(right);
-            Instructions.EmitNotEqual(left.Type);
+            Instructions.EmitEqual(left.Type, liftedToNull);
         }
 
-        private void CompileComparison(ExpressionType nodeType, Expression left, Expression right) {
+        private void CompileNotEqual(Expression left, Expression right, bool liftedToNull) {
+#if DEBUG
+            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+#endif
+            Compile(left);
+            Compile(right);
+            Instructions.EmitNotEqual(left.Type, liftedToNull);
+        }
+
+        private void CompileComparison(BinaryExpression node) {
+            Expression left = node.Left;
+            Expression right = node.Right;
             Debug.Assert(left.Type == right.Type && left.Type.IsNumeric());
 
-            // TODO:
-            // if (TypeUtils.IsNullableType(left.Type) && liftToNull) ...
-
             Compile(left);
             Compile(right);
-            
-            switch (nodeType) {
-                case ExpressionType.LessThan: Instructions.EmitLessThan(left.Type); break;
-                case ExpressionType.LessThanOrEqual: Instructions.EmitLessThanOrEqual(left.Type); break;
-                case ExpressionType.GreaterThan: Instructions.EmitGreaterThan(left.Type); break;
-                case ExpressionType.GreaterThanOrEqual: Instructions.EmitGreaterThanOrEqual(left.Type); break;
+
+            switch (node.NodeType) {
+                case ExpressionType.LessThan: Instructions.EmitLessThan(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.LessThanOrEqual: Instructions.EmitLessThanOrEqual(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.GreaterThan: Instructions.EmitGreaterThan(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.GreaterThanOrEqual: Instructions.EmitGreaterThanOrEqual(left.Type, node.IsLiftedToNull); break;
                 default: throw Assert.Unreachable;
             }
         }
@@ -594,6 +640,7 @@ namespace Microsoft.Scripting.Interpreter {
                 case ExpressionType.Multiply: Instructions.EmitMul(left.Type, false); break;
                 case ExpressionType.MultiplyChecked: Instructions.EmitMul(left.Type, true); break;
                 case ExpressionType.Divide: Instructions.EmitDiv(left.Type); break;
+                case ExpressionType.Modulo: Instructions.EmitModulo(left.Type); break;
                 default: throw Assert.Unreachable;
             }
         }
@@ -639,12 +686,8 @@ namespace Microsoft.Scripting.Interpreter {
         }
 
         private void CompileNotExpression(UnaryExpression node) {
-            if (node.Operand.Type == typeof(bool)) {
-                Compile(node.Operand);
-                Instructions.EmitNot();
-            } else {
-                throw new NotImplementedException();
-            }
+            Compile(node.Operand);
+            Instructions.EmitNot(node.Operand.Type);
         }
 
         private void CompileUnaryBoolCheck(UnaryExpression node) {
@@ -676,7 +719,27 @@ namespace Microsoft.Scripting.Interpreter {
             } else {
                 switch (node.NodeType) {
                     case ExpressionType.Not:
+                    case ExpressionType.OnesComplement:
                         CompileNotExpression(node);
+                        return;
+                    case ExpressionType.NegateChecked:
+                        Compile(node.Operand);
+                        Instructions.EmitNegateChecked(node.Type);
+                        return;
+                    case ExpressionType.Negate:
+                        Compile(node.Operand);
+                        Instructions.EmitNegate(node.Type);
+                        return;
+                    case ExpressionType.Increment:
+                        Compile(node.Operand);
+                        Instructions.EmitIncrement(node.Type);
+                        return;
+                    case ExpressionType.Decrement:
+                        Compile(node.Operand);
+                        Instructions.EmitDecrement(node.Type);
+                        return;
+                    case ExpressionType.UnaryPlus:
+                        Compile(node.Operand);
                         return;
                     case ExpressionType.IsTrue:
                     case ExpressionType.IsFalse:

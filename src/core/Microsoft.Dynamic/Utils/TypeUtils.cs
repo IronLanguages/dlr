@@ -30,6 +30,8 @@ namespace Microsoft.Scripting.Utils {
 
         internal static bool IsNullableType(this Type type) => type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
+        internal static bool IsNullableOrReferenceType(this Type type) => !type.IsValueType || IsNullableType(type);
+
         internal static bool IsBool(this Type type) => GetNonNullableType(type) == typeof(bool);
 
         internal static bool IsNumeric(this Type type) {
@@ -115,9 +117,9 @@ namespace Microsoft.Scripting.Utils {
         internal static bool CanAssign(Type to, Expression from) {
             if (CanAssign(to, from.Type)) return true;
 
-            if (to.IsValueType && 
-                to.IsGenericType && 
-                to.GetGenericTypeDefinition() == typeof(Nullable<>) && 
+            if (to.IsValueType &&
+                to.IsGenericType &&
+                to.GetGenericTypeDefinition() == typeof(Nullable<>) &&
                 ConstantCheck.Check(from, null)) {
                 return true;
             }
@@ -140,7 +142,7 @@ namespace Microsoft.Scripting.Utils {
                     CanAssign(to.GetElementType(), from.GetElementType())) {
                     return true;
                 }
-            } 
+            }
 
             return false;
         }
@@ -165,8 +167,8 @@ namespace Microsoft.Scripting.Utils {
             //          |     |     |
             //          v     v     v
             // 1: I1 -> I2 -> I4 -> I8
-            //          |     |     
-            //          v     v     
+            //          |     |
+            //          v     v
             // 2:       R4 -> R8
 
             switch (code) {

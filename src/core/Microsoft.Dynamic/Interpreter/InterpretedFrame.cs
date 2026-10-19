@@ -69,6 +69,22 @@ namespace Microsoft.Scripting.Interpreter {
             Data[StackIndex++] = ScriptingRuntimeHelpers.Int32ToObject(value);
         }
 
+        internal void Push(byte value) {
+            Data[StackIndex++] = value;
+        }
+
+        internal void Push(sbyte value) {
+            Data[StackIndex++] = value;
+        }
+
+        internal void Push(short value) {
+            Data[StackIndex++] = value;
+        }
+
+        internal void Push(ushort value) {
+            Data[StackIndex++] = value;
+        }
+
         public object Pop() {
             var val = Data[--StackIndex];
             Data[StackIndex] = null;
