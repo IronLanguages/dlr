@@ -408,10 +408,6 @@ namespace Microsoft.Scripting.Interpreter {
         private void CompileIndexAssignment(BinaryExpression node, bool asVoid) {
             var index = (IndexExpression)node.Left;
 
-            if (!asVoid) {
-                throw new NotImplementedException();
-            }
-
             // instance:
             if (index.Object is not null) {
                 Compile(index.Object);
@@ -424,6 +420,11 @@ namespace Microsoft.Scripting.Interpreter {
 
             // value:
             Compile(node.Right);
+            LocalDefinition local = default;
+            if (!asVoid) {
+                local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), Instructions.Count);
+                Instructions.EmitAssignLocal(local.Index);
+            }
 
             if (index.Indexer is not null) {
                 EmitCall(index.Indexer.GetSetMethod(true));
@@ -431,6 +432,11 @@ namespace Microsoft.Scripting.Interpreter {
                 EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
             } else {
                 Instructions.EmitSetArrayItem(index.Object.Type);
+            }
+
+            if (!asVoid) {
+                Instructions.EmitLoadLocal(local.Index);
+                _locals.UndefineLocal(local, Instructions.Count);
             }
         }
 
@@ -458,6 +464,10 @@ namespace Microsoft.Scripting.Interpreter {
             if (member.Member is FieldInfo fi) {
                 if (member.Expression is not null) {
                     Compile(member.Expression);
+                    if (fi.DeclaringType.IsValueType && member.Expression.NodeType is not (ExpressionType.Parameter or ExpressionType.Unbox)) {
+                        // the instance is a temporary value so the store must not update the original boxed value
+                        EmitCall(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetObjectValue)));
+                    }
                 }
                 Compile(node.Right);
 
