@@ -140,6 +140,9 @@ namespace Microsoft.Dynamic.Test {
                 return d.DynamicInvoke(args);
             } catch (TargetInvocationException ex) {
                 return ex.InnerException.GetType();
+            } catch (ArithmeticException ex) {
+                // Mono doesn't wrap arithmetic exceptions thrown by dynamic methods
+                return ex.GetType();
             }
         }
 
