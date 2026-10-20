@@ -10,11 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-22.04, macos-14]
-        # macOS 14 Sonoma will be deprecated on 2026-07-06 and unsupported on 2026-11-02
-        # https://github.com/actions/runner-images/issues/13518
-        # but it is the last macOS image that comes with Mono preinstalled
-        # https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
       # Prerequisites
@@ -34,6 +30,17 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '8.0.x'
+
+      # Setup Mono (the runner images no longer include it)
+    - name: Install Mono
+      if: matrix.os != 'windows-latest'
+      run: |
+        if [ "$RUNNER_OS" = Linux ]; then
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          echo "$HOMEBREW_PREFIX/bin" >> "$GITHUB_PATH"
+        fi
+        brew install mono
+        mono --version
 
       # Build & package
     - name: Build
