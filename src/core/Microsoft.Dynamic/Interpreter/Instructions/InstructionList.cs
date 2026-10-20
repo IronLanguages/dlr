@@ -28,7 +28,7 @@ namespace Microsoft.Scripting.Interpreter {
         // list of (instruction index, cookie) sorted by instruction index:
         internal readonly List<KeyValuePair<int, object>> DebugCookies;
 
-        internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions, 
+        internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
             object[] objects, RuntimeLabel[] labels, List<KeyValuePair<int, object>> debugCookies) {
 
             MaxStackDepth = maxStackDepth;
@@ -55,9 +55,9 @@ namespace Microsoft.Scripting.Interpreter {
             public InstructionList.DebugView.InstructionView[]/*!*/ A0 {
                 get {
                     return InstructionList.DebugView.GetInstructionViews(
-                        _array.Instructions, 
-                        _array.Objects, 
-                        (index) => _array.Labels[index].Index, 
+                        _array.Instructions,
+                        _array.Objects,
+                        (index) => _array.Labels[index].Index,
                         _array.DebugCookies
                     );
                 }
@@ -99,9 +99,9 @@ namespace Microsoft.Scripting.Interpreter {
             public InstructionView[]/*!*/ A0 {
                 get {
                     return GetInstructionViews(
-                        _list._instructions, 
-                        _list._objects, 
-                        (index) => _list._labels[index].TargetIndex, 
+                        _list._instructions,
+                        _list._objects,
+                        (index) => _list._labels[index].TargetIndex,
                         _list._debugCookies
                     );
                 }
@@ -307,8 +307,8 @@ namespace Microsoft.Scripting.Interpreter {
                 if (value is bool b) {
                     EmitLoad(b);
                     return;
-                } 
-                
+                }
+
                 if (value is int i) {
                     if (i >= PushIntMinCachedValue && i <= PushIntMaxCachedValue) {
                         _ints ??= new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
@@ -575,55 +575,103 @@ namespace Microsoft.Scripting.Interpreter {
         #region Arithmetic Operations
 
         public void EmitAdd(Type type, bool @checked) {
-            if (@checked) {
-                Emit(AddOvfInstruction.Create(type));
-            } else {
-                Emit(AddInstruction.Create(type));
-            }
+            Emit(@checked ? AddOvfInstruction.Create(type) : AddInstruction.Create(type));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
         public void EmitSub(Type type, bool @checked) {
-            throw new NotSupportedException();
+            Emit(@checked ? SubOvfInstruction.Create(type) : SubInstruction.Create(type));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
         public void EmitMul(Type type, bool @checked) {
-            throw new NotSupportedException();
+            Emit(@checked ? MulOvfInstruction.Create(type) : MulInstruction.Create(type));
         }
 
         public void EmitDiv(Type type) {
             Emit(DivInstruction.Create(type));
         }
 
+        public void EmitModulo(Type type) {
+            Emit(ModuloInstruction.Create(type));
+        }
+
+        public void EmitNegate(Type type) {
+            Emit(NegateInstruction.Create(type));
+        }
+
+        public void EmitNegateChecked(Type type) {
+            Emit(NegateCheckedInstruction.Create(type));
+        }
+
+        public void EmitIncrement(Type type) {
+            Emit(IncrementInstruction.Create(type));
+        }
+
+        public void EmitDecrement(Type type) {
+            Emit(DecrementInstruction.Create(type));
+        }
+
+        #endregion
+
+        #region Bitwise Operations
+
+        public void EmitExclusiveOr(Type type) {
+            Emit(ExclusiveOrInstruction.Create(type));
+        }
+
+        public void EmitAnd(Type type) {
+            Emit(AndInstruction.Create(type));
+        }
+
+        public void EmitOr(Type type) {
+            Emit(OrInstruction.Create(type));
+        }
+
+        public void EmitLeftShift(Type type) {
+            Emit(LeftShiftInstruction.Create(type));
+        }
+
+        public void EmitRightShift(Type type) {
+            Emit(RightShiftInstruction.Create(type));
+        }
+
         #endregion
 
         #region Comparisons
 
-        public void EmitEqual(Type type) {
-            Emit(EqualInstruction.Create(type));
+        public void EmitEqual(Type type) => EmitEqual(type, false);
+
+        public void EmitEqual(Type type, bool liftedToNull) {
+            Emit(EqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitNotEqual(Type type) {
-            Emit(NotEqualInstruction.Create(type));
+        public void EmitNotEqual(Type type) => EmitNotEqual(type, false);
+
+        public void EmitNotEqual(Type type, bool liftedToNull) {
+            Emit(NotEqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitLessThan(Type type) {
-            Emit(LessThanInstruction.Create(type));
+        public void EmitLessThan(Type type) => EmitLessThan(type, false);
+
+        public void EmitLessThan(Type type, bool liftedToNull) {
+            Emit(LessThanInstruction.Create(type, liftedToNull));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        public void EmitLessThanOrEqual(Type type) {
-            throw new NotSupportedException();
+        public void EmitLessThanOrEqual(Type type) => EmitLessThanOrEqual(type, false);
+
+        public void EmitLessThanOrEqual(Type type, bool liftedToNull) {
+            Emit(LessThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitGreaterThan(Type type) {
-            Emit(GreaterThanInstruction.Create(type));
+        public void EmitGreaterThan(Type type) => EmitGreaterThan(type, false);
+
+        public void EmitGreaterThan(Type type, bool liftedToNull) {
+            Emit(GreaterThanInstruction.Create(type, liftedToNull));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        public void EmitGreaterThanOrEqual(Type type) {
-            throw new NotSupportedException();
+        public void EmitGreaterThanOrEqual(Type type) => EmitGreaterThanOrEqual(type, false);
+
+        public void EmitGreaterThanOrEqual(Type type, bool liftedToNull) {
+            Emit(GreaterThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
         #endregion
@@ -643,7 +691,11 @@ namespace Microsoft.Scripting.Interpreter {
         #region Boolean Operators
 
         public void EmitNot() {
-            Emit(NotInstruction.Instance);
+            EmitNot(typeof(bool));
+        }
+
+        public void EmitNot(Type type) {
+            Emit(NotInstruction.Create(type));
         }
 
         #endregion
@@ -697,7 +749,7 @@ namespace Microsoft.Scripting.Interpreter {
                 return instruction;
             }
         }
-        
+
         public void EmitStoreField(FieldInfo field) {
             if (field.IsStatic) {
                 Emit(new StoreStaticFieldInstruction(field));

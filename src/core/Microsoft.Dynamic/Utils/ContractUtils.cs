@@ -11,6 +11,8 @@ using System.Diagnostics;
 
 namespace Microsoft.Scripting.Utils {
     public static class ContractUtils {
+        internal static Exception Unreachable => Utils.Assert.Unreachable;
+
         [Conditional("DEBUG")]
         public static void Assert(bool precondition) {
             Debug.Assert(precondition);

@@ -20,6 +20,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- used by the instructions copied from .NET (Interpreter/Instructions/DotNet) -->
+    <Using Include="System" />
+    <Using Include="Microsoft.Scripting.Runtime.ScriptingRuntimeHelpers" Alias="ScriptingRuntimeHelpers" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Scripting.Metadata\Microsoft.Scripting.Metadata.csproj" Condition=" $(Features.Contains('FEATURE_METADATA_READER')) " />
     <ProjectReference Include="..\Microsoft.Scripting\Microsoft.Scripting.csproj" />
   </ItemGroup>
