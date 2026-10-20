@@ -60,6 +60,10 @@ namespace Microsoft.Scripting.Debugging {
             if (sequencePointIndex == Int32.MaxValue)
                 return false;
 
+            // Changing the location remaps the frame to a generator; a frame without a generator factory (a traced async body) cannot do that.
+            if (traceFrame.Generator is null && traceFrame.FunctionInfo.GeneratorFactory is null && sequencePointIndex != traceFrame.CurrentSequencePointIndex)
+                return false;
+
             traceFrame.CurrentSequencePointIndex = sequencePointIndex;
             return true;
         }

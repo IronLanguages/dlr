@@ -29,6 +29,10 @@ namespace Microsoft.Scripting.Ast {
             = typeof(StrongBox<object?>).GetConstructor(Type.EmptyTypes)!;
         private static readonly ConstructorInfo s_exceptionSlotCtor
             = typeof(StrongBox<Exception?>).GetConstructor(Type.EmptyTypes)!;
+        private static readonly MethodInfo s_captureMethod
+            = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture))!;
+        private static readonly MethodInfo s_throwMethod
+            = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes)!;
 
         private readonly AsyncExpression _node;
 
@@ -52,9 +56,18 @@ namespace Microsoft.Scripting.Ast {
             ParameterExpression exceptionSlot = Expression.Variable(typeof(StrongBox<Exception?>), "$awaitException");
             LabelTarget yieldLabel = Expression.Label(typeof(object), "$asyncYield");
 
+            // Optional tracing, when the node carries a debug hook: instrument the body before the await rewrite, so that its debug points
+            // are sliced into the same state machine as the awaits, and wrap that state machine in a TracingStateMachine (see below).
+            Expression body = _node.Body;
+            AsyncDebugSupport? debugSupport = null;
+            if (_node.DebugContext is not null && _node.DebugLambdaInfo is not null) {
+                debugSupport = new AsyncDebugSupport(_node.DebugContext, _node.DebugLambdaInfo, _node.Name, exceptionSlot);
+                body = debugSupport.InjectDebugPoints(body, yieldLabel);
+            }
+
             // Rewrite AwaitExpression(e) -> { yield e; rethrow-if-pending; valueSlot.Value }
             var rewriter = new AwaitToYieldRewriter(yieldLabel, valueSlot, exceptionSlot);
-            Expression rewrittenBody = rewriter.Visit(_node.Body);
+            Expression rewrittenBody = rewriter.Visit(body);
 
             // After the body completes, the function's final value must live in valueSlot for DriveAsync to pick up. For a value-typed body this
             // is a single assignment of the body expression into the slot. For a void body, the body has no value to assign, but we still
@@ -81,10 +94,11 @@ namespace Microsoft.Scripting.Ast {
                 generatorBody,
                 typeof(IEnumerator<object>),
                 rewriteAssignments: false);
+            Expression states = debugSupport?.TraceStateMachine(generator, resultSlot: valueSlot, isAsyncEnumerable: false) ?? generator;
 
             Expression drive = Expression.Call(
                 s_driveMethod,
-                generator,
+                states,
                 valueSlot,
                 exceptionSlot,
                 _node.CancellationToken,
@@ -98,12 +112,25 @@ namespace Microsoft.Scripting.Ast {
                 drive);
         }
 
-        private sealed class AwaitToYieldRewriter : ExpressionVisitor {
-            private static readonly MethodInfo s_captureMethod
-                = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture))!;
-            private static readonly MethodInfo s_throwMethod
-                = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes)!;
 
+        /// <summary>
+        ///   Rethrows the exception parked in <paramref name="exceptionSlot"/>, if any, preserving its original stack trace.
+        /// </summary>
+        /// <remarks>
+        ///   Emitted right after each yield of an async body: whatever resumes the body (the driver past an await, or the tracer past a
+        ///   debug point) parks an exception in the slot to make the body observe it at the resume point.
+        /// </remarks>
+        internal static Expression RethrowIfPending(Expression exceptionSlot) {
+            Expression readException = Expression.Field(exceptionSlot, s_exceptionSlotField);
+            return Expression.IfThen(
+                Expression.ReferenceNotEqual(readException, Expression.Constant(null, typeof(Exception))),
+                Expression.Call(
+                    Expression.Call(s_captureMethod, readException),
+                    s_throwMethod));
+        }
+
+
+        private sealed class AwaitToYieldRewriter : ExpressionVisitor {
             private readonly LabelTarget _yieldLabel;
             private readonly ParameterExpression _resultSlot;
             private readonly ParameterExpression _exceptionSlot;
@@ -118,22 +145,15 @@ namespace Microsoft.Scripting.Ast {
                 if (node is AwaitExpression aw) {
                     Expression operand = Visit(aw.Operand);
                     Expression boxed = operand.Type == typeof(object) ? operand : Expression.Convert(operand, typeof(object));
-                    Expression readException = Expression.Field(_exceptionSlot, s_exceptionSlotField);
                     Expression readSlot = Expression.Field(_resultSlot, s_valueSlotField);
 
-                    // After the yield, if the runner stored an exception, rethrow it preserving the original stack trace 
+                    // After the yield, if the runner stored an exception, rethrow it preserving the original stack trace
                     // (so the body's try/except observes the right exception object).
                     // Otherwise return the awaited result.
-                    Expression rethrow = Expression.IfThen(
-                        Expression.ReferenceNotEqual(readException, Expression.Constant(null, typeof(Exception))),
-                        Expression.Call(
-                            Expression.Call(s_captureMethod, readException),
-                            s_throwMethod));
-
                     return Expression.Block(
                         typeof(object),
                         Utils.YieldReturn(_yieldLabel, boxed),
-                        rethrow,
+                        RethrowIfPending(_exceptionSlot),
                         readSlot);
                 }
                 return base.VisitExtension(node);
