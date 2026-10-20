@@ -638,27 +638,39 @@ namespace Microsoft.Scripting.Interpreter {
 
         #region Comparisons
 
-        public void EmitEqual(Type type, bool liftedToNull = false) {
+        public void EmitEqual(Type type) => EmitEqual(type, false);
+
+        public void EmitEqual(Type type, bool liftedToNull) {
             Emit(EqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitNotEqual(Type type, bool liftedToNull = false) {
+        public void EmitNotEqual(Type type) => EmitNotEqual(type, false);
+
+        public void EmitNotEqual(Type type, bool liftedToNull) {
             Emit(NotEqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitLessThan(Type type, bool liftedToNull = false) {
+        public void EmitLessThan(Type type) => EmitLessThan(type, false);
+
+        public void EmitLessThan(Type type, bool liftedToNull) {
             Emit(LessThanInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitLessThanOrEqual(Type type, bool liftedToNull = false) {
+        public void EmitLessThanOrEqual(Type type) => EmitLessThanOrEqual(type, false);
+
+        public void EmitLessThanOrEqual(Type type, bool liftedToNull) {
             Emit(LessThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitGreaterThan(Type type, bool liftedToNull = false) {
+        public void EmitGreaterThan(Type type) => EmitGreaterThan(type, false);
+
+        public void EmitGreaterThan(Type type, bool liftedToNull) {
             Emit(GreaterThanInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitGreaterThanOrEqual(Type type, bool liftedToNull = false) {
+        public void EmitGreaterThanOrEqual(Type type) => EmitGreaterThanOrEqual(type, false);
+
+        public void EmitGreaterThanOrEqual(Type type, bool liftedToNull) {
             Emit(GreaterThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
