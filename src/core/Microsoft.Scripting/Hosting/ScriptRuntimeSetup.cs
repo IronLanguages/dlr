@@ -45,7 +45,7 @@ namespace Microsoft.Scripting.Hosting {
         /// <summary>
         /// Indicates that the script runtime is in debug mode.
         /// This means:
-        /// 
+        ///
         /// 1) Symbols are emitted for debuggable methods (methods associated with SourceUnit).
         /// 2) Debuggable methods are emitted to non-collectable types (this is due to CLR limitations on dynamic method debugging).
         /// 3) JIT optimization is disabled for all methods
@@ -55,7 +55,7 @@ namespace Microsoft.Scripting.Hosting {
             get => _debugMode;
             set {
                 CheckFrozen();
-                _debugMode = value; 
+                _debugMode = value;
             }
         }
 
@@ -66,7 +66,7 @@ namespace Microsoft.Scripting.Hosting {
             get => _privateBinding;
             set {
                 CheckFrozen();
-                _privateBinding = value; 
+                _privateBinding = value;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Scripting.Hosting {
             // prepare
             ReadOnlyCollection<LanguageSetup> setups = new ReadOnlyCollection<LanguageSetup>(ArrayUtils.MakeArray(LanguageSetups));
             var hostArguments = new ReadOnlyCollection<object>(ArrayUtils.MakeArray(_hostArguments));
-            var options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(Options));            
+            var options = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(Options));
             var config = new DlrConfiguration(_debugMode, _privateBinding, options);
 
             // validate
@@ -143,9 +143,9 @@ namespace Microsoft.Scripting.Hosting {
         private void CheckFrozen() {
             if (_frozen) {
                 throw new InvalidOperationException("Cannot modify ScriptRuntimeSetup after it has been used to create a ScriptRuntime");
-            }            
+            }
         }
-        
+
         /// <summary>
         /// Reads setup from .NET configuration system (.config files).
         /// If there is no configuration available returns an empty setup.
@@ -153,13 +153,45 @@ namespace Microsoft.Scripting.Hosting {
         public static ScriptRuntimeSetup ReadConfiguration() {
             var setup = new ScriptRuntimeSetup();
 #if FEATURE_CONFIGURATION
-            LoadRuntimeSetup(setup, null);
+            if (AppConfigMayContainSection()) {
+                LoadRuntimeSetup(setup, null);
+            }
 #endif
             return setup;
         }
 
-
 #if FEATURE_CONFIGURATION
+        /// <summary>
+        /// Initializing the configuration system is expensive, so skip it when the application has no config file
+        /// or the config file doesn't mention our section.
+        /// Returns false only if the section is known not to be there.
+        /// </summary>
+        private static bool AppConfigMayContainSection() {
+            try {
+#if NETFRAMEWORK
+                string? path = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+#else
+                // simplified ClientConfigPaths lookup
+                string? path = AppContext.GetData("APP_CONFIG_FILE") as string;
+                if (string.IsNullOrEmpty(path)) {
+                    string? location = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+                    if (string.IsNullOrEmpty(location)) return true;
+                    path = location + ".config";
+                }
+#endif
+                if (path is null || path.Length == 0) return true;
+                if (path.Contains("://")) return true; // the configuration system also accepts URIs...
+                var file = new FileInfo(path);
+                if (!file.Exists) return false;
+                if (file.Length > 1024 * 1024) return true; // defer to the configuration system for large files
+                string text = File.ReadAllText(path);
+                if (text.Length >= 2 && (text[0] == '\0' || text[1] == '\0')) return true; // likely UTF-16/32 without BOM
+                return text.Contains("microsoft.scripting"); // Configuration.Section.SectionName, not referenced to avoid loading System.Configuration
+            } catch {
+                return true;
+            }
+        }
+
         private static void LoadRuntimeSetup(ScriptRuntimeSetup setup, Stream? configFileStream) {
             try {
                 LoadRuntimeSetupImpl(setup, configFileStream);
