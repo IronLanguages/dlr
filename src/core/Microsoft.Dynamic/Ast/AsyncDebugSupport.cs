@@ -194,7 +194,7 @@ namespace Microsoft.Scripting.Ast {
 
             protected override Expression VisitExtension(Expression node) {
                 // A nested async node is sliced into its own state machine against its own label; leave it opaque.
-                if (node is AsyncExpression
+                if (node is AsyncExpression or GeneratorExpression
 #if NET
                     or AsyncEnumerableExpression
 #endif
