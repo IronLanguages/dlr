@@ -61,7 +61,8 @@ namespace Microsoft.Scripting.Debugging {
                 return false;
 
             // Changing the location remaps the frame to a generator; a frame without a generator factory (a traced async body) cannot do that.
-            if (traceFrame.Generator is null && traceFrame.FunctionInfo.GeneratorFactory is null && sequencePointIndex != traceFrame.CurrentSequencePointIndex)
+            if (traceFrame.Generator is null && traceFrame.FunctionInfo.GeneratorFactory is null &&
+                (sequencePointIndex != traceFrame.CurrentSequencePointIndex || traceFrame.ThrownException is not null))
                 return false;
 
             traceFrame.CurrentSequencePointIndex = sequencePointIndex;
