@@ -324,6 +324,11 @@ namespace Microsoft.Scripting.Ast {
             if (catchYields != tryYields) {
                 var block = new List<Expression>();
 
+                // A deferred handler runs if its variable is set, so the variables must be reset on each entry into the try: they are
+                // hoisted, and would otherwise keep the exception of an earlier pass (e.g. of a loop) whose handler did not reach its end.
+                // A resumption into a deferred handler is routed past the reset, which keeps the exception for the rest of the handler.
+                var resetDeferredVars = new List<Expression>();
+
                 block.Add(MakeYieldRouter(node.Body.Type, tryYields, catchYields, tryStart));
                 block.Add(null); // empty slot to fill in later
 
@@ -347,6 +352,7 @@ namespace Microsoft.Scripting.Ast {
                     // the catch might contain yields.
                     var deferredVar = c.Variable ?? Expression.Variable(c.Test, null);
                     _vars.Add(deferredVar);
+                    resetDeferredVars.Add(Expression.Assign(deferredVar, AstUtils.Constant(null, deferredVar.Type)));
 
                     // We need to ensure that filters can access the exception
                     // variable
@@ -382,7 +388,8 @@ namespace Microsoft.Scripting.Ast {
                     );
                 }
 
-                block[1] = Expression.MakeTry(null, @try, null, null, new ReadOnlyCollection<CatchBlock>(handlers));
+                resetDeferredVars.Add(Expression.MakeTry(null, @try, null, null, new ReadOnlyCollection<CatchBlock>(handlers)));
+                block[1] = Expression.Block(resetDeferredVars);
                 @try = Expression.Block(block);
                 handlers = EmptyArray<CatchBlock>.Instance; // so we don't reuse these
             }
@@ -535,7 +542,8 @@ namespace Microsoft.Scripting.Ast {
 
             // Lowered async nodes (AsyncExpression / AsyncEnumerableExpression) carry their own generator
             // label and are reduced — with their await/yield points rewritten — in their own context so skip here.
-            // TODO: tracing *into* async bodies will instead require dedicated support here rather than this skip.
+            // Tracing into an async body does not need this rewriter either: the node instruments its own body when
+            // reduced, if it carries a debug hook (AsyncExpression.WithDebugInfo).
             if (node is AsyncExpression
 #if NET
                 or AsyncEnumerableExpression

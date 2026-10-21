@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Microsoft.Scripting.Ast {
@@ -28,8 +27,6 @@ namespace Microsoft.Scripting.Ast {
             = typeof(Runtime.AwaitPoint).GetConstructor([typeof(Task)])!;
         private static readonly FieldInfo s_valueSlotField
             = typeof(StrongBox<object?>).GetField(nameof(StrongBox<object?>.Value))!;
-        private static readonly FieldInfo s_exceptionSlotField
-            = typeof(StrongBox<Exception?>).GetField(nameof(StrongBox<Exception?>.Value))!;
         private static readonly ConstructorInfo s_valueSlotCtor
             = typeof(StrongBox<object?>).GetConstructor(Type.EmptyTypes)!;
         private static readonly ConstructorInfo s_exceptionSlotCtor
@@ -48,8 +45,17 @@ namespace Microsoft.Scripting.Ast {
             ParameterExpression valueSlot = Expression.Variable(typeof(StrongBox<object?>), "$asyncValue");
             ParameterExpression exceptionSlot = Expression.Variable(typeof(StrongBox<Exception?>), "$awaitException");
 
+            // Optional tracing, as in AsyncRewriter: the debug points are injected on the same label the body's yields and awaits target,
+            // so they all land in one state machine, which is then wrapped in a TracingStateMachine.
+            Expression body = _node.Body;
+            AsyncDebugSupport? debugSupport = null;
+            if (_node.DebugContext is not null && _node.DebugLambdaInfo is not null) {
+                debugSupport = new AsyncDebugSupport(_node.DebugContext, _node.DebugLambdaInfo, _node.Name, exceptionSlot);
+                body = debugSupport.InjectDebugPoints(body, _node.YieldLabel);
+            }
+
             var rewriter = new AwaitToAwaitPointRewriter(_node.YieldLabel, valueSlot, exceptionSlot);
-            Expression rewrittenBody = rewriter.Visit(_node.Body);
+            Expression rewrittenBody = rewriter.Visit(body);
 
             // Coerce to void for Utils.Generator (the generator body's value is discarded).
             Expression generatorBody = rewrittenBody.Type == typeof(void)
@@ -62,12 +68,13 @@ namespace Microsoft.Scripting.Ast {
                 generatorBody,
                 typeof(IEnumerator<object>),
                 rewriteAssignments: false);
+            Expression states = debugSupport?.TraceStateMachine(generator, resultSlot: null, isAsyncEnumerable: true) ?? generator;
 
             // Argument order matches DriveAsyncEnumerable: ..., cancellationToken, cancellationException
             // (same as DriveAsync — cancellationToken is the last required parameter).
             Expression drive = Expression.Call(
                 s_driveMethod,
-                generator,
+                states,
                 valueSlot,
                 exceptionSlot,
                 _node.CancellationToken,
@@ -88,11 +95,6 @@ namespace Microsoft.Scripting.Ast {
         ///   value yielded by a language-level <c>yield</c>.
         /// </summary>
         private sealed class AwaitToAwaitPointRewriter : ExpressionVisitor {
-            private static readonly MethodInfo s_captureMethod
-                = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture))!;
-            private static readonly MethodInfo s_throwMethod
-                = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes)!;
-
             private readonly LabelTarget _yieldLabel;
             private readonly ParameterExpression _valueSlot;
             private readonly ParameterExpression _exceptionSlot;
@@ -109,20 +111,12 @@ namespace Microsoft.Scripting.Ast {
                     // Wrap the awaited Task in an AwaitPoint marker, then box to object for the yield.
                     Expression awaitPoint = Expression.New(s_awaitPointCtor, Expression.Convert(operand, typeof(Task)));
                     Expression yielded = Expression.Convert(awaitPoint, typeof(object));
-
-                    Expression readException = Expression.Field(_exceptionSlot, s_exceptionSlotField);
                     Expression readSlot = Expression.Field(_valueSlot, s_valueSlotField);
-
-                    Expression rethrow = Expression.IfThen(
-                        Expression.ReferenceNotEqual(readException, Expression.Constant(null, typeof(Exception))),
-                        Expression.Call(
-                            Expression.Call(s_captureMethod, readException),
-                            s_throwMethod));
 
                     return Expression.Block(
                         typeof(object),
                         Utils.YieldReturn(_yieldLabel, yielded),
-                        rethrow,
+                        AsyncRewriter.RethrowIfPending(_exceptionSlot),
                         readSlot);
                 }
                 return base.VisitExtension(node);

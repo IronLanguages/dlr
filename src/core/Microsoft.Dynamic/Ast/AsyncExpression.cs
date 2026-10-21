@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Scripting.Debugging.CompilerServices;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
@@ -39,11 +40,33 @@ namespace Microsoft.Scripting.Ast {
 
         internal AsyncExpression(string? name, Expression body,
                                   Expression? cancellationToken = null,
-                                  Expression? cancellationException = null) {
+                                  Expression? cancellationException = null,
+                                  DebugContext? debugContext = null,
+                                  DebugLambdaInfo? debugLambdaInfo = null) {
             Name = name;
             Body = body;
             CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
             CancellationException = cancellationException ?? Utils.DefaultCancellationException;
+            DebugContext = debugContext;
+            DebugLambdaInfo = debugLambdaInfo;
+        }
+
+        /// <summary>
+        ///   Optional tracing hook. When both are non-null, <see cref="Reduce"/> instruments the body with debug
+        ///   points so it becomes traceable (see <c>AsyncDebugSupport</c>); when null, reduction is unchanged.
+        ///   Set by the host (e.g. IronPython's <c>FunctionCode</c>) only when building the tracing variant.
+        /// </summary>
+        internal DebugContext? DebugContext { get; }
+
+        internal DebugLambdaInfo? DebugLambdaInfo { get; }
+
+        /// <summary>
+        ///   Returns a copy of this node that instruments its body for tracing under the given debug context.
+        /// </summary>
+        public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo) {
+            ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
+            ContractUtils.RequiresNotNull(debugLambdaInfo, nameof(debugLambdaInfo));
+            return new AsyncExpression(Name, Body, CancellationToken, CancellationException, debugContext, debugLambdaInfo);
         }
 
         /// <summary>
@@ -86,7 +109,7 @@ namespace Microsoft.Scripting.Ast {
             Expression ct = visitor.Visit(CancellationToken);
             Expression ce = visitor.Visit(CancellationException);
             if (b == Body && ct == CancellationToken && ce == CancellationException) return this;
-            return new AsyncExpression(Name, b, ct, ce);
+            return new AsyncExpression(Name, b, ct, ce, DebugContext, DebugLambdaInfo);
         }
     }
 
