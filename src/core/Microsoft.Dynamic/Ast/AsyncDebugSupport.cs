@@ -201,6 +201,11 @@ namespace Microsoft.Scripting.Ast {
                     ) {
                     return node;
                 }
+                if (node is YieldExpression { Value: not null } yield && yield.Target == _yieldLabel) {
+                    return Expression.Block(
+                        base.VisitExtension(node),
+                        AsyncRewriter.RethrowIfPending(_exceptionSlot));
+                }
                 return base.VisitExtension(node);
             }
         }
