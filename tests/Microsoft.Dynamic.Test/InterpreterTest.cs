@@ -320,6 +320,14 @@ namespace Microsoft.Dynamic.Test {
             Assert.That(Outcome(lambda.Compile()), Is.EqualTo(expected), "compiled");
         }
 
+        private static Expression RecordStackDepth(List<int> depths) {
+            return Expression.Call(
+                Expression.Constant(depths),
+                typeof(List<int>).GetMethod(nameof(List<int>.Add)),
+                Expression.Call(typeof(InterpreterTest).GetMethod(nameof(StackDepth)))
+            );
+        }
+
         public enum CatchExit { Continue, Break, ContinueThroughFinally, ContinueFromNestedCatch, ContinueAfterFault }
 
         [Test]
@@ -327,11 +335,7 @@ namespace Microsoft.Dynamic.Test {
             // Leaving a catch handler by a jump must not leave the interpreter running inside an unfinished CLR catch block,
             // which grows the CLR stack on every iteration (https://github.com/IronLanguages/ironpython3/issues/1182).
             var depths = new List<int>();
-            var record = Expression.Call(
-                Expression.Constant(depths),
-                typeof(List<int>).GetMethod(nameof(List<int>.Add)),
-                Expression.Call(typeof(InterpreterTest).GetMethod(nameof(StackDepth)))
-            );
+            var record = RecordStackDepth(depths);
 
             var lambda = Expression.Lambda<Action>(Loop(continueLabel => {
                 var exitCatch = Expression.Block(record, Expression.Continue(continueLabel));
@@ -385,6 +389,81 @@ namespace Microsoft.Dynamic.Test {
             int recordsPerIteration = exit is CatchExit.ContinueThroughFinally or CatchExit.ContinueAfterFault ? 2 : 1;
             Assert.That(depths, Has.Count.EqualTo(recordsPerIteration * LoopIterations));
             Assert.That(depths.Distinct(), Has.Exactly(1).Items, $"CLR stack depth changed: {string.Join(", ", depths)}");
+        }
+
+        public enum FinallyExit { Continue, Throw }
+
+        [Test]
+        public void ExceptionCancelledByFinallyTest([Values] FinallyExit exit) {
+            // A finally block running while an exception without a handler in the frame propagates can cancel the exception,
+            // by a jump out of the block or by throwing an exception handled in the frame. The method then goes on and must not
+            // be left running inside an unfinished CLR catch block.
+            var depths = new List<int>();
+            var record = RecordStackDepth(depths);
+
+            var lambda = Expression.Lambda<Action>(Loop(continueLabel => exit switch {
+                // the interpreter allows jumps out of finally blocks (see FinallyFlowControlExpression)
+                FinallyExit.Continue => Expression.TryFinally(
+                    Throw<InvalidOperationException>("A"),
+                    Expression.Block(record, Expression.Continue(continueLabel))
+                ),
+                FinallyExit.Throw => Expression.TryCatch(
+                    Expression.TryFinally(Throw<InvalidOperationException>("A"), Expression.Block(record, Throw<ArgumentException>("B"))),
+                    Expression.Catch(typeof(ArgumentException), Expression.Empty())
+                ),
+                _ => throw new ArgumentOutOfRangeException(nameof(exit)),
+            }));
+
+            Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue)();
+
+            Assert.That(depths, Has.Count.EqualTo(LoopIterations));
+            Assert.That(depths.Distinct(), Has.Exactly(1).Items, $"CLR stack depth changed: {string.Join(", ", depths)}");
+        }
+
+        [Test]
+        public void PropagateThroughFinallyTest() {
+            // the exception leaves an interpreted lambda that has finally blocks but no handler
+            var outer = Expression.Variable(typeof(InvalidOperationException), "outer");
+            AssertOutcome("f1f2A", log => Expression.TryCatch(
+                Expression.Invoke(Expression.Lambda<Action>(
+                    Expression.TryFinally(
+                        Expression.TryFinally(Throw<InvalidOperationException>("A"), Append(log, "f1")),
+                        Append(log, "f2")
+                    )
+                )),
+                Expression.Catch(outer, Append(log, Message(outer)))
+            ));
+        }
+
+        [Test]
+        public void ThrowFromFinallyTest() {
+            // an exception thrown by a finally block replaces the propagating exception
+            AssertOutcome("ArgumentException: B", log => Expression.TryFinally(
+                Throw<InvalidOperationException>("A"),
+                Throw<ArgumentException>("B")
+            ));
+        }
+
+        [Test]
+        public void JumpOutOfFinallyTest() {
+            // A jump out of a finally block cancels the propagating exception.
+            // FinallyFlowControl rewrites the jump for the compiler, which doesn't allow jumps out of finally blocks.
+            Expression CancelledThrow(ParameterExpression log) {
+                var after = Expression.Label("after");
+                return Scripting.Ast.Utils.FinallyFlowControl(Expression.Block(
+                    Expression.TryFinally(Throw<InvalidOperationException>("A"), Expression.Block(Append(log, "f"), Expression.Goto(after))),
+                    Expression.Label(after),
+                    Append(log, "a")
+                ));
+            }
+
+            AssertOutcome("fa", CancelledThrow);
+
+            // the cancelled exception doesn't resurface when a later exception propagates
+            AssertOutcome("NotSupportedException: C", log => Expression.Block(
+                CancelledThrow(log),
+                Throw<NotSupportedException>("C")
+            ));
         }
 
         [Test]
@@ -519,9 +598,14 @@ namespace Microsoft.Dynamic.Test {
                 return Expression.TryCatch(body, Expression.Catch(e, Expression.Rethrow()));
             }
 
-            // rethrown by two interpreted lambdas
+            // rethrown by interpreted lambdas with a catch handler, with a finally block, and with neither
             var lambda = Expression.Lambda<Action>(CatchAndRethrow(Expression.Invoke(Expression.Lambda<Action>(
-                CatchAndRethrow(Expression.Call(typeof(InterpreterTest).GetMethod(nameof(ThrowFromHelper)), Expression.Constant("A")))
+                Expression.TryFinally(
+                    Expression.Invoke(Expression.Lambda<Action>(
+                        Expression.Call(typeof(InterpreterTest).GetMethod(nameof(ThrowFromHelper)), Expression.Constant("A"))
+                    )),
+                    Expression.Empty()
+                )
             ))));
             var interpreted = Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue);
 
@@ -530,22 +614,25 @@ namespace Microsoft.Dynamic.Test {
         }
 
 #if NETFRAMEWORK
-        [Test]
-        public void ThreadAbortTest() {
-            // The CLR rethrows ThreadAbortException at the end of a catch block unless the abort is reset,
-            // so the interpreted handler has to run inside the CLR catch block.
-            using var started = new ManualResetEventSlim();
-            var lambda = Expression.Lambda<Func<string>>(Expression.TryCatch(
-                Expression.Block(
-                    Expression.Call(Expression.Constant(started), typeof(ManualResetEventSlim).GetMethod(nameof(ManualResetEventSlim.Set))),
-                    Expression.Call(typeof(Thread).GetMethod(nameof(Thread.Sleep), [typeof(int)]), Expression.Constant(Timeout.Infinite)),
-                    Expression.Constant("not aborted")
-                ),
+        // signals that the thread can be aborted and waits for it
+        private static Expression SignalAndSleep(ManualResetEventSlim started) {
+            return Expression.Block(
+                Expression.Call(Expression.Constant(started), typeof(ManualResetEventSlim).GetMethod(nameof(ManualResetEventSlim.Set))),
+                Expression.Call(typeof(Thread).GetMethod(nameof(Thread.Sleep), [typeof(int)]), Expression.Constant(Timeout.Infinite))
+            );
+        }
+
+        private static Expression CatchThreadAbort(Expression body) {
+            return Expression.TryCatch(
+                Expression.Block(body, Expression.Constant("not aborted")),
                 Expression.Catch(typeof(ThreadAbortException), Expression.Block(
                     Expression.Call(typeof(Thread).GetMethod(nameof(Thread.ResetAbort))),
                     Expression.Constant("caught")
                 ))
-            ));
+            );
+        }
+
+        private static string RunAndAbort(Expression<Func<string>> lambda, ManualResetEventSlim started) {
             var interpreted = Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue);
 
             string result = null;
@@ -554,8 +641,35 @@ namespace Microsoft.Dynamic.Test {
             started.Wait();
             thread.Abort();
             thread.Join();
+            return result;
+        }
 
-            Assert.That(result, Is.EqualTo("caught"));
+        [Test]
+        public void ThreadAbortTest() {
+            // The CLR rethrows ThreadAbortException at the end of a catch block unless the abort is reset,
+            // so the interpreted handler has to run inside the CLR catch block.
+            using var started = new ManualResetEventSlim();
+            var lambda = Expression.Lambda<Func<string>>(CatchThreadAbort(SignalAndSleep(started)));
+
+            Assert.That(RunAndAbort(lambda, started), Is.EqualTo("caught"));
+        }
+
+        [Test]
+        public void ThreadAbortFinallyTest() {
+            // Finally blocks run while ThreadAbortException propagates have to run inside the CLR catch block too,
+            // or the CLR rethrows the exception before they run.
+            using var started = new ManualResetEventSlim();
+            var log = new List<string>();
+            var lambda = Expression.Lambda<Func<string>>(CatchThreadAbort(
+                // a lambda without a handler for the exception
+                Expression.Invoke(Expression.Lambda<Action>(Expression.TryFinally(
+                    SignalAndSleep(started),
+                    Expression.Call(Expression.Constant(log), typeof(List<string>).GetMethod(nameof(List<string>.Add)), Expression.Constant("finally"))
+                )))
+            ));
+
+            Assert.That(RunAndAbort(lambda, started), Is.EqualTo("caught"));
+            Assert.That(log, Is.EqualTo(new[] { "finally" }));
         }
 #endif
 

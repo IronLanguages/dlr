@@ -102,8 +102,8 @@ namespace Microsoft.Scripting.Interpreter {
                 }
             }
 
-            // A handler running outside of the CLR catch block has rethrown an exception that has no handler in this frame.
-            // It is thrown outside of the try block so that the catch block above doesn't handle it again.
+            // An exception that has no handler in this frame is rethrown once the finally blocks on its way have run outside
+            // of the CLR catch block. It is thrown outside of the try block so that the catch block above doesn't handle it again.
             if (frame.InstructionIndex == RethrowOnReturn && frame.PendingRethrow is { } pending) {
                 frame.PendingRethrow = null;
                 ExceptionDispatchInfo.Capture(pending).Throw();
@@ -114,27 +114,30 @@ namespace Microsoft.Scripting.Interpreter {
             frame.SaveTraceToException(exception);
             frame.InstructionIndex += GotoHandler(frame, exception, out ExceptionHandler handler);
 
-            if (handler is null) {
-                // run finally blocks; the exception is then rethrown by the CLR catch block rather than as a pending rethrow
-                frame.PendingRethrow = null;
-                return RunInCatch(frame);
-            }
-
 #if FEATURE_THREAD
             // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
             if (exception is ThreadAbortException abort) {
-                _anyAbortException = abort;
-                frame.CurrentAbortHandler = handler;
+                if (handler is not null && !handler.IsFault) {
+                    _anyAbortException = abort;
+                    frame.CurrentAbortHandler = handler;
+                }
                 runHandlerInCatch = true;
             }
 #endif
             if (runHandlerInCatch) {
-                return handler.IsFault ? RunInCatch(frame) : RunCatchHandlerInCatch(frame);
+                if (handler is null || handler.IsFault) {
+                    // the exception is rethrown by the CLR catch block once the finally or fault blocks have run
+                    frame.PendingRethrow = null;
+                    return RunInCatch(frame);
+                }
+                return RunCatchHandlerInCatch(frame);
             }
 
-            // Continue with the handler in Run, outside of the CLR catch block. A handler running inside the catch block
-            // would leave it unfinished if exited by a jump (e.g. break or continue) that skips LeaveExceptionHandlerInstruction,
-            // and the following code would then nest the catch blocks of further exceptions on the stack.
+            // Continue in Run, outside of the CLR catch block, with the handler or with the finally blocks to run before Run
+            // rethrows the exception. Code running inside the catch block would leave it unfinished if the method went on
+            // after a jump (e.g. break or continue) out of a handler or a finally block, or after a handler in this frame caught
+            // an exception thrown by a finally block. The catch blocks of further exceptions would then nest on the stack.
+            // Rethrowing from outside of the catch block is also not slower than rethrowing from within it.
             return ExceptionHandlingResult.Continue;
         }
 
