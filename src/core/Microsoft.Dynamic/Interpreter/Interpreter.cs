@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 using Microsoft.Scripting.Utils;
@@ -91,7 +92,7 @@ namespace Microsoft.Scripting.Interpreter {
                         index += instructions[index].Run(frame);
                         frame.InstructionIndex = index;
                     }
-                    return;
+                    break;
                 } catch (Exception exception) {
                     switch (HandleException(frame, exception)) {
                         case ExceptionHandlingResult.Rethrow: throw;
@@ -100,30 +101,64 @@ namespace Microsoft.Scripting.Interpreter {
                     }
                 }
             }
+
+            // A handler running outside of the CLR catch block has rethrown an exception that has no handler in this frame.
+            // It is thrown outside of the try block so that the catch block above doesn't handle it again.
+            if (frame.InstructionIndex == RethrowOnReturn && frame.PendingRethrow is { } pending) {
+                frame.PendingRethrow = null;
+                ExceptionDispatchInfo.Capture(pending).Throw();
+            }
         }
 
-        private ExceptionHandlingResult HandleException(InterpretedFrame frame, Exception exception) {
+        private ExceptionHandlingResult HandleException(InterpretedFrame frame, Exception exception, bool runHandlerInCatch = false) {
             frame.SaveTraceToException(exception);
             frame.InstructionIndex += GotoHandler(frame, exception, out ExceptionHandler handler);
 
-            if (handler is null || handler.IsFault) {
-                // run finally/fault blocks:
-                Run(frame);
-
-                // a finally block can throw an exception caught by a handler, which cancels the previous exception:
-                if (frame.InstructionIndex == RethrowOnReturn) {
-                    return ExceptionHandlingResult.Rethrow;
-                }
-                return ExceptionHandlingResult.Return;
+            if (handler is null) {
+                // run finally blocks; the exception is then rethrown by the CLR catch block rather than as a pending rethrow
+                frame.PendingRethrow = null;
+                return RunInCatch(frame);
             }
-            
+
 #if FEATURE_THREAD
             // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
             if (exception is ThreadAbortException abort) {
                 _anyAbortException = abort;
                 frame.CurrentAbortHandler = handler;
+                runHandlerInCatch = true;
             }
 #endif
+            if (runHandlerInCatch) {
+                return handler.IsFault ? RunInCatch(frame) : RunCatchHandlerInCatch(frame);
+            }
+
+            // Continue with the handler in Run, outside of the CLR catch block. A handler running inside the catch block
+            // would leave it unfinished if exited by a jump (e.g. break or continue) that skips LeaveExceptionHandlerInstruction,
+            // and the following code would then nest the catch blocks of further exceptions on the stack.
+            return ExceptionHandlingResult.Continue;
+        }
+
+        /// <summary>
+        /// Runs finally or fault blocks within the current CLR catch block.
+        /// </summary>
+        private ExceptionHandlingResult RunInCatch(InterpretedFrame frame) {
+            Run(frame);
+
+            // a finally block can throw an exception caught by a handler, which cancels the previous exception:
+            if (frame.InstructionIndex == RethrowOnReturn) {
+                return ExceptionHandlingResult.Rethrow;
+            }
+            return ExceptionHandlingResult.Return;
+        }
+
+        /// <summary>
+        /// Runs a catch handler within the current CLR catch block until the handler completes.
+        /// </summary>
+        /// <remarks>
+        /// Handlers of exceptions thrown meanwhile also run within their CLR catch blocks, so that
+        /// <see cref="LeaveExceptionHandlerInstruction"/> executed here always completes this handler.
+        /// </remarks>
+        private ExceptionHandlingResult RunCatchHandlerInCatch(InterpretedFrame frame) {
             while (true) {
                 try {
                     var instructions = Instructions.Instructions;
@@ -142,12 +177,14 @@ namespace Microsoft.Scripting.Interpreter {
                     }
 
                     if (frame.InstructionIndex == RethrowOnReturn) {
+                        // rethrown by the CLR catch block rather than as a pending rethrow
+                        frame.PendingRethrow = null;
                         return ExceptionHandlingResult.Rethrow;
                     }
 
                     return ExceptionHandlingResult.Return;
                 } catch (Exception nestedException) {
-                    switch (HandleException(frame, nestedException)) {
+                    switch (HandleException(frame, nestedException, runHandlerInCatch: true)) {
                         case ExceptionHandlingResult.Rethrow: throw;
                         case ExceptionHandlingResult.Continue: continue;
                         case ExceptionHandlingResult.Return: return ExceptionHandlingResult.Return;
@@ -215,9 +252,11 @@ namespace Microsoft.Scripting.Interpreter {
             }
         }
 
-        internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler) {
+        internal int GotoHandler(InterpretedFrame frame, Exception exception, out ExceptionHandler handler) {
             handler = GetBestHandler(frame.InstructionIndex, exception.GetType());
             if (handler is null) {
+                // Run throws the exception when the frame reaches the label (after running finally blocks on the way):
+                frame.PendingRethrow = exception;
                 return frame.Goto(ReturnAndRethrowLabelIndex, NoValue);
             }
 

@@ -1,9 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Microsoft.Dynamic.Test {
     [TestFixture]
@@ -254,5 +257,308 @@ namespace Microsoft.Dynamic.Test {
             }
             Assert.That(tested, Is.GreaterThan(0));
         }
+
+        #region Exception handling
+
+        // enough to detect a growing stack, few enough not to overflow it
+        private const int LoopIterations = 20;
+
+        public static int StackDepth() => new StackTrace().FrameCount;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowFromHelper(string message) => throw new InvalidOperationException(message);
+
+        private static Expression Throw<T>(string message) where T : Exception {
+            return Expression.Throw(Expression.New(typeof(T).GetConstructor([typeof(string)]), Expression.Constant(message)));
+        }
+
+        private static Expression Append(ParameterExpression log, Expression value) {
+            return Expression.Block(typeof(void),
+                Expression.Assign(log, Expression.Call(typeof(string).GetMethod(nameof(string.Concat), [typeof(string), typeof(string)]), log, value))
+            );
+        }
+
+        private static Expression Append(ParameterExpression log, string value) => Append(log, Expression.Constant(value));
+
+        private static Expression Message(ParameterExpression exception) => Expression.Property(exception, nameof(Exception.Message));
+
+        // for (int i = 0; i < LoopIterations; i++) { body }
+        private static Expression Loop(Func<LabelTarget, Expression> body) {
+            var i = Expression.Variable(typeof(int), "i");
+            var breakLabel = Expression.Label("break");
+            var continueLabel = Expression.Label("continue");
+            return Expression.Block([i],
+                Expression.Assign(i, Expression.Constant(0)),
+                Expression.Loop(
+                    Expression.Block(
+                        Expression.IfThen(Expression.GreaterThanOrEqual(i, Expression.Constant(LoopIterations)), Expression.Break(breakLabel)),
+                        Expression.Assign(i, Expression.Add(i, Expression.Constant(1))),
+                        body(continueLabel)
+                    ),
+                    breakLabel,
+                    continueLabel
+                )
+            );
+        }
+
+        private static string Outcome(Func<string> f) {
+            try {
+                return f();
+            } catch (Exception e) {
+                return $"{e.GetType().Name}: {e.Message}";
+            }
+        }
+
+        // The lambda returns the log the body appends to, unless an exception escapes.
+        private static void AssertOutcome(string expected, Func<ParameterExpression, Expression> body) {
+            var log = Expression.Variable(typeof(string), "log");
+            var lambda = Expression.Lambda<Func<string>>(
+                Expression.Block(typeof(string), [log], Expression.Assign(log, Expression.Constant("")), body(log), log)
+            );
+
+            Assert.That(Outcome(Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue)), Is.EqualTo(expected), "interpreted");
+            Assert.That(Outcome(lambda.Compile()), Is.EqualTo(expected), "compiled");
+        }
+
+        public enum CatchExit { Continue, Break, ContinueThroughFinally, ContinueFromNestedCatch, ContinueAfterFault }
+
+        [Test]
+        public void JumpOutOfCatchTest([Values] CatchExit exit) {
+            // Leaving a catch handler by a jump must not leave the interpreter running inside an unfinished CLR catch block,
+            // which grows the CLR stack on every iteration (https://github.com/IronLanguages/ironpython3/issues/1182).
+            var depths = new List<int>();
+            var record = Expression.Call(
+                Expression.Constant(depths),
+                typeof(List<int>).GetMethod(nameof(List<int>.Add)),
+                Expression.Call(typeof(InterpreterTest).GetMethod(nameof(StackDepth)))
+            );
+
+            var lambda = Expression.Lambda<Action>(Loop(continueLabel => {
+                var exitCatch = Expression.Block(record, Expression.Continue(continueLabel));
+                switch (exit) {
+                    case CatchExit.Continue:
+                        return Expression.TryCatch(
+                            Throw<InvalidOperationException>("A"),
+                            Expression.Catch(typeof(InvalidOperationException), exitCatch)
+                        );
+                    case CatchExit.Break:
+                        var breakLabel = Expression.Label("innerBreak");
+                        return Expression.Loop(
+                            Expression.TryCatch(
+                                Throw<InvalidOperationException>("A"),
+                                Expression.Catch(typeof(InvalidOperationException), Expression.Block(record, Expression.Break(breakLabel)))
+                            ),
+                            breakLabel
+                        );
+                    case CatchExit.ContinueThroughFinally:
+                        return Expression.TryFinally(
+                            Expression.TryCatch(
+                                Throw<InvalidOperationException>("A"),
+                                Expression.Catch(typeof(InvalidOperationException), exitCatch)
+                            ),
+                            record
+                        );
+                    case CatchExit.ContinueFromNestedCatch:
+                        return Expression.TryCatch(
+                            Throw<InvalidOperationException>("A"),
+                            Expression.Catch(typeof(InvalidOperationException), Expression.TryCatch(
+                                Throw<ArgumentException>("B"),
+                                Expression.Catch(typeof(ArgumentException), exitCatch)
+                            ))
+                        );
+                    case CatchExit.ContinueAfterFault:
+                        // catch (Exception) { ...; rethrow; } is interpreted as a fault block
+                        return Expression.TryCatch(
+                            Expression.TryCatch(
+                                Throw<InvalidOperationException>("A"),
+                                Expression.Catch(typeof(Exception), Expression.Block(record, Expression.Rethrow()))
+                            ),
+                            Expression.Catch(typeof(InvalidOperationException), exitCatch)
+                        );
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(exit));
+                }
+            }));
+
+            Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue)();
+
+            int recordsPerIteration = exit is CatchExit.ContinueThroughFinally or CatchExit.ContinueAfterFault ? 2 : 1;
+            Assert.That(depths, Has.Count.EqualTo(recordsPerIteration * LoopIterations));
+            Assert.That(depths.Distinct(), Has.Exactly(1).Items, $"CLR stack depth changed: {string.Join(", ", depths)}");
+        }
+
+        [Test]
+        public void RethrowFromCatchTest() {
+            var e = Expression.Variable(typeof(InvalidOperationException), "e");
+            AssertOutcome("InvalidOperationException: A", log => Expression.TryCatch(
+                Throw<InvalidOperationException>("A"),
+                Expression.Catch(e, Expression.Rethrow())
+            ));
+        }
+
+        [Test]
+        public void RethrowAfterNestedCatchTest() {
+            // the exception of the enclosing handler is rethrown, not the last exception caught
+            var e = Expression.Variable(typeof(InvalidOperationException), "e");
+            AssertOutcome("InvalidOperationException: A", log => Expression.TryCatch(
+                Throw<InvalidOperationException>("A"),
+                Expression.Catch(e, Expression.Block(
+                    Expression.TryCatch(
+                        Throw<ArgumentException>("B"),
+                        Expression.Catch(typeof(ArgumentException), Append(log, "b"))
+                    ),
+                    Expression.Rethrow()
+                ))
+            ));
+        }
+
+        [Test]
+        public void RethrowThroughFinallyTest() {
+            // the exception is rethrown out of an interpreted lambda with a finally block on the way
+            var e = Expression.Variable(typeof(InvalidOperationException), "e");
+            var outer = Expression.Variable(typeof(InvalidOperationException), "outer");
+            AssertOutcome("cfA", log => Expression.TryCatch(
+                Expression.Invoke(Expression.Lambda<Action>(
+                    Expression.TryFinally(
+                        Expression.TryCatch(
+                            Throw<InvalidOperationException>("A"),
+                            Expression.Catch(e, Expression.Block(Append(log, "c"), Expression.Rethrow()))
+                        ),
+                        Append(log, "f")
+                    )
+                )),
+                Expression.Catch(outer, Append(log, Message(outer)))
+            ));
+        }
+
+        [Test]
+        public void RethrowToOuterHandlerThroughFinallyTest() {
+            // the exception is rethrown to an enclosing handler in the same lambda with a finally block on the way
+            var e = Expression.Variable(typeof(InvalidOperationException), "e");
+            var outer = Expression.Variable(typeof(InvalidOperationException), "outer");
+            AssertOutcome("cfA", log => Expression.TryCatch(
+                Expression.TryFinally(
+                    Expression.TryCatch(
+                        Throw<InvalidOperationException>("A"),
+                        Expression.Catch(e, Expression.Block(Append(log, "c"), Expression.Rethrow()))
+                    ),
+                    Append(log, "f")
+                ),
+                Expression.Catch(outer, Append(log, Message(outer)))
+            ));
+        }
+
+        [Test]
+        public void ExceptionFromFinallyReplacesRethrowTest() {
+            // an exception thrown by a finally block cancels the rethrow in progress
+            Expression ReplacedRethrow(ParameterExpression log) {
+                var e = Expression.Variable(typeof(InvalidOperationException), "e");
+                var b = Expression.Variable(typeof(ArgumentException), "b");
+                return Expression.TryCatch(
+                    Expression.TryFinally(
+                        Expression.TryCatch(Throw<InvalidOperationException>("A"), Expression.Catch(e, Expression.Rethrow())),
+                        Throw<ArgumentException>("B")
+                    ),
+                    Expression.Catch(b, Append(log, Message(b)))
+                );
+            }
+
+            AssertOutcome("B", ReplacedRethrow);
+
+            // the cancelled rethrow doesn't resurface when a later exception propagates
+            AssertOutcome("NotSupportedException: C", log => Expression.Block(
+                ReplacedRethrow(log),
+                Expression.TryFinally(Throw<NotSupportedException>("C"), Append(log, "f"))
+            ));
+        }
+
+        [Test]
+        public void ThrowFromCatchTest() {
+            AssertOutcome("ArgumentException: B", log => Expression.TryCatch(
+                Throw<InvalidOperationException>("A"),
+                Expression.Catch(typeof(InvalidOperationException), Throw<ArgumentException>("B"))
+            ));
+        }
+
+        [Test]
+        public void FaultTest() {
+            // catch (Exception) { ...; rethrow; } is interpreted as a fault block
+            Expression Fault(ParameterExpression log) => Expression.TryCatch(
+                Throw<InvalidOperationException>("A"),
+                Expression.Catch(typeof(Exception), Expression.Block(Append(log, "f"), Expression.Rethrow()))
+            );
+
+            AssertOutcome("InvalidOperationException: A", Fault);
+
+            var outer = Expression.Variable(typeof(InvalidOperationException), "outer");
+            AssertOutcome("fA", log => Expression.TryCatch(Fault(log), Expression.Catch(outer, Append(log, Message(outer)))));
+        }
+
+        [Test]
+        public void CatchWithValueTest() {
+            AssertOutcome("caught", log => Expression.Assign(log, Expression.TryCatch(
+                Expression.Block(Throw<InvalidOperationException>("A"), Expression.Constant("try")),
+                Expression.Catch(typeof(InvalidOperationException), Expression.Constant("caught"))
+            )));
+
+            // the handler leaves the loop with a value
+            var breakLabel = Expression.Label(typeof(string), "break");
+            AssertOutcome("broken", log => Expression.Assign(log, Expression.Loop(
+                Expression.TryCatch(
+                    Expression.Block(Throw<InvalidOperationException>("A"), Expression.Constant("try")),
+                    Expression.Catch(typeof(InvalidOperationException), Expression.Break(breakLabel, Expression.Constant("broken"), typeof(string)))
+                ),
+                breakLabel
+            )));
+        }
+
+        [Test]
+        public void RethrowPreservesStackTraceTest() {
+            Expression CatchAndRethrow(Expression body) {
+                var e = Expression.Variable(typeof(InvalidOperationException), "e");
+                return Expression.TryCatch(body, Expression.Catch(e, Expression.Rethrow()));
+            }
+
+            // rethrown by two interpreted lambdas
+            var lambda = Expression.Lambda<Action>(CatchAndRethrow(Expression.Invoke(Expression.Lambda<Action>(
+                CatchAndRethrow(Expression.Call(typeof(InterpreterTest).GetMethod(nameof(ThrowFromHelper)), Expression.Constant("A")))
+            ))));
+            var interpreted = Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue);
+
+            var exception = Assert.Throws<InvalidOperationException>(() => interpreted());
+            Assert.That(exception.StackTrace, Does.Contain(nameof(ThrowFromHelper)));
+        }
+
+#if NETFRAMEWORK
+        [Test]
+        public void ThreadAbortTest() {
+            // The CLR rethrows ThreadAbortException at the end of a catch block unless the abort is reset,
+            // so the interpreted handler has to run inside the CLR catch block.
+            using var started = new ManualResetEventSlim();
+            var lambda = Expression.Lambda<Func<string>>(Expression.TryCatch(
+                Expression.Block(
+                    Expression.Call(Expression.Constant(started), typeof(ManualResetEventSlim).GetMethod(nameof(ManualResetEventSlim.Set))),
+                    Expression.Call(typeof(Thread).GetMethod(nameof(Thread.Sleep), [typeof(int)]), Expression.Constant(Timeout.Infinite)),
+                    Expression.Constant("not aborted")
+                ),
+                Expression.Catch(typeof(ThreadAbortException), Expression.Block(
+                    Expression.Call(typeof(Thread).GetMethod(nameof(Thread.ResetAbort))),
+                    Expression.Constant("caught")
+                ))
+            ));
+            var interpreted = Scripting.Generation.CompilerHelpers.LightCompile(lambda, int.MaxValue);
+
+            string result = null;
+            var thread = new Thread(() => result = interpreted());
+            thread.Start();
+            started.Wait();
+            thread.Abort();
+            thread.Join();
+
+            Assert.That(result, Is.EqualTo("caught"));
+        }
+#endif
+
+        #endregion
     }
 }
