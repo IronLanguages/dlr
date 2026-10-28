@@ -36,6 +36,10 @@ namespace Microsoft.Scripting.Interpreter {
         // No handlers within this handler re-abort the current thread when left.
         public ExceptionHandler CurrentAbortHandler;
 
+        // An exception rethrown when there is no handler for it in this frame.
+        // Interpreter.Run throws it once the frame reaches the "return and rethrow" label.
+        internal Exception PendingRethrow;
+
         internal InterpretedFrame(Interpreter interpreter, StrongBox<object>[] closure) {
             Interpreter = interpreter;
             StackIndex = interpreter.LocalCount;

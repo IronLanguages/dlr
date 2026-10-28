@@ -373,7 +373,7 @@ namespace Microsoft.Scripting.Interpreter {
         public override int Run(InterpretedFrame frame) {
             // TODO: ThreadAbortException ?
 
-            object exception = frame.Pop();
+            var exception = (Exception)frame.Pop();
             return frame.Interpreter.GotoHandler(frame, exception, out _);
         }
     }
