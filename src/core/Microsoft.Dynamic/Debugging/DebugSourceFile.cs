@@ -27,16 +27,6 @@ namespace Microsoft.Scripting.Debugging {
             set { _debugMode = value; }
         }
 
-        internal FunctionInfo LookupFunctionInfo(DebugSourceSpan span) {
-            foreach (var entry in _functionInfoMap) {
-                if (entry.Key.Intersects(span)) {
-                    return entry.Value;
-                }
-            }
-
-            return null;
-        }
-
         [Obsolete("do not call this property", true)]
         public int Mode {
             get { return (int)_debugMode; }
