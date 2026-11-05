@@ -130,17 +130,9 @@ namespace Microsoft.Scripting.Debugging {
                 return Int32.MaxValue;
             }
 
+            // Look only at the sequence points of the frame's own function
             DebugSourceSpan debugSourceSpan = new DebugSourceSpan(debugSourceFile, sourceSpan);
-            FunctionInfo leafFrameFuncInfo = frame.FunctionInfo;
-            FunctionInfo funcInfo = debugSourceFile.LookupFunctionInfo(debugSourceSpan);
-
-            // Verify that funcInfo matches the current frame
-            if (funcInfo != leafFrameFuncInfo) {
-                return Int32.MaxValue;
-            }
-
-            // Get the target sequence point
-            return debugSourceSpan.GetSequencePointIndex(funcInfo);
+            return debugSourceSpan.GetSequencePointIndex(frame.FunctionInfo);
         }
 
         private void VerifyNotClosed() {

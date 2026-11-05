@@ -8,16 +8,10 @@ using System.Collections.Generic;
 namespace Microsoft.Scripting.Debugging {
     public sealed class DebugSourceFile {
         private DebugMode _debugMode;
-        private readonly Dictionary<DebugSourceSpan, FunctionInfo> _functionInfoMap;
 
         internal DebugSourceFile(string fileName, DebugMode debugMode) {
             Name = fileName;
             _debugMode = debugMode;
-            _functionInfoMap = new Dictionary<DebugSourceSpan, FunctionInfo>();
-        }
-
-        internal Dictionary<DebugSourceSpan, FunctionInfo> FunctionInfoMap {
-            get { return _functionInfoMap; }
         }
 
         internal string Name { get; }
@@ -25,16 +19,6 @@ namespace Microsoft.Scripting.Debugging {
         internal DebugMode DebugMode {
             get { return _debugMode; }
             set { _debugMode = value; }
-        }
-
-        internal FunctionInfo LookupFunctionInfo(DebugSourceSpan span) {
-            foreach (var entry in _functionInfoMap) {
-                if (entry.Key.Intersects(span)) {
-                    return entry.Value;
-                }
-            }
-
-            return null;
         }
 
         [Obsolete("do not call this property", true)]
