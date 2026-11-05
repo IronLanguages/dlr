@@ -135,21 +135,13 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
             IList<VariableInfo>[] scopedVariables,
             IList<VariableInfo> variables,
             object customPayload) {
-            FunctionInfo funcInfo = new FunctionInfo(
+            return new FunctionInfo(
                 generatorFactory,
                 name,
                 locationSpanMap,
                 scopedVariables,
                 variables,
                 customPayload);
-            
-            foreach (DebugSourceSpan sourceSpan in (DebugSourceSpan[])locationSpanMap) {
-                lock (sourceSpan.SourceFile.FunctionInfoMap) {
-                    sourceSpan.SourceFile.FunctionInfoMap[sourceSpan] = funcInfo;
-                }
-            }
-
-            return funcInfo;
         }
 
         internal DebugFrame CreateFrameForGenerator(FunctionInfo func) {

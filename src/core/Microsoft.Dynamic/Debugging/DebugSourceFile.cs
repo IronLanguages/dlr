@@ -8,16 +8,10 @@ using System.Collections.Generic;
 namespace Microsoft.Scripting.Debugging {
     public sealed class DebugSourceFile {
         private DebugMode _debugMode;
-        private readonly Dictionary<DebugSourceSpan, FunctionInfo> _functionInfoMap;
 
         internal DebugSourceFile(string fileName, DebugMode debugMode) {
             Name = fileName;
             _debugMode = debugMode;
-            _functionInfoMap = new Dictionary<DebugSourceSpan, FunctionInfo>();
-        }
-
-        internal Dictionary<DebugSourceSpan, FunctionInfo> FunctionInfoMap {
-            get { return _functionInfoMap; }
         }
 
         internal string Name { get; }
