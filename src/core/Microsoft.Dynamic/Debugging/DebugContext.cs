@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -22,6 +21,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         private readonly ThreadLocal<DebugThread> _thread;
         private DebugThread _cachedThread;
         private readonly Dictionary<string, DebugSourceFile> _sourceFiles;
+        private readonly Lock _sourceFilesLock = new();    // guards _sourceFiles, and _debugMode against files being added
         private readonly IDebugThreadFactory _threadFactory;
 
         private DebugContext(IDebugThreadFactory runtimeThreadFactory) {
@@ -66,7 +66,9 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         /// </summary>
         public void ResetSourceFile(string sourceFileName) {
             ContractUtils.RequiresNotNull(sourceFileName, nameof(sourceFileName));
-            _sourceFiles.Remove(sourceFileName);
+            lock (_sourceFilesLock) {
+                _sourceFiles.Remove(sourceFileName);
+            }
         }
 
         [Obsolete("do not call this property", true)]
@@ -79,21 +81,22 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
         internal DebugMode DebugMode {
             get { return _debugMode; }
             set {
-                _debugMode = value;
+                // Under the lock, so that a source file added meanwhile gets either the new mode or the update below
+                lock (_sourceFilesLock) {
+                    _debugMode = value;
 
-                // Also update debug mode for all source files
-                foreach (DebugSourceFile file in _sourceFiles.Values) {
-                    file.DebugMode = value;
+                    // Also update debug mode for all source files
+                    foreach (DebugSourceFile file in _sourceFiles.Values) {
+                        file.DebugMode = value;
+                    }
                 }
             }
         }
 
         internal DebugSourceFile Lookup(string sourceFile) {
-            if (_sourceFiles.TryGetValue(sourceFile, out DebugSourceFile debugSourceFile)) {
-                return debugSourceFile;
+            lock (_sourceFilesLock) {
+                return _sourceFiles.TryGetValue(sourceFile, out DebugSourceFile debugSourceFile) ? debugSourceFile : null;
             }
-
-            return null;
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
 
         internal DebugSourceFile GetDebugSourceFile(string sourceFile) {
             DebugSourceFile file;
-            lock (((ICollection)_sourceFiles).SyncRoot) {
+            lock (_sourceFilesLock) {
                 if (!_sourceFiles.TryGetValue(sourceFile, out file)) {
                     file = new DebugSourceFile(sourceFile, _debugMode);
                     _sourceFiles.Add(sourceFile, file);
