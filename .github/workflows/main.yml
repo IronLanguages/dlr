@@ -72,5 +72,8 @@ jobs:
       run: ./make.ps1 -frameworks net8.0 test-all
       shell: pwsh
     - name: Test (net462)
-      run: ./make.ps1 -frameworks net462 test-all
+      run: |
+        # the .NET 11 SDK no longer runs .NET Framework tests on Mono
+        if (!$IsWindows) { '{ "sdk": { "version": "10.0.100", "rollForward": "latestFeature" } }' | Set-Content global.json }
+        ./make.ps1 -frameworks net462 test-all
       shell: pwsh
