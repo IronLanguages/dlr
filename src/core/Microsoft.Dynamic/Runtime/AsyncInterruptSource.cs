@@ -21,9 +21,12 @@ namespace Microsoft.Scripting.Runtime {
     ///   or at its next await if the body is running. The body may catch it and continue, and be interrupted again later.
     ///   Unlike a cancelled <see cref="CancellationToken"/>, the source doesn't stay permanently interrupted.</para>
     ///
-    ///   <para>An accepted interrupt is always observed: if it is pending before the body starts, the body doesn't run and its task
-    ///   fails with the exception; if the body returns before reaching an await, its task fails with the exception instead of returning
-    ///   the result. If the body raises an exception of its own while an interrupt is pending, the body's exception wins.</para>
+    ///   <para>An accepted interrupt is always observed if the body is driven to its end:
+    ///   if it is pending before the body starts, the body doesn't run and its task fails with the exception;
+    ///   if the body returns before reaching an await, its task fails with the exception instead of returning the result.
+    ///   If the body raises an exception of its own while an interrupt is pending, the body's exception wins.
+    ///   If the body is abandoned instead (its enumerator disposed or dropped before it starts or while it's held at a yield),
+    ///   a pending interrupt is dropped.</para>
     /// </remarks>
     public sealed class AsyncInterruptSource {
         private static readonly CancellationToken s_cancelled = new CancellationToken(true);
