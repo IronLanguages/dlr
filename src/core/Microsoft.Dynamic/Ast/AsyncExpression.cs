@@ -6,7 +6,6 @@
 
 using System;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,14 +38,14 @@ namespace Microsoft.Scripting.Ast {
         private Expression? _reduced;
 
         internal AsyncExpression(string? name, Expression body,
+                                  Expression? interrupts = null,
                                   Expression? cancellationToken = null,
-                                  Expression? cancellationException = null,
                                   DebugContext? debugContext = null,
                                   DebugLambdaInfo? debugLambdaInfo = null) {
             Name = name;
             Body = body;
+            Interrupts = interrupts ?? Utils.DefaultInterrupts;
             CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
-            CancellationException = cancellationException ?? Utils.DefaultCancellationException;
             DebugContext = debugContext;
             DebugLambdaInfo = debugLambdaInfo;
         }
@@ -66,7 +65,7 @@ namespace Microsoft.Scripting.Ast {
         public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo) {
             ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
             ContractUtils.RequiresNotNull(debugLambdaInfo, nameof(debugLambdaInfo));
-            return new AsyncExpression(Name, Body, CancellationToken, CancellationException, debugContext, debugLambdaInfo);
+            return new AsyncExpression(Name, Body, Interrupts, CancellationToken, debugContext, debugLambdaInfo);
         }
 
         /// <summary>
@@ -80,19 +79,16 @@ namespace Microsoft.Scripting.Ast {
         public Expression Body { get; }
 
         /// <summary>
+        ///   Expression evaluating to an <see cref="AsyncInterruptSource"/> (null allowed) that raises exceptions inside the body at its
+        ///   awaits, any number of times. It must produce a new source each time the node is evaluated. Defaults to a null constant.
+        /// </summary>
+        public Expression Interrupts { get; }
+
+        /// <summary>
         ///   Expression evaluating to a <see cref="System.Threading.CancellationToken"/> that <see cref="AsyncHelpers.DriveAsync"/> samples
         ///   between iterations and links to each suspended task. Defaults to <c>default(CancellationToken)</c>.
         /// </summary>
         public Expression CancellationToken { get; }
-
-        /// <summary>
-        ///   Expression evaluating to a <c>StrongBox&lt;Exception?&gt;</c> (null allowed) — see
-        ///   <see cref="AsyncHelpers.DriveAsync"/>'s <c>cancellationException</c> parameter. When the box is
-        ///   non-null and its <c>Value</c> is non-null at cancellation time, that exception is surfaced to
-        ///   the body instead of <see cref="System.OperationCanceledException"/>. Defaults to a null
-        ///   constant (the plain-cancellation behavior).
-        /// </summary>
-        public Expression CancellationException { get; }
 
         public override bool CanReduce => true;
 
@@ -106,10 +102,10 @@ namespace Microsoft.Scripting.Ast {
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression b = visitor.Visit(Body);
+            Expression i = visitor.Visit(Interrupts);
             Expression ct = visitor.Visit(CancellationToken);
-            Expression ce = visitor.Visit(CancellationException);
-            if (b == Body && ct == CancellationToken && ce == CancellationException) return this;
-            return new AsyncExpression(Name, b, ct, ce, DebugContext, DebugLambdaInfo);
+            if (b == Body && i == Interrupts && ct == CancellationToken) return this;
+            return new AsyncExpression(Name, b, i, ct, DebugContext, DebugLambdaInfo);
         }
     }
 
@@ -130,26 +126,25 @@ namespace Microsoft.Scripting.Ast {
         }
 
         /// <summary>
-        ///   Wraps an async-function body in an <see cref="AsyncExpression"/> with a caller-provided
-        ///   <see cref="System.Threading.CancellationToken"/> and, optionally, an exception-override box.
+        ///   Wraps an async-function body in an <see cref="AsyncExpression"/> with an interrupt source and, optionally, a
+        ///   caller-provided <see cref="System.Threading.CancellationToken"/>.
         /// </summary>
         /// <remarks>
-        ///   When cancellation fires and the box's <c>Value</c> is non-null, that exception is delivered to
-        ///   the body instead of a fresh <see cref="System.OperationCanceledException"/>. This lets a host inject
-        ///   an arbitrary exception (e.g. Python's <c>coro.throw(exc)</c>) by populating the box and then
-        ///   cancelling the token. <paramref name="cancellationException"/> defaults to <c>null</c>
-        ///   — the plain OCE-on-cancellation behavior.
+        ///   <paramref name="interrupts"/> evaluates to an <see cref="AsyncInterruptSource"/>, a new one each time the node is evaluated,
+        ///   or to null. It lets a host raise arbitrary exceptions inside the body, any number of times (e.g. for Python's
+        ///   <c>coro.throw(exc)</c>). <paramref name="cancellationToken"/> defaults to <c>default(CancellationToken)</c>.
         /// </remarks>
         public static AsyncExpression Async(string? name, Expression body,
-                                            Expression cancellationToken,
-                                            Expression? cancellationException = null) {
+                                            Expression? interrupts,
+                                            Expression? cancellationToken = null) {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            ContractUtils.RequiresNotNull(cancellationToken, nameof(cancellationToken));
-            ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
-            if (cancellationException is not null) {
-                ContractUtils.RequiresType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
+            if (interrupts is not null) {
+                ContractUtils.RequiresType(interrupts, typeof(AsyncInterruptSource), nameof(interrupts));
             }
-            return new AsyncExpression(name, body, cancellationToken, cancellationException);
+            if (cancellationToken is not null) {
+                ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
+            }
+            return new AsyncExpression(name, body, interrupts, cancellationToken);
         }
     }
 }

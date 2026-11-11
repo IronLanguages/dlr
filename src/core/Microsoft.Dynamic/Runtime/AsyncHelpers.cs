@@ -33,17 +33,13 @@ namespace Microsoft.Scripting.Runtime {
         ///   Faulted/cancelled await is parked here so the body's rewriter can rethrow it at the resume point via <see
         ///   cref="ExceptionDispatchInfo"/>.
         /// </param>
+        /// <param name="interrupts">
+        ///   Optional source of exceptions to raise inside the body at its awaits, any number of times; see remarks and <see
+        ///   cref="AsyncInterruptSource"/>.
+        /// </param>
         /// <param name="cancellationToken">
         ///   Caller's cancellation token. Sampled at each loop iteration and linked to each
         ///   awaited task; see remarks for the cancellation model.
-        /// </param>
-        /// <param name="cancellationException">
-        ///   Optional override for the exception surfaced when <paramref name="cancellationToken"/>
-        ///   fires. If non-null and its <c>Value</c> is non-null at the moment cancellation is
-        ///   observed, that exception is delivered into <paramref name="exceptionSlot"/> instead
-        ///   of a fresh <see cref="OperationCanceledException"/>. It lets a host inject an arbitrary
-        ///   exception (e.g. for Python's <c>coro.throw(exc)</c>) by setting the box's value and
-        ///   then cancelling the token. Default null preserves the plain-cancellation behavior.
         /// </param>
         /// <remarks>
         ///   This method is itself an <c>async Task</c> whose IL is produced by Roslyn (on .NET 11+, under feature
@@ -64,6 +60,11 @@ namespace Microsoft.Scripting.Runtime {
         ///   If the body lets the exception propagate, it bubbles out of <see cref="DriveAsync"/> and the returned Task transitions to <see
         ///   cref="TaskStatus.Canceled"/> because the OCE's token matches.</para>
         ///
+        ///   <para>An exception from <paramref name="interrupts"/> is routed the same way, at the await the body is suspended at, or at
+        ///   its next await if it is running. Unlike cancellation, it is delivered once, so the body can handle it and continue. If it is
+        ///   pending before the body starts, the body doesn't run and the returned Task fails with it; if the body returns while it is
+        ///   pending, the Task fails with it instead of returning the result.</para>
+        ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
@@ -72,47 +73,87 @@ namespace Microsoft.Scripting.Runtime {
         public static async Task<object?> DriveAsync(IEnumerator<object?> states,
                                                      StrongBox<object?> valueSlot,
                                                      StrongBox<Exception?> exceptionSlot,
-                                                     CancellationToken cancellationToken ,
-                                                     StrongBox<Exception?>? cancellationException = null) {
+                                                     AsyncInterruptSource? interrupts,
+                                                     CancellationToken cancellationToken) {
 
-            while (states.MoveNext()) {
-                object? item = states.Current;
-
-                // Surface cancellation at the just-yielded suspension point so the body's try/except around
-                // `await` can observe it (matches asyncio's "CancelledError raised at the await" model).
-                // Caught here as well as in the WaitAsync branch so that a stretch of synchronously-resolved
-                // yields is still cancellable. If the host pre-populated cancellationException, deliver that
-                // instead of a fresh OCE — lets coro.throw(arbitrary) inject any exception type.
-                if (cancellationToken.IsCancellationRequested) {
-                    valueSlot.Value = null;
-                    exceptionSlot.Value = cancellationException?.Value
-                                          ?? new OperationCanceledException(cancellationToken);
-                    continue;
-                }
-
-                if (item is Task task) {
-                    try {
-                        // Task.WaitAsync is BCL on net6+, polyfilled by Meziantou.Polyfill on net4x/netstandard2.0.
-                        // No ConfigureAwait(false): honor caller's SyncContext / TaskScheduler.
-                        await task.WaitAsync(cancellationToken);
-                        valueSlot.Value = ExtractTaskResult(task);
-                        exceptionSlot.Value = null;
-                    } catch (Exception ex) {
-                        // The body's rewriter inserts a check after each yield that rethrows this on the resumed thread,
-                        // so a try/except inside `await` can catch it (including the cancellation OCE from WaitAsync).
-                        valueSlot.Value = null;
-                        exceptionSlot.Value = ex;
-                    }
-                } else {
-                    // Synchronously-produced value forwards straight through.
-                    valueSlot.Value = item;
-                    exceptionSlot.Value = null;
-                }
+            if (interrupts?.Start(cancellationToken) is Exception early) {
+                ExceptionDispatchInfo.Capture(early).Throw();
             }
+
+            try {
+                while (states.MoveNext()) {
+                    object? item = states.Current;
+
+                    // Surface an interrupt or cancellation at the just-yielded suspension point so the body's try/except around
+                    // `await` can observe it.
+                    // Checked here as well as in the WaitAsync branch so that a stretch of synchronously-resolved yields
+                    // can still be interrupted. An interrupt is delivered once; cancellation stays.
+                    if (interrupts?.TakePending() is Exception interrupt) {
+                        valueSlot.Value = null;
+                        exceptionSlot.Value = interrupt;
+                        continue;
+                    }
+                    if (cancellationToken.IsCancellationRequested) {
+                        valueSlot.Value = null;
+                        exceptionSlot.Value = new OperationCanceledException(cancellationToken);
+                        continue;
+                    }
+
+                    if (item is Task task) {
+                        // The interrupt source's token is cancelled by an interrupt as well as by cancellationToken.
+                        bool interruptible = interrupts is not null && !task.IsCompleted;
+                        CancellationToken token = interruptible ? interrupts!.GetToken() : cancellationToken;
+                        try {
+                            // Task.WaitAsync is BCL on net6+, polyfilled by Meziantou.Polyfill on net4x/netstandard2.0.
+                            // No ConfigureAwait(false): honour caller's SyncContext / TaskScheduler.
+                            await task.WaitAsync(token);
+                            valueSlot.Value = ExtractTaskResult(task);
+                            exceptionSlot.Value = null;
+                        } catch (Exception ex) {
+                            // The body's rewriter inserts a check after each yield that rethrows this on the resumed thread,
+                            // so a try/except inside `await` can catch it (including the cancellation OCE from WaitAsync).
+                            valueSlot.Value = null;
+                            exceptionSlot.Value = ex;
+                        }
+                        if (interruptible) {
+                            ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken);
+                        }
+                    } else {
+                        // Synchronously-produced value forwards straight through.
+                        valueSlot.Value = item;
+                        exceptionSlot.Value = null;
+                    }
+                }
+
+                // The body has returned. An interrupt it hasn't observed fails the task instead.
+                if (interrupts?.Close() is Exception late) {
+                    ExceptionDispatchInfo.Capture(late).Throw();
+                }
+            } finally {
+                interrupts?.Close();
+            }
+
             // Body has completed: its final assignment has just written into valueSlot
             // (see AsyncExpression.BuildReduction), so the per-await role of the slot
             // is over and the same slot now carries the function's return value.
             return valueSlot.Value;
+        }
+
+
+        /// <summary>
+        ///   Settles what the body observes after an await that waited on the token of <paramref name="interrupts"/>.
+        /// </summary>
+        private static void ResolveInterruptibleAwait(StrongBox<object?> valueSlot, StrongBox<Exception?> exceptionSlot,
+                                                      AsyncInterruptSource interrupts, CancellationToken token, CancellationToken cancellationToken) {
+            if (interrupts.TakePending() is Exception interrupt) {
+                // A pending interrupt wins over the awaited result or exception.
+                valueSlot.Value = null;
+                exceptionSlot.Value = interrupt;
+            } else if (exceptionSlot.Value is OperationCanceledException && token.IsCancellationRequested) {
+                // With no interrupt pending, only cancellationToken cancels the interrupt source's token: report the caller's token.
+                // (The WaitAsync polyfill on .NET Framework doesn't put the token it was given into the exception.)
+                exceptionSlot.Value = new OperationCanceledException(cancellationToken);
+            }
         }
 
 
@@ -134,6 +175,11 @@ namespace Microsoft.Scripting.Runtime {
         ///     never awaited — this is the disambiguation that lets <c>await</c> and <c>yield</c> coexist.</item>
         ///   </list>
         ///
+        ///   <para>Interrupts from <paramref name="interrupts"/> and cancellation are raised at awaits only, as in <see cref="DriveAsync"/>:
+        ///   the body doesn't observe the exception slot after a language-level <c>yield</c>. An interrupt that arrives while the consumer
+        ///   holds the body at a <c>yield</c> stays pending until the body's next await, or fails the enumeration if the body ends first.
+        ///   The body starts at the first <c>MoveNextAsync</c>.</para>
+        ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
@@ -142,38 +188,62 @@ namespace Microsoft.Scripting.Runtime {
         public static async IAsyncEnumerable<object?> DriveAsyncEnumerable(IEnumerator<object?> states,
                                                                            StrongBox<object?> valueSlot,
                                                                            StrongBox<Exception?> exceptionSlot,
-                                                                           [EnumeratorCancellation] CancellationToken cancellationToken,
-                                                                           StrongBox<Exception?>? cancellationException = null) {
+                                                                           AsyncInterruptSource? interrupts,
+                                                                           [EnumeratorCancellation] CancellationToken cancellationToken) {
 
-            while (states.MoveNext()) {
-                object? item = states.Current;
+            if (interrupts?.Start(cancellationToken) is Exception early) {
+                ExceptionDispatchInfo.Capture(early).Throw();
+            }
 
-                if (cancellationToken.IsCancellationRequested) {
-                    valueSlot.Value = null;
-                    exceptionSlot.Value = cancellationException?.Value
-                                          ?? new OperationCanceledException(cancellationToken);
-                    continue;
-                }
+            try {
+                while (states.MoveNext()) {
+                    object? item = states.Current;
 
-                if (item is AwaitPoint awaitPoint) {
-                    // Suspension point — await internally, do not surface to the consumer.
-                    try {
-                        await awaitPoint.Task.WaitAsync(cancellationToken);
-                        valueSlot.Value = ExtractTaskResult(awaitPoint.Task);
-                        exceptionSlot.Value = null;
-                    } catch (Exception ex) {
+                    if (item is AwaitPoint awaitPoint) {
+                        if (interrupts?.TakePending() is Exception interrupt) {
+                            valueSlot.Value = null;
+                            exceptionSlot.Value = interrupt;
+                            continue;
+                        }
+                        if (cancellationToken.IsCancellationRequested) {
+                            valueSlot.Value = null;
+                            exceptionSlot.Value = new OperationCanceledException(cancellationToken);
+                            continue;
+                        }
+
+                        // Suspension point — await internally, do not surface to the consumer.
+                        Task task = awaitPoint.Task;
+                        bool interruptible = interrupts is not null && !task.IsCompleted;
+                        CancellationToken token = interruptible ? interrupts!.GetToken() : cancellationToken;
+                        try {
+                            await task.WaitAsync(token);
+                            valueSlot.Value = ExtractTaskResult(task);
+                            exceptionSlot.Value = null;
+                        } catch (Exception ex) {
+                            valueSlot.Value = null;
+                            exceptionSlot.Value = ex;
+                        }
+                        if (interruptible) {
+                            ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken);
+                        }
+                    } else {
+                        // Value from a language-level `yield` — emit it.
+                        yield return item;
+
+                        // No value flows back in for a plain `async for`;
+                        // Clear the slots so the body's resume of the yield expression observes null.
                         valueSlot.Value = null;
-                        exceptionSlot.Value = ex;
+                        exceptionSlot.Value = null;
                     }
-                } else {
-                    // Value from a language-level `yield` — emit it.
-                    yield return item;
-
-                    // No value flows back in for a plain `async for`;
-                    // Clear the slots so the body's resume of the yield expression observes null.
-                    valueSlot.Value = null;
-                    exceptionSlot.Value = null;
                 }
+
+                // The body has ended. An interrupt it hasn't observed fails the enumeration.
+                if (interrupts?.Close() is Exception late) {
+                    ExceptionDispatchInfo.Capture(late).Throw();
+                }
+            } finally {
+                // Also reached when the consumer disposes the enumerator early.
+                interrupts?.Close();
             }
         }
 #endif

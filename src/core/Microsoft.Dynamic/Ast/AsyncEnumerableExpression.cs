@@ -9,11 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Scripting.Debugging.CompilerServices;
+using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Ast {
@@ -35,15 +35,15 @@ namespace Microsoft.Scripting.Ast {
         private Expression? _reduced;
 
         internal AsyncEnumerableExpression(string? name, Expression body, LabelTarget yieldLabel,
+                                           Expression? interrupts = null,
                                            Expression? cancellationToken = null,
-                                           Expression? cancellationException = null,
                                            DebugContext? debugContext = null,
                                            DebugLambdaInfo? debugLambdaInfo = null) {
             Name = name;
             Body = body;
             YieldLabel = yieldLabel;
+            Interrupts = interrupts ?? Utils.DefaultInterrupts;
             CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
-            CancellationException = cancellationException ?? Utils.DefaultCancellationException;
             DebugContext = debugContext;
             DebugLambdaInfo = debugLambdaInfo;
         }
@@ -62,7 +62,7 @@ namespace Microsoft.Scripting.Ast {
         public AsyncEnumerableExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo) {
             ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
             ContractUtils.RequiresNotNull(debugLambdaInfo, nameof(debugLambdaInfo));
-            return new AsyncEnumerableExpression(Name, Body, YieldLabel, CancellationToken, CancellationException, debugContext, debugLambdaInfo);
+            return new AsyncEnumerableExpression(Name, Body, YieldLabel, Interrupts, CancellationToken, debugContext, debugLambdaInfo);
         }
 
         /// <summary>Optional diagnostic name (forwarded to the inner generator).</summary>
@@ -77,11 +77,14 @@ namespace Microsoft.Scripting.Ast {
         /// </summary>
         public LabelTarget YieldLabel { get; }
 
+        /// <summary>
+        ///   Expression evaluating to an <see cref="AsyncInterruptSource"/> (or null), a new one each time the node is evaluated
+        ///   (see <see cref="AsyncExpression.Interrupts"/>). Default null.
+        /// </summary>
+        public Expression Interrupts { get; }
+
         /// <summary>Expression evaluating to the cancellation token (see <see cref="AsyncExpression"/>). Default <c>default(CancellationToken)</c>.</summary>
         public Expression CancellationToken { get; }
-
-        /// <summary>Expression evaluating to a <c>StrongBox&lt;Exception?&gt;</c> exception override (or null). Default null.</summary>
-        public Expression CancellationException { get; }
 
         public override bool CanReduce => true;
 
@@ -95,10 +98,10 @@ namespace Microsoft.Scripting.Ast {
 
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression b = visitor.Visit(Body);
+            Expression i = visitor.Visit(Interrupts);
             Expression ct = visitor.Visit(CancellationToken);
-            Expression ce = visitor.Visit(CancellationException);
-            if (b == Body && ct == CancellationToken && ce == CancellationException) return this;
-            return new AsyncEnumerableExpression(Name, b, YieldLabel, ct, ce, DebugContext, DebugLambdaInfo);
+            if (b == Body && i == Interrupts && ct == CancellationToken) return this;
+            return new AsyncEnumerableExpression(Name, b, YieldLabel, i, ct, DebugContext, DebugLambdaInfo);
         }
     }
 
@@ -117,28 +120,28 @@ namespace Microsoft.Scripting.Ast {
 
         /// <summary>
         ///   Wraps an async-generator body in an <see cref="AsyncEnumerableExpression"/> producing <c>IAsyncEnumerable&lt;object&gt;</c>,
-        ///   with a caller-provided <see cref="System.Threading.CancellationToken"/> and, optionally, an exception-override box.
+        ///   with an interrupt source and, optionally, a caller-provided <see cref="System.Threading.CancellationToken"/>.
         /// </summary>
         /// <remarks>
-        ///   When cancellation fires and the box's <c>Value</c> is non-null, that exception is delivered to
-        ///   the body instead of a fresh <see cref="System.OperationCanceledException"/>. This lets a host inject
-        ///   an arbitrary exception (e.g. Python's <c>coro.throw(exc)</c>) by populating the box and then
-        ///   cancelling the token. <paramref name="cancellationException"/> defaults to <c>null</c>
-        ///   — the plain OCE-on-cancellation behavior.
+        ///   <paramref name="interrupts"/> evaluates to an <see cref="AsyncInterruptSource"/>, a new one each time the node is evaluated,
+        ///   or to null. It lets a host raise arbitrary exceptions inside the body at its awaits, any number of times.
+        ///   <paramref name="cancellationToken"/> defaults to <c>default(CancellationToken)</c>.
         /// </remarks>
         /// <param name="yieldLabel">
         ///   It must be the same label the body's language-level <c>yield</c>s target.
         /// </param>
         public static AsyncEnumerableExpression AsyncEnumerable(string? name, Expression body, LabelTarget yieldLabel,
-                                                                Expression cancellationToken,
-                                                                Expression? cancellationException = null) {
+                                                                Expression? interrupts,
+                                                                Expression? cancellationToken = null) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ContractUtils.RequiresNotNull(yieldLabel, nameof(yieldLabel));
-            ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
-            if (cancellationException is not null) {
-                ContractUtils.RequiresType(cancellationException, typeof(StrongBox<Exception?>), nameof(cancellationException));
+            if (interrupts is not null) {
+                ContractUtils.RequiresType(interrupts, typeof(AsyncInterruptSource), nameof(interrupts));
             }
-            return new AsyncEnumerableExpression(name, body, yieldLabel, cancellationToken, cancellationException);
+            if (cancellationToken is not null) {
+                ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
+            }
+            return new AsyncEnumerableExpression(name, body, yieldLabel, interrupts, cancellationToken);
         }
     }
 }
