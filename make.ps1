@@ -18,7 +18,7 @@ $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $_defaultFrameworkSettings = @{
     "runner" = "dotnet";
     "tests" = @{ "Microsoft.Dynamic.Test" = "tests/Microsoft.Dynamic.Test"; "Microsoft.Scripting.Test" = "tests/Microsoft.Scripting.Test"; "Metadata" = "tests/Metadata"; "HostingTest" = "tests/HostingTest" };
-    "args" = @('test', '__BASEDIR__/__TESTFOLDER__', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
+    "args" = @('test', '--project', '__BASEDIR__/__TESTFOLDER__', '-f', '__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '--report-trx', '--report-trx-filename', "__FILTERNAME__-__TESTDESC__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '--settings', '__RUNSETTINGS__');
     "filterArg" = '--filter="__FILTER__"';
     "filters" = @{
         "all" = "";
@@ -135,13 +135,13 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks,
                 foreach($r in $replacements.Keys) {
                     $tmp = $tmp.Replace($r, $replacements[$r])
                 }
-                $filter = $tmp
+                $args += $tmp
             }
 
-            Write-Host "$runner $args $filter"
+            Write-Host "$runner $args"
 
             # execute the tests
-            & $runner $args $filter
+            & $runner $args
 
             # save off the status in case of failure
             if($LastExitCode -ne 0) {
