@@ -9,6 +9,12 @@
     <DefineConstants>$(Features);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
+  <!-- Runtime-async opt-in. Done AFTER DefineConstants is computed so the compiler-feature name
+       (which contains '=' and '-') does not leak into C# preprocessor symbols.-->
+  <PropertyGroup Condition="$(Features.Contains('FEATURE_RUNTIME_ASYNC'))">
+    <Features>$(Features);runtime-async=on</Features>
+  </PropertyGroup>
+
   <!-- Include shared global usings (e.g. Lock alias) in all DLR projects -->
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" Link="GlobalUsings.cs" />
