@@ -766,7 +766,16 @@ namespace Metadata {
             return Directory.GetFiles(Path.GetDirectoryName(typeof(object).Assembly.Location), "*.dll");
         }
         
-        static void Main(string[] args) {
+        static int Main(string[] args) {
+            // dotnet test runs the tests with "--" options; the tool uses "/" options
+            if (args.Any(arg => arg.StartsWith("--", StringComparison.Ordinal))) {
+                return MicrosoftTestingPlatformEntryPoint.Main(args).GetAwaiter().GetResult();
+            }
+            RunTool(args);
+            return 0;
+        }
+
+        private static void RunTool(string[] args) {
             //Detailed = true;
             //DumpMembers(typeof(Tests.Class1<,,,,>));
             //DumpMembers(typeof(System.Security.Policy.NetCodeGroup), true);

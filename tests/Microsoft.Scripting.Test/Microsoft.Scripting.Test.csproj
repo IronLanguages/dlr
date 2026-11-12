@@ -2,12 +2,16 @@
 
   <PropertyGroup>
     <TargetFrameworks>net462;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <EnableNUnitRunner>true</EnableNUnitRunner>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
     <PackageReference Include="NUnit" Version="4.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
