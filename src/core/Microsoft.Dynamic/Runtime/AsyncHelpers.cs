@@ -37,6 +37,10 @@ namespace Microsoft.Scripting.Runtime {
         ///   Optional source of exceptions to raise inside the body at its awaits, any number of times; see remarks and <see
         ///   cref="AsyncInterruptSource"/>.
         /// </param>
+        /// <param name="observer">
+        ///   Optional observer, notified as the body starts, suspends, resumes and returns, and of its outcome; see <see
+        ///   cref="AsyncBodyEvent"/>.
+        /// </param>
         /// <param name="cancellationToken">
         ///   Caller's cancellation token. Sampled at each loop iteration and linked to each
         ///   awaited task; see remarks for the cancellation model.
@@ -63,7 +67,8 @@ namespace Microsoft.Scripting.Runtime {
         ///   <para>An exception from <paramref name="interrupts"/> is routed the same way, at the await the body is suspended at, or at
         ///   its next await if it is running. Unlike cancellation, it is delivered once, so the body can handle it and continue. If it is
         ///   pending before the body starts, the body doesn't run and the returned Task fails with it; if the body returns while it is
-        ///   pending, the Task fails with it instead of returning the result.</para>
+        ///   pending, the Task fails with it instead of returning the result. If it wins over an exception the awaited task raised, that
+        ///   exception is passed to <paramref name="observer"/> with <see cref="AsyncBodyEventKind.Resumed"/>.</para>
         ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
@@ -74,14 +79,25 @@ namespace Microsoft.Scripting.Runtime {
                                                      StrongBox<object?> valueSlot,
                                                      StrongBox<Exception?> exceptionSlot,
                                                      AsyncInterruptSource? interrupts,
+                                                     IObserver<AsyncBodyEvent>? observer,
                                                      CancellationToken cancellationToken) {
 
             if (interrupts?.Start(cancellationToken) is Exception early) {
+                observer?.OnError(early);
                 ExceptionDispatchInfo.Capture(early).Throw();
             }
 
             try {
-                while (states.MoveNext()) {
+                observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Started, null));
+                while (true) {
+                    try {
+                        if (!states.MoveNext()) break;
+                    } catch (Exception ex) when (observer is not null) {
+                        // The body has raised: the task fails with the exception.
+                        interrupts?.Close();
+                        observer.OnError(ex);
+                        throw;
+                    }
                     object? item = states.Current;
 
                     // Surface an interrupt or cancellation at the just-yielded suspension point so the body's try/except around
@@ -103,10 +119,16 @@ namespace Microsoft.Scripting.Runtime {
                         // The interrupt source's token is cancelled by an interrupt as well as by cancellationToken.
                         bool interruptible = interrupts is not null && !task.IsCompleted;
                         CancellationToken token = interruptible ? interrupts!.GetToken() : cancellationToken;
+                        // Task.WaitAsync is BCL on net6+, polyfilled by Meziantou.Polyfill on net4x/netstandard2.0.
+                        Task waiting = task.WaitAsync(token);
+
+                        // Only an await of a task that hasn't completed gives up the thread. If the task completes before the await,
+                        // the await continues on this thread, so the observer still gets a matching pair.
+                        bool suspends = observer is not null && !waiting.IsCompleted;
+                        if (suspends) observer!.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Awaiting, task));
                         try {
-                            // Task.WaitAsync is BCL on net6+, polyfilled by Meziantou.Polyfill on net4x/netstandard2.0.
                             // No ConfigureAwait(false): honour caller's SyncContext / TaskScheduler.
-                            await task.WaitAsync(token);
+                            await waiting;
                             valueSlot.Value = ExtractTaskResult(task);
                             exceptionSlot.Value = null;
                         } catch (Exception ex) {
@@ -115,9 +137,10 @@ namespace Microsoft.Scripting.Runtime {
                             valueSlot.Value = null;
                             exceptionSlot.Value = ex;
                         }
-                        if (interruptible) {
-                            ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken);
-                        }
+                        Exception? superseded = interruptible
+                            ? ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken)
+                            : null;
+                        if (suspends) observer!.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Resumed, superseded));
                     } else {
                         // Synchronously-produced value forwards straight through.
                         valueSlot.Value = item;
@@ -125,35 +148,47 @@ namespace Microsoft.Scripting.Runtime {
                     }
                 }
 
-                // The body has returned. An interrupt it hasn't observed fails the task instead.
+                // Body has completed: its final assignment has just written into valueSlot
+                // (see AsyncExpression.BuildReduction), so the per-await role of the slot
+                // is over and the same slot now carries the function's return value.
+                observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Returning, valueSlot.Value));
+
+                // An interrupt the body hasn't observed fails the task instead.
                 if (interrupts?.Close() is Exception late) {
+                    observer?.OnError(late);
                     ExceptionDispatchInfo.Capture(late).Throw();
                 }
+                observer?.OnCompleted();
             } finally {
                 interrupts?.Close();
             }
 
-            // Body has completed: its final assignment has just written into valueSlot
-            // (see AsyncExpression.BuildReduction), so the per-await role of the slot
-            // is over and the same slot now carries the function's return value.
             return valueSlot.Value;
         }
 
 
         /// <summary>
         ///   Settles what the body observes after an await that waited on the token of <paramref name="interrupts"/>.
+        ///   Returns the exception the awaited task raised if an interrupt wins over it, otherwise <see langword="null"/>.
         /// </summary>
-        private static void ResolveInterruptibleAwait(StrongBox<object?> valueSlot, StrongBox<Exception?> exceptionSlot,
-                                                      AsyncInterruptSource interrupts, CancellationToken token, CancellationToken cancellationToken) {
+        private static Exception? ResolveInterruptibleAwait(StrongBox<object?> valueSlot, StrongBox<Exception?> exceptionSlot,
+                                                            AsyncInterruptSource interrupts, CancellationToken token, CancellationToken cancellationToken) {
+            // Whether the token, and not the awaited task, ended the wait.
+            // (The WaitAsync polyfill on .NET Framework doesn't put the token it was given into the exception, so it can't be compared.)
+            bool waitCancelled = exceptionSlot.Value is OperationCanceledException && token.IsCancellationRequested;
+
             if (interrupts.TakePending() is Exception interrupt) {
                 // A pending interrupt wins over the awaited result or exception.
+                Exception? superseded = waitCancelled ? null : exceptionSlot.Value;
                 valueSlot.Value = null;
                 exceptionSlot.Value = interrupt;
-            } else if (exceptionSlot.Value is OperationCanceledException && token.IsCancellationRequested) {
+                return superseded;
+            }
+            if (waitCancelled) {
                 // With no interrupt pending, only cancellationToken cancels the interrupt source's token: report the caller's token.
-                // (The WaitAsync polyfill on .NET Framework doesn't put the token it was given into the exception.)
                 exceptionSlot.Value = new OperationCanceledException(cancellationToken);
             }
+            return null;
         }
 
 
@@ -180,6 +215,10 @@ namespace Microsoft.Scripting.Runtime {
         ///   holds the body at a <c>yield</c> stays pending until the body's next await, or fails the enumeration if the body ends first.
         ///   The body starts at the first <c>MoveNextAsync</c>.</para>
         ///
+        ///   <para><paramref name="observer"/> is notified as in <see cref="DriveAsync"/>, and also around each value handed to the
+        ///   consumer, since the consumer decides when, and on which thread, the body continues. If the consumer abandons the body at a
+        ///   <c>yield</c>, by disposing the enumerator, the observer's last call is <see cref="IObserver{T}.OnCompleted"/>.</para>
+        ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
         /// </remarks>
@@ -189,14 +228,27 @@ namespace Microsoft.Scripting.Runtime {
                                                                            StrongBox<object?> valueSlot,
                                                                            StrongBox<Exception?> exceptionSlot,
                                                                            AsyncInterruptSource? interrupts,
+                                                                           IObserver<AsyncBodyEvent>? observer,
                                                                            [EnumeratorCancellation] CancellationToken cancellationToken) {
 
             if (interrupts?.Start(cancellationToken) is Exception early) {
+                observer?.OnError(early);
                 ExceptionDispatchInfo.Capture(early).Throw();
             }
 
+            // Whether the consumer holds the body at a `yield`, where it can abandon it by disposing the enumerator.
+            bool yielded = false;
             try {
-                while (states.MoveNext()) {
+                observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Started, null));
+                while (true) {
+                    try {
+                        if (!states.MoveNext()) break;
+                    } catch (Exception ex) when (observer is not null) {
+                        // The body has raised: the enumeration throws the exception.
+                        interrupts?.Close();
+                        observer.OnError(ex);
+                        throw;
+                    }
                     object? item = states.Current;
 
                     if (item is AwaitPoint awaitPoint) {
@@ -215,20 +267,28 @@ namespace Microsoft.Scripting.Runtime {
                         Task task = awaitPoint.Task;
                         bool interruptible = interrupts is not null && !task.IsCompleted;
                         CancellationToken token = interruptible ? interrupts!.GetToken() : cancellationToken;
+                        Task waiting = task.WaitAsync(token);
+                        bool suspends = observer is not null && !waiting.IsCompleted;
+                        if (suspends) observer!.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Awaiting, task));
                         try {
-                            await task.WaitAsync(token);
+                            await waiting;
                             valueSlot.Value = ExtractTaskResult(task);
                             exceptionSlot.Value = null;
                         } catch (Exception ex) {
                             valueSlot.Value = null;
                             exceptionSlot.Value = ex;
                         }
-                        if (interruptible) {
-                            ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken);
-                        }
+                        Exception? superseded = interruptible
+                            ? ResolveInterruptibleAwait(valueSlot, exceptionSlot, interrupts!, token, cancellationToken)
+                            : null;
+                        if (suspends) observer!.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Resumed, superseded));
                     } else {
                         // Value from a language-level `yield` — emit it.
+                        observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Yielding, item));
+                        yielded = true;
                         yield return item;
+                        yielded = false;
+                        observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Resumed, null));
 
                         // No value flows back in for a plain `async for`;
                         // Clear the slots so the body's resume of the yield expression observes null.
@@ -238,12 +298,16 @@ namespace Microsoft.Scripting.Runtime {
                 }
 
                 // The body has ended. An interrupt it hasn't observed fails the enumeration.
+                observer?.OnNext(new AsyncBodyEvent(AsyncBodyEventKind.Returning, null));
                 if (interrupts?.Close() is Exception late) {
+                    observer?.OnError(late);
                     ExceptionDispatchInfo.Capture(late).Throw();
                 }
+                observer?.OnCompleted();
             } finally {
                 // Also reached when the consumer disposes the enumerator early.
                 interrupts?.Close();
+                if (yielded) observer?.OnCompleted();
             }
         }
 #endif

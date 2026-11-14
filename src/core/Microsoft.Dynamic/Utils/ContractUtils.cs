@@ -196,6 +196,17 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
+        /// <summary>
+        /// Requires the expression to evaluate to a reference of the expected type, or of a type derived from it or implementing it.
+        /// </summary>
+        internal static void RequiresReferenceAssignable(Expression expr, Type expected, string paramName) {
+            if (expr.Type.IsValueType || !expected.IsAssignableFrom(expr.Type)) {
+                throw new ArgumentException(
+                    $"Expression must evaluate to {expected}, got {expr.Type}.",
+                    paramName);
+            }
+        }
+
 
         [Conditional("FALSE")]
         public static void Invariant(bool condition) {

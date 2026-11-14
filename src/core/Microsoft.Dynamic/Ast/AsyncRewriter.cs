@@ -102,6 +102,7 @@ namespace Microsoft.Scripting.Ast {
                 valueSlot,
                 exceptionSlot,
                 _node.Interrupts,
+                _node.Observer,
                 _node.CancellationToken);
 
             return Expression.Block(

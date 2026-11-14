@@ -39,12 +39,14 @@ namespace Microsoft.Scripting.Ast {
 
         internal AsyncExpression(string? name, Expression body,
                                   Expression? interrupts = null,
+                                  Expression? observer = null,
                                   Expression? cancellationToken = null,
                                   DebugContext? debugContext = null,
                                   DebugLambdaInfo? debugLambdaInfo = null) {
             Name = name;
             Body = body;
             Interrupts = interrupts ?? Utils.DefaultInterrupts;
+            Observer = observer ?? Utils.DefaultObserver;
             CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
             DebugContext = debugContext;
             DebugLambdaInfo = debugLambdaInfo;
@@ -65,7 +67,28 @@ namespace Microsoft.Scripting.Ast {
         public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo) {
             ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
             ContractUtils.RequiresNotNull(debugLambdaInfo, nameof(debugLambdaInfo));
-            return new AsyncExpression(Name, Body, Interrupts, CancellationToken, debugContext, debugLambdaInfo);
+            return new AsyncExpression(Name, Body, Interrupts, Observer, CancellationToken, debugContext, debugLambdaInfo);
+        }
+
+        /// <summary>
+        ///   The observer expression set by <see cref="WithObserver"/>; defaults to a null constant.
+        /// </summary>
+        internal Expression Observer { get; }
+
+        /// <summary>
+        ///   Returns a copy of this node that notifies an observer as the body runs: when it starts, suspends, resumes and returns,
+        ///   and of its outcome. The calls for each body follow the contract described on <see cref="AsyncBodyEvent"/>.
+        /// </summary>
+        /// <param name="observer">
+        ///   Expression evaluating to an <see cref="IObserver{T}"/> of <see cref="AsyncBodyEvent"/> (null allowed). It is evaluated each
+        ///   time the node is evaluated, so it typically produces a new observer each time.
+        /// </param>
+        /// <exception cref="InvalidOperationException">The node already has an observer.</exception>
+        public AsyncExpression WithObserver(Expression observer) {
+            ContractUtils.RequiresNotNull(observer, nameof(observer));
+            ContractUtils.RequiresReferenceAssignable(observer, typeof(IObserver<AsyncBodyEvent>), nameof(observer));
+            if (Utils.HasObserver(Observer)) throw new InvalidOperationException("The async expression already has an observer.");
+            return new AsyncExpression(Name, Body, Interrupts, observer, CancellationToken, DebugContext, DebugLambdaInfo);
         }
 
         /// <summary>
@@ -103,9 +126,10 @@ namespace Microsoft.Scripting.Ast {
         protected override Expression VisitChildren(ExpressionVisitor visitor) {
             Expression b = visitor.Visit(Body);
             Expression i = visitor.Visit(Interrupts);
+            Expression o = visitor.Visit(Observer);
             Expression ct = visitor.Visit(CancellationToken);
-            if (b == Body && i == Interrupts && ct == CancellationToken) return this;
-            return new AsyncExpression(Name, b, i, ct, DebugContext, DebugLambdaInfo);
+            if (b == Body && i == Interrupts && o == Observer && ct == CancellationToken) return this;
+            return new AsyncExpression(Name, b, i, o, ct, DebugContext, DebugLambdaInfo);
         }
     }
 
@@ -144,7 +168,7 @@ namespace Microsoft.Scripting.Ast {
             if (cancellationToken is not null) {
                 ContractUtils.RequiresType(cancellationToken, typeof(CancellationToken), nameof(cancellationToken));
             }
-            return new AsyncExpression(name, body, interrupts, cancellationToken);
+            return new AsyncExpression(name, body, interrupts, cancellationToken: cancellationToken);
         }
     }
 }
