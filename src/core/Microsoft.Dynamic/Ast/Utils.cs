@@ -98,6 +98,13 @@ namespace Microsoft.Scripting.Ast {
         internal static Expression DefaultInterrupts
             => field ??= Expression.Constant(null, typeof(Runtime.AsyncInterruptSource));
 
+        internal static Expression DefaultObserver
+            => field ??= Expression.Constant(null, typeof(IObserver<Runtime.AsyncBodyEvent>));
+
+        // An observer of an async node is set unless it is a null constant, such as the default.
+        internal static bool HasObserver(Expression observer)
+            => observer is not ConstantExpression { Value: null };
+
         internal static Expression DefaultCancellationToken
             => field ??= Expression.Default(typeof(CancellationToken));
     }

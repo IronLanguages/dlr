@@ -70,7 +70,7 @@ namespace Microsoft.Scripting.Ast {
                 rewriteAssignments: false);
             Expression states = debugSupport?.TraceStateMachine(generator, resultSlot: null, isAsyncEnumerable: true) ?? generator;
 
-            // Argument order matches DriveAsyncEnumerable: ..., interrupts, cancellationToken
+            // Argument order matches DriveAsyncEnumerable: ..., interrupts, observer, cancellationToken
             // (same as DriveAsync — the [EnumeratorCancellation] token comes last).
             Expression drive = Expression.Call(
                 s_driveMethod,
@@ -78,6 +78,7 @@ namespace Microsoft.Scripting.Ast {
                 valueSlot,
                 exceptionSlot,
                 _node.Interrupts,
+                _node.Observer,
                 _node.CancellationToken);
 
             return Expression.Block(
