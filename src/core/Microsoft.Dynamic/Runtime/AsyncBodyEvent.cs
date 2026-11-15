@@ -37,11 +37,6 @@ namespace Microsoft.Scripting.Runtime {
         ///   <see cref="AsyncInterruptSource"/> arrived before the body continued and was raised at the await instead.
         ///   It is always <see langword="null"/> after yielding.
         /// </summary>
-        /// <remarks>
-        ///   In the .NET Framework and .NET Standard 2.0 builds, the payload can be <see langword="null"/> instead of an
-        ///   <see cref="OperationCanceledException"/> from the awaited task: those builds can't always tell it from the cancellation of
-        ///   the wait.
-        /// </remarks>
         Resumed,
 
         /// <summary>

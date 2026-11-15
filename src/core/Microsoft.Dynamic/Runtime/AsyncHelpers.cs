@@ -174,15 +174,9 @@ namespace Microsoft.Scripting.Runtime {
         private static Exception? ResolveInterruptibleAwait(StrongBox<object?> valueSlot, StrongBox<Exception?> exceptionSlot,
                                                             AsyncInterruptSource interrupts, CancellationToken token, CancellationToken cancellationToken) {
             // Whether the token, and not the awaited task, ended the wait.
-#if NET
-            // Task.WaitAsync cancels with the token it was given, which only the interrupt source hands out.
+            // Task.WaitAsync (and its polyfill since Meziantou.Polyfill 1.0.172) cancels with the token it was given,
+            // which only the interrupt source hands out.
             bool waitCancelled = exceptionSlot.Value is OperationCanceledException oce && oce.CancellationToken == token;
-#else
-            // The WaitAsync polyfill (Meziantou.Polyfill, in the net462 and netstandard2.0 builds) doesn't put the token into the exception
-            // when the token is cancelled during the wait, so it is inferred from the token's state. An OperationCanceledException from the
-            // awaited task itself is then taken for the wait's if the token was cancelled before the body continued.
-            bool waitCancelled = exceptionSlot.Value is OperationCanceledException && token.IsCancellationRequested;
-#endif
 
             if (interrupts.TakePending() is Exception interrupt) {
                 // A pending interrupt wins over the awaited result or exception.
