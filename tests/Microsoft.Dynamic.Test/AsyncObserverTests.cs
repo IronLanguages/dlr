@@ -239,18 +239,29 @@ namespace Microsoft.Dynamic.Test {
             Assert.That(observer.Events[2].Payload, Is.Null);
         }
 
-        [Test]
-        public void InterruptSupersedesFaultedAwait() {
+        public enum AwaitedOutcome { Faulted, FaultedWithCancellation, Cancelled }
+
+        [TestCase(AwaitedOutcome.Faulted)]
+        [TestCase(AwaitedOutcome.FaultedWithCancellation)]
+        [TestCase(AwaitedOutcome.Cancelled)]
+        public void InterruptSupersedesFaultedAwait(AwaitedOutcome outcome) {
             var observer = new Recorder();
             var source = new AsyncInterruptSource();
             var awaited = new TaskCompletionSource<object>();
-            var fault = new ArgumentException();
+            Exception fault = outcome == AwaitedOutcome.Faulted ? new ArgumentException() : new OperationCanceledException();
+            using var ownSource = new CancellationTokenSource();
+            CancellationToken ownToken = ownSource.Token;
             var interrupt = new InvalidOperationException();
             var context = new QueueContext();
 
-            // The context holds the body's continuation, so the awaited task faults and the interrupt arrives before the body resumes.
+            // The context holds the body's continuation, so the awaited task ends and the interrupt arrives before the body resumes.
+            // An OperationCanceledException from the awaited task must not be taken for the cancellation of the wait by the interrupt.
             Task<object> task = context.Run(() => Run(CatchInvalidOperation(Await(awaited.Task), Value("caught")), observer, source));
-            awaited.SetException(fault);
+            if (outcome == AwaitedOutcome.Cancelled) {
+                awaited.TrySetCanceled(ownToken);
+            } else {
+                awaited.SetException(fault);
+            }
             SpinWait.SpinUntil(() => context.Count > 0, s_timeout);
             Assert.That(source.Interrupt(interrupt), Is.True);
             context.RunOne();
@@ -258,7 +269,13 @@ namespace Microsoft.Dynamic.Test {
 
             Assert.That(task.Result, Is.EqualTo("caught"));
             Assert.That(observer.Log, Is.EqualTo(["Started", "Awaiting", "Resumed", "Returning", "OnCompleted"]));
-            Assert.That(observer.Events[2].Payload, Is.SameAs(fault));
+            object payload = observer.Events[2].Payload;
+            if (outcome == AwaitedOutcome.Cancelled) {
+                Assert.That(payload, Is.InstanceOf<OperationCanceledException>());
+                Assert.That(((OperationCanceledException)payload).CancellationToken, Is.EqualTo(ownToken));
+            } else {
+                Assert.That(payload, Is.SameAs(fault));
+            }
         }
 
         [Test]
