@@ -29,7 +29,9 @@ namespace Microsoft.Scripting.Runtime {
     ///   a pending interrupt is dropped.</para>
     /// </remarks>
     public sealed class AsyncInterruptSource {
-        private static readonly CancellationToken s_cancelled = new CancellationToken(true);
+        // From a source of its own: the driver tells the cancellation of a wait from the awaited task's own by the token in the exception,
+        // and `new CancellationToken(true)` would equal any other such token.
+        private static readonly CancellationToken s_cancelled = CreateCancelledToken();
 
         private readonly Lock _lock = new();
         private Exception? _pending;
@@ -38,6 +40,12 @@ namespace Microsoft.Scripting.Runtime {
         private CancellationTokenRegistration _registration;
         private bool _started;
         private bool _closed;
+
+        private static CancellationToken CreateCancelledToken() {
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            return cts.Token;
+        }
 
         /// <summary>
         ///   Requests that <paramref name="exception"/> be raised inside the body.

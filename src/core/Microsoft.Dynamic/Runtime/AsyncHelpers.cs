@@ -67,8 +67,8 @@ namespace Microsoft.Scripting.Runtime {
         ///   <para>An exception from <paramref name="interrupts"/> is routed the same way, at the await the body is suspended at, or at
         ///   its next await if it is running. Unlike cancellation, it is delivered once, so the body can handle it and continue. If it is
         ///   pending before the body starts, the body doesn't run and the returned Task fails with it; if the body returns while it is
-        ///   pending, the Task fails with it instead of returning the result. If it wins over an exception the awaited task raised, that
-        ///   exception is passed to <paramref name="observer"/> with <see cref="AsyncBodyEventKind.Resumed"/>.</para>
+        ///   pending, the Task fails with it instead of returning the result. If it wins over an exception the await would have raised,
+        ///   that exception is passed to <paramref name="observer"/> with <see cref="AsyncBodyEventKind.Resumed"/>.</para>
         ///
         ///   <para>This method is not obsolete but is not part of the public API surface; do not call it directly from source-level code.
         ///   It is made public only for internal use by the DLR.</para>
@@ -169,13 +169,20 @@ namespace Microsoft.Scripting.Runtime {
 
         /// <summary>
         ///   Settles what the body observes after an await that waited on the token of <paramref name="interrupts"/>.
-        ///   Returns the exception the awaited task raised if an interrupt wins over it, otherwise <see langword="null"/>.
+        ///   Returns the exception the await would have raised if an interrupt wins over it, otherwise <see langword="null"/>.
         /// </summary>
         private static Exception? ResolveInterruptibleAwait(StrongBox<object?> valueSlot, StrongBox<Exception?> exceptionSlot,
                                                             AsyncInterruptSource interrupts, CancellationToken token, CancellationToken cancellationToken) {
             // Whether the token, and not the awaited task, ended the wait.
-            // (The WaitAsync polyfill on .NET Framework doesn't put the token it was given into the exception, so it can't be compared.)
+#if NET
+            // Task.WaitAsync cancels with the token it was given, which only the interrupt source hands out.
+            bool waitCancelled = exceptionSlot.Value is OperationCanceledException oce && oce.CancellationToken == token;
+#else
+            // The WaitAsync polyfill (Meziantou.Polyfill, in the net462 and netstandard2.0 builds) doesn't put the token into the exception
+            // when the token is cancelled during the wait, so it is inferred from the token's state. An OperationCanceledException from the
+            // awaited task itself is then taken for the wait's if the token was cancelled before the body continued.
             bool waitCancelled = exceptionSlot.Value is OperationCanceledException && token.IsCancellationRequested;
+#endif
 
             if (interrupts.TakePending() is Exception interrupt) {
                 // A pending interrupt wins over the awaited result or exception.
