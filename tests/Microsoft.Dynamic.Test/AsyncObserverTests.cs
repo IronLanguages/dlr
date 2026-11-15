@@ -92,6 +92,14 @@ namespace Microsoft.Dynamic.Test {
         private static Expression CatchInvalidOperation(Expression body, Expression handler)
             => Expression.TryCatch(body, Expression.Catch(typeof(InvalidOperationException), handler));
 
+        private static Expression AwaitNull() => AstUtils.Await(Expression.Constant(null, typeof(Task)));
+
+        // An await of null that the body catches.
+        private static Expression CaughtAwaitNull(List<string> log)
+            => Expression.TryCatch(
+                Expression.Block(typeof(void), AwaitNull()),
+                Expression.Catch(typeof(NullReferenceException), Call(() => log.Add("caught"))));
+
         private static Func<Task<object>> Compile(Expression body, Expression observer, AsyncInterruptSource source = null) {
             AsyncExpression node = AstUtils.Async("test", body, Expression.Constant(source, typeof(AsyncInterruptSource))).WithObserver(observer);
             return Expression.Lambda<Func<Task<object>>>(node).Compile();
@@ -195,6 +203,23 @@ namespace Microsoft.Dynamic.Test {
 
             Assert.That(task.Result, Is.EqualTo("caught"));
             Assert.That(observer.Log, Is.EqualTo(["Started", "Returning", "OnCompleted"]));
+        }
+
+        [Test]
+        public void AwaitNullThrowsInBody() {
+            var observer = new Recorder();
+            var log = new List<string>();
+            Task<object> task = Run(
+                Expression.TryFinally(
+                    Expression.Block(CaughtAwaitNull(log), AwaitNull()),
+                    Call(() => log.Add("finally"))),
+                observer);
+            WaitFor(task);
+
+            Assert.That(task.Exception!.InnerException, Is.TypeOf<NullReferenceException>());
+            Assert.That(log, Is.EqualTo(["caught", "finally"]));
+            Assert.That(observer.Log, Is.EqualTo(["Started", "OnError"]));
+            Assert.That(observer.Error, Is.SameAs(task.Exception.InnerException));
         }
 
         [Test]
@@ -407,6 +432,27 @@ namespace Microsoft.Dynamic.Test {
             Assert.That(next.Exception!.InnerException, Is.SameAs(error));
             Assert.That(observer.Log, Is.EqualTo(["Started", "Yielding", "Resumed", "OnError"]));
             Assert.That(observer.Error, Is.SameAs(error));
+        }
+
+        [Test]
+        public void AsyncEnumerableAwaitNullThrowsInBody() {
+            var observer = new Recorder();
+            var log = new List<string>();
+            IAsyncEnumerator<object> enumerator = Enumerate(
+                label => Expression.TryFinally(
+                    Expression.Block(CaughtAwaitNull(log), AstUtils.YieldReturn(label, Value("first")), AwaitNull()),
+                    Call(() => log.Add("finally"))),
+                observer);
+
+            Assert.That(MoveNext(enumerator));
+            Task<bool> next = enumerator.MoveNextAsync().AsTask();
+            WaitFor(next);
+
+            Assert.That(next.Exception!.InnerException, Is.TypeOf<NullReferenceException>());
+            Assert.That(log, Is.EqualTo(["caught", "finally"]));
+            Assert.That(observer.Log, Is.EqualTo(["Started", "Yielding", "Resumed", "OnError"]));
+            Assert.That(observer.Error, Is.SameAs(next.Exception.InnerException));
+            Assert.That(MoveNext(enumerator), Is.False);
         }
 
         [Test]
