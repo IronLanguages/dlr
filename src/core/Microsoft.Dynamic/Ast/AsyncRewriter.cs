@@ -65,7 +65,7 @@ namespace Microsoft.Scripting.Ast {
                 body = debugSupport.InjectDebugPoints(body, yieldLabel);
             }
 
-            // Rewrite AwaitExpression(e) -> { yield e; rethrow-if-pending; valueSlot.Value }
+            // Rewrite AwaitExpression(e) -> { yield e ?? throw new NullReferenceException(); rethrow-if-pending; valueSlot.Value }
             var rewriter = new AwaitToYieldRewriter(yieldLabel, valueSlot, exceptionSlot);
             Expression rewrittenBody = rewriter.Visit(body);
 
@@ -131,6 +131,17 @@ namespace Microsoft.Scripting.Ast {
         }
 
 
+        /// <summary>
+        ///   Throws <see cref="NullReferenceException"/> if the awaited operand evaluates to null, as C#'s <c>await</c> does.
+        /// </summary>
+        /// <remarks>
+        ///   Wraps the operand an await yields to the driver, so the exception is raised in the body, at the await, before it suspends:
+        ///   the body's handlers see it, and if they don't catch it, it fails the body like any exception it raises.
+        /// </remarks>
+        internal static Expression ThrowIfNull(Expression awaitable)
+            => Expression.Coalesce(awaitable, Expression.Throw(Expression.New(typeof(NullReferenceException)), awaitable.Type));
+
+
         private sealed class AwaitToYieldRewriter : ExpressionVisitor {
             private readonly LabelTarget _yieldLabel;
             private readonly ParameterExpression _resultSlot;
@@ -153,7 +164,7 @@ namespace Microsoft.Scripting.Ast {
                     // Otherwise return the awaited result.
                     return Expression.Block(
                         typeof(object),
-                        Utils.YieldReturn(_yieldLabel, boxed),
+                        Utils.YieldReturn(_yieldLabel, ThrowIfNull(boxed)),
                         RethrowIfPending(_exceptionSlot),
                         readSlot);
                 }

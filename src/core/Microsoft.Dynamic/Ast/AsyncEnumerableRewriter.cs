@@ -90,7 +90,7 @@ namespace Microsoft.Scripting.Ast {
         }
 
         /// <summary>
-        ///   Rewrites <c>AwaitExpression(task)</c> → <c>{ yield AwaitPoint(task); rethrow-if-pending; valueSlot.Value }</c>,
+        ///   Rewrites <c>AwaitExpression(task)</c> → <c>{ yield AwaitPoint(task ?? throw new NullReferenceException()); rethrow-if-pending; valueSlot.Value }</c>,
         ///   targeting the shared yield label. Mirrors <c>AsyncRewriter.AwaitToYieldRewriter</c> but wraps the awaited
         ///   Task in an <see cref="Microsoft.Scripting.Runtime.AwaitPoint"/> so the driver distinguishes it from a
         ///   value yielded by a language-level <c>yield</c>.
@@ -110,7 +110,7 @@ namespace Microsoft.Scripting.Ast {
                 if (node is AwaitExpression aw) {
                     Expression operand = Visit(aw.Operand);
                     // Wrap the awaited Task in an AwaitPoint marker, then box to object for the yield.
-                    Expression awaitPoint = Expression.New(s_awaitPointCtor, Expression.Convert(operand, typeof(Task)));
+                    Expression awaitPoint = Expression.New(s_awaitPointCtor, AsyncRewriter.ThrowIfNull(Expression.Convert(operand, typeof(Task))));
                     Expression yielded = Expression.Convert(awaitPoint, typeof(object));
                     Expression readSlot = Expression.Field(_valueSlot, s_valueSlotField);
 

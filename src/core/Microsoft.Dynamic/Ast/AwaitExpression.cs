@@ -29,7 +29,10 @@ namespace Microsoft.Scripting.Ast {
             Operand = operand;
         }
 
-        /// <summary>The awaitable being awaited. Must produce a Task or Task&lt;T&gt;.</summary>
+        /// <summary>
+        ///   The awaitable being awaited. Must produce a Task or Task&lt;T&gt;. If it produces null, the await throws
+        ///   <see cref="NullReferenceException"/> in the body, as C#'s <c>await</c> does.
+        /// </summary>
         public Expression Operand { get; }
 
         public override bool CanReduce => false;
