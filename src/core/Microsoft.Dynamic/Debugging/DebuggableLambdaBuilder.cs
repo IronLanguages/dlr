@@ -607,13 +607,17 @@ namespace Microsoft.Scripting.Debugging {
                             // Ensuring that the catch block is of the same type as the try block
                             Ast.Default(returnType)
                         ),
-                        // Make sure that the debugMarker is up-to-date after the generator loop
-                        Ast.Assign(
-                            _debugMarker, 
-                            Ast.Call(
-                                typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetCurrentSequencePointForLeafGeneratorFrame)),
-                                _thread
-                            )
+                        Ast.Block(
+                            // Make sure that the debugMarker is up-to-date after the generator loop
+                            Ast.Assign(
+                                _debugMarker,
+                                Ast.Call(
+                                    typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.GetCurrentSequencePointForLeafGeneratorFrame)),
+                                    _thread
+                                )
+                            ),
+                            // normal or exception exit from the generator loop
+                            frameExit
                         )
                     )
                 )
