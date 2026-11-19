@@ -258,6 +258,38 @@ namespace Microsoft.Dynamic.Test {
             Assert.That(tested, Is.GreaterThan(0));
         }
 
+        private sealed class IdentityBinder : CallSiteBinder {
+            public override Expression Bind(object[] args, System.Collections.ObjectModel.ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel)
+                => Expression.Return(returnLabel, parameters[0]);
+        }
+
+        [Test]
+        public void CompileClosureWithDynamicExpressionTest() {
+            // A lambda nested in an interpreted lambda, closing over one of its variables, is compiled on its own, which rewrites the
+            // variable into an access to the interpreter's closure. A DynamicExpression in its body must be visited, not reduced:
+            // ReduceExtensions leaves it as it is, since it isn't an extension node, so visiting it as one never ended, leading to the stack overflow.
+            var p = Expression.Parameter(typeof(object), "p");
+            var x = Expression.Variable(typeof(object), "x");
+            var lambda = Expression.Lambda<Func<object, Func<object>>>(
+                Expression.Block(
+                    [x],
+                    Expression.Assign(x, p),
+                    Expression.Lambda<Func<object>>(Expression.Dynamic(new IdentityBinder(), typeof(object), x))
+                ),
+                p
+            );
+
+            // with a threshold of 1, the nested lambda is compiled synchronously at its second call
+            Func<object> nested = Scripting.Generation.CompilerHelpers.LightCompile(lambda, 1)("value");
+            bool compiled = false;
+            ((Scripting.Interpreter.LightLambda)nested.Target).Compile += (_, _) => compiled = true;
+
+            for (int i = 0; i < 3; i++) {
+                Assert.That(nested(), Is.EqualTo("value"));
+            }
+            Assert.That(compiled, Is.True);
+        }
+
         #region Exception handling
 
         // enough to detect a growing stack, few enough not to overflow it
