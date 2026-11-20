@@ -20,7 +20,7 @@ namespace Microsoft.Scripting.Interpreter {
     /// Also inserts debug information tracking similar to what the interpreter
     /// would do.
     /// </summary>
-    internal sealed class LightLambdaClosureVisitor : ExpressionVisitor {
+    internal sealed class LightLambdaClosureVisitor : DynamicExpressionVisitor {
         /// <summary>
         /// Local variable mapping.
         /// </summary>
