@@ -97,15 +97,44 @@ namespace Microsoft.Scripting.Runtime {
         internal SharedIO() {
         }
 
+        private static Encoding TryGetConsoleEncoding(Func<Encoding> getter, Encoding fallback) {
+            try {
+                return getter();
+            } catch {
+                return fallback;
+            }
+        }
+
+        private static TextReader TryGetConsoleReader(Func<TextReader> getter, Encoding fallbackEncoding) {
+            try {
+                return getter();
+            } catch {
+                // Console.In is built from Console.InputEncoding, so it throws for the same reason.
+                try {
+                    return new StreamReader(Console.OpenStandardInput(), fallbackEncoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+                } catch {
+                    return TextReader.Null;
+                }
+            }
+        }
+
+        private static TextWriter TryGetConsoleWriter(Func<TextWriter> getter, Func<TextWriter> fallback) {
+            try {
+                return getter();
+            } catch {
+                return fallback();
+            }
+        }
+
         private void InitializeInput() {
             if (_inputStream is null) {
                 lock (_mutex) {
                     if (_inputStream is null) {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
-                                _inputEncoding = Console.InputEncoding;
+                                _inputEncoding = TryGetConsoleEncoding(() => Console.InputEncoding, Encoding.UTF8);
                                 _inputStream = ConsoleInputStream.Instance;
-                                _inputReader = Console.In;
+                                _inputReader = TryGetConsoleReader(() => Console.In, _inputEncoding);
                                 break;
                             case SupportLevel.Basic:
                                 _inputEncoding = Encoding.UTF8;
@@ -131,7 +160,9 @@ namespace Microsoft.Scripting.Runtime {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _outputStream = Console.OpenStandardOutput();
-                                _outputWriter = Console.Out;
+                                _outputWriter = TryGetConsoleWriter(
+                                    () => Console.Out,
+                                    () => new StreamWriter(_outputStream, Encoding.UTF8, bufferSize: 64, leaveOpen: true) { AutoFlush = true });
                                 break;
                             case SupportLevel.Basic:
                                 _outputStream = new TextStream(Console.Out);
@@ -157,7 +188,9 @@ namespace Microsoft.Scripting.Runtime {
                         switch (ConsoleSupportLevel) {
                             case SupportLevel.Full:
                                 _errorStream = Console.OpenStandardError();
-                                _errorWriter = Console.Error;
+                                _errorWriter = TryGetConsoleWriter(
+                                    () => Console.Error,
+                                    () => new StreamWriter(_errorStream, Encoding.UTF8, bufferSize: 64, leaveOpen: true) { AutoFlush = true });
                                 break;
                             case SupportLevel.Basic:
                                 _errorStream = new TextStream(Console.Error);
