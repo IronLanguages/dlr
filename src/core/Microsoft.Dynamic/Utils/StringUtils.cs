@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,20 +15,20 @@ namespace Microsoft.Scripting.Utils {
         [Obsolete("Use Encoding.Default")]
         public static Encoding DefaultEncoding { get; } = Encoding.Default;
 
-        public static string GetSuffix(string str, char separator, bool includeSeparator) {
+        public static string? GetSuffix(string str, char separator, bool includeSeparator) {
             ContractUtils.RequiresNotNull(str, nameof(str));
             int last = str.LastIndexOf(separator);
             return (last != -1) ? str.Substring(includeSeparator ? last : last + 1) : null;
         }
 
-        public static string GetLongestPrefix(string str, char separator, bool includeSeparator) {
+        public static string? GetLongestPrefix(string str, char separator, bool includeSeparator) {
             ContractUtils.RequiresNotNull(str, nameof(str));
             int last = str.LastIndexOf(separator);
             return (last != -1) ? str.Substring(0, (includeSeparator || last == 0) ? last : last - 1) : null;
         }
 
-        public static int CountOf(string str, char c) {
-            if (string.IsNullOrEmpty(str)) return 0;
+        public static int CountOf(string? str, char c) {
+            if (str is null || str.Length == 0) return 0;
 
             int result = 0;
             for (int i = 0; i < str.Length; i++) {
@@ -107,23 +109,23 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [Obsolete("Use double.TryParse")]
-        public static bool TryParseDouble(string s, NumberStyles style, IFormatProvider provider, out double result)
+        public static bool TryParseDouble(string? s, NumberStyles style, IFormatProvider? provider, out double result)
             => double.TryParse(s, style, provider, out result);
 
         [Obsolete("Use int.TryParse")]
-        public static bool TryParseInt32(string s, out int result)
+        public static bool TryParseInt32(string? s, out int result)
             => int.TryParse(s, out result);
 
         [Obsolete("Use DateTime.TryParseExact")]
-        public static bool TryParseDateTimeExact(string s, string format, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+        public static bool TryParseDateTimeExact(string? s, string? format, IFormatProvider? provider, DateTimeStyles style, out DateTime result)
             => DateTime.TryParseExact(s, format, provider, style, out result);
 
         [Obsolete("Use DateTime.TryParseExact")]
-        public static bool TryParseDateTimeExact(string s, string[] formats, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+        public static bool TryParseDateTimeExact(string? s, string?[]? formats, IFormatProvider? provider, DateTimeStyles style, out DateTime result)
             => DateTime.TryParseExact(s, formats, provider, style, out result);
 
         [Obsolete("Use DateTime.TryParse")]
-        public static bool TryParseDate(string s, IFormatProvider provider, DateTimeStyles style, out DateTime result)
+        public static bool TryParseDate(string? s, IFormatProvider? provider, DateTimeStyles style, out DateTime result)
             => DateTime.TryParse(s, provider, style, out result);
 
         [Obsolete("Use CultureInfo.GetCultureInfo")]

@@ -8,6 +8,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EmitCompilerGeneratedFiles>True</EmitCompilerGeneratedFiles>
     <MeziantouPolyfill_IncludedPolyfills>
+      T:System.Diagnostics.CodeAnalysis.AllowNullAttribute;
+      T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute;
+      T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute;
+      T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute;
+      T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute;
+      T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute;
+      T:System.Diagnostics.CodeAnalysis.NotNullAttribute;
+      T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
       P:System.Collections.ObjectModel.ReadOnlyCollection`1.Empty;
       P:System.Collections.ObjectModel.ReadOnlyDictionary`2.Empty;
       M:System.Enum.IsDefined``1(``0);

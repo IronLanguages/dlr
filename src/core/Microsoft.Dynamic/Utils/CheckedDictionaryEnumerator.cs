@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -13,7 +15,7 @@ namespace Microsoft.Scripting.Utils {
     /// Not all .NET enumerators throw exceptions if accessed in an invalid state. This type
     /// can be used to throw exceptions from enumerators implemented in IronPython.
     /// </summary>
-    public abstract class CheckedDictionaryEnumerator : IDictionaryEnumerator, IEnumerator<KeyValuePair<object, object>> {
+    public abstract class CheckedDictionaryEnumerator : IDictionaryEnumerator, IEnumerator<KeyValuePair<object, object?>> {
         private EnumeratorState _enumeratorState = EnumeratorState.NotStarted;
 
         private void CheckEnumeratorState() {
@@ -39,7 +41,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public object Value {
+        public object? Value {
             get {
                 CheckEnumeratorState();
                 return GetValue();
@@ -70,8 +72,8 @@ namespace Microsoft.Scripting.Utils {
 
         #region IEnumerator<KeyValuePair<object,object>> Members
 
-        KeyValuePair<object, object> IEnumerator<KeyValuePair<object, object>>.Current {
-            get { return new KeyValuePair<object, object>(Key, Value); }
+        KeyValuePair<object, object?> IEnumerator<KeyValuePair<object, object?>>.Current {
+            get { return new KeyValuePair<object, object?>(Key, Value); }
         }
 
         #endregion
@@ -90,7 +92,7 @@ namespace Microsoft.Scripting.Utils {
         protected abstract object GetKey();
         
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")] // TODO: fix
-        protected abstract object GetValue();
+        protected abstract object? GetValue();
 
         protected abstract bool DoMoveNext();
         protected abstract void DoReset();

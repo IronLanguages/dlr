@@ -1,6 +1,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 using System;
@@ -22,17 +24,17 @@ namespace Microsoft.Scripting.ComInterop {
         /// Since multicast delegate's built-in chaining supports only chaining instances of the same type,
         /// we need to complement this design by using an explicit linked list data structure.
         /// </summary>
-        private Func<object[], object> _delegate;
+        private Func<object?[], object?>? _delegate;
         private readonly Lock lockObject = new();
 
         private readonly int _dispid;
-        private ComEventsMethod _next;
+        private ComEventsMethod? _next;
 
         public ComEventsMethod(int dispid) {
             _dispid = dispid;
         }
 
-        public static ComEventsMethod Find(ComEventsMethod methods, int dispid) {
+        public static ComEventsMethod? Find(ComEventsMethod? methods, int dispid) {
             while (methods is not null && methods._dispid != dispid) {
                 methods = methods._next;
             }
@@ -40,19 +42,19 @@ namespace Microsoft.Scripting.ComInterop {
             return methods;
         }
 
-        public static ComEventsMethod Add(ComEventsMethod methods, ComEventsMethod method) {
+        public static ComEventsMethod Add(ComEventsMethod? methods, ComEventsMethod method) {
             method._next = methods;
             return method;
         }
 
-        public static ComEventsMethod Remove(ComEventsMethod methods, ComEventsMethod method) {
+        public static ComEventsMethod? Remove(ComEventsMethod methods, ComEventsMethod method) {
             Debug.Assert(methods is not null, "removing method from empty methods collection");
             Debug.Assert(method is not null, "specify method is null");
 
             if (methods == method) {
                 return methods._next;
             } else {
-                ComEventsMethod current = methods;
+                ComEventsMethod? current = methods;
 
                 while (current is not null && current._next != method) {
                     current = current._next;
@@ -74,18 +76,18 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        public void AddDelegate(Func<object[], object> d) {
+        public void AddDelegate(Func<object?[], object?> d) {
             lock (lockObject) {
                 _delegate += d;
             }
         }
 
-        internal void RemoveDelegates(Func<Func<object[], object>, bool> condition)
+        internal void RemoveDelegates(Func<Func<object?[], object?>, bool> condition)
         {
             lock (lockObject) {
-                Delegate[] invocationList = _delegate.GetInvocationList();
+                Delegate[] invocationList = _delegate?.GetInvocationList() ?? throw new InvalidOperationException("The event method has no delegates.");
                 for (int i = 0; i < invocationList.Length; i++) {
-                    Func<object[], object> delegateMaybe = (Func<object[], object>)invocationList[i];
+                    Func<object?[], object?> delegateMaybe = (Func<object?[], object?>)invocationList[i];
                     if (condition(delegateMaybe)) {
                         _delegate -= delegateMaybe;
                     }
@@ -93,9 +95,9 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        public object Invoke(object[] args) {
+        public object? Invoke(object?[] args) {
             Debug.Assert(!Empty);
-            object result = null;
+            object? result = null;
 
             lock (lockObject) {
                 result = _delegate?.Invoke(args);

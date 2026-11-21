@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 
 namespace Microsoft.Scripting.Runtime {
@@ -15,12 +17,12 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <param name="extends">The type which is being extended</param>
         /// <param name="extensionType">The type which provides the extension members.</param>
-        public ExtensionTypeAttribute(Type extends, Type extensionType) {
+        public ExtensionTypeAttribute(Type extends, Type? extensionType) {
             if (extends is null) {
                 throw new ArgumentNullException(nameof(extends));
             }
             if (extensionType is not null && !extensionType.IsPublic && !extensionType.IsNestedPublic) {
-                throw Error.ExtensionMustBePublic(extensionType.FullName);
+                throw Error.ExtensionMustBePublic(extensionType);
             }
 
             Extends = extends;
@@ -30,7 +32,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// The type which contains extension members which are added to the type being extended.
         /// </summary>
-        public Type ExtensionType { get; }
+        public Type? ExtensionType { get; }
 
         /// <summary>
         /// The type which is being extended by the extension type.

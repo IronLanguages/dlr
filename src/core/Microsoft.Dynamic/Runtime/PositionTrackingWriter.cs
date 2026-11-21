@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_CODEDOM
 
 using System;
@@ -53,8 +55,10 @@ namespace Microsoft.Scripting.Runtime {
             base.Write(value);
         }
 
-        public override void Write(string value) {
-            UpdateLineColumn(value);
+        public override void Write(string? value) {
+            if (value is not null) {
+                UpdateLineColumn(value);
+            }
             base.Write(value);
         }
 

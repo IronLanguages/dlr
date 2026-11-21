@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 
 using System.Linq.Expressions;
@@ -65,7 +67,8 @@ namespace Microsoft.Scripting.Generation {
                 _builder.GetToken().Token
             );
 #else
-            return _finishedType.Value.GetDeclaredField(_builder.Name);
+            Type finishedType = _finishedType.Value ?? throw new InvalidOperationException("The type declaring the field has not been finished.");
+            return finishedType.GetDeclaredField(_builder.Name) ?? throw new InvalidOperationException($"Field {_builder.Name} not found in {finishedType}.");
 #endif
         }
 

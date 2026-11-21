@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +30,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Given an ID returns the object associated with that ID.
         /// </summary>
-        public static object GetObject(long id) {
+        public static object? GetObject(long id) {
             lock (_synchObject) {
                 foreach (Wrapper w in _hashtable.Keys) {
                     if (w.Target is not null) {
@@ -42,14 +44,14 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Gets a unique ID for an object
         /// </summary>
-        public static long GetId(object o) {
+        public static long GetId(object? o) {
             if (o is null)
                 return 0;
 
             lock (_synchObject) {
 
                 // If the object exists then return it's existing ID.
-                if (_hashtable.TryGetValue(o, out object res)) {
+                if (_hashtable.TryGetValue(o, out object? res)) {
                     return ((Wrapper)res).Id;
                 }
 
@@ -124,7 +126,7 @@ namespace Microsoft.Scripting.Runtime {
 
             public long Id { get; }
 
-            public object Target => _weakReference.Target;
+            public object? Target => _weakReference.Target;
 
             public override int GetHashCode() {
                 return _hashCode;
@@ -135,7 +137,7 @@ namespace Microsoft.Scripting.Runtime {
         /// WrapperComparer treats Wrapper as transparent envelope 
         /// </summary>
         private sealed class WrapperComparer : IEqualityComparer<object> {            
-            bool IEqualityComparer<object>.Equals(object x, object y) {
+            bool IEqualityComparer<object>.Equals(object? x, object? y) {
                 if (x is Wrapper wx)
                     x = wx.Target;
 
@@ -152,7 +154,7 @@ namespace Microsoft.Scripting.Runtime {
                 return GetHashCodeWorker(obj);
             }
 
-            private static int GetHashCodeWorker(object o) {
+            private static int GetHashCodeWorker(object? o) {
                 if (o is null) return 0;
                 return ReferenceEqualityComparer<object>.Instance.GetHashCode(o);
             }

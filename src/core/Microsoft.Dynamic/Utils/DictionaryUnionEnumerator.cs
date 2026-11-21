@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +23,7 @@ namespace Microsoft.Scripting.Utils {
             return _enums[_current].Key;
         }
 
-        protected override object GetValue() {
+        protected override object? GetValue() {
             return _enums[_current].Value;
         }
 

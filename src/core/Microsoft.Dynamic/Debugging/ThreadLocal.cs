@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,10 +11,10 @@ using System.Diagnostics;
 
 namespace Microsoft.Scripting.Debugging {
     internal sealed class ThreadLocal<T> {
-        private StorageInfo[] _stores;                                         // array of storage indexed by managed thread ID
-        private static readonly StorageInfo[] Updating = Array.Empty<StorageInfo>();   // a marker used when updating the array
+        private StorageInfo?[]? _stores;                                       // array of storage indexed by managed thread ID
+        private static readonly StorageInfo?[] Updating = Array.Empty<StorageInfo?>();   // a marker used when updating the array
 
-        internal T Value {
+        internal T? Value {
             get {
                 return GetStorageInfo().Value;
             }
@@ -21,10 +23,15 @@ namespace Microsoft.Scripting.Debugging {
             }
         }
 
-        internal T[] Values {
+        internal T?[] Values {
             get {
-                List<T> allValues = new List<T>(_stores.Length);
-                foreach (StorageInfo si in _stores) {
+                StorageInfo?[]? stores = _stores;
+                if (stores is null) {
+                    return Array.Empty<T?>();
+                }
+
+                List<T?> allValues = new List<T?>(stores.Length);
+                foreach (StorageInfo? si in stores) {
                     if (si is not null && si.Thread.IsAlive)
                         allValues.Add(si.Value);
                 }
@@ -39,12 +46,12 @@ namespace Microsoft.Scripting.Debugging {
             return GetStorageInfo(_stores);
         }
 
-        private StorageInfo GetStorageInfo(StorageInfo[] curStorage) {
+        private StorageInfo GetStorageInfo(StorageInfo?[]? curStorage) {
             int threadId = Environment.CurrentManagedThreadId;
 
             // fast path if we already have a value in the array
             if (curStorage is not null && curStorage.Length > threadId) {
-                StorageInfo res = curStorage[threadId];
+                StorageInfo? res = curStorage[threadId];
 
                 if (res is not null && res.Thread == Thread.CurrentThread) {
                     return res;
@@ -54,7 +61,7 @@ namespace Microsoft.Scripting.Debugging {
             return RetryOrCreateStorageInfo(curStorage);
         }
 
-        private StorageInfo RetryOrCreateStorageInfo(StorageInfo[] curStorage) {
+        private StorageInfo RetryOrCreateStorageInfo(StorageInfo?[]? curStorage) {
             if (curStorage == Updating) {
                 // we need to retry
                 while ((curStorage = _stores) == Updating) {
@@ -72,7 +79,7 @@ namespace Microsoft.Scripting.Debugging {
         private StorageInfo CreateStorageInfo() {
             // we do our own locking, tell hosts this is a bad time to interrupt us.
             Thread.BeginCriticalRegion();
-            StorageInfo[] curStorage = Updating;
+            StorageInfo?[]? curStorage = Updating;
             try {
                 int threadId = Environment.CurrentManagedThreadId;
                 StorageInfo newInfo = new StorageInfo(Thread.CurrentThread);
@@ -88,11 +95,11 @@ namespace Microsoft.Scripting.Debugging {
                 if (curStorage is null) {
                     curStorage = new StorageInfo[threadId + 1];
                 } else if (curStorage.Length <= threadId) {
-                    StorageInfo[] newStorage = new StorageInfo[threadId + 1];
+                    StorageInfo?[] newStorage = new StorageInfo?[threadId + 1];
                     for (int i = 0; i < curStorage.Length; i++) {
                         // leave out the threads that have exited
-                        if (curStorage[i] is not null && curStorage[i].Thread.IsAlive) {
-                            newStorage[i] = curStorage[i];
+                        if (curStorage[i] is StorageInfo si && si.Thread.IsAlive) {
+                            newStorage[i] = si;
                         }
                     }
                     curStorage = newStorage;
@@ -100,7 +107,7 @@ namespace Microsoft.Scripting.Debugging {
 
                 // create our StorageInfo in the array, the empty check ensures we're only here
                 // when we need to create.
-                Debug.Assert(curStorage[threadId] is null || curStorage[threadId].Thread != Thread.CurrentThread);
+                Debug.Assert(curStorage[threadId]?.Thread != Thread.CurrentThread);
 
                 return curStorage[threadId] = newInfo;
             } finally {
@@ -115,10 +122,10 @@ namespace Microsoft.Scripting.Debugging {
 
         private sealed class StorageInfo {
             public readonly Thread Thread;                 // the thread that owns the StorageInfo
-            public T Value;                                // the current value for the owning thread
+            public T? Value;                               // the current value for the owning thread
 
             public StorageInfo(Thread curThread) {
-                Debug.Assert(curThread is not null);
+                Utils.Assert.NotNull(curThread);
                 Thread = curThread;
             }
         }

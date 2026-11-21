@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,12 +21,12 @@ namespace Microsoft.Scripting.Runtime {
             Name = type.Name;
         }
 
-        internal TypeName(string nameSpace, string typeName) {
+        internal TypeName(string? nameSpace, string typeName) {
             Namespace = nameSpace;
             Name = typeName;
         }
 
-        internal string Namespace { get; }
+        internal string? Namespace { get; }
         internal string Name { get; }
 
         public override int GetHashCode() {
@@ -34,7 +36,7 @@ namespace Microsoft.Scripting.Runtime {
             return hash;
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (obj is TypeName tn) {
                 return tn.Namespace == Namespace && tn.Name == Name;
             }

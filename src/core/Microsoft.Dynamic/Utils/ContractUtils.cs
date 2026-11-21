@@ -2,12 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Utils {
     public static class ContractUtils {
@@ -18,13 +21,13 @@ namespace Microsoft.Scripting.Utils {
             Debug.Assert(precondition);
         }
 
-        public static void Requires(bool precondition) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition) {
             if (!precondition) {
                 throw new ArgumentException(Strings.MethodPreconditionViolated);
             }
         }
 
-        public static void Requires(bool precondition, string paramName) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition, string paramName) {
             Utils.Assert.NotEmpty(paramName);
 
             if (!precondition) {
@@ -32,7 +35,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void Requires(bool precondition, string paramName, string message) {
+        public static void Requires([DoesNotReturnIf(false)] bool precondition, string paramName, string message) {
             Utils.Assert.NotEmpty(paramName);
 
             if (!precondition) {
@@ -40,7 +43,7 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void RequiresNotNull(object value, string paramName) {
+        public static void RequiresNotNull([NotNull] object? value, string paramName) {
             Utils.Assert.NotEmpty(paramName);
 
             if (value is null) {
@@ -48,14 +51,14 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static void RequiresNotEmpty(string str, string paramName) {
+        public static void RequiresNotEmpty([NotNull] string? str, string paramName) {
             RequiresNotNull(str, paramName);
             if (str.Length == 0) {
                 throw new ArgumentException(Strings.NonEmptyStringRequired, paramName);
             }
         }
 
-        public static void RequiresNotEmpty<T>(ICollection<T> collection, string paramName) {
+        public static void RequiresNotEmpty<T>([NotNull] ICollection<T>? collection, string paramName) {
             RequiresNotNull(collection, paramName);
             if (collection.Count == 0) {
                 throw new ArgumentException(Strings.NonEmptyCollectionRequired, paramName);
@@ -157,7 +160,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Requires the array and all its items to be non-null.
         /// </summary>
-        public static void RequiresNotNullItems<T>(IList<T> array, string arrayName) {
+        public static void RequiresNotNullItems<T>([NotNull] IList<T>? array, string arrayName) {
             Utils.Assert.NotNull(arrayName);
             RequiresNotNull(array, arrayName);
 
@@ -171,7 +174,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Requires the enumerable collection and all its items to be non-null.
         /// </summary>
-        public static void RequiresNotNullItems<T>(IEnumerable<T> collection, string collectionName) {
+        public static void RequiresNotNullItems<T>([NotNull] IEnumerable<T>? collection, string collectionName) {
             Utils.Assert.NotNull(collectionName);
             RequiresNotNull(collection, collectionName);
 
@@ -228,11 +231,13 @@ namespace Microsoft.Scripting.Utils {
             // nop
         }
 
+        [return: MaybeNull]
         public static T Result<T>() { 
             return default(T); 
         }
 
-        public static T Parameter<T>(out T value) { 
+        [return: MaybeNull]
+        public static T Parameter<T>([MaybeNull] out T value) { 
             value = default(T); 
             return value; 
         }

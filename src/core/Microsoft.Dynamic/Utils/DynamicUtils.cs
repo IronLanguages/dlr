@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Threading.Tasks;
 
 using System.Linq.Expressions;
@@ -27,12 +29,12 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="objects">An array of <see cref="DynamicMetaObject"/> instances to extract expressions from.</param>
         /// <returns>The array of expressions.</returns>
         public static Expression[] GetExpressions(DynamicMetaObject[] objects) {
-            ContractUtils.RequiresNotNull(objects, nameof(objects));
+            ContractUtils.RequiresNotNullItems(objects, nameof(objects));
 
             Expression[] res = new Expression[objects.Length];
             for (int i = 0; i < objects.Length; i++) {
                 DynamicMetaObject mo = objects[i];
-                res[i] = mo?.Expression;
+                res[i] = mo.Expression;
             }
 
             return res;
@@ -44,12 +46,12 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="argValue">The runtime value to be represented by the <see cref="DynamicMetaObject"/>.</param>
         /// <param name="parameterExpression">An expression to represent this <see cref="DynamicMetaObject"/> during the binding process.</param>
         /// <returns>The new instance of <see cref="DynamicMetaObject"/>.</returns>
-        public static DynamicMetaObject ObjectToMetaObject(object argValue, Expression parameterExpression) {
+        public static DynamicMetaObject ObjectToMetaObject(object? argValue, Expression parameterExpression) {
             if (argValue is IDynamicMetaObjectProvider ido) {
                 return ido.GetMetaObject(parameterExpression);
             }
 
-            return new DynamicMetaObject(parameterExpression, BindingRestrictions.Empty, argValue);
+            return new DynamicMetaObject(parameterExpression, BindingRestrictions.Empty, argValue!); // null is a valid value despite the annotation
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Microsoft.Scripting.Utils {
         /// <param name="compilationThreshold">The number of calls before the binder should switch to a compiled mode.</param>
         /// <param name="args">The arguments that are passed for the binding (as received in a BindDelegate call)</param>
         /// <returns>A delegate which represents the interpreted binding.</returns>
-        public static T/*!*/ LightBind<T>(this DynamicMetaObjectBinder/*!*/ binder, object[]/*!*/ args, int compilationThreshold) where T : class {
+        public static T LightBind<T>(this DynamicMetaObjectBinder binder, object?[] args, int compilationThreshold) where T : class {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             ContractUtils.RequiresNotNull(args, nameof(args));
 
@@ -74,12 +76,12 @@ namespace Microsoft.Scripting.Utils {
         }
 
         private sealed class GenericInterpretedBinder<T> where T : class {
-            public static readonly GenericInterpretedBinder<T>/*!*/ Instance = new();
-            private readonly ReadOnlyCollection<ParameterExpression>/*!*/ _parameters;
-            private readonly Expression/*!*/ _updateExpression;
+            public static readonly GenericInterpretedBinder<T> Instance = new();
+            private readonly ReadOnlyCollection<ParameterExpression> _parameters;
+            private readonly Expression _updateExpression;
 
             private GenericInterpretedBinder() {
-                var invokeMethod = typeof(T).GetMethod("Invoke");
+                var invokeMethod = typeof(T).GetMethod("Invoke") ?? throw new InvalidOperationException($"{typeof(T)} is not a delegate type.");
                 var methodParams = invokeMethod.GetParameters();
 
                 ReadOnlyCollectionBuilder<ParameterExpression> prms = new ReadOnlyCollectionBuilder<ParameterExpression>(methodParams.Length);
@@ -101,18 +103,18 @@ namespace Microsoft.Scripting.Utils {
                     Expression.Invoke(
                         Expression.Property(
                             invokePrms[0],
-                            typeof(CallSite<T>).GetDeclaredProperty("Update")
+                            typeof(CallSite<T>).GetDeclaredProperty("Update")!
                         ),
                         invokePrms.ToReadOnlyCollection()
                     )
                 );
             }
 
-            public T/*!*/ Bind(DynamicMetaObjectBinder/*!*/ binder, int compilationThreshold, object[] args) {
+            public T Bind(DynamicMetaObjectBinder binder, int compilationThreshold, object?[] args) {
                 if (CachedBindingInfo<T>.LastInterpretedFailure is not null && CachedBindingInfo<T>.LastInterpretedFailure.Binder == binder) {
                     // we failed the rule because we have a compiled target available, return the compiled target
                     Debug.Assert(CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget is not null);
-                    var res = CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget;
+                    var res = CachedBindingInfo<T>.LastInterpretedFailure.CompiledTarget!; // CheckCompiled sets LastInterpretedFailure only once CompiledTarget is set
                     CachedBindingInfo<T>.LastInterpretedFailure = null;
                     return res;
                 }
@@ -120,17 +122,17 @@ namespace Microsoft.Scripting.Utils {
                 // we haven't produced a rule yet....
                 var bindingInfo = new CachedBindingInfo<T>(binder, compilationThreshold);
 
-                var targetMO = DynamicMetaObject.Create(args[0], _parameters[1]); // 1 is skipping CallSite
+                var targetMO = DynamicMetaObject.Create(args[0]!, _parameters[1]); // 1 is skipping CallSite; null is a valid value despite the annotation
                 DynamicMetaObject[] argsMO = new DynamicMetaObject[args.Length - 1];
                 for (int i = 0; i < argsMO.Length; i++) {
-                    argsMO[i] = DynamicMetaObject.Create(args[i + 1], _parameters[i + 2]);
+                    argsMO[i] = DynamicMetaObject.Create(args[i + 1]!, _parameters[i + 2]); // null is a valid value despite the annotation
                 }
                 var binding = binder.Bind(targetMO, argsMO);
 
                 return CreateDelegate(binder, binding, bindingInfo);
             }
 
-            private T/*!*/ CreateDelegate(DynamicMetaObjectBinder/*!*/ binder, DynamicMetaObject/*!*/ binding, CachedBindingInfo<T>/*!*/ bindingInfo) {
+            private T CreateDelegate(DynamicMetaObjectBinder binder, DynamicMetaObject binding, CachedBindingInfo<T> bindingInfo) {
                 var lambda = Compile(binding, bindingInfo);
                 try {
                     return lambda.LightCompile(Int32.MaxValue);
@@ -141,7 +143,7 @@ namespace Microsoft.Scripting.Utils {
                 }
             }
 
-            private Expression<T>/*!*/ Compile(DynamicMetaObject/*!*/ obj, CachedBindingInfo<T>/*!*/ bindingInfo) {
+            private Expression<T> Compile(DynamicMetaObject obj, CachedBindingInfo<T> bindingInfo) {
                 var restrictions = obj.Restrictions.ToExpression();
 
                 var body = Expression.Condition(
@@ -166,11 +168,11 @@ namespace Microsoft.Scripting.Utils {
             /// check which enables compiling when the count down is reached.
             /// </summary>
             private sealed class InterpretedRuleHitCheckExpression : Expression, IInstructionProvider {
-                private readonly Expression/*!*/ _test;
-                private readonly CachedBindingInfo/*!*/ _bindingInfo;
+                private readonly Expression _test;
+                private readonly CachedBindingInfo _bindingInfo;
 
-                private static readonly MethodInfo InterpretedCallSiteTest = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.InterpretedCallSiteTest));
-                public InterpretedRuleHitCheckExpression(Expression/*!*/ test, CachedBindingInfo/*!*/ bindingInfo) {
+                private static readonly MethodInfo InterpretedCallSiteTest = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.InterpretedCallSiteTest))!; // public method of ScriptingRuntimeHelpers
+                public InterpretedRuleHitCheckExpression(Expression test, CachedBindingInfo bindingInfo) {
                     Assert.NotNull(test, bindingInfo);
 
                     _test = test;
@@ -229,7 +231,7 @@ namespace Microsoft.Scripting.Utils {
     /// and return the compiled overload.
     /// </summary>
     internal abstract class CachedBindingInfo {
-        public readonly DynamicMetaObjectBinder/*!*/ Binder;
+        public readonly DynamicMetaObjectBinder Binder;
         public int CompilationThreshold;
 
         public CachedBindingInfo(DynamicMetaObjectBinder binder, int compilationThreshold) {
@@ -241,11 +243,11 @@ namespace Microsoft.Scripting.Utils {
     }
 
     internal sealed class CachedBindingInfo<T> : CachedBindingInfo where T : class {
-        public T CompiledTarget;
-        public Expression<T> Target;
+        public T? CompiledTarget;
+        public Expression<T>? Target;
 
         [ThreadStatic]
-        public static CachedBindingInfo<T> LastInterpretedFailure;
+        public static CachedBindingInfo<T>? LastInterpretedFailure;
 
         public CachedBindingInfo(DynamicMetaObjectBinder binder, int compilationThreshold)
             : base(binder, compilationThreshold) {

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 using System.Diagnostics;
@@ -16,13 +18,9 @@ namespace Microsoft.Scripting.ComInterop {
         internal readonly INVOKEKIND InvokeKind;
         private readonly int _paramCnt;
 
-        private ComMethodDesc(int dispId) {
-            _memid = dispId;
-        }
-
-        internal ComMethodDesc(string name, int dispId)
-            : this(dispId) {
+        internal ComMethodDesc(string name, int dispId) {
             // no ITypeInfo constructor
+            _memid = dispId;
             _name = name;
         }
 
@@ -31,9 +29,8 @@ namespace Microsoft.Scripting.ComInterop {
             InvokeKind = invkind;
         }
 
-        internal ComMethodDesc(ITypeInfo typeInfo, FUNCDESC funcDesc)
-            : this(funcDesc.memid) {
-
+        internal ComMethodDesc(ITypeInfo typeInfo, FUNCDESC funcDesc) {
+            _memid = funcDesc.memid;
             InvokeKind = funcDesc.invkind;
 
             string[] rgNames = new string[1 + funcDesc.cParams];
@@ -50,7 +47,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         public string Name {
             get {
-                Debug.Assert(_name is not null);
+                Utils.Assert.NotNull(_name);
                 return _name;
             }
         }

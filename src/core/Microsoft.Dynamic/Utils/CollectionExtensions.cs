@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +21,7 @@ namespace Microsoft.Scripting.Utils {
         /// accidentally changed after creation. The exception is if the enumerable is
         /// already a ReadOnlyCollection{T} (or its subclass), in which case we just return it.
         /// </remarks>
-        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable) {
+        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable) {
             // Copy of Microsoft.Scripting.Utils.CollectionExtensions.ToReadOnlyCollection, which is internal.
             return enumerable switch {
                 null => ReadOnlyCollection<T>.Empty,
@@ -38,7 +40,7 @@ namespace Microsoft.Scripting.Utils {
             var cmp = EqualityComparer<T>.Default;
             int h = 6551;
             foreach (T t in list) {
-                h ^= (h << 5) ^ cmp.GetHashCode(t);
+                h ^= (h << 5) ^ cmp.GetHashCode(t!); // the default comparer returns 0 for null
             }
             return h;
         }
@@ -103,7 +105,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         internal static T[] RemoveAt<T>(this T[] array, int indexToRemove) {
-            Debug.Assert(array is not null);
+            Assert.NotNull(array);
             Debug.Assert(indexToRemove >= 0 && indexToRemove < array.Length);
 
             T[] result = new T[array.Length - 1];

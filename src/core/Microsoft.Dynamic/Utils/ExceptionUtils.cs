@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,7 +12,7 @@ using System.Threading;
 
 namespace Microsoft.Scripting.Utils {
     public static class ExceptionUtils {
-        public static ArgumentOutOfRangeException MakeArgumentOutOfRangeException(string paramName, object actualValue, string message) {
+        public static ArgumentOutOfRangeException MakeArgumentOutOfRangeException(string paramName, object? actualValue, string message) {
             return new ArgumentOutOfRangeException(paramName, actualValue, message);
         }
 
@@ -19,11 +21,11 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if FEATURE_REMOTING
-        public static object GetData(this Exception e, object key) {
+        public static object? GetData(this Exception e, object key) {
             return e.Data[key];
         }
 
-        public static void SetData(this Exception e, object key, object data) {
+        public static void SetData(this Exception e, object key, object? data) {
             e.Data[key] = data;
         }
 
@@ -31,11 +33,11 @@ namespace Microsoft.Scripting.Utils {
             e.Data.Remove(key);
         }
 #else
-        private static ConditionalWeakTable<Exception, List<KeyValuePair<object, object>>> _exceptionData;
+        private static ConditionalWeakTable<Exception, List<KeyValuePair<object, object?>>>? _exceptionData;
 
-        public static void SetData(this Exception e, object key, object value) {
+        public static void SetData(this Exception e, object key, object? value) {
             if (_exceptionData is null) {
-                Interlocked.CompareExchange(ref _exceptionData, new ConditionalWeakTable<Exception, List<KeyValuePair<object, object>>>(), null);
+                Interlocked.CompareExchange(ref _exceptionData, new ConditionalWeakTable<Exception, List<KeyValuePair<object, object?>>>(), null);
             }
 
             lock (_exceptionData) {
@@ -43,20 +45,20 @@ namespace Microsoft.Scripting.Utils {
             
                 int index = data.FindIndex(entry => entry.Key == key);
                 if (index >= 0) {
-                    data[index] = new KeyValuePair<object, object>(key, value);
+                    data[index] = new KeyValuePair<object, object?>(key, value);
                 } else {
-                    data.Add(new KeyValuePair<object, object>(key, value));
+                    data.Add(new KeyValuePair<object, object?>(key, value));
                 }
             }
         }
 
-        public static object GetData(this Exception e, object key) {
+        public static object? GetData(this Exception e, object key) {
             if (_exceptionData is null) {
                 return null;
             }
 
             lock (_exceptionData) {
-                List<KeyValuePair<object, object>> data;
+                List<KeyValuePair<object, object?>>? data;
                 if (!_exceptionData.TryGetValue(e, out data)) {
                     return null;
                 }
@@ -71,7 +73,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             lock (_exceptionData) {
-                List<KeyValuePair<object, object>> data;
+                List<KeyValuePair<object, object?>>? data;
                 if (!_exceptionData.TryGetValue(e, out data)) {
                     return;
                 }

@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Utils {
     /// <summary>
@@ -14,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
     /// 
     /// This class is not thread safe.
     /// </summary>
-    public class CacheDict<TKey, TValue> {
+    public class CacheDict<TKey, TValue> where TKey : notnull {
         private readonly Dictionary<TKey, KeyInfo> _dict = new();
         private readonly LinkedList<TKey> _list = new();
         private readonly int _maxSize;
@@ -31,7 +34,7 @@ namespace Microsoft.Scripting.Utils {
         /// Tries to get the value associated with 'key', returning true if it's found and
         /// false if it's not present.
         /// </summary>
-        public bool TryGetValue(TKey key, out TValue value) {
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) {
             if (_dict.TryGetValue(key, out KeyInfo storedValue)) {
                 LinkedListNode<TKey> node = storedValue.List;
                 if (node.Previous is not null) {
@@ -58,7 +61,7 @@ namespace Microsoft.Scripting.Utils {
                 _list.Remove(keyInfo.List);
             } else if (_list.Count == _maxSize) {
                 // we've reached capacity, remove the last used element...
-                LinkedListNode<TKey> node = _list.Last;
+                LinkedListNode<TKey> node = _list.Last!; // the list is at capacity
                 _list.RemoveLast();
                 bool res = _dict.Remove(node.Value);
                 Debug.Assert(res);
@@ -77,7 +80,7 @@ namespace Microsoft.Scripting.Utils {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public TValue this[TKey key] {
             get {
-                if (TryGetValue(key, out TValue res)) {
+                if (TryGetValue(key, out TValue? res)) {
                     return res;
                 }
                 throw new KeyNotFoundException();

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -21,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
     internal sealed class OperatorInfo {
         private static readonly OperatorDictionary _infos = MakeOperatorTable(); // table of ExpressionType, names, and alt names for looking up methods.
 
-        private OperatorInfo(ExpressionType op, string name, string altName) {
+        private OperatorInfo(ExpressionType op, string name, string? altName) {
             Operator = op;
             Name = name;
             AlternateName = altName;
@@ -30,14 +32,14 @@ namespace Microsoft.Scripting.Actions {
         /// <summary>
         /// Given an operator returns the OperatorInfo associated with the operator or null.
         /// </summary>
-        public static OperatorInfo GetOperatorInfo(ExpressionType op) {
-            _infos.TryGetValue(op, out OperatorInfo data);
+        public static OperatorInfo? GetOperatorInfo(ExpressionType op) {
+            _infos.TryGetValue(op, out OperatorInfo? data);
             return data;
         }
 
 
         [Obsolete("This method is not efficient; use GetOperatorInfo(ExpressionType) instead.")]
-        public static OperatorInfo GetOperatorInfo(string name) {
+        public static OperatorInfo? GetOperatorInfo(string name) {
             foreach (OperatorInfo info in _infos.Values) {
                 if (info.Name == name || info.AlternateName == name) {
                     return info;
@@ -62,7 +64,7 @@ namespace Microsoft.Scripting.Actions {
         /// Gets the secondary method name associated with the method.
         /// This method name is usually a standard .NET method name with pascal casing (e.g. Add).
         /// </summary>
-        public string AlternateName { get; }
+        public string? AlternateName { get; }
 
 
         // This method is internal for benchmarking purposes only; not intended for use outside of this class.
@@ -129,7 +131,7 @@ namespace Microsoft.Scripting.Actions {
 #endif
         }
 
-        private sealed class KvpDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+        private sealed class KvpDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
         {
             public void Add(KeyValuePair<TKey, TValue> kvp) => Add(kvp.Key, kvp.Value);
         }

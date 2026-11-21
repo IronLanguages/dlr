@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +18,7 @@ namespace Microsoft.Scripting.Utils {
     /// callback is called (w/o any locks held).  The create call back will only be called
     /// once for each key.  
     /// </summary>
-    public class Publisher<TKey, TValue> {
+    public class Publisher<TKey, TValue> where TKey : notnull {
         private readonly Dictionary<TKey, PublishInfo<TValue>> data = new();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")] // TODO: fix
@@ -25,7 +27,7 @@ namespace Microsoft.Scripting.Utils {
             try {
                 MonitorUtils.Enter(data, ref lockTaken);
 
-                if (data.TryGetValue(key, out PublishInfo<TValue> pubValue)) {
+                if (data.TryGetValue(key, out PublishInfo<TValue>? pubValue)) {
                     if (pubValue.Value is null && pubValue.Exception is null) {
                         pubValue.PrepareForWait();
                         MonitorUtils.Exit(data, ref lockTaken);
@@ -40,7 +42,7 @@ namespace Microsoft.Scripting.Utils {
 
                     if (pubValue.Exception is not null) throw new Exception("Error", pubValue.Exception);
 
-                    return pubValue.Value;
+                    return pubValue.Value!; // published values are never null
                 }
 
                 TValue ret;
@@ -85,15 +87,15 @@ namespace Microsoft.Scripting.Utils {
 
             // TODO: seems to be FxCop bug
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-            public T Value;
+            public T? Value;
 
             // TODO: seems to be FxCop bug
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-            public Exception Exception;
+            public Exception? Exception;
 
             // TODO: seems to be FxCop bug
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-            private ManualResetEvent _waitEvent;
+            private ManualResetEvent? _waitEvent;
 
             // TODO: seems to be FxCop bug
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
@@ -111,7 +113,7 @@ namespace Microsoft.Scripting.Utils {
             public void PrepareForWait() {
                 if (_waitEvent is null) {
                     ManualResetEvent mre = new ManualResetEvent(false);
-                    if (Interlocked.CompareExchange<ManualResetEvent>(ref _waitEvent, mre, null) is not null) {
+                    if (Interlocked.CompareExchange<ManualResetEvent?>(ref _waitEvent, mre, null) is not null) {
                         mre.Dispose();
                     }
                 }
@@ -119,13 +121,13 @@ namespace Microsoft.Scripting.Utils {
             }
 
             public void WaitForPublish() {
-                _waitEvent.WaitOne();
+                _waitEvent!.WaitOne(); // created in PrepareForWait
             }
 
             public void FinishWait() {
                 _waiters--;
                 if (_waiters == 0) {
-                    _waitEvent.Dispose();
+                    _waitEvent!.Dispose(); // created in PrepareForWait
                 }
             }
         }

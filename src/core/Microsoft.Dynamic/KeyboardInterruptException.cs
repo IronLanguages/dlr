@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.Serialization;
 
@@ -9,8 +11,8 @@ namespace Microsoft.Scripting {
     [Serializable]
     public class KeyboardInterruptException : Exception {
         public KeyboardInterruptException() : base() { }
-        public KeyboardInterruptException(string msg) : base(msg) { }
-        public KeyboardInterruptException(string message, Exception innerException)
+        public KeyboardInterruptException(string? msg) : base(msg) { }
+        public KeyboardInterruptException(string? message, Exception? innerException)
             : base(message, innerException) {
         }
 #if FEATURE_SERIALIZATION

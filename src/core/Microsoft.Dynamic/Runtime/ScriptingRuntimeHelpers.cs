@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using Microsoft.Scripting.Actions;
@@ -37,8 +40,8 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public static readonly object False = false;
 
-        internal static readonly MethodInfo BooleanToObjectMethod = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.BooleanToObject));
-        internal static readonly MethodInfo Int32ToObjectMethod = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.Int32ToObject));
+        internal static readonly MethodInfo BooleanToObjectMethod = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.BooleanToObject))!; // declared below
+        internal static readonly MethodInfo Int32ToObjectMethod = typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.Int32ToObject))!; // declared below
 
         private static object[] MakeCache() {
             object[] result = new object[MAX_CACHE - MIN_CACHE];
@@ -92,7 +95,7 @@ namespace Microsoft.Scripting.Runtime {
             return new string(ch, 1);
         }
 
-        internal static object GetPrimitiveDefaultValue(Type type) {
+        internal static object? GetPrimitiveDefaultValue(Type type) {
             switch (type.GetTypeCode()) {
                 case TypeCode.Boolean: return ScriptingRuntimeHelpers.False;
                 case TypeCode.SByte: return default(SByte);
@@ -118,7 +121,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
-        public static Exception CannotConvertError(Type toType, object value) {
+        public static Exception CannotConvertError(Type toType, object? value) {
             return SimpleTypeError($"Cannot convert {CompilerHelpers.GetType(value).Name}({value}) to {toType.Name}");
         }
 
@@ -142,6 +145,7 @@ namespace Microsoft.Scripting.Runtime {
         /// TODO: Why can't we just emit the right thing for default(T)?
         /// It's always null for reference types and it's well defined for value types
         /// </summary>
+        [return: MaybeNull]
         public static T CreateInstance<T>() {
             return default(T);
         }
@@ -159,7 +163,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <returns></returns>
         public static Type GetEventHandlerType(EventInfo eventInfo) {
             ContractUtils.RequiresNotNull(eventInfo, nameof(eventInfo));
-            return eventInfo.EventHandlerType;
+            return eventInfo.EventHandlerType!; // only custom EventInfo implementations can lack a handler type
         }
 
         public static IList<string> GetStringMembers(IList<object> members) {
@@ -173,7 +177,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
-        public static void SetEvent(EventTracker eventTracker, object value) {
+        public static void SetEvent(EventTracker eventTracker, object? value) {
             if (value is EventTracker et) {
                 if (et != eventTracker) {
                     throw Error.UnexpectedEvent(eventTracker.DeclaringType.Name,
@@ -210,11 +214,11 @@ namespace Microsoft.Scripting.Runtime {
 
         // TODO: just emit this in the generated code
         [Obsolete("use MakeIncorrectBoxTypeError instead")]
-        public static T IncorrectBoxType<T>(object received) {
+        public static T IncorrectBoxType<T>(object? received) {
             throw Error.UnexpectedType("StrongBox<" + typeof(T).Name + ">", CompilerHelpers.GetType(received).Name);
         }
 
-        public static Exception MakeIncorrectBoxTypeError(Type type, object received) {
+        public static Exception MakeIncorrectBoxTypeError(Type type, object? received) {
             return Error.UnexpectedType("StrongBox<" + type.Name + ">", CompilerHelpers.GetType(received).Name);
         }
 

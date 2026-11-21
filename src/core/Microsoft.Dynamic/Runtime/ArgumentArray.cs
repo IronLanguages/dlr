@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Dynamic;
 using System.Linq.Expressions;
@@ -17,12 +19,12 @@ namespace Microsoft.Scripting.Runtime {
     /// The binder generating a rule for such a site should unwrap the arguments first and then perform a binding to them.
     /// </summary>
     public sealed class ArgumentArray {
-        private readonly object[] _arguments;
+        private readonly object?[] _arguments;
 
         // the index of the first item _arguments that represents an argument:
         private readonly int _first;
 
-        internal ArgumentArray(object[] arguments, int first, int count) {
+        internal ArgumentArray(object?[] arguments, int first, int count) {
             _arguments = arguments;
             _first = first;
             Count = count;
@@ -33,14 +35,14 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         public int Count { get; }
 
-        public object GetArgument(int index) {
+        public object? GetArgument(int index) {
             ContractUtils.RequiresArrayIndex(_arguments, index, nameof(index));
             return _arguments[_first + index];
         }
 
         public DynamicMetaObject GetMetaObject(Expression parameter, int index) {
             return DynamicMetaObject.Create(
-                GetArgument(index),
+                GetArgument(index)!, // null is a valid MetaObject value despite the annotation of Create
                 Expression.Call(
                     _GetArgMethod, 
                     AstUtils.Convert(parameter, typeof(ArgumentArray)),
@@ -50,10 +52,10 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [CLSCompliant(false)]
-        public static object GetArg(ArgumentArray array, int index) {
+        public static object? GetArg(ArgumentArray array, int index) {
             return array._arguments[array._first + index];
         }
 
-        private static readonly MethodInfo _GetArgMethod = new Func<ArgumentArray, int, object>(GetArg).GetMethodInfo();
+        private static readonly MethodInfo _GetArgMethod = new Func<ArgumentArray, int, object?>(GetArg).GetMethodInfo();
     }
 }

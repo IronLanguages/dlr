@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -20,7 +22,7 @@ namespace Microsoft.Scripting.Utils {
             _gcHandle = GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
-        public object Target {
+        public object? Target {
             get {
                 if (!_gcHandle.IsAllocated)
                     return null;

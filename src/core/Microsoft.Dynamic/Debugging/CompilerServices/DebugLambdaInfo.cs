@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using MSAst = System.Linq.Expressions;
 
 using System.Collections.Generic;
@@ -12,12 +14,12 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
     /// </summary>
     public sealed class DebugLambdaInfo {
         public DebugLambdaInfo(
-            IDebugCompilerSupport compilerSupport,
-            string lambdaAlias,
+            IDebugCompilerSupport? compilerSupport,
+            string? lambdaAlias,
             bool optimizeForLeafFrames,
-            IList<MSAst.ParameterExpression> hiddenVariables,
-            IDictionary<MSAst.ParameterExpression, string> variableAliases,
-            object customPayload) {
+            IList<MSAst.ParameterExpression>? hiddenVariables,
+            IDictionary<MSAst.ParameterExpression, string>? variableAliases,
+            object? customPayload) {
             CompilerSupport = compilerSupport;
             LambdaAlias = lambdaAlias;
             HiddenVariables = hiddenVariables;
@@ -26,15 +28,15 @@ namespace Microsoft.Scripting.Debugging.CompilerServices {
             OptimizeForLeafFrames = optimizeForLeafFrames;
         }
 
-        public IDebugCompilerSupport CompilerSupport { get; }
+        public IDebugCompilerSupport? CompilerSupport { get; }
 
-        public string LambdaAlias { get; }
+        public string? LambdaAlias { get; }
 
-        public IList<MSAst.ParameterExpression> HiddenVariables { get; }
+        public IList<MSAst.ParameterExpression>? HiddenVariables { get; }
 
-        public IDictionary<MSAst.ParameterExpression, string> VariableAliases { get; }
+        public IDictionary<MSAst.ParameterExpression, string>? VariableAliases { get; }
 
-        public object CustomPayload { get; }
+        public object? CustomPayload { get; }
 
         public bool OptimizeForLeafFrames { get; }
     }

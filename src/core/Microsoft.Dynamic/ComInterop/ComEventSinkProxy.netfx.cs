@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM && FEATURE_REMOTING
 
 using System;
@@ -44,9 +46,6 @@ namespace Microsoft.Scripting.ComInterop {
 
         #region ctors
 
-        private ComEventSinkProxy() {
-        }
-
         public ComEventSinkProxy(ComEventSink sink, Guid sinkIid)
             : base(typeof(ComEventSink)) {
             _sink = sink;
@@ -87,7 +86,7 @@ namespace Microsoft.Scripting.ComInterop {
             // and pass-in null.
             MethodInfo methodInfo = (MethodInfo)methodCallMessage.MethodBase;
             if (methodInfo == _methodInfoInvokeMember) {
-                object retVal = null;
+                object? retVal = null;
 
                 try {
                     // InvokeMember(string name, BindingFlags bindingFlags, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)

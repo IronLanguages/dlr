@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Security;
 using System;
 
@@ -18,7 +20,7 @@ namespace Microsoft.Scripting {
     internal static class DebugOptions {
 
         private static bool ReadOption(string name) {
-            string envVar = ReadString(name);
+            string? envVar = ReadString(name);
             return "true".Equals(envVar, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -31,7 +33,7 @@ namespace Microsoft.Scripting {
 #endif
         }
 
-        private static string ReadString(string name) {
+        private static string? ReadString(string name) {
 #if FEATURE_PROCESS
             try {
                 return Environment.GetEnvironmentVariable("DLR_" + name);
@@ -44,7 +46,7 @@ namespace Microsoft.Scripting {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "name")]
-        private static string ReadDebugString(string name) {
+        private static string? ReadDebugString(string name) {
 #if DEBUG
             return ReadString(name);
 #else

@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -23,7 +26,7 @@ namespace Microsoft.Scripting.Actions {
         /// Array of additional meta information about the arguments, such as named arguments.
         /// Null for a simple signature that's just an expression list. eg: foo(a*b,c,d)
         /// </summary>
-        private readonly Argument[] _infos;
+        private readonly Argument[]? _infos;
 
         /// <summary>
         /// Number of arguments in the signature.
@@ -33,6 +36,7 @@ namespace Microsoft.Scripting.Actions {
         /// <summary>
         /// All arguments are unnamed and matched by position. 
         /// </summary>
+        [MemberNotNullWhen(false, nameof(_infos))]
         public bool IsSimple => _infos is null;
 
         public int ArgumentCount {
@@ -55,7 +59,7 @@ namespace Microsoft.Scripting.Actions {
             _infos = null;
         }
 
-        public CallSignature(params Argument[] infos) {
+        public CallSignature(params Argument[]? infos) {
             bool simple = true;
 
             if (infos is not null) {
@@ -73,7 +77,7 @@ namespace Microsoft.Scripting.Actions {
             _infos = (!simple) ? infos : null;
         }
 
-        public CallSignature(params ArgumentType[] kinds) {
+        public CallSignature(params ArgumentType[]? kinds) {
             bool simple = true;
 
             if (kinds is not null) {
@@ -89,7 +93,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             if (!simple) {
-                _infos = new Argument[kinds.Length];
+                _infos = new Argument[kinds!.Length]; // not simple implies not null
                 for (int i = 0; i < kinds.Length; i++) {
                     _infos[i] = new Argument(kinds[i]);
                 }
@@ -124,7 +128,7 @@ namespace Microsoft.Scripting.Actions {
 
         #region Overrides
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is CallSignature signature && Equals(signature);
 
         public static bool operator ==(CallSignature left, CallSignature right) => left.Equals(right);
@@ -245,7 +249,7 @@ namespace Microsoft.Scripting.Actions {
             return _infos?[index].Kind ?? ArgumentType.Simple;
         }
 
-        public string GetArgumentName(int index) {
+        public string? GetArgumentName(int index) {
             ContractUtils.Requires(index >= 0 && index < _argumentCount);
             return _infos?[index].Name;
         }
@@ -288,7 +292,7 @@ namespace Microsoft.Scripting.Actions {
         public Expression CreateExpression() {
             if (_infos is null) {
                 return Expression.New(
-                    typeof(CallSignature).GetConstructor(new Type[] { typeof(int) }),
+                    typeof(CallSignature).GetConstructor(new Type[] { typeof(int) })!, // declared above
                     AstUtils.Constant(ArgumentCount)
                 );
             }
@@ -298,7 +302,7 @@ namespace Microsoft.Scripting.Actions {
                 args[i] = _infos[i].CreateExpression();
             }
             return Expression.New(
-                typeof(CallSignature).GetConstructor(new Type[] { typeof(Argument[]) }), 
+                typeof(CallSignature).GetConstructor(new Type[] { typeof(Argument[]) })!, // declared above
                 Expression.NewArrayInit(typeof(Argument), args)
             );
         }

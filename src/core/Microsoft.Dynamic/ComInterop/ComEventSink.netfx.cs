@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 using System;
@@ -35,9 +37,9 @@ namespace Microsoft.Scripting.ComInterop {
         #region private fields
 
         private Guid _sourceIid;
-        private ComTypes.IConnectionPoint _connectionPoint;
+        private ComTypes.IConnectionPoint? _connectionPoint;
         private int _adviseCookie;
-        private List<ComEventSinkMethod> _comEventSinkMethods;
+        private List<ComEventSinkMethod>? _comEventSinkMethods;
         private readonly Lock _lockObject = new(); // We cannot lock on ComEventSink since it causes a DoNotLockOnObjectsWithWeakIdentity warning
 
         #endregion
@@ -49,8 +51,8 @@ namespace Microsoft.Scripting.ComInterop {
         /// and a chained list of delegates to invoke
         /// </summary>
         private sealed class ComEventSinkMethod {
-            public string _name;
-            public Func<object[], object> _handlers;
+            public string? _name;
+            public Func<object?[], object?>? _handlers;
         }
         #endregion
 
@@ -82,14 +84,14 @@ namespace Microsoft.Scripting.ComInterop {
 
         #region static methods
 
-        public static ComEventSink FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
-            List<ComEventSink> comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
+        public static ComEventSink? FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
+            List<ComEventSink>? comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
 
             if (comEventSinks is null) {
                 return null;
             }
 
-            ComEventSink comEventSink = null;
+            ComEventSink? comEventSink = null;
             lock (comEventSinks) {
 
                 foreach (ComEventSink sink in comEventSinks) {
@@ -121,7 +123,7 @@ namespace Microsoft.Scripting.ComInterop {
             string name = String.Format(CultureInfo.InvariantCulture, "[DISPID={0}]", dispid);
 
             lock (_lockObject) {
-                ComEventSinkMethod sinkMethod = FindSinkMethod(name);
+                ComEventSinkMethod? sinkMethod = FindSinkMethod(name);
 
                 if (sinkMethod is null) {
                     _comEventSinkMethods ??= new List<ComEventSinkMethod>();
@@ -141,7 +143,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             lock (_lockObject) {
 
-                ComEventSinkMethod sinkEntry = FindSinkMethod(name);
+                ComEventSinkMethod? sinkEntry = FindSinkMethod(name);
                 if (sinkEntry is null){
                     return;
                 }
@@ -151,10 +153,10 @@ namespace Microsoft.Scripting.ComInterop {
                 // to the func handler we want to remove. This will be
                 // easy since we Target property of the delegate object
                 // is a ComEventCallContext object.
-                Delegate[] delegates = sinkEntry._handlers.GetInvocationList();
+                Delegate[] delegates = sinkEntry._handlers!.GetInvocationList(); // registered methods always have handlers
                 foreach (Delegate d in delegates) {
                     if (d.Target is SplatCallSite callContext && callContext._callable.Equals(func)) {
-                        sinkEntry._handlers -= d as Func<object[], object>;
+                        sinkEntry._handlers -= d as Func<object?[], object?>;
                         break;
                     }
                 }
@@ -162,12 +164,12 @@ namespace Microsoft.Scripting.ComInterop {
                 // If the delegates chain is empty - we can remove 
                 // corresponding ComEvenSinkEntry
                 if (sinkEntry._handlers is null)
-                    _comEventSinkMethods.Remove(sinkEntry);
+                    _comEventSinkMethods!.Remove(sinkEntry); // the entry was found in _comEventSinkMethods
 
                 // We can Unadvise from the ConnectionPoint if no more sink entries
                 // are registered for this interface 
                 //(calling Dispose will call IConnectionPoint.Unadvise).
-                if (_comEventSinkMethods.Count == 0) {
+                if (_comEventSinkMethods!.Count == 0) {
                     // notice that we do not remove 
                     // ComEventSinkEntry from the list, we will re-use this data structure
                     // if a new handler needs to be attached.
@@ -176,8 +178,8 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        public object ExecuteHandler(string name, object[] args) {
-            ComEventSinkMethod site = FindSinkMethod(name);
+        public object? ExecuteHandler(string name, object?[] args) {
+            ComEventSinkMethod? site = FindSinkMethod(name);
 
             return site?._handlers?.Invoke(args);
         }
@@ -186,7 +188,7 @@ namespace Microsoft.Scripting.ComInterop {
 
         #region Unimplemented members
 
-        public FieldInfo GetField(string name, BindingFlags bindingAttr) {
+        public FieldInfo? GetField(string name, BindingFlags bindingAttr) {
             return null;
         }
 
@@ -202,11 +204,11 @@ namespace Microsoft.Scripting.ComInterop {
             return EmptyArray<MemberInfo>.Instance;
         }
 
-        public MethodInfo GetMethod(string name, BindingFlags bindingAttr) {
+        public MethodInfo? GetMethod(string name, BindingFlags bindingAttr) {
             return null;
         }
 
-        public MethodInfo GetMethod(string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers) {
+        public MethodInfo? GetMethod(string name, BindingFlags bindingAttr, Binder? binder, Type[] types, ParameterModifier[]? modifiers) {
             return null;
         }
 
@@ -214,11 +216,11 @@ namespace Microsoft.Scripting.ComInterop {
             return EmptyArray<MethodInfo>.Instance;
         }
 
-        public PropertyInfo GetProperty(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers) {
+        public PropertyInfo? GetProperty(string name, BindingFlags bindingAttr, Binder? binder, Type? returnType, Type[] types, ParameterModifier[]? modifiers) {
             return null;
         }
 
-        public PropertyInfo GetProperty(string name, BindingFlags bindingAttr) {
+        public PropertyInfo? GetProperty(string name, BindingFlags bindingAttr) {
             return null;
         }
 
@@ -234,15 +236,15 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        public object InvokeMember(
+        public object? InvokeMember(
             string name,
             BindingFlags invokeAttr,
-            Binder binder,
-            object target,
-            object[] args,
-            ParameterModifier[] modifiers,
-            CultureInfo culture,
-            string[] namedParameters) {
+            Binder? binder,
+            object? target,
+            object?[] args,
+            ParameterModifier[]? modifiers,
+            CultureInfo? culture,
+            string[]? namedParameters) {
 
             return ExecuteHandler(name, args);
         }
@@ -295,11 +297,11 @@ namespace Microsoft.Scripting.ComInterop {
             }
         }
 
-        private ComEventSinkMethod FindSinkMethod(string name) {
+        private ComEventSinkMethod? FindSinkMethod(string name) {
             if (_comEventSinkMethods is null)
                 return null;
 
-            ComEventSinkMethod site = _comEventSinkMethods.Find(element => element._name == name);
+            ComEventSinkMethod? site = _comEventSinkMethods.Find(element => element._name == name);
 
             return site;
         }

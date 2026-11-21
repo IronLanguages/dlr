@@ -1,6 +1,8 @@
 ﻿// The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 #pragma warning disable CA1416 // Validate platform compatibility
@@ -21,9 +23,9 @@ namespace Microsoft.Scripting.ComInterop {
     /// </summary>
     internal sealed class ComEventSink : IDispatch, ICustomQueryInterface, IDisposable {
         private Guid _iidSourceItf;
-        private IConnectionPoint _connectionPoint;
+        private IConnectionPoint? _connectionPoint;
         private int _cookie;
-        private ComEventsMethod _methods;
+        private ComEventsMethod? _methods;
 
         public ComEventSink(object rcw, Guid iid) {
             _iidSourceItf = iid;
@@ -35,14 +37,14 @@ namespace Microsoft.Scripting.ComInterop {
             this.Advise(rcw);
         }
 
-        public static ComEventSink FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
-            List<ComEventSink> comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
+        public static ComEventSink? FromRuntimeCallableWrapper(object rcw, Guid sourceIid, bool createIfNotFound) {
+            List<ComEventSink>? comEventSinks = ComEventSinksContainer.FromRuntimeCallableWrapper(rcw, createIfNotFound);
 
             if (comEventSinks is null) {
                 return null;
             }
 
-            ComEventSink comEventSink = null;
+            ComEventSink? comEventSink = null;
             lock (comEventSinks) {
                 foreach (ComEventSink sink in comEventSinks) {
                     if (sink._iidSourceItf == sourceIid) {
@@ -67,12 +69,12 @@ namespace Microsoft.Scripting.ComInterop {
             return comEventSink;
         }
 
-        public ComEventsMethod RemoveMethod(ComEventsMethod method) {
-            _methods = ComEventsMethod.Remove(_methods, method);
+        public ComEventsMethod? RemoveMethod(ComEventsMethod method) {
+            _methods = ComEventsMethod.Remove(_methods!, method); // the method was found in _methods
             return _methods;
         }
 
-        public ComEventsMethod FindMethod(int dispid) {
+        public ComEventsMethod? FindMethod(int dispid) {
             return ComEventsMethod.Find(_methods, dispid);
         }
 
@@ -84,13 +86,13 @@ namespace Microsoft.Scripting.ComInterop {
 
 
         public void AddHandler(int dispid, object func) {
-            ComEventsMethod method = FindMethod(dispid);
+            ComEventsMethod? method = FindMethod(dispid);
             method ??= AddMethod(dispid);
             method.AddDelegate(new SplatCallSite(func).Invoke);
         }
 
         public void RemoveHandler(int dispid, object func) {
-            ComEventsMethod sinkEntry = FindMethod(dispid);
+            ComEventsMethod? sinkEntry = FindMethod(dispid);
             if (sinkEntry is null) {
                 return;
             }
@@ -107,7 +109,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (sinkEntry.Empty)
                 RemoveMethod(sinkEntry);
 
-            if (_methods.Empty) {
+            if (_methods is null || _methods.Empty) {
                 Dispose();
             }
         }
@@ -164,7 +166,7 @@ namespace Microsoft.Scripting.ComInterop {
             IntPtr pExcepInfo,
             IntPtr puArgErr) {
 
-            ComEventsMethod method = FindMethod(dispIdMember);
+            ComEventsMethod? method = FindMethod(dispIdMember);
             if (method is null) {
                 return ComHresults.DISP_E_MEMBERNOTFOUND;
             }
@@ -174,7 +176,7 @@ namespace Microsoft.Scripting.ComInterop {
                 // arguments marshalling. see code:ComEventsHelper#ComEventsArgsMarshalling
 
                 const int InvalidIdx = -1;
-                object[] args = new object[pDispParams.cArgs];
+                object?[] args = new object?[pDispParams.cArgs];
                 int[] byrefsMap = new int[pDispParams.cArgs];
                 bool[] usedArgs = new bool[pDispParams.cArgs];
 
@@ -221,7 +223,7 @@ namespace Microsoft.Scripting.ComInterop {
                 }
 
                 // Do the actual delegate invocation
-                object result = method.Invoke(args);
+                object? result = method.Invoke(args);
 
                 if (VarResult != IntPtr.Zero) {
                     Marshal.GetNativeVariantForObject(result, VarResult);
@@ -258,11 +260,11 @@ namespace Microsoft.Scripting.ComInterop {
             Debug.Assert(_connectionPoint is null, "comevent sink is already advised");
 
             IConnectionPointContainer cpc = (IConnectionPointContainer)rcw;
-            cpc.FindConnectionPoint(ref _iidSourceItf, out IConnectionPoint cp);
+            cpc.FindConnectionPoint(ref _iidSourceItf, out IConnectionPoint? cp);
 
             object sinkObject = this;
 
-            cp.Advise((IDispatch)sinkObject, out _cookie);
+            cp!.Advise((IDispatch)sinkObject, out _cookie); // FindConnectionPoint throws if not found
 
             _connectionPoint = cp;
         }

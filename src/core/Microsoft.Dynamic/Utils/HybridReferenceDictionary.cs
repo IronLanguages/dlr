@@ -2,18 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Utils {
     /// <summary>
     /// A hybrid dictionary which compares based upon object identity.
     /// </summary>
     internal sealed class HybridReferenceDictionary<TKey, TValue> where TKey : class {
-        private KeyValuePair<TKey, TValue>[] _keysAndValues;
-        private Dictionary<TKey, TValue> _dict;
+        private KeyValuePair<TKey, TValue>[]? _keysAndValues;
+        private Dictionary<TKey, TValue>? _dict;
         private int _count;
         private const int _arraySize = 10;
 
@@ -28,8 +31,8 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value) {
-            Debug.Assert(key is not null);
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) {
+            Assert.NotNull(key);
 
             if (_dict is not null) {
                 return _dict.TryGetValue(key, out value);
@@ -49,7 +52,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public bool Remove(TKey key) {
-            Debug.Assert(key is not null);
+            Assert.NotNull(key);
 
             if (_dict is not null) {
                 return _dict.Remove(key);
@@ -69,7 +72,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public bool ContainsKey(TKey key) {
-            Debug.Assert(key is not null);
+            Assert.NotNull(key);
 
             if (_dict is not null) {
                 return _dict.ContainsKey(key);
@@ -116,16 +119,16 @@ namespace Microsoft.Scripting.Utils {
 
         public TValue this[TKey key] {
             get {
-                Debug.Assert(key is not null);
+                Assert.NotNull(key);
 
-                if (TryGetValue(key, out TValue res)) {
+                if (TryGetValue(key, out TValue? res)) {
                     return res;
                 }
 
                 throw new KeyNotFoundException();
             }
             set {
-                Debug.Assert(key is not null);
+                Assert.NotNull(key);
 
                 if (_dict is not null) {
                     _dict[key] = value;
