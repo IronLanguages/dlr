@@ -656,7 +656,12 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="lambda">the lambda to compile</param>
         /// <param name="emitDebugSymbols">true to generate a debuggable method, false otherwise</param>
         /// <returns>the compiled delegate</returns>
-        public static T Compile<T>(this Expression<T> lambda, bool emitDebugSymbols) {
+        /// <remarks>
+        /// This method is static, not an extension method, so call it as CompilerHelpers.Compile(lambda, emitDebugSymbols).
+        /// On .NET and .NET Standard 2.0, lambda.Compile(emitDebugSymbols) calls
+        /// Expression&lt;T&gt;.Compile(bool preferInterpretation) instead, which interprets the lambda when the argument is true.
+        /// </remarks>
+        public static T Compile<T>(Expression<T> lambda, bool emitDebugSymbols) {
 #if FEATURE_PDBEMIT && FEATURE_REFEMIT
             if (emitDebugSymbols) {
                 try {
