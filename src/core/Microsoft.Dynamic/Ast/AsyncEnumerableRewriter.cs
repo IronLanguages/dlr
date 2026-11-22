@@ -50,7 +50,7 @@ namespace Microsoft.Scripting.Ast {
             Expression body = _node.Body;
             AsyncDebugSupport? debugSupport = null;
             if (_node.DebugContext is not null && _node.DebugLambdaInfo is not null) {
-                debugSupport = new AsyncDebugSupport(_node.DebugContext, _node.DebugLambdaInfo, _node.Name, exceptionSlot);
+                debugSupport = new AsyncDebugSupport(_node.DebugContext, _node.DebugLambdaInfo, _node.DebugVariables, _node.Name, exceptionSlot);
                 body = debugSupport.InjectDebugPoints(body, _node.YieldLabel);
             }
 

@@ -35,7 +35,8 @@ namespace Microsoft.Scripting.Debugging {
     ///   to the body through the exception slot, the same way the driver delivers a faulted await, so it surfaces inside the body, where
     ///   the body's own <c>try</c> statements see it.</para>
     ///
-    ///   <para>The frame is read-only: it reports the body's location, but none of its locals.</para>
+    ///   <para>The frame reports the body's location and its variables, which can be changed through it, 
+    ///   but its location cannot be changed.</para>
     /// </remarks>
     internal sealed class TracingStateMachine : IEnumerator<object?> {
         // The entry sequence point is the location of the 'call' event, so it fires no 'line' event of its own (as in DebuggableLambdaBuilder).
@@ -43,7 +44,7 @@ namespace Microsoft.Scripting.Debugging {
 
         private readonly IEnumerator<object?> _states;
         private readonly DebugContext _debugContext;
-        private readonly MarkerRuntimeVariables _variables;
+        private readonly FrameRuntimeVariables _variables;
         private readonly StrongBox<object?>? _resultSlot;
         private readonly StrongBox<Exception?> _exceptionSlot;
         private readonly bool _isAsyncEnumerable;
@@ -53,18 +54,23 @@ namespace Microsoft.Scripting.Debugging {
 
         /// <param name="states">The state machine of the instrumented body.</param>
         /// <param name="debugContext">The debug context the trace events are dispatched through.</param>
-        /// <param name="functionInfo">The body's sequence points, indexed by the cookies of its <see cref="DebugPoint"/>s.</param>
+        /// <param name="functionInfo">
+        ///   The body's sequence points, indexed by the cookies of its <see cref="DebugPoint"/>s, and its variables, indexed like
+        ///   <paramref name="variables"/>.
+        /// </param>
         /// <param name="resultSlot">Where the body leaves its return value on completion, or null if it has none (an async generator).</param>
         /// <param name="exceptionSlot">The slot the body reads at each resume point, and rethrows from if it is set.</param>
         /// <param name="isAsyncEnumerable">
         ///   Whether the driver is <c>AsyncHelpers.DriveAsyncEnumerable</c>, which hands every item but an <see cref="AwaitPoint"/> to the
         ///   consumer, rather than <see cref="AsyncHelpers.DriveAsync"/>, which awaits every item.
         /// </param>
+        /// <param name="variables">The storage of the body's variables, which the frame exposes.</param>
         internal TracingStateMachine(IEnumerator<object?> states, DebugContext debugContext, FunctionInfo functionInfo,
-                                     StrongBox<object?>? resultSlot, StrongBox<Exception?> exceptionSlot, bool isAsyncEnumerable) {
+                                     StrongBox<object?>? resultSlot, StrongBox<Exception?> exceptionSlot, bool isAsyncEnumerable,
+                                     IRuntimeVariables variables) {
             _states = states;
             _debugContext = debugContext;
-            _variables = new MarkerRuntimeVariables(functionInfo);
+            _variables = new FrameRuntimeVariables(functionInfo, variables);
             _resultSlot = resultSlot;
             _exceptionSlot = exceptionSlot;
             _isAsyncEnumerable = isAsyncEnumerable;
@@ -190,27 +196,37 @@ namespace Microsoft.Scripting.Debugging {
 
 
         /// <summary>
-        ///   The runtime variables of the body's frame: the body's <see cref="FunctionInfo"/> and its current sequence point.
+        ///   The runtime variables of the body's frame: the body's <see cref="FunctionInfo"/>, its current sequence point, and its variables.
         /// </summary>
         /// <remarks>
-        ///   Slot 0 is the <see cref="FunctionInfo"/> and slot 1 the marker, which is the layout <see cref="DebugRuntimeVariables"/> expects.
-        ///   No further slots are exposed, so the frame reports no locals.
+        ///   Slot 0 is the <see cref="FunctionInfo"/> and slot 1 the marker, followed by the body's variables, which is the layout
+        ///   <see cref="DebugRuntimeVariables"/> expects (the same one a synchronous debuggable body lifts its locals in).
         /// </remarks>
-        private sealed class MarkerRuntimeVariables : IRuntimeVariables {
+        private sealed class FrameRuntimeVariables : IRuntimeVariables {
             private readonly FunctionInfo _functionInfo;
+            private readonly IRuntimeVariables _variables;
 
-            internal MarkerRuntimeVariables(FunctionInfo functionInfo) {
+            internal FrameRuntimeVariables(FunctionInfo functionInfo, IRuntimeVariables variables) {
                 _functionInfo = functionInfo;
+                _variables = variables;
             }
 
             internal int Marker { get; set; }
 
-            public int Count => 2;
+            public int Count => 2 + _variables.Count;
 
             public object? this[int index] {
-                get => index == 0 ? _functionInfo : Marker;
+                get => index switch {
+                    0 => _functionInfo,
+                    1 => Marker,
+                    _ => _variables[index - 2],
+                };
                 set {
-                    if (index == 1) Marker = (int)value!;
+                    if (index == 1) {
+                        Marker = (int)value!;
+                    } else if (index > 1) {
+                        _variables[index - 2] = value;
+                    }
                 }
             }
         }
