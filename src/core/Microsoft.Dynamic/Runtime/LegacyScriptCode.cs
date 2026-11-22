@@ -54,7 +54,7 @@ namespace Microsoft.Scripting.Runtime {
                     // rewrite the lambda with the correct type
                     lambda = Expression.Lambda<DlrMainCallTarget>(code.Body, code.Name, code.Parameters);
                 }
-                Interlocked.CompareExchange(ref _target, lambda.Compile(SourceUnit.EmitDebugSymbols), null);
+                Interlocked.CompareExchange(ref _target, CompilerHelpers.Compile(lambda, SourceUnit.EmitDebugSymbols), null);
             }
             return _target;
         }
