@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Utils {
 
@@ -17,7 +20,7 @@ namespace Microsoft.Scripting.Utils {
     public class SynchronizedDictionary<TKey, TValue> :
         IDictionary<TKey, TValue>,
         ICollection<KeyValuePair<TKey, TValue>>,
-        IEnumerable<KeyValuePair<TKey, TValue>> {
+        IEnumerable<KeyValuePair<TKey, TValue>> where TKey : notnull {
 
         private readonly Dictionary<TKey, TValue> _dictionary;
 
@@ -66,11 +69,13 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value) {
+#pragma warning disable CS8767 // IDictionary<TKey, TValue> is not annotated in netstandard2.0 and net462
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) {
             lock (_dictionary) {
                 return _dictionary.TryGetValue(key, out value);
             }
         }
+#pragma warning restore CS8767
 
         public ICollection<TValue> Values {
             get {

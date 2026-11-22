@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -18,14 +21,14 @@ namespace Microsoft.Scripting {
         public const int MaxSize = 128;
         private static readonly Dictionary<Type, int> _sizeDict = new();
 
-        public abstract object GetValue(int index);
-        public abstract void SetValue(int index, object value);
+        public abstract object? GetValue(int index);
+        public abstract void SetValue(int index, object? value);
 
         /// <summary>
         /// Sets the value at the given index for a tuple of the given size.  This set supports
         /// walking through nested tuples to get the correct final index.
         /// </summary>
-        public void SetNestedValue(int size, int index, object value) {
+        public void SetNestedValue(int size, int index, object? value) {
             if (size < MutableTuple.MaxSize) {
                 // fast path
                 SetValue(index, value);
@@ -35,7 +38,7 @@ namespace Microsoft.Scripting {
                 int lastAccess = -1;
                 foreach (int i in GetAccessPath(size, index)) {
                     if (lastAccess != -1) {
-                        res = (MutableTuple)res.GetValue(lastAccess);
+                        res = res.GetNestedTuple(lastAccess);
                     }
                     lastAccess = i;
                 }
@@ -47,24 +50,33 @@ namespace Microsoft.Scripting {
         /// Gets the value at the given index for a tuple of the given size.  This get
         /// supports walking through nested tuples to get the correct final index.
         /// </summary>
-        public object GetNestedValue(int size, int index) {
+        public object? GetNestedValue(int size, int index) {
             if (size < MutableTuple.MaxSize) {
                 // fast path
                 return GetValue(index);
             }
 
             // slow path
-            object res = this;
+            MutableTuple res = this;
+            int lastAccess = -1;
             foreach (int i in GetAccessPath(size, index)) {
-                res = ((MutableTuple)res).GetValue(i);
+                if (lastAccess != -1) {
+                    res = res.GetNestedTuple(lastAccess);
+                }
+                lastAccess = i;
             }
-            return res;
+            return res.GetValue(lastAccess);
         }
+
+        // Nested tuples are created together with their parent tuple and never replaced,
+        // so a slot on an access path always holds one.
+        private MutableTuple GetNestedTuple(int index)
+            => GetValue(index) as MutableTuple ?? throw new InvalidOperationException($"Item {index} of {GetType()} is not a nested tuple.");
 
         /// <summary>
         /// Gets the unbound generic Tuple type which has at lease size slots or null if a large enough tuple is not available.
         /// </summary>
-        public static Type GetTupleType(int size) {
+        public static Type? GetTupleType(int size) {
             #region Generated Tuple Get From Size
 
             // *** BEGIN GENERATED CODE ***
@@ -153,7 +165,7 @@ namespace Microsoft.Scripting {
         /// Creates a new instance of tupleType with the specified args.  If the tuple is a nested
         /// tuple the values are added in their nested forms.
         /// </summary>
-        public static MutableTuple MakeTuple(Type tupleType, params object[] args) {
+        public static MutableTuple MakeTuple(Type tupleType, params object?[] args) {
             ContractUtils.RequiresNotNull(tupleType, nameof(tupleType));
             ContractUtils.RequiresNotNull(args, nameof(args));
 
@@ -163,10 +175,10 @@ namespace Microsoft.Scripting {
         /// <summary>
         /// Gets the values from a tuple including unpacking nested values.
         /// </summary>
-        public static object[] GetTupleValues(MutableTuple tuple) {
+        public static object?[] GetTupleValues(MutableTuple tuple) {
             ContractUtils.RequiresNotNull(tuple, nameof(tuple));
 
-            List<object> res = new List<object>();
+            List<object?> res = new List<object?>();
 
             GetTupleValues(tuple, res);
 
@@ -190,7 +202,7 @@ namespace Microsoft.Scripting {
 
             foreach (int curIndex in GetAccessPath(size, index)) {
                 PropertyInfo pi = tupleType.GetInheritedProperties("Item" + String.Format("{0:D3}", curIndex)).First();
-                Debug.Assert(pi is not null);
+                Assert.NotNull(pi);
                 yield return pi;
                 tupleType = pi.PropertyType;
             }
@@ -227,21 +239,21 @@ namespace Microsoft.Scripting {
             }
         }
 
-        private static void GetTupleValues(MutableTuple tuple, List<object> args) {
+        private static void GetTupleValues(MutableTuple tuple, List<object?> args) {
             Type[] types = tuple.GetType().GetGenericArguments();
             for (int i = 0; i < types.Length; i++) {
                 if (typeof(MutableTuple).IsAssignableFrom(types[i])) {
-                    GetTupleValues((MutableTuple)tuple.GetValue(i), args);
+                    GetTupleValues(tuple.GetNestedTuple(i), args);
                 } else if (types[i] != typeof(DynamicNull)) {
                     args.Add(tuple.GetValue(i));
                 }
             }
         }
 
-        private static MutableTuple MakeTuple(Type tupleType, int start, int end, object[] args) {
+        private static MutableTuple MakeTuple(Type tupleType, int start, int end, object?[] args) {
             int size = end - start;
 
-            MutableTuple res = (MutableTuple)Activator.CreateInstance(tupleType);
+            MutableTuple res = (MutableTuple)Activator.CreateInstance(tupleType)!; // null only for Nullable<T>
             if (size > MutableTuple.MaxSize) {
                 int multiplier = 1;
                 while (size > MutableTuple.MaxSize) {
@@ -265,18 +277,18 @@ namespace Microsoft.Scripting {
 
         }
 
-        private static MutableTuple CreateTupleInstance(Type tupleType, int start, int end, object[] args) {
-            if (args is null) return (MutableTuple)Activator.CreateInstance(tupleType);
+        private static MutableTuple CreateTupleInstance(Type tupleType, int start, int end, object?[]? args) {
+            if (args is null) return (MutableTuple)Activator.CreateInstance(tupleType)!; // null only for Nullable<T>
             
-            object[] realArgs = new object[tupleType.GetGenericArguments().Length];
+            object?[] realArgs = new object?[tupleType.GetGenericArguments().Length];
             Array.Copy(args, start, realArgs, 0, end - start);
-            return (MutableTuple)Activator.CreateInstance(tupleType, realArgs);
+            return (MutableTuple)Activator.CreateInstance(tupleType, realArgs)!; // null only for Nullable<T>
         }
 
         private static Type MakeTupleType(Type[] types, int start, int end) {
             int size = end - start;
 
-            Type type = GetTupleType(size);
+            Type? type = GetTupleType(size);
             if (type is not null) {
                 Type[] typeArr = new Type[type.GetGenericArguments().Length];
                 int index = 0;
@@ -296,7 +308,7 @@ namespace Microsoft.Scripting {
             }
 
             type = MutableTuple.GetTupleType(size);
-            Debug.Assert(type is not null);
+            Assert.NotNull(type); // size is at most MaxSize here
             Type[] nestedTypes = new Type[type.GetGenericArguments().Length];
             for (int i = 0; i < size; i++) {
 
@@ -333,7 +345,7 @@ namespace Microsoft.Scripting {
 
         internal static Expression CreateNew(Type tupleType, int start, int end, Expression[] values) {
             int size = end - start;
-            Debug.Assert(tupleType is not null);
+            Assert.NotNull(tupleType);
             Debug.Assert(tupleType.IsSubclassOf(typeof(MutableTuple)));
 
             Expression[] newValues;
@@ -369,7 +381,7 @@ namespace Microsoft.Scripting {
             }
             
             return Expression.New(
-                tupleType.GetConstructor(ArrayUtils.ConvertAll(newValues, static x => x.Type)), 
+                tupleType.GetConstructor(ArrayUtils.ConvertAll(newValues, static x => x.Type))!, // tuples have a constructor taking all items
                 newValues);
         }
     }
@@ -388,18 +400,19 @@ namespace Microsoft.Scripting {
             Item000 = item0;
         }
 
+        [AllowNull, MaybeNull]
         public T0 Item000 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
+                case 0: Item000 = (T0?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -414,9 +427,10 @@ namespace Microsoft.Scripting {
             Item001 = item1;
         }
 
+        [AllowNull, MaybeNull]
         public T1 Item001 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -424,10 +438,10 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -443,11 +457,13 @@ namespace Microsoft.Scripting {
             Item003 = item3;
         }
 
+        [AllowNull, MaybeNull]
         public T2 Item002 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T3 Item003 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -457,12 +473,12 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -480,15 +496,19 @@ namespace Microsoft.Scripting {
             Item007 = item7;
         }
 
+        [AllowNull, MaybeNull]
         public T4 Item004 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T5 Item005 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T6 Item006 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T7 Item007 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -502,16 +522,16 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
-                case 4: Item004 = (T4)value; break;
-                case 5: Item005 = (T5)value; break;
-                case 6: Item006 = (T6)value; break;
-                case 7: Item007 = (T7)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
+                case 4: Item004 = (T4?)value; break;
+                case 5: Item005 = (T5?)value; break;
+                case 6: Item006 = (T6?)value; break;
+                case 7: Item007 = (T7?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -533,23 +553,31 @@ namespace Microsoft.Scripting {
             Item015 = item15;
         }
 
+        [AllowNull, MaybeNull]
         public T8 Item008 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T9 Item009 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T10 Item010 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T11 Item011 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T12 Item012 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T13 Item013 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T14 Item014 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T15 Item015 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -571,24 +599,24 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
-                case 4: Item004 = (T4)value; break;
-                case 5: Item005 = (T5)value; break;
-                case 6: Item006 = (T6)value; break;
-                case 7: Item007 = (T7)value; break;
-                case 8: Item008 = (T8)value; break;
-                case 9: Item009 = (T9)value; break;
-                case 10: Item010 = (T10)value; break;
-                case 11: Item011 = (T11)value; break;
-                case 12: Item012 = (T12)value; break;
-                case 13: Item013 = (T13)value; break;
-                case 14: Item014 = (T14)value; break;
-                case 15: Item015 = (T15)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
+                case 4: Item004 = (T4?)value; break;
+                case 5: Item005 = (T5?)value; break;
+                case 6: Item006 = (T6?)value; break;
+                case 7: Item007 = (T7?)value; break;
+                case 8: Item008 = (T8?)value; break;
+                case 9: Item009 = (T9?)value; break;
+                case 10: Item010 = (T10?)value; break;
+                case 11: Item011 = (T11?)value; break;
+                case 12: Item012 = (T12?)value; break;
+                case 13: Item013 = (T13?)value; break;
+                case 14: Item014 = (T14?)value; break;
+                case 15: Item015 = (T15?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -618,39 +646,55 @@ namespace Microsoft.Scripting {
             Item031 = item31;
         }
 
+        [AllowNull, MaybeNull]
         public T16 Item016 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T17 Item017 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T18 Item018 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T19 Item019 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T20 Item020 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T21 Item021 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T22 Item022 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T23 Item023 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T24 Item024 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T25 Item025 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T26 Item026 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T27 Item027 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T28 Item028 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T29 Item029 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T30 Item030 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T31 Item031 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -688,40 +732,40 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
-                case 4: Item004 = (T4)value; break;
-                case 5: Item005 = (T5)value; break;
-                case 6: Item006 = (T6)value; break;
-                case 7: Item007 = (T7)value; break;
-                case 8: Item008 = (T8)value; break;
-                case 9: Item009 = (T9)value; break;
-                case 10: Item010 = (T10)value; break;
-                case 11: Item011 = (T11)value; break;
-                case 12: Item012 = (T12)value; break;
-                case 13: Item013 = (T13)value; break;
-                case 14: Item014 = (T14)value; break;
-                case 15: Item015 = (T15)value; break;
-                case 16: Item016 = (T16)value; break;
-                case 17: Item017 = (T17)value; break;
-                case 18: Item018 = (T18)value; break;
-                case 19: Item019 = (T19)value; break;
-                case 20: Item020 = (T20)value; break;
-                case 21: Item021 = (T21)value; break;
-                case 22: Item022 = (T22)value; break;
-                case 23: Item023 = (T23)value; break;
-                case 24: Item024 = (T24)value; break;
-                case 25: Item025 = (T25)value; break;
-                case 26: Item026 = (T26)value; break;
-                case 27: Item027 = (T27)value; break;
-                case 28: Item028 = (T28)value; break;
-                case 29: Item029 = (T29)value; break;
-                case 30: Item030 = (T30)value; break;
-                case 31: Item031 = (T31)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
+                case 4: Item004 = (T4?)value; break;
+                case 5: Item005 = (T5?)value; break;
+                case 6: Item006 = (T6?)value; break;
+                case 7: Item007 = (T7?)value; break;
+                case 8: Item008 = (T8?)value; break;
+                case 9: Item009 = (T9?)value; break;
+                case 10: Item010 = (T10?)value; break;
+                case 11: Item011 = (T11?)value; break;
+                case 12: Item012 = (T12?)value; break;
+                case 13: Item013 = (T13?)value; break;
+                case 14: Item014 = (T14?)value; break;
+                case 15: Item015 = (T15?)value; break;
+                case 16: Item016 = (T16?)value; break;
+                case 17: Item017 = (T17?)value; break;
+                case 18: Item018 = (T18?)value; break;
+                case 19: Item019 = (T19?)value; break;
+                case 20: Item020 = (T20?)value; break;
+                case 21: Item021 = (T21?)value; break;
+                case 22: Item022 = (T22?)value; break;
+                case 23: Item023 = (T23?)value; break;
+                case 24: Item024 = (T24?)value; break;
+                case 25: Item025 = (T25?)value; break;
+                case 26: Item026 = (T26?)value; break;
+                case 27: Item027 = (T27?)value; break;
+                case 28: Item028 = (T28?)value; break;
+                case 29: Item029 = (T29?)value; break;
+                case 30: Item030 = (T30?)value; break;
+                case 31: Item031 = (T31?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -767,71 +811,103 @@ namespace Microsoft.Scripting {
             Item063 = item63;
         }
 
+        [AllowNull, MaybeNull]
         public T32 Item032 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T33 Item033 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T34 Item034 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T35 Item035 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T36 Item036 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T37 Item037 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T38 Item038 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T39 Item039 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T40 Item040 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T41 Item041 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T42 Item042 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T43 Item043 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T44 Item044 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T45 Item045 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T46 Item046 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T47 Item047 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T48 Item048 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T49 Item049 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T50 Item050 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T51 Item051 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T52 Item052 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T53 Item053 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T54 Item054 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T55 Item055 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T56 Item056 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T57 Item057 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T58 Item058 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T59 Item059 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T60 Item060 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T61 Item061 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T62 Item062 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T63 Item063 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -901,72 +977,72 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
-                case 4: Item004 = (T4)value; break;
-                case 5: Item005 = (T5)value; break;
-                case 6: Item006 = (T6)value; break;
-                case 7: Item007 = (T7)value; break;
-                case 8: Item008 = (T8)value; break;
-                case 9: Item009 = (T9)value; break;
-                case 10: Item010 = (T10)value; break;
-                case 11: Item011 = (T11)value; break;
-                case 12: Item012 = (T12)value; break;
-                case 13: Item013 = (T13)value; break;
-                case 14: Item014 = (T14)value; break;
-                case 15: Item015 = (T15)value; break;
-                case 16: Item016 = (T16)value; break;
-                case 17: Item017 = (T17)value; break;
-                case 18: Item018 = (T18)value; break;
-                case 19: Item019 = (T19)value; break;
-                case 20: Item020 = (T20)value; break;
-                case 21: Item021 = (T21)value; break;
-                case 22: Item022 = (T22)value; break;
-                case 23: Item023 = (T23)value; break;
-                case 24: Item024 = (T24)value; break;
-                case 25: Item025 = (T25)value; break;
-                case 26: Item026 = (T26)value; break;
-                case 27: Item027 = (T27)value; break;
-                case 28: Item028 = (T28)value; break;
-                case 29: Item029 = (T29)value; break;
-                case 30: Item030 = (T30)value; break;
-                case 31: Item031 = (T31)value; break;
-                case 32: Item032 = (T32)value; break;
-                case 33: Item033 = (T33)value; break;
-                case 34: Item034 = (T34)value; break;
-                case 35: Item035 = (T35)value; break;
-                case 36: Item036 = (T36)value; break;
-                case 37: Item037 = (T37)value; break;
-                case 38: Item038 = (T38)value; break;
-                case 39: Item039 = (T39)value; break;
-                case 40: Item040 = (T40)value; break;
-                case 41: Item041 = (T41)value; break;
-                case 42: Item042 = (T42)value; break;
-                case 43: Item043 = (T43)value; break;
-                case 44: Item044 = (T44)value; break;
-                case 45: Item045 = (T45)value; break;
-                case 46: Item046 = (T46)value; break;
-                case 47: Item047 = (T47)value; break;
-                case 48: Item048 = (T48)value; break;
-                case 49: Item049 = (T49)value; break;
-                case 50: Item050 = (T50)value; break;
-                case 51: Item051 = (T51)value; break;
-                case 52: Item052 = (T52)value; break;
-                case 53: Item053 = (T53)value; break;
-                case 54: Item054 = (T54)value; break;
-                case 55: Item055 = (T55)value; break;
-                case 56: Item056 = (T56)value; break;
-                case 57: Item057 = (T57)value; break;
-                case 58: Item058 = (T58)value; break;
-                case 59: Item059 = (T59)value; break;
-                case 60: Item060 = (T60)value; break;
-                case 61: Item061 = (T61)value; break;
-                case 62: Item062 = (T62)value; break;
-                case 63: Item063 = (T63)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
+                case 4: Item004 = (T4?)value; break;
+                case 5: Item005 = (T5?)value; break;
+                case 6: Item006 = (T6?)value; break;
+                case 7: Item007 = (T7?)value; break;
+                case 8: Item008 = (T8?)value; break;
+                case 9: Item009 = (T9?)value; break;
+                case 10: Item010 = (T10?)value; break;
+                case 11: Item011 = (T11?)value; break;
+                case 12: Item012 = (T12?)value; break;
+                case 13: Item013 = (T13?)value; break;
+                case 14: Item014 = (T14?)value; break;
+                case 15: Item015 = (T15?)value; break;
+                case 16: Item016 = (T16?)value; break;
+                case 17: Item017 = (T17?)value; break;
+                case 18: Item018 = (T18?)value; break;
+                case 19: Item019 = (T19?)value; break;
+                case 20: Item020 = (T20?)value; break;
+                case 21: Item021 = (T21?)value; break;
+                case 22: Item022 = (T22?)value; break;
+                case 23: Item023 = (T23?)value; break;
+                case 24: Item024 = (T24?)value; break;
+                case 25: Item025 = (T25?)value; break;
+                case 26: Item026 = (T26?)value; break;
+                case 27: Item027 = (T27?)value; break;
+                case 28: Item028 = (T28?)value; break;
+                case 29: Item029 = (T29?)value; break;
+                case 30: Item030 = (T30?)value; break;
+                case 31: Item031 = (T31?)value; break;
+                case 32: Item032 = (T32?)value; break;
+                case 33: Item033 = (T33?)value; break;
+                case 34: Item034 = (T34?)value; break;
+                case 35: Item035 = (T35?)value; break;
+                case 36: Item036 = (T36?)value; break;
+                case 37: Item037 = (T37?)value; break;
+                case 38: Item038 = (T38?)value; break;
+                case 39: Item039 = (T39?)value; break;
+                case 40: Item040 = (T40?)value; break;
+                case 41: Item041 = (T41?)value; break;
+                case 42: Item042 = (T42?)value; break;
+                case 43: Item043 = (T43?)value; break;
+                case 44: Item044 = (T44?)value; break;
+                case 45: Item045 = (T45?)value; break;
+                case 46: Item046 = (T46?)value; break;
+                case 47: Item047 = (T47?)value; break;
+                case 48: Item048 = (T48?)value; break;
+                case 49: Item049 = (T49?)value; break;
+                case 50: Item050 = (T50?)value; break;
+                case 51: Item051 = (T51?)value; break;
+                case 52: Item052 = (T52?)value; break;
+                case 53: Item053 = (T53?)value; break;
+                case 54: Item054 = (T54?)value; break;
+                case 55: Item055 = (T55?)value; break;
+                case 56: Item056 = (T56?)value; break;
+                case 57: Item057 = (T57?)value; break;
+                case 58: Item058 = (T58?)value; break;
+                case 59: Item059 = (T59?)value; break;
+                case 60: Item060 = (T60?)value; break;
+                case 61: Item061 = (T61?)value; break;
+                case 62: Item062 = (T62?)value; break;
+                case 63: Item063 = (T63?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -1044,135 +1120,199 @@ namespace Microsoft.Scripting {
             Item127 = item127;
         }
 
+        [AllowNull, MaybeNull]
         public T64 Item064 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T65 Item065 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T66 Item066 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T67 Item067 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T68 Item068 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T69 Item069 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T70 Item070 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T71 Item071 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T72 Item072 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T73 Item073 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T74 Item074 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T75 Item075 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T76 Item076 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T77 Item077 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T78 Item078 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T79 Item079 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T80 Item080 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T81 Item081 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T82 Item082 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T83 Item083 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T84 Item084 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T85 Item085 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T86 Item086 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T87 Item087 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T88 Item088 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T89 Item089 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T90 Item090 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T91 Item091 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T92 Item092 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T93 Item093 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T94 Item094 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T95 Item095 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T96 Item096 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T97 Item097 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T98 Item098 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T99 Item099 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T100 Item100 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T101 Item101 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T102 Item102 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T103 Item103 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T104 Item104 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T105 Item105 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T106 Item106 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T107 Item107 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T108 Item108 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T109 Item109 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T110 Item110 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T111 Item111 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T112 Item112 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T113 Item113 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T114 Item114 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T115 Item115 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T116 Item116 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T117 Item117 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T118 Item118 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T119 Item119 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T120 Item120 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T121 Item121 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T122 Item122 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T123 Item123 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T124 Item124 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T125 Item125 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T126 Item126 { get; set; }
 
+        [AllowNull, MaybeNull]
         public T127 Item127 { get; set; }
 
-        public override object GetValue(int index) {
+        public override object? GetValue(int index) {
             switch(index) {
                 case 0: return Item000;
                 case 1: return Item001;
@@ -1306,136 +1446,136 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public override void SetValue(int index, object value) {
+        public override void SetValue(int index, object? value) {
             switch(index) {
-                case 0: Item000 = (T0)value; break;
-                case 1: Item001 = (T1)value; break;
-                case 2: Item002 = (T2)value; break;
-                case 3: Item003 = (T3)value; break;
-                case 4: Item004 = (T4)value; break;
-                case 5: Item005 = (T5)value; break;
-                case 6: Item006 = (T6)value; break;
-                case 7: Item007 = (T7)value; break;
-                case 8: Item008 = (T8)value; break;
-                case 9: Item009 = (T9)value; break;
-                case 10: Item010 = (T10)value; break;
-                case 11: Item011 = (T11)value; break;
-                case 12: Item012 = (T12)value; break;
-                case 13: Item013 = (T13)value; break;
-                case 14: Item014 = (T14)value; break;
-                case 15: Item015 = (T15)value; break;
-                case 16: Item016 = (T16)value; break;
-                case 17: Item017 = (T17)value; break;
-                case 18: Item018 = (T18)value; break;
-                case 19: Item019 = (T19)value; break;
-                case 20: Item020 = (T20)value; break;
-                case 21: Item021 = (T21)value; break;
-                case 22: Item022 = (T22)value; break;
-                case 23: Item023 = (T23)value; break;
-                case 24: Item024 = (T24)value; break;
-                case 25: Item025 = (T25)value; break;
-                case 26: Item026 = (T26)value; break;
-                case 27: Item027 = (T27)value; break;
-                case 28: Item028 = (T28)value; break;
-                case 29: Item029 = (T29)value; break;
-                case 30: Item030 = (T30)value; break;
-                case 31: Item031 = (T31)value; break;
-                case 32: Item032 = (T32)value; break;
-                case 33: Item033 = (T33)value; break;
-                case 34: Item034 = (T34)value; break;
-                case 35: Item035 = (T35)value; break;
-                case 36: Item036 = (T36)value; break;
-                case 37: Item037 = (T37)value; break;
-                case 38: Item038 = (T38)value; break;
-                case 39: Item039 = (T39)value; break;
-                case 40: Item040 = (T40)value; break;
-                case 41: Item041 = (T41)value; break;
-                case 42: Item042 = (T42)value; break;
-                case 43: Item043 = (T43)value; break;
-                case 44: Item044 = (T44)value; break;
-                case 45: Item045 = (T45)value; break;
-                case 46: Item046 = (T46)value; break;
-                case 47: Item047 = (T47)value; break;
-                case 48: Item048 = (T48)value; break;
-                case 49: Item049 = (T49)value; break;
-                case 50: Item050 = (T50)value; break;
-                case 51: Item051 = (T51)value; break;
-                case 52: Item052 = (T52)value; break;
-                case 53: Item053 = (T53)value; break;
-                case 54: Item054 = (T54)value; break;
-                case 55: Item055 = (T55)value; break;
-                case 56: Item056 = (T56)value; break;
-                case 57: Item057 = (T57)value; break;
-                case 58: Item058 = (T58)value; break;
-                case 59: Item059 = (T59)value; break;
-                case 60: Item060 = (T60)value; break;
-                case 61: Item061 = (T61)value; break;
-                case 62: Item062 = (T62)value; break;
-                case 63: Item063 = (T63)value; break;
-                case 64: Item064 = (T64)value; break;
-                case 65: Item065 = (T65)value; break;
-                case 66: Item066 = (T66)value; break;
-                case 67: Item067 = (T67)value; break;
-                case 68: Item068 = (T68)value; break;
-                case 69: Item069 = (T69)value; break;
-                case 70: Item070 = (T70)value; break;
-                case 71: Item071 = (T71)value; break;
-                case 72: Item072 = (T72)value; break;
-                case 73: Item073 = (T73)value; break;
-                case 74: Item074 = (T74)value; break;
-                case 75: Item075 = (T75)value; break;
-                case 76: Item076 = (T76)value; break;
-                case 77: Item077 = (T77)value; break;
-                case 78: Item078 = (T78)value; break;
-                case 79: Item079 = (T79)value; break;
-                case 80: Item080 = (T80)value; break;
-                case 81: Item081 = (T81)value; break;
-                case 82: Item082 = (T82)value; break;
-                case 83: Item083 = (T83)value; break;
-                case 84: Item084 = (T84)value; break;
-                case 85: Item085 = (T85)value; break;
-                case 86: Item086 = (T86)value; break;
-                case 87: Item087 = (T87)value; break;
-                case 88: Item088 = (T88)value; break;
-                case 89: Item089 = (T89)value; break;
-                case 90: Item090 = (T90)value; break;
-                case 91: Item091 = (T91)value; break;
-                case 92: Item092 = (T92)value; break;
-                case 93: Item093 = (T93)value; break;
-                case 94: Item094 = (T94)value; break;
-                case 95: Item095 = (T95)value; break;
-                case 96: Item096 = (T96)value; break;
-                case 97: Item097 = (T97)value; break;
-                case 98: Item098 = (T98)value; break;
-                case 99: Item099 = (T99)value; break;
-                case 100: Item100 = (T100)value; break;
-                case 101: Item101 = (T101)value; break;
-                case 102: Item102 = (T102)value; break;
-                case 103: Item103 = (T103)value; break;
-                case 104: Item104 = (T104)value; break;
-                case 105: Item105 = (T105)value; break;
-                case 106: Item106 = (T106)value; break;
-                case 107: Item107 = (T107)value; break;
-                case 108: Item108 = (T108)value; break;
-                case 109: Item109 = (T109)value; break;
-                case 110: Item110 = (T110)value; break;
-                case 111: Item111 = (T111)value; break;
-                case 112: Item112 = (T112)value; break;
-                case 113: Item113 = (T113)value; break;
-                case 114: Item114 = (T114)value; break;
-                case 115: Item115 = (T115)value; break;
-                case 116: Item116 = (T116)value; break;
-                case 117: Item117 = (T117)value; break;
-                case 118: Item118 = (T118)value; break;
-                case 119: Item119 = (T119)value; break;
-                case 120: Item120 = (T120)value; break;
-                case 121: Item121 = (T121)value; break;
-                case 122: Item122 = (T122)value; break;
-                case 123: Item123 = (T123)value; break;
-                case 124: Item124 = (T124)value; break;
-                case 125: Item125 = (T125)value; break;
-                case 126: Item126 = (T126)value; break;
-                case 127: Item127 = (T127)value; break;
+                case 0: Item000 = (T0?)value; break;
+                case 1: Item001 = (T1?)value; break;
+                case 2: Item002 = (T2?)value; break;
+                case 3: Item003 = (T3?)value; break;
+                case 4: Item004 = (T4?)value; break;
+                case 5: Item005 = (T5?)value; break;
+                case 6: Item006 = (T6?)value; break;
+                case 7: Item007 = (T7?)value; break;
+                case 8: Item008 = (T8?)value; break;
+                case 9: Item009 = (T9?)value; break;
+                case 10: Item010 = (T10?)value; break;
+                case 11: Item011 = (T11?)value; break;
+                case 12: Item012 = (T12?)value; break;
+                case 13: Item013 = (T13?)value; break;
+                case 14: Item014 = (T14?)value; break;
+                case 15: Item015 = (T15?)value; break;
+                case 16: Item016 = (T16?)value; break;
+                case 17: Item017 = (T17?)value; break;
+                case 18: Item018 = (T18?)value; break;
+                case 19: Item019 = (T19?)value; break;
+                case 20: Item020 = (T20?)value; break;
+                case 21: Item021 = (T21?)value; break;
+                case 22: Item022 = (T22?)value; break;
+                case 23: Item023 = (T23?)value; break;
+                case 24: Item024 = (T24?)value; break;
+                case 25: Item025 = (T25?)value; break;
+                case 26: Item026 = (T26?)value; break;
+                case 27: Item027 = (T27?)value; break;
+                case 28: Item028 = (T28?)value; break;
+                case 29: Item029 = (T29?)value; break;
+                case 30: Item030 = (T30?)value; break;
+                case 31: Item031 = (T31?)value; break;
+                case 32: Item032 = (T32?)value; break;
+                case 33: Item033 = (T33?)value; break;
+                case 34: Item034 = (T34?)value; break;
+                case 35: Item035 = (T35?)value; break;
+                case 36: Item036 = (T36?)value; break;
+                case 37: Item037 = (T37?)value; break;
+                case 38: Item038 = (T38?)value; break;
+                case 39: Item039 = (T39?)value; break;
+                case 40: Item040 = (T40?)value; break;
+                case 41: Item041 = (T41?)value; break;
+                case 42: Item042 = (T42?)value; break;
+                case 43: Item043 = (T43?)value; break;
+                case 44: Item044 = (T44?)value; break;
+                case 45: Item045 = (T45?)value; break;
+                case 46: Item046 = (T46?)value; break;
+                case 47: Item047 = (T47?)value; break;
+                case 48: Item048 = (T48?)value; break;
+                case 49: Item049 = (T49?)value; break;
+                case 50: Item050 = (T50?)value; break;
+                case 51: Item051 = (T51?)value; break;
+                case 52: Item052 = (T52?)value; break;
+                case 53: Item053 = (T53?)value; break;
+                case 54: Item054 = (T54?)value; break;
+                case 55: Item055 = (T55?)value; break;
+                case 56: Item056 = (T56?)value; break;
+                case 57: Item057 = (T57?)value; break;
+                case 58: Item058 = (T58?)value; break;
+                case 59: Item059 = (T59?)value; break;
+                case 60: Item060 = (T60?)value; break;
+                case 61: Item061 = (T61?)value; break;
+                case 62: Item062 = (T62?)value; break;
+                case 63: Item063 = (T63?)value; break;
+                case 64: Item064 = (T64?)value; break;
+                case 65: Item065 = (T65?)value; break;
+                case 66: Item066 = (T66?)value; break;
+                case 67: Item067 = (T67?)value; break;
+                case 68: Item068 = (T68?)value; break;
+                case 69: Item069 = (T69?)value; break;
+                case 70: Item070 = (T70?)value; break;
+                case 71: Item071 = (T71?)value; break;
+                case 72: Item072 = (T72?)value; break;
+                case 73: Item073 = (T73?)value; break;
+                case 74: Item074 = (T74?)value; break;
+                case 75: Item075 = (T75?)value; break;
+                case 76: Item076 = (T76?)value; break;
+                case 77: Item077 = (T77?)value; break;
+                case 78: Item078 = (T78?)value; break;
+                case 79: Item079 = (T79?)value; break;
+                case 80: Item080 = (T80?)value; break;
+                case 81: Item081 = (T81?)value; break;
+                case 82: Item082 = (T82?)value; break;
+                case 83: Item083 = (T83?)value; break;
+                case 84: Item084 = (T84?)value; break;
+                case 85: Item085 = (T85?)value; break;
+                case 86: Item086 = (T86?)value; break;
+                case 87: Item087 = (T87?)value; break;
+                case 88: Item088 = (T88?)value; break;
+                case 89: Item089 = (T89?)value; break;
+                case 90: Item090 = (T90?)value; break;
+                case 91: Item091 = (T91?)value; break;
+                case 92: Item092 = (T92?)value; break;
+                case 93: Item093 = (T93?)value; break;
+                case 94: Item094 = (T94?)value; break;
+                case 95: Item095 = (T95?)value; break;
+                case 96: Item096 = (T96?)value; break;
+                case 97: Item097 = (T97?)value; break;
+                case 98: Item098 = (T98?)value; break;
+                case 99: Item099 = (T99?)value; break;
+                case 100: Item100 = (T100?)value; break;
+                case 101: Item101 = (T101?)value; break;
+                case 102: Item102 = (T102?)value; break;
+                case 103: Item103 = (T103?)value; break;
+                case 104: Item104 = (T104?)value; break;
+                case 105: Item105 = (T105?)value; break;
+                case 106: Item106 = (T106?)value; break;
+                case 107: Item107 = (T107?)value; break;
+                case 108: Item108 = (T108?)value; break;
+                case 109: Item109 = (T109?)value; break;
+                case 110: Item110 = (T110?)value; break;
+                case 111: Item111 = (T111?)value; break;
+                case 112: Item112 = (T112?)value; break;
+                case 113: Item113 = (T113?)value; break;
+                case 114: Item114 = (T114?)value; break;
+                case 115: Item115 = (T115?)value; break;
+                case 116: Item116 = (T116?)value; break;
+                case 117: Item117 = (T117?)value; break;
+                case 118: Item118 = (T118?)value; break;
+                case 119: Item119 = (T119?)value; break;
+                case 120: Item120 = (T120?)value; break;
+                case 121: Item121 = (T121?)value; break;
+                case 122: Item122 = (T122?)value; break;
+                case 123: Item123 = (T123?)value; break;
+                case 124: Item124 = (T124?)value; break;
+                case 125: Item125 = (T125?)value; break;
+                case 126: Item126 = (T126?)value; break;
+                case 127: Item127 = (T127?)value; break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }

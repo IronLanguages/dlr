@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -49,7 +51,7 @@ namespace Microsoft.Scripting.Utils {
         /// Doesn't include the terminator into the resulting string.
         /// Returns <c>null</c>, if the reader is at the end position.
         /// </summary>
-        public static string ReadTo(TextReader reader, char terminator) {
+        public static string? ReadTo(TextReader reader, char terminator) {
             ContractUtils.RequiresNotNull(reader, nameof(reader));
 
             StringBuilder result = new StringBuilder();
@@ -80,19 +82,19 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static string ToValidPath(string path) {
+        public static string ToValidPath(string? path) {
             return ToValidPath(path, false, true);
         }
 
-        public static string ToValidPath(string path, bool isMask) {
+        public static string ToValidPath(string? path, bool isMask) {
             return ToValidPath(path, isMask, true);
         }
 
-        public static string ToValidFileName(string path) {
+        public static string ToValidFileName(string? path) {
             return ToValidPath(path, false, false);
         }
 
-        private static string ToValidPath(string path, bool isMask, bool isPath) {
+        private static string ToValidPath(string? path, bool isMask, bool isPath) {
             Debug.Assert(!isMask || isPath);
 
             if (String.IsNullOrEmpty(path)) {

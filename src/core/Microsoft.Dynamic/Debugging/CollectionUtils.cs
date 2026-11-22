@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,7 +42,7 @@ namespace Microsoft.Scripting.Debugging {
             var cmp = EqualityComparer<T>.Default;
             int h = 6551;
             foreach (T t in list) {
-                h ^= (h << 5) ^ cmp.GetHashCode(t);
+                h ^= (h << 5) ^ cmp.GetHashCode(t!); // the default comparer returns 0 for null
             }
             return h;
         }
@@ -52,9 +54,8 @@ namespace Microsoft.Scripting.Debugging {
 
         private ListEqualityComparer() { }
 
-        // EqualityComparer<T> handles null and object identity for us
-        public override bool Equals(ICollection<T> x, ICollection<T> y) {
-            return x.ListEquals(y);
+        public override bool Equals(ICollection<T>? x, ICollection<T>? y) {
+            return ReferenceEquals(x, y) || x is not null && y is not null && x.ListEquals(y);
         }
 
         public override int GetHashCode(ICollection<T> obj) {

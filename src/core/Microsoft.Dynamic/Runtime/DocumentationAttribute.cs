@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 
 namespace Microsoft.Scripting.Runtime {
@@ -13,10 +15,10 @@ namespace Microsoft.Scripting.Runtime {
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
     public sealed class DocumentationAttribute : Attribute {
-        public DocumentationAttribute(string documentation) {
+        public DocumentationAttribute(string? documentation) {
             Documentation = documentation;
         }
 
-        public string Documentation { get; }
+        public string? Documentation { get; }
     }
 }

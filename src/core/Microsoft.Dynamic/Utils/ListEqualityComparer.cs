@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Generic;
 
 namespace Microsoft.Scripting.Utils {
@@ -11,8 +13,8 @@ namespace Microsoft.Scripting.Utils {
 
         private ListEqualityComparer() { }
 
-        // EqualityComparer<T> handles null and object identity for us
-        public override bool Equals(ICollection<T> x, ICollection<T> y) => x.ListEquals(y);
+        public override bool Equals(ICollection<T>? x, ICollection<T>? y)
+            => ReferenceEquals(x, y) || x is not null && y is not null && x.ListEquals(y);
 
         public override int GetHashCode(ICollection<T> obj) {
             return obj.ListHashCode();

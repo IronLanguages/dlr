@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 #pragma warning disable CA1416 // Validate platform compatibility
@@ -25,12 +27,12 @@ namespace Microsoft.Scripting.ComInterop {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
-        public static ComEventSinksContainer FromRuntimeCallableWrapper(object rcw, bool createIfNotFound) {
+        public static ComEventSinksContainer? FromRuntimeCallableWrapper(object rcw, bool createIfNotFound) {
             // !!! Marshal.Get/SetComObjectData has a LinkDemand for UnmanagedCode which will turn into
             // a full demand. We need to avoid this by making this method SecurityCritical
-            object data = Marshal.GetComObjectData(rcw, _ComObjectEventSinksKey);
+            object? data = Marshal.GetComObjectData(rcw, _ComObjectEventSinksKey);
             if (data is not null || createIfNotFound == false) {
-                return (ComEventSinksContainer)data;
+                return (ComEventSinksContainer?)data;
             }
 
             lock (_ComObjectEventSinksKey) {

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Reflection;
 
 namespace Microsoft.Scripting.Generation {
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting.Generation {
             _genericArity = genericArity;
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (obj is not MethodSignatureInfo args) return false;
             if (args._isStatic != _isStatic || args._pis.Length != _pis.Length || args._genericArity != _genericArity) {
                 return false;

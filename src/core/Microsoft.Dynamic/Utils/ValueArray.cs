@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 
 namespace Microsoft.Scripting.Utils {
@@ -20,21 +22,21 @@ namespace Microsoft.Scripting.Utils {
 
         #region IEquatable<ValueArray<T>> Members
 
-        public bool Equals(ValueArray<T> other) {
+        public bool Equals(ValueArray<T>? other) {
             if (other is null) return false;
             return _array.ValueEquals(other._array);
         }
 
         #endregion
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             Equals(obj as ValueArray<T>);
 
         public override int GetHashCode() {
             int val = 6551;
 
             for (int i = 0; i < _array.Length; i++) {
-                val ^= _array[i].GetHashCode();
+                val ^= _array[i]!.GetHashCode(); // items checked non-null in the constructor
             }
             return val;
         }

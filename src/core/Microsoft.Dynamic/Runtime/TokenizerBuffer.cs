@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 //#define DUMP_TOKENS
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 using Microsoft.Scripting.Utils;
@@ -84,6 +87,8 @@ namespace Microsoft.Scripting.Runtime {
             Initialize(reader, initialLocation, initialCapacity, multiEolns);
         }
 
+        [MemberNotNull(nameof(Reader))]
+        [MemberNotNull(nameof(_buffer))]
         public void Initialize(TextReader reader, SourceLocation initialLocation, int initialCapacity, bool multiEolns) {
             ContractUtils.RequiresNotNull(reader, nameof(reader));
             ContractUtils.Requires(initialCapacity > 0, nameof(initialCapacity));
@@ -417,7 +422,8 @@ namespace Microsoft.Scripting.Runtime {
         /// Resizes an array to a speficied new size and copies a portion of the original array into its beginning.
         /// </summary>
         private static void ResizeInternal(ref char[] array, int newSize, int start, int count) {
-            Debug.Assert(array is not null && newSize > 0 && count >= 0 && newSize >= count && start >= 0);
+            Assert.NotNull(array);
+            Debug.Assert(newSize > 0 && count >= 0 && newSize >= count && start >= 0);
 
             char[] result = (newSize != array.Length) ? new char[newSize] : array;
 

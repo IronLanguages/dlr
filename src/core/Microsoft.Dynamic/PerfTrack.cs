@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -150,7 +152,7 @@ namespace Microsoft.Scripting {
             Dictionary<string, int> categoryEvents = _events[category];
             totalEvents++;
             lock (categoryEvents) {
-                string name = key.ToString();
+                string name = key.ToString() ?? string.Empty;
                 if (key is Exception ex) name = ex.GetType().ToString();
                 if (!categoryEvents.TryGetValue(name, out int v)) categoryEvents[name] = 1;
                 else categoryEvents[name] = v + 1;

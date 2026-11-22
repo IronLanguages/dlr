@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
@@ -13,7 +15,7 @@ namespace Microsoft.Scripting.Utils {
 
         private ReferenceEqualityComparer() { }
 
-        public bool Equals(T x, T y) {
+        public bool Equals(T? x, T? y) {
             return object.ReferenceEquals(x, y);
         }
 

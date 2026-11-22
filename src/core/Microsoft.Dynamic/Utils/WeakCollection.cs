@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +17,7 @@ namespace Microsoft.Scripting.Utils {
     internal sealed class WeakCollection<T> : IEnumerable<T> where T : class {
         private const int DefaultCapacity = 4; // default capacity of List<T>
 
-        private WeakReference[] _items = new WeakReference[DefaultCapacity];
+        private WeakReference?[] _items = new WeakReference?[DefaultCapacity];
         private int _size;
 
         public void Add(T t) {
@@ -33,7 +35,7 @@ namespace Microsoft.Scripting.Utils {
                     if (newSize < size) {
                         newSize = size;
                     }
-                    var newList = new WeakReference[newSize];
+                    var newList = new WeakReference?[newSize];
                     _items.CopyTo(newList, 0);
                     _items = newList;
                 }
@@ -43,7 +45,7 @@ namespace Microsoft.Scripting.Utils {
         private void Compact() {
             int newSize = 0;
             for (int i = 0; i < _size; i++) {
-                if (_items[i].IsAlive) {
+                if (_items[i]!.IsAlive) { // all items below _size are set
                     if (newSize < i) {
                         _items[newSize] = _items[i];
                     }
@@ -58,7 +60,7 @@ namespace Microsoft.Scripting.Utils {
 
         public IEnumerator<T> GetEnumerator() {
             for (int i = 0; i < _size; i++) {
-                T light = (T)_items[i].Target;
+                T? light = (T?)_items[i]!.Target; // all items below _size are set
                 if (light is not null) {
                     yield return light;
                 }

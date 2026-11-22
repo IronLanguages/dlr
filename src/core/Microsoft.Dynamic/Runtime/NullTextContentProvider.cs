@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// A NullTextContentProvider to be provided when we have a pre-compiled ScriptCode which doesn't

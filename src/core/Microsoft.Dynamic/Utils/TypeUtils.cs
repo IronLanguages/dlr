@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -20,7 +22,7 @@ namespace Microsoft.Scripting.Utils {
         internal static Type GetNonNullableType(this Type type) => IsNullableType(type) ? type.GetGenericArguments()[0] : type;
 
         internal static Type GetNullableType(this Type type) {
-            Debug.Assert(type is not null, "type cannot be null");
+            Assert.NotNull(type);
             if (type.IsValueType && !IsNullableType(type)) {
                 return typeof(Nullable<>).MakeGenericType(type);
             }
@@ -139,7 +141,7 @@ namespace Microsoft.Scripting.Utils {
                 // Arrays can be assigned if they have same rank and assignable element types.
                 if (to.IsArray && from.IsArray &&
                     to.GetArrayRank() == from.GetArrayRank() &&
-                    CanAssign(to.GetElementType(), from.GetElementType())) {
+                    CanAssign(to.GetElementType()!, from.GetElementType()!)) { // arrays have element types
                     return true;
                 }
             }
@@ -259,7 +261,7 @@ namespace Microsoft.Scripting.Utils {
             if (dest.IsAssignableFrom(src)) {
                 return true;
             }
-            if (dest.IsArray && src.IsArray && dest.GetArrayRank() == src.GetArrayRank() && AreReferenceAssignable(dest.GetElementType(), src.GetElementType())) {
+            if (dest.IsArray && src.IsArray && dest.GetArrayRank() == src.GetArrayRank() && AreReferenceAssignable(dest.GetElementType()!, src.GetElementType()!)) { // arrays have element types
                 return true;
             }
             if (src.IsArray && dest.IsGenericType &&
@@ -282,7 +284,7 @@ namespace Microsoft.Scripting.Utils {
             // Get the visible base type
             Type bt = type;
             do {
-                bt = bt.BaseType;
+                bt = bt.BaseType!; // System.Object is visible
             } while (!bt.IsVisible);
 
             // If it's one of the known reflection types,
@@ -336,14 +338,14 @@ namespace Microsoft.Scripting.Utils {
         }
 
 #if FEATURE_COM
-        public static readonly Type ComObjectType = typeof(object).Assembly.GetType("System.__ComObject");
+        public static readonly Type? ComObjectType = typeof(object).Assembly.GetType("System.__ComObject");
 
-        public static bool IsComObjectType(Type/*!*/ type) {
+        public static bool IsComObjectType(Type type) {
             return ComObjectType?.IsAssignableFrom(type) ?? false;
         }
 
         // we can't use System.Runtime.InteropServices.Marshal.IsComObject(obj) since it doesn't work in partial trust
-        public static bool IsComObject(object obj) {
+        public static bool IsComObject(object? obj) {
 #if NETCOREAPP || NETSTANDARD
             return obj is not null && Marshal.IsComObject(obj);
 #else
@@ -351,11 +353,11 @@ namespace Microsoft.Scripting.Utils {
 #endif
         }
 #else
-        public static bool IsComObjectType(Type/*!*/ type) {
+        public static bool IsComObjectType(Type type) {
             return false;
         }
 
-        public static bool IsComObject(object obj) {
+        public static bool IsComObject(object? obj) {
             return false;
         }
 #endif

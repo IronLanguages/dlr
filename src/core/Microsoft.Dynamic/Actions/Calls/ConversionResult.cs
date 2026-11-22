@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -13,9 +15,9 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// type to another.
     /// </summary>
     public sealed class ConversionResult {
-        private readonly object _arg;
+        private readonly object? _arg;
 
-        internal ConversionResult(object arg, Type argType, Type toType, bool failed) {
+        internal ConversionResult(object? arg, Type argType, Type toType, bool failed) {
             _arg = arg;
             ArgType = argType;
             To = toType;
@@ -25,7 +27,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Value of the argument or null if it is not available.
         /// </summary>
-        public object Arg => _arg;
+        public object? Arg => _arg;
 
         /// <summary>
         /// Argument actual type or its limit type if the value not known.

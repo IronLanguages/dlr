@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_METADATA_READER
 using Microsoft.Scripting.Metadata;
 #endif
@@ -151,31 +153,31 @@ namespace Microsoft.Scripting.Utils {
             return members.WithBindingFlags(MatchesFlags, flags);
         }
 
-        public static MemberInfo WithBindingFlags(this MemberInfo member, BindingFlags flags) {
+        public static MemberInfo? WithBindingFlags(this MemberInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static MethodInfo WithBindingFlags(this MethodInfo member, BindingFlags flags) {
+        public static MethodInfo? WithBindingFlags(this MethodInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static ConstructorInfo WithBindingFlags(this ConstructorInfo member, BindingFlags flags) {
+        public static ConstructorInfo? WithBindingFlags(this ConstructorInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static FieldInfo WithBindingFlags(this FieldInfo member, BindingFlags flags) {
+        public static FieldInfo? WithBindingFlags(this FieldInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static PropertyInfo WithBindingFlags(this PropertyInfo member, BindingFlags flags) {
+        public static PropertyInfo? WithBindingFlags(this PropertyInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static EventInfo WithBindingFlags(this EventInfo member, BindingFlags flags) {
+        public static EventInfo? WithBindingFlags(this EventInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
-        public static TypeInfo WithBindingFlags(this TypeInfo member, BindingFlags flags) {
+        public static TypeInfo? WithBindingFlags(this TypeInfo? member, BindingFlags flags) {
             return member is not null && MatchesFlags(member, flags) ? member : null;
         }
 
@@ -240,9 +242,9 @@ namespace Microsoft.Scripting.Utils {
 
         // NOTE: Following GetXxx only implement overriding, not hiding specified by hide-by-name or hide-by-name-and-signature flags.
 
-        public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string name = null, bool flattenHierarchy = false) {
+        public static IEnumerable<MethodInfo> GetInheritedMethods(this Type type, string? name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.BaseType;
+                type = type.BaseType!; // generic parameters always have a base type
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -257,7 +259,7 @@ namespace Microsoft.Scripting.Utils {
 
         private static bool IncludeMethod(MethodInfo member, Type reflectedType, HashSet<MethodInfo> baseDefinitions, bool flattenHierarchy) {
             if (member.IsVirtual) {
-                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(member))) {
+                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(member)!)) { // the method itself if it has no base
                     return true;
                 }
             } else if (member.DeclaringType == reflectedType) {
@@ -269,9 +271,9 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static IEnumerable<PropertyInfo> GetInheritedProperties(this Type type, string name = null, bool flattenHierarchy = false) {
+        public static IEnumerable<PropertyInfo> GetInheritedProperties(this Type type, string? name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.BaseType;
+                type = type.BaseType!; // generic parameters always have a base type
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -303,7 +305,7 @@ namespace Microsoft.Scripting.Utils {
             var getter = member.GetGetMethod(nonPublic: true);
             var setter = member.GetSetMethod(nonPublic: true);
 
-            MethodInfo virtualAccessor;
+            MethodInfo? virtualAccessor;
             if (getter is not null && getter.IsVirtual) {
                 virtualAccessor = getter;
             } else if (setter is not null && setter.IsVirtual) {
@@ -313,7 +315,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if (virtualAccessor is not null) {
-                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor))) {
+                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor)!)) { // the method itself if it has no base
                     return true;
                 }
             } else if (member.DeclaringType == reflectedType) {
@@ -325,9 +327,9 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static IEnumerable<EventInfo> GetInheritedEvents(this Type type, string name = null, bool flattenHierarchy = false) {
+        public static IEnumerable<EventInfo> GetInheritedEvents(this Type type, string? name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.BaseType;
+                type = type.BaseType!; // generic parameters always have a base type
             }
 
             var baseDefinitions = new HashSet<MethodInfo>(ReferenceEqualityComparer<MethodInfo>.Instance);
@@ -353,7 +355,7 @@ namespace Microsoft.Scripting.Utils {
 
             // TOOD: fire method?
 
-            MethodInfo virtualAccessor;
+            MethodInfo? virtualAccessor;
             if (add is not null && add.IsVirtual) {
                 virtualAccessor = add;
             } else if (remove is not null && remove.IsVirtual) {
@@ -363,7 +365,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if (virtualAccessor is not null) {
-                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor))) {
+                if (baseDefinitions.Add(RuntimeReflectionExtensions.GetRuntimeBaseDefinition(virtualAccessor)!)) { // the method itself if it has no base
                     return true;
                 }
             } else if (member.DeclaringType == reflectedType) {
@@ -375,9 +377,9 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static IEnumerable<FieldInfo> GetInheritedFields(this Type type, string name = null, bool flattenHierarchy = false) {
+        public static IEnumerable<FieldInfo> GetInheritedFields(this Type type, string? name = null, bool flattenHierarchy = false) {
             while (type.IsGenericParameter) {
-                type = type.BaseType;
+                type = type.BaseType!; // generic parameters always have a base type
             }
 
             foreach (var ancestor in type.Ancestors()) {
@@ -408,7 +410,7 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static IEnumerable<MemberInfo> GetInheritedMembers(this Type type, string name = null, bool flattenHierarchy = false) {
+        public static IEnumerable<MemberInfo> GetInheritedMembers(this Type type, string? name = null, bool flattenHierarchy = false) {
             var result =
                 type.GetInheritedMethods(name, flattenHierarchy).Cast<MethodInfo, MemberInfo>().Concat(
                 type.GetInheritedProperties(name, flattenHierarchy).Cast<PropertyInfo, MemberInfo>().Concat(
@@ -433,7 +435,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GetConstructors(BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name = null) {
+        public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string? name = null) {
             if (name is null) {
                 return type.GetMethods(BindingFlags.DeclaredOnly | AllMembers);
             }
@@ -445,7 +447,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GetProperties(BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static PropertyInfo GetDeclaredProperty(this Type type, string name) {
+        public static PropertyInfo? GetDeclaredProperty(this Type type, string name) {
             Debug.Assert(name is not null);
             return type.GetProperty(name, BindingFlags.DeclaredOnly | AllMembers);
         }
@@ -454,7 +456,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GetEvents(BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static EventInfo GetDeclaredEvent(this Type type, string name) {
+        public static EventInfo? GetDeclaredEvent(this Type type, string name) {
             Debug.Assert(name is not null);
             return type.GetEvent(name, BindingFlags.DeclaredOnly | AllMembers);
         }
@@ -463,7 +465,7 @@ namespace Microsoft.Scripting.Utils {
             return type.GetFields(BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static FieldInfo GetDeclaredField(this Type type, string name) {
+        public static FieldInfo? GetDeclaredField(this Type type, string name) {
             Debug.Assert(name is not null);
             return type.GetField(name, BindingFlags.DeclaredOnly | AllMembers);
         }
@@ -472,12 +474,12 @@ namespace Microsoft.Scripting.Utils {
             return type.GetNestedTypes(BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static TypeInfo GetDeclaredNestedType(this Type type, string name) {
+        public static TypeInfo? GetDeclaredNestedType(this Type type, string name) {
             Debug.Assert(name is not null);
             return type.GetNestedType(name, BindingFlags.DeclaredOnly | AllMembers);
         }
 
-        public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string name = null) {
+        public static IEnumerable<MemberInfo> GetDeclaredMembers(this Type type, string? name = null) {
             if (name is null) {
                 return type.GetMembers(BindingFlags.DeclaredOnly | AllMembers);
             }
@@ -487,11 +489,11 @@ namespace Microsoft.Scripting.Utils {
 
         #endregion
 
-        public static Type[] GetGenericTypeArguments(this Type type) {
+        public static Type[]? GetGenericTypeArguments(this Type type) {
             return type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
-        public static Type[] GetGenericTypeParameters(this Type type) {
+        public static Type[]? GetGenericTypeParameters(this Type type) {
             return type.IsGenericTypeDefinition ? type.GetGenericArguments() : null;
         }
 
@@ -518,12 +520,12 @@ namespace Microsoft.Scripting.Utils {
             return assembly.IsDefined(attributeType, false);
         }
 
-        public static T GetCustomAttribute<T>(this Assembly assembly, bool inherit = false) where T : Attribute {
-            return (T)Attribute.GetCustomAttribute(assembly, typeof(T), inherit);
+        public static T? GetCustomAttribute<T>(this Assembly assembly, bool inherit = false) where T : Attribute {
+            return (T?)Attribute.GetCustomAttribute(assembly, typeof(T), inherit);
         }
 
-        public static T GetCustomAttribute<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
-            return (T)Attribute.GetCustomAttribute(member, typeof(T), inherit);
+        public static T? GetCustomAttribute<T>(this MemberInfo member, bool inherit = false) where T : Attribute {
+            return (T?)Attribute.GetCustomAttribute(member, typeof(T), inherit);
         }
 
         [Obsolete("Use Type.ContainsGenericParameters directly instead.")]
@@ -572,7 +574,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         [Obsolete("Use Type.BaseType directly instead.")]
-        public static Type GetBaseType(this Type type) {
+        public static Type? GetBaseType(this Type type) {
             return type.BaseType;
         }
 
@@ -598,13 +600,13 @@ namespace Microsoft.Scripting.Utils {
 
         public static readonly Type[] EmptyTypes = Array.Empty<TypeInfo>();
 
-        public static object GetRawConstantValue(this FieldInfo field) {
+        public static object? GetRawConstantValue(this FieldInfo field) {
             if (!field.IsLiteral) {
                 throw new ArgumentException(field + " not a literal.");
             }
 
-            object value = field.GetValue(null);
-            return field.FieldType.IsEnum ? UnwrapEnumValue(value) : value;
+            object? value = field.GetValue(null);
+            return field.FieldType.IsEnum ? UnwrapEnumValue(value!) : value; // enum constants are never null
         }
 
         /// <summary>
@@ -671,7 +673,7 @@ namespace Microsoft.Scripting.Utils {
         public const char GenericArityDelimiter = '`';
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method) {
-            return FormatSignature(result, method, static t => t.FullName);
+            return FormatSignature(result, method, static t => t.FullName ?? t.Name);
         }
 
         public static StringBuilder FormatSignature(StringBuilder result, MethodBase method, Func<Type, string> nameDispenser) {
@@ -695,8 +697,10 @@ namespace Microsoft.Scripting.Utils {
                 return result;
             }
 #endif
-            FormatTypeName(result, method.DeclaringType, nameDispenser);
-            result.Append("::");
+            if (method.DeclaringType is not null) {
+                FormatTypeName(result, method.DeclaringType, nameDispenser);
+                result.Append("::");
+            }
             result.Append(method.Name);
 
             if (!method.IsConstructor) {
@@ -724,7 +728,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type) {
-            return FormatTypeName(result, type, static t => t.FullName);
+            return FormatTypeName(result, type, static t => t.FullName ?? t.Name);
         }
 
         public static StringBuilder FormatTypeName(StringBuilder result, Type type, Func<Type, string> nameDispenser) {
@@ -755,7 +759,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static StringBuilder FormatTypeArgs(StringBuilder result, Type[] types) {
-            return FormatTypeArgs(result, types, static t => t.FullName);
+            return FormatTypeArgs(result, types, static t => t.FullName ?? t.Name);
         }
 
         public static StringBuilder FormatTypeArgs(StringBuilder result, Type[] types, Func<Type, string> nameDispenser) {
@@ -819,7 +823,7 @@ namespace Microsoft.Scripting.Utils {
         /// <summary>
         /// Creates a closed delegate for the given (dynamic)method.
         /// </summary>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target) {
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object? target) {
 #if FEATURE_LCG
             if (methodInfo is DynamicMethod dm) {
                 return dm.CreateDelegate(delegateType, target);
@@ -844,7 +848,7 @@ namespace Microsoft.Scripting.Utils {
         public static void GetDelegateSignature(Type delegateType, out ParameterInfo[] parameterInfos, out ParameterInfo returnInfo) {
             ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
 
-            MethodInfo invokeMethod = delegateType.GetMethod("Invoke");
+            MethodInfo? invokeMethod = delegateType.GetMethod("Invoke");
             ContractUtils.Requires(invokeMethod is not null, nameof(delegateType), Strings.InvalidDelegate);
 
             parameterInfos = invokeMethod.GetParameters();
@@ -922,7 +926,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         public static Type GetReturnType(this MethodBase mi) {
-            return (mi.IsConstructor) ? mi.DeclaringType : ((MethodInfo)mi).ReturnType;
+            return (mi.IsConstructor) ? mi.DeclaringType! : ((MethodInfo)mi).ReturnType; // constructors are always declared on a type
         }
 
         public static bool SignatureEquals(MethodInfo method, params Type[] requiredSignature) {
@@ -992,7 +996,7 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static object GetDefaultValue(this ParameterInfo info) {
+        public static object? GetDefaultValue(this ParameterInfo info) {
             return info.DefaultValue;
         }
 
@@ -1005,10 +1009,11 @@ namespace Microsoft.Scripting.Utils {
         /// Does not include implemented interfaces.
         /// </summary>
         public static IEnumerable<Type> Ancestors(this Type type) {
+            Type? current = type;
             do {
-                yield return type;
-                type = type.BaseType;
-            } while (type is not null);
+                yield return current;
+                current = current.BaseType;
+            } while (current is not null);
         }
 
         /// <summary>
@@ -1028,7 +1033,7 @@ namespace Microsoft.Scripting.Utils {
 
         internal static IEnumerable<TypeInfo> GetAllTypesFromAssembly(Assembly asm) {
             foreach (Module module in asm.GetModules()) {
-                Type[] moduleTypes;
+                Type?[] moduleTypes;
                 try {
                     moduleTypes = module.GetTypes();
                 } catch (ReflectionTypeLoadException e) {
@@ -1046,7 +1051,7 @@ namespace Microsoft.Scripting.Utils {
 
 #if !FEATURE_ASSEMBLY_GETFORWARDEDTYPES
 #if NETSTANDARD2_0
-        private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", Array.Empty<Type>());
+        private static readonly MethodInfo? GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", Array.Empty<Type>());
 
         internal static Type[] GetForwardedTypes(this Assembly assembly) {
             if (GetForwardedTypesMethodInfo is not null) {
@@ -1101,7 +1106,7 @@ namespace Microsoft.Scripting.Utils {
 
         public static MethodBuilder DefineMethodOverride(TypeBuilder tb, MethodAttributes extra, MethodInfo decl) {
             MethodAttributes finalAttrs = (decl.Attributes & ~MethodAttributesToEraseInOveride) | extra;
-            if (!decl.DeclaringType.IsInterface) {
+            if (!decl.DeclaringType!.IsInterface) { // an overridable method is always declared on a type
                 finalAttrs &= ~MethodAttributes.NewSlot;
             }
 
@@ -1119,14 +1124,14 @@ namespace Microsoft.Scripting.Utils {
         public static void CopyMethodSignature(MethodInfo from, MethodBuilder to, bool substituteDeclaringType) {
             ParameterInfo[] paramInfos = from.GetParameters();
             Type[] parameterTypes = new Type[paramInfos.Length];
-            Type[][] parameterRequiredModifiers = null, parameterOptionalModifiers = null;
-            Type[] returnRequiredModifiers = null, returnOptionalModifiers = null;
+            Type[][]? parameterRequiredModifiers = null, parameterOptionalModifiers = null;
+            Type[]? returnRequiredModifiers = null, returnOptionalModifiers = null;
 
             returnRequiredModifiers = from.ReturnParameter.GetRequiredCustomModifiers();
             returnOptionalModifiers = from.ReturnParameter.GetOptionalCustomModifiers();
             for (int i = 0; i < paramInfos.Length; i++) {
                 if (substituteDeclaringType && paramInfos[i].ParameterType == from.DeclaringType) {
-                    parameterTypes[i] = to.DeclaringType;
+                    parameterTypes[i] = to.DeclaringType ?? throw new ArgumentException("Substituting the declaring type requires a method defined on a type.", nameof(to));
                 } else {
                     parameterTypes[i] = paramInfos[i].ParameterType;
                 }
@@ -1237,27 +1242,27 @@ namespace Microsoft.Scripting.Utils {
         }
 
         // Value is null if there are no extension methods in the assembly.
-        private static Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>> _extensionMethodsCache;
+        private static Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>?>? _extensionMethodsCache;
 
         /// <summary>
         /// Enumerates extension methods in given assembly. Groups the methods by declaring namespace.
         /// Uses a global cache if <paramref name="useCache"/> is true.
         /// </summary>
-        public static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> GetVisibleExtensionMethodGroups(Assembly/*!*/ assembly, bool useCache) {
+        public static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> GetVisibleExtensionMethodGroups(Assembly assembly, bool useCache) {
 #if FEATURE_REFEMIT
             useCache &= !assembly.IsDynamic;
 #endif
             if (useCache) {
-                _extensionMethodsCache ??= new Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>>();
+                _extensionMethodsCache ??= new Dictionary<Assembly, Dictionary<string, List<ExtensionMethodInfo>>?>();
 
                 lock (_extensionMethodsCache) {
-                    if (_extensionMethodsCache.TryGetValue(assembly, out Dictionary<string, List<ExtensionMethodInfo>> existing)) {
+                    if (_extensionMethodsCache.TryGetValue(assembly, out Dictionary<string, List<ExtensionMethodInfo>>? existing)) {
                         return EnumerateExtensionMethods(existing);
                     }
                 }
             }
 
-            Dictionary<string, List<ExtensionMethodInfo>> result = null;
+            Dictionary<string, List<ExtensionMethodInfo>>? result = null;
             foreach (MethodInfo method in GetVisibleExtensionMethodsSlow(assembly)) {
                 if (method.DeclaringType is null || method.DeclaringType.IsGenericTypeDefinition) {
                     continue;
@@ -1277,7 +1282,7 @@ namespace Microsoft.Scripting.Utils {
 
                 result ??= new Dictionary<string, List<ExtensionMethodInfo>>();
 
-                if (!result.TryGetValue(ns, out List<ExtensionMethodInfo> extensions)) {
+                if (!result.TryGetValue(ns, out List<ExtensionMethodInfo>? extensions)) {
                     result.Add(ns, extensions = new List<ExtensionMethodInfo>());
                 }
 
@@ -1285,7 +1290,7 @@ namespace Microsoft.Scripting.Utils {
             }
 
             if (useCache) {
-                lock (_extensionMethodsCache) {
+                lock (_extensionMethodsCache!) { // initialized above
                     _extensionMethodsCache[assembly] = result;
                 }
             }
@@ -1295,7 +1300,7 @@ namespace Microsoft.Scripting.Utils {
 
         // TODO: GetVisibleExtensionMethods(Hashset<string> namespaces, Type type, string methodName) : IEnumerable<MethodInfo> {}
 
-        private static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> EnumerateExtensionMethods(Dictionary<string, List<ExtensionMethodInfo>> dict) {
+        private static IEnumerable<KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>> EnumerateExtensionMethods(Dictionary<string, List<ExtensionMethodInfo>>? dict) {
             if (dict is not null) {
                 foreach (var entry in dict) {
                     yield return new KeyValuePair<string, IEnumerable<ExtensionMethodInfo>>(entry.Key, new ReadOnlyCollection<ExtensionMethodInfo>(entry.Value));
@@ -1307,10 +1312,10 @@ namespace Microsoft.Scripting.Utils {
 
         #region Generic Types
 
-        internal static Dictionary<Type, Type> BindGenericParameters(Type/*!*/ openType, Type/*!*/ closedType, bool ignoreUnboundParameters) {
+        internal static Dictionary<Type, Type>? BindGenericParameters(Type openType, Type closedType, bool ignoreUnboundParameters) {
             var binding = new Dictionary<Type, Type>();
             BindGenericParameters(openType, closedType, (parameter, type) => {
-                if (binding.TryGetValue(parameter, out Type existing)) {
+                if (binding.TryGetValue(parameter, out Type? existing)) {
                     return type == existing;
                 }
 
@@ -1327,7 +1332,7 @@ namespace Microsoft.Scripting.Utils {
         /// Invokes <paramref name="binder"/>(parameter, type) for each such binding.
         /// Returns false if the <paramref name="openType"/> is structurally different from <paramref name="closedType"/> or if the binder returns false.
         /// </summary>
-        internal static bool BindGenericParameters(Type/*!*/ openType, Type/*!*/ closedType, Func<Type, Type, bool>/*!*/ binder) {
+        internal static bool BindGenericParameters(Type openType, Type closedType, Func<Type, Type, bool> binder) {
             if (openType.IsGenericParameter) {
                 return binder(openType, closedType);
             }
@@ -1336,7 +1341,7 @@ namespace Microsoft.Scripting.Utils {
                 if (!closedType.IsArray) {
                     return false;
                 }
-                return BindGenericParameters(openType.GetElementType(), closedType.GetElementType(), binder);
+                return BindGenericParameters(openType.GetElementType()!, closedType.GetElementType()!, binder); // both are arrays
             }
 
             if (!openType.IsGenericType || !closedType.IsGenericType) {
@@ -1359,7 +1364,7 @@ namespace Microsoft.Scripting.Utils {
             return true;
         }
 
-        internal static bool ConstraintsViolated(Dictionary<Type, Type>/*!*/ binding, bool ignoreUnboundParameters) {
+        internal static bool ConstraintsViolated(Dictionary<Type, Type> binding, bool ignoreUnboundParameters) {
             foreach (var entry in binding) {
                 if (ConstraintsViolated(entry.Key, entry.Value, binding, ignoreUnboundParameters)) {
                     return true;
@@ -1369,7 +1374,7 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        internal static bool ConstraintsViolated(Type/*!*/ genericParameter, Type/*!*/ closedType, Dictionary<Type, Type>/*!*/ binding, bool ignoreUnboundParameters) {
+        internal static bool ConstraintsViolated(Type genericParameter, Type closedType, Dictionary<Type, Type> binding, bool ignoreUnboundParameters) {
             if ((genericParameter.GenericParameterAttributes & GenericParameterAttributes.ReferenceTypeConstraint) != 0 && closedType.IsValueType) {
                 // value type to parameter type constrained as class
                 return true;
@@ -1389,7 +1394,7 @@ namespace Microsoft.Scripting.Utils {
 
             Type[] constraints = genericParameter.GetGenericParameterConstraints();
             for (int i = 0; i < constraints.Length; i++) {
-                Type instantiation = InstantiateConstraint(constraints[i], binding);
+                Type? instantiation = InstantiateConstraint(constraints[i], binding);
 
                 if (instantiation is null) {
                     if (ignoreUnboundParameters) {
@@ -1407,22 +1412,24 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        internal static Type InstantiateConstraint(Type/*!*/ constraint, Dictionary<Type, Type>/*!*/ binding) {
+        internal static Type? InstantiateConstraint(Type constraint, Dictionary<Type, Type> binding) {
             Debug.Assert(!constraint.IsArray && !constraint.IsByRef && !constraint.IsGenericTypeDefinition);
             if (!constraint.ContainsGenericParameters) {
                 return constraint;
             }
 
-            Type closedType;
+            Type? closedType;
             if (constraint.IsGenericParameter) {
                 return binding.TryGetValue(constraint, out closedType) ? closedType : null;
             }
 
             Type[] args = constraint.GetGenericArguments();
             for (int i = 0; i < args.Length; i++) {
-                if ((args[i] = InstantiateConstraint(args[i], binding)) is null) {
+                Type? arg = InstantiateConstraint(args[i], binding);
+                if (arg is null) {
                     return null;
                 }
+                args[i] = arg;
             }
 
             return constraint.GetGenericTypeDefinition().MakeGenericType(args);
@@ -1432,24 +1439,24 @@ namespace Microsoft.Scripting.Utils {
     }
 
     public readonly struct ExtensionMethodInfo : IEquatable<ExtensionMethodInfo> {
-        private readonly Type/*!*/ _extendedType; // cached type of the first parameter
-        private readonly MethodInfo/*!*/ _method;
+        private readonly Type _extendedType; // cached type of the first parameter
+        private readonly MethodInfo _method;
 
-        internal ExtensionMethodInfo(Type/*!*/ extendedType, MethodInfo/*!*/ method) {
+        internal ExtensionMethodInfo(Type extendedType, MethodInfo method) {
             Assert.NotNull(extendedType, method);
             _extendedType = extendedType;
             _method = method;
         }
 
-        public Type/*!*/ ExtendedType {
+        public Type ExtendedType {
             get { return _extendedType; }
         }
 
-        public MethodInfo/*!*/ Method {
+        public MethodInfo Method {
             get { return _method; }
         }
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is ExtensionMethodInfo info && Equals(info);
 
         public bool Equals(ExtensionMethodInfo other) =>
@@ -1467,7 +1474,7 @@ namespace Microsoft.Scripting.Utils {
         /// Determines if a given type matches the type that the method extends. 
         /// The match might be non-trivial if the extended type is an open generic type with constraints.
         /// </summary>
-        public bool IsExtensionOf(Type/*!*/ type) {
+        public bool IsExtensionOf(Type type) {
             ContractUtils.RequiresNotNull(type, nameof(type));
 #if FEATURE_TYPE_EQUIVALENCE
             if (type.IsEquivalentTo(ExtendedType)) {

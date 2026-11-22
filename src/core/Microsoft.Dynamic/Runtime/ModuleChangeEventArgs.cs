@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 
 namespace Microsoft.Scripting.Runtime {
@@ -20,7 +22,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Creates a nwe ModuleChangeEventArgs with the specified name, type, and changed value.
         /// </summary>
-        public ModuleChangeEventArgs(string name, ModuleChangeType changeType, object value) {
+        public ModuleChangeEventArgs(string name, ModuleChangeType changeType, object? value) {
             Name = name;
             ChangeType = changeType;
             Value = value;
@@ -39,6 +41,6 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Gets the symbol has been set provides the new value.
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
     }
 }

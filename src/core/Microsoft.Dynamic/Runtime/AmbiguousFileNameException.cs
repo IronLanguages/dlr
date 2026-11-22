@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.Serialization;
 
@@ -19,11 +21,11 @@ namespace Microsoft.Scripting {
             : this(firstPath, secondPath, null, null) {
         }
 
-        public AmbiguousFileNameException(string firstPath, string secondPath, string message)
+        public AmbiguousFileNameException(string firstPath, string secondPath, string? message)
             : this(firstPath, secondPath, message, null) {
         }
 
-        public AmbiguousFileNameException(string firstPath, string secondPath, string message, Exception inner)
+        public AmbiguousFileNameException(string firstPath, string secondPath, string? message, Exception? inner)
             : base(message ??
                    $"File name is ambiguous; more files are matching the same name (including '{firstPath}' and '{secondPath}')", inner) {
             ContractUtils.RequiresNotNull(firstPath, nameof(firstPath));
@@ -37,6 +39,8 @@ namespace Microsoft.Scripting {
 #if FEATURE_SERIALIZATION
         protected AmbiguousFileNameException(SerializationInfo info, StreamingContext context)
             : base(info, context) {
+            FirstPath = info.GetString("firstPath");
+            SecondPath = info.GetString("secondPath");
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context) {

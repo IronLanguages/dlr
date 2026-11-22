@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 
 using Microsoft.Scripting.Utils;
@@ -28,7 +29,7 @@ namespace Microsoft.Scripting.Actions {
         /// to create ErrorInfo objects.
         /// </summary>
         private ErrorInfo(Expression value, ErrorInfoKind kind) {
-            Debug.Assert(value is not null);
+            Assert.NotNull(value);
 
             Expression = value;
             Kind = kind;

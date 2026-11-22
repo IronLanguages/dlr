@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 #pragma warning disable 414 // msc: unused private field
 
@@ -35,12 +37,12 @@ namespace Microsoft.Scripting.ComInterop {
         }
 #endif
 
-        private static string ConvertAndFreeBstr(ref IntPtr bstr) {
+        private static string? ConvertAndFreeBstr(ref IntPtr bstr) {
             if (bstr == IntPtr.Zero) {
                 return null;
             }
 
-            string result = Marshal.PtrToStringBSTR(bstr);
+            string? result = Marshal.PtrToStringBSTR(bstr);
             Marshal.FreeBSTR(bstr);
             bstr = IntPtr.Zero;
             return result;
@@ -69,9 +71,9 @@ namespace Microsoft.Scripting.ComInterop {
 #endif
 
             int errorCode = (scode != 0) ? scode : wCode;
-            Exception exception = Marshal.GetExceptionForHR(errorCode);
+            Exception exception = Marshal.GetExceptionForHR(errorCode) ?? new COMException(null, errorCode);
 
-            string message = ConvertAndFreeBstr(ref bstrDescription);
+            string? message = ConvertAndFreeBstr(ref bstrDescription);
             if (message is not null) {
                 // If we have a custom message, create a new Exception object with the message set correctly.
                 // We need to create a new object because "exception.Message" is a read-only property.
@@ -79,7 +81,7 @@ namespace Microsoft.Scripting.ComInterop {
                     exception = new COMException(message, errorCode);
                 } else {
                     Type exceptionType = exception.GetType();
-                    ConstructorInfo ctor = exceptionType.GetConstructor(new Type[] { typeof(string) });
+                    ConstructorInfo? ctor = exceptionType.GetConstructor(new Type[] { typeof(string) });
                     if (ctor is not null) {
                         exception = (Exception)ctor.Invoke(new object[] { message });
                     }
@@ -88,7 +90,7 @@ namespace Microsoft.Scripting.ComInterop {
 
             exception.Source = ConvertAndFreeBstr(ref bstrSource);
 
-            string helpLink = ConvertAndFreeBstr(ref bstrHelpFile);
+            string? helpLink = ConvertAndFreeBstr(ref bstrHelpFile);
             if (helpLink is not null && dwHelpContext != 0) {
                 helpLink += "#" + dwHelpContext;
             }

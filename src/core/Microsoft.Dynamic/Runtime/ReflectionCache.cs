@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -19,7 +21,7 @@ namespace Microsoft.Scripting.Runtime {
         private static readonly Dictionary<Type, TypeTracker> _typeCache = new();
 
         public static MethodGroup GetMethodGroup(string name, MethodBase[] methods) {
-            MethodGroup res = null;
+            MethodGroup? res = null;
             MethodBaseCache cache = new MethodBaseCache(name, methods);
             lock (_functions) {
                 if (!_functions.TryGetValue(cache, out res)) {
@@ -34,8 +36,8 @@ namespace Microsoft.Scripting.Runtime {
             return res;
         }
 
-        public static MethodGroup GetMethodGroup(string name, MemberGroup mems) {
-            MethodGroup res = null;
+        public static MethodGroup? GetMethodGroup(string name, MemberGroup mems) {
+            MethodGroup? res = null;
 
             MethodBase[] bases = new MethodBase[mems.Count];
             MethodTracker[] trackers = new MethodTracker[mems.Count];
@@ -57,7 +59,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         public static TypeTracker GetTypeTracker(Type type) {
-            TypeTracker res;
+            TypeTracker? res;
 
             lock (_typeCache) {
                 if (!_typeCache.TryGetValue(type, out res)) {
@@ -97,7 +99,7 @@ namespace Microsoft.Scripting.Runtime {
                 return xModule.ModuleVersionId.CompareTo(yModule.ModuleVersionId);
             }
 
-            public override bool Equals(object obj) {
+            public override bool Equals(object? obj) {
                 if (obj is not MethodBaseCache other || _members.Length != other._members.Length || other._name != _name) {
                     return false;
                 }
@@ -135,7 +137,7 @@ namespace Microsoft.Scripting.Runtime {
                 foreach (MethodBase mi in _members) {
                     //MetadataToken causes exception on CoreRT
                     //https://github.com/dotnet/corert/blob/db9c9ced21afd0848c748960358832bc3e41ae62/src/System.Private.Reflection.Core/src/System/Reflection/Runtime/MethodInfos/NativeFormat/NativeFormatMethodCommon.cs#L184
-                    res ^= res << 5 ^ mi.DeclaringType.GetHashCode() ^ (PlatformAdaptationLayer.IsNativeModule ? mi.MethodHandle.GetHashCode() : mi.MetadataToken);
+                    res ^= res << 5 ^ (mi.DeclaringType?.GetHashCode() ?? 0) ^ (PlatformAdaptationLayer.IsNativeModule ? mi.MethodHandle.GetHashCode() : mi.MetadataToken);
                 }
                 res ^= _name.GetHashCode();
 

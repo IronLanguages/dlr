@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -86,14 +88,14 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
-        public static IDictionaryEnumerator ToDictionaryEnumerator(IEnumerator<KeyValuePair<object, object>> enumerator) {
+        public static IDictionaryEnumerator ToDictionaryEnumerator(IEnumerator<KeyValuePair<object, object?>> enumerator) {
             return new DictionaryEnumerator(enumerator);
         }
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator {
-            private readonly IEnumerator<KeyValuePair<object, object>> _enumerator;
+            private readonly IEnumerator<KeyValuePair<object, object?>> _enumerator;
 
-            public DictionaryEnumerator(IEnumerator<KeyValuePair<object, object>> enumerator) {
+            public DictionaryEnumerator(IEnumerator<KeyValuePair<object, object?>> enumerator) {
                 _enumerator = enumerator;
             }
 
@@ -105,7 +107,7 @@ namespace Microsoft.Scripting.Utils {
                 get { return _enumerator.Current.Key; }
             }
 
-            public object Value {
+            public object? Value {
                 get { return _enumerator.Current.Value; }
             }
 
@@ -128,7 +130,7 @@ namespace Microsoft.Scripting.Utils {
             return result;
         }
 
-        public static int CountOf<T>(IList<T> list, T item) where T : IEquatable<T> {
+        public static int CountOf<T>(IList<T>? list, T item) where T : IEquatable<T> {
             if (list is null) return 0;
 
             int result = 0;

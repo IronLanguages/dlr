@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +19,7 @@ namespace Microsoft.Scripting.Debugging {
             DebugSourceSpan[] sequencePoints,
             IList<VariableInfo>[] scopedVariables,
             IList<VariableInfo> variables,
-            object customPayload) {
+            object? customPayload) {
 
             GeneratorFactory = generatorFactory;
             Name = name;
@@ -34,9 +36,9 @@ namespace Microsoft.Scripting.Debugging {
 
         internal IList<VariableInfo>[] VariableScopeMap { get; }
 
-        internal FunctionInfo PreviousVersion { get; set; }
+        internal FunctionInfo? PreviousVersion { get; set; }
 
-        internal FunctionInfo NextVersion { get; set; }
+        internal FunctionInfo? NextVersion { get; set; }
 
         internal int Version { get; set; }
 
@@ -53,7 +55,7 @@ namespace Microsoft.Scripting.Debugging {
         /// <summary>
         /// Gets the custom payload.
         /// </summary>
-        internal object CustomPayload { get; }
+        internal object? CustomPayload { get; }
 
         /// <summary>
         /// GetTraceLocations

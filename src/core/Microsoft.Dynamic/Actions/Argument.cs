@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq.Expressions;
 
@@ -14,12 +16,12 @@ namespace Microsoft.Scripting.Actions {
     /// </summary>
     public readonly struct Argument : IEquatable<Argument> {
         private readonly ArgumentType _kind;
-        private readonly string _name;
+        private readonly string? _name;
 
         public static readonly Argument Simple = new(ArgumentType.Simple, null);
 
         public ArgumentType Kind => _kind;
-        public string Name => _name;
+        public string? Name => _name;
 
         public Argument(string name) {
             _kind = ArgumentType.Named;
@@ -31,13 +33,13 @@ namespace Microsoft.Scripting.Actions {
             _name = null;
         }
 
-        public Argument(ArgumentType kind, string name) {
+        public Argument(ArgumentType kind, string? name) {
             ContractUtils.Requires((kind == ArgumentType.Named) ^ (name is null), nameof(kind));
             _kind = kind;
             _name = name;
         }
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is Argument argument && Equals(argument);
 
         public bool Equals(Argument other) =>
@@ -59,7 +61,7 @@ namespace Microsoft.Scripting.Actions {
 
         internal Expression CreateExpression() {
             return Expression.New(
-                typeof(Argument).GetConstructor(new Type[] { typeof(ArgumentType), typeof(string) }),
+                typeof(Argument).GetConstructor(new Type[] { typeof(ArgumentType), typeof(string) })!, // declared above
                 AstUtils.Constant(_kind),
                 AstUtils.Constant(_name, typeof(string))
             );

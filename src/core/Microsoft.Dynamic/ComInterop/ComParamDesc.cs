@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 using System;
@@ -23,8 +25,8 @@ namespace Microsoft.Scripting.ComInterop {
         private readonly bool _byRef; // is a reference or pointer parameter?
         private readonly bool _isArray;
         private readonly VarEnum _vt;
-        private readonly string _name;
-        private readonly Type _type;
+        private readonly string? _name;
+        private readonly Type? _type;
         private readonly object _defaultValue;
 
         # endregion
@@ -34,7 +36,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <summary>
         /// Creates a representation for the paramter of a COM method
         /// </summary>
-        internal ComParamDesc(ref ELEMDESC elemDesc, string name) {
+        internal ComParamDesc(ref ELEMDESC elemDesc, string? name) {
             // Ensure _defaultValue is set to DBNull.Value regardless of whether or not the 
             // default value is extracted from the parameter description.  Failure to do so
             // yields a runtime exception in the ToString() function.
@@ -105,8 +107,8 @@ namespace Microsoft.Scripting.ComInterop {
         //    }
         //}
 
-        private static Type GetTypeForVarEnum(VarEnum vt) {
-            Type type;
+        private static Type? GetTypeForVarEnum(VarEnum vt) {
+            Type? type;
 
             switch (vt) {
                 // VarEnums which can be used in VARIANTs, but which cannot occur in a TYPEDESC
@@ -170,7 +172,7 @@ namespace Microsoft.Scripting.ComInterop {
                 result.Append("[out]");
             }
 
-            result.Append(_type.Name);
+            result.Append(_type?.Name);
 
             if (_isArray) {
                 result.Append("[]");
@@ -211,7 +213,7 @@ namespace Microsoft.Scripting.ComInterop {
             get { return _isArray; }
         }
 
-        public Type ParameterType {
+        public Type? ParameterType {
             get {
                 return _type;
             }

@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -23,10 +26,10 @@ namespace Microsoft.Scripting.Utils {
     /// get collected. This could be fixed by triggerring CheckCleanup() to be called on every garbage-collection
     /// by having a dummy watch-dog object with a finalizer which calls CheckCleanup().
     /// </summary>
-    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
+    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : notnull {
         // The one and only comparer instance.
         private static readonly IEqualityComparer<object> comparer = new WeakComparer<object>();
-        private static readonly ConstructorInfo valueConstructor;
+        private static readonly ConstructorInfo? valueConstructor;
 
         private IDictionary<object, TValue> dict = new Dictionary<object, TValue>(comparer);
         private int version, cleanupVersion;
@@ -45,7 +48,7 @@ namespace Microsoft.Scripting.Utils {
 
             // If the WeakHash already holds this value as a key, it will lead to a circular-reference and result
             // in the objects being kept alive forever. The caller needs to ensure that this cannot happen.
-            Debug.Assert(!dict.ContainsKey(value));
+            Debug.Assert(value is null || !dict.ContainsKey(value));
 
             dict.Add(new WeakObject(key), value);
         }
@@ -68,12 +71,14 @@ namespace Microsoft.Scripting.Utils {
             return dict.Remove(key);
         }
 
-        public bool TryGetValue(TKey key, out TValue value) {
+#pragma warning disable CS8767 // IDictionary<TKey, TValue> is not annotated in netstandard2.0 and net462
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) {
             return dict.TryGetValue(key, out value);
         }
+#pragma warning restore CS8767
 
         public TValue GetOrCreateValue(TKey key) {
-            if (!TryGetValue(key, out TValue value)) {
+            if (!TryGetValue(key, out TValue? value)) {
                 if (valueConstructor is null) {
                     throw new InvalidOperationException($"{typeof(TValue).Name} does not have a default constructor.");
                 }
@@ -100,7 +105,7 @@ namespace Microsoft.Scripting.Utils {
             set {
                 // If the WeakHash already holds this value as a key, it will lead to a circular-reference and result
                 // in the objects being kept alive forever. The caller needs to ensure that this cannot happen.
-                Debug.Assert(!dict.ContainsKey(value));
+                Debug.Assert(value is null || !dict.ContainsKey(value));
 
                 CheckCleanup();
 
@@ -157,7 +162,7 @@ namespace Microsoft.Scripting.Utils {
                 Dictionary<object, TValue> newtable = new Dictionary<object, TValue>(liveCount + liveCount / 4, comparer);
 
                 foreach (WeakObject w in dict.Keys) {
-                    object target = w.Target;
+                    object? target = w.Target;
 
                     if (target is not null)
                         newtable[w] = dict[w];
@@ -238,12 +243,12 @@ namespace Microsoft.Scripting.Utils {
         private readonly WeakReference weakReference;
         private readonly int hashCode;
 
-        public WeakObject(object obj) {
+        public WeakObject(object? obj) {
             weakReference = new WeakReference(obj, true);
             hashCode = (obj is null) ? 0 : ReferenceEqualityComparer<object>.Instance.GetHashCode(obj);
         }
 
-        public object Target {
+        public object? Target {
             get {
                 return weakReference.Target;
             }
@@ -253,8 +258,8 @@ namespace Microsoft.Scripting.Utils {
             return hashCode;
         }
 
-        public override bool Equals(object obj) {
-            object target = weakReference.Target;
+        public override bool Equals(object? obj) {
+            object? target = weakReference.Target;
             if (target is null) {
                 return false;
             }
@@ -265,12 +270,12 @@ namespace Microsoft.Scripting.Utils {
 
     // WeakComparer treats WeakObject as transparent envelope
     internal sealed class WeakComparer<T> : IEqualityComparer<T> {
-        bool IEqualityComparer<T>.Equals(T x, T y) {
+        bool IEqualityComparer<T>.Equals(T? x, T? y) {
             if (x is WeakObject wx)
-                x = (T)wx.Target;
+                x = (T?)wx.Target;
 
             if (y is WeakObject wy)
-                y = (T)wy.Target;
+                y = (T?)wy.Target;
 
             return Object.Equals(x, y);
         }
@@ -283,7 +288,7 @@ namespace Microsoft.Scripting.Utils {
         }
     }
 
-    public sealed class HybridMapping<T> {
+    public sealed class HybridMapping<T> where T : notnull {
         private readonly Dictionary<int, object> _dict = new();
         private readonly Lock _synchObject = new();
         private readonly int _offset;
@@ -346,21 +351,22 @@ namespace Microsoft.Scripting.Utils {
             }
         }
 
+        [return: MaybeNull]
         public T GetObjectFromId(int id) {
             bool success;
-            object ret;
+            object? ret;
             lock (_synchObject) {
                 success = _dict.TryGetValue(id, out ret);
             }
             if (success) {
                 if (ret is WeakObject weakObj) {
-                    return (T)weakObj.Target;
+                    return (T?)weakObj.Target;
                 }
                 if (ret is T variable) {
                     return variable;
                 }
 
-                throw new InvalidOperationException("Unexpected dictionary content: type " + ret.GetType());
+                throw new InvalidOperationException("Unexpected dictionary content: type " + ret!.GetType()); // stored values are never null
             }
 
             return default(T);
@@ -371,7 +377,7 @@ namespace Microsoft.Scripting.Utils {
                 foreach (KeyValuePair<int, object> kv in _dict) {
                     switch (kv.Value) {
                         case WeakObject weakObject:
-                            object target = weakObject.Target;
+                            object? target = weakObject.Target;
                             if (target is not null && target.Equals(value))
                                 return kv.Key;
                             break;

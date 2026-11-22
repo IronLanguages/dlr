@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,7 @@ namespace Microsoft.Scripting.Utils {
             _reflector = reflector;
         }
 
-        public IEnumerable<T> GetMembers(Type type, string name = null, bool inherited = false) {
+        public IEnumerable<T> GetMembers(Type type, string? name = null, bool inherited = false) {
             var membersByName = GetMembers(type);
 
             if (name is null) {
@@ -50,7 +52,7 @@ namespace Microsoft.Scripting.Utils {
                 return allMembers.Where(overload => overload.DeclaringType == type);
             }
 
-            if (!membersByName.TryGetValue(name, out List<T> inheritedOverloads)) {
+            if (!membersByName.TryGetValue(name, out List<T>? inheritedOverloads)) {
                 return Enumerable.Empty<T>();
             }
 
@@ -65,7 +67,7 @@ namespace Microsoft.Scripting.Utils {
             var result = new Dictionary<string, List<T>>();
             
             foreach (T member in _reflector(type)) {
-                if (!result.TryGetValue(member.Name, out List<T> overloads)) {
+                if (!result.TryGetValue(member.Name, out List<T>? overloads)) {
                     result.Add(member.Name, overloads = new List<T>());
                 }
 

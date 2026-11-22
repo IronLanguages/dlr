@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Scripting.Runtime {
     public static class ExceptionHelpers {
@@ -21,7 +24,7 @@ namespace Microsoft.Scripting.Runtime {
             // from the raw exception object.
             StackTrace st = new StackTrace(rethrow, true);
 
-            if (!TryGetAssociatedStackTraces(rethrow, out List<StackTrace> prev)) {
+            if (!TryGetAssociatedStackTraces(rethrow, out List<StackTrace>? prev)) {
                 prev = new List<StackTrace>();
                 AssociateStackTraces(rethrow, prev);
             }
@@ -34,15 +37,15 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Returns all the stack traces associates with an exception
         /// </summary>
-        public static IList<StackTrace> GetExceptionStackTraces(Exception rethrow) {
-            return TryGetAssociatedStackTraces(rethrow, out List<StackTrace> result) ? result : null;
+        public static IList<StackTrace>? GetExceptionStackTraces(Exception rethrow) {
+            return TryGetAssociatedStackTraces(rethrow, out List<StackTrace>? result) ? result : null;
         }
 
         private static void AssociateStackTraces(Exception e, List<StackTrace> traces) {
             e.Data[prevStackTraces] = traces;
         }
 
-        private static bool TryGetAssociatedStackTraces(Exception e, out List<StackTrace> traces) {
+        private static bool TryGetAssociatedStackTraces(Exception e, [NotNullWhen(true)] out List<StackTrace>? traces) {
             traces = e.Data[prevStackTraces] as List<StackTrace>;
             return traces is not null;
         }        

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 
 using System;
@@ -47,7 +49,7 @@ namespace Microsoft.Scripting.ComInterop {
             if (dest.IsAssignableFrom(src)) {
                 return true;
             }
-            if (dest.IsArray && src.IsArray && dest.GetArrayRank() == src.GetArrayRank() && AreReferenceAssignable(dest.GetElementType(), src.GetElementType())) {
+            if (dest.IsArray && src.IsArray && dest.GetArrayRank() == src.GetArrayRank() && AreReferenceAssignable(dest.GetElementType()!, src.GetElementType()!)) { // arrays have element types
                 return true;
             }
             if (src.IsArray && dest.IsGenericType &&
@@ -74,13 +76,13 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         //CONFORMING
-        internal static MethodInfo GetUserDefinedCoercionMethod(Type convertFrom, Type convertToType, bool implicitOnly) {
+        internal static MethodInfo? GetUserDefinedCoercionMethod(Type convertFrom, Type convertToType, bool implicitOnly) {
             // check for implicit coercions first
             Type nnExprType = TypeUtils.GetNonNullableType(convertFrom);
             Type nnConvType = TypeUtils.GetNonNullableType(convertToType);
             // try exact match on types
             MethodInfo[] eMethods = nnExprType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo method = FindConversionOperator(eMethods, convertFrom, convertToType, implicitOnly);
+            MethodInfo? method = FindConversionOperator(eMethods, convertFrom, convertToType, implicitOnly);
             if (method is not null) {
                 return method;
             }
@@ -101,7 +103,7 @@ namespace Microsoft.Scripting.ComInterop {
         }
 
         //CONFORMING
-        internal static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly) {
+        internal static MethodInfo? FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly) {
             foreach (MethodInfo mi in methods) {
                 if (mi.Name != "op_Implicit" && (implicitOnly || mi.Name != "op_Explicit"))
                     continue;

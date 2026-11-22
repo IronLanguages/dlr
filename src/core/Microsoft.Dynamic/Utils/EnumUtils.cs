@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Runtime.CompilerServices;
 
 namespace Microsoft.Scripting.Utils {
     public static class EnumUtils {        
-        public static object BitwiseOr(object self, object other) {
+        public static object? BitwiseOr(object self, object other) {
             if (self is Enum && other is Enum) {
                 Type selfType = self.GetType();
                 Type otherType = other.GetType();
@@ -41,7 +43,7 @@ namespace Microsoft.Scripting.Utils {
             return null;
         }
 
-        public static object BitwiseAnd(object self, object other) {
+        public static object? BitwiseAnd(object self, object other) {
             if (self is Enum && other is Enum) {
                 Type selfType = self.GetType();
                 Type otherType = other.GetType();
@@ -72,7 +74,7 @@ namespace Microsoft.Scripting.Utils {
             return null;
         }
 
-        public static object ExclusiveOr(object self, object other) {
+        public static object? ExclusiveOr(object self, object other) {
             if (self is Enum && other is Enum) {
                 Type selfType = self.GetType();
                 Type otherType = other.GetType();
@@ -104,7 +106,7 @@ namespace Microsoft.Scripting.Utils {
             return null;
         }
 
-        public static object OnesComplement(object self) {
+        public static object? OnesComplement(object self) {
             if (self is Enum) {
                 Type selfType = self.GetType();
                 Type underType = Enum.GetUnderlyingType(selfType);

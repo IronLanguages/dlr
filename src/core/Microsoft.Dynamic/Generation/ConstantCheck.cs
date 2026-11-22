@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System.Diagnostics;
@@ -17,7 +19,7 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="expression">The expression to examine</param>
         /// <param name="value">The constant value to check for.</param>
         /// <returns>true/false</returns>
-        public static bool Check(Expression expression, object value) {
+        public static bool Check(Expression expression, object? value) {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
             return IsConstant(expression, value);
         }
@@ -29,7 +31,7 @@ namespace Microsoft.Scripting.Generation {
         /// <param name="e">The expression to examine</param>
         /// <param name="value">The constant value to check for.</param>
         /// <returns>true/false</returns>
-        internal static bool IsConstant(Expression e, object value) {
+        internal static bool IsConstant(Expression e, object? value) {
             switch (e.NodeType) {
                 case ExpressionType.AndAlso:
                     return CheckAndAlso((BinaryExpression)e, value);
@@ -54,7 +56,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
 
-        private static bool CheckAndAlso(BinaryExpression node, object value) {
+        private static bool CheckAndAlso(BinaryExpression node, object? value) {
             Debug.Assert(node.NodeType == ExpressionType.AndAlso);
 
             if (node.Method is not null) {
@@ -76,7 +78,7 @@ namespace Microsoft.Scripting.Generation {
             return false;
         }
 
-        private static bool CheckOrElse(BinaryExpression node, object value) {
+        private static bool CheckOrElse(BinaryExpression node, object? value) {
             Debug.Assert(node.NodeType == ExpressionType.OrElse);
 
             if (node.Method is not null) {
@@ -94,7 +96,7 @@ namespace Microsoft.Scripting.Generation {
             return false;
         }
 
-        private static bool CheckConstant(ConstantExpression node, object value) {
+        private static bool CheckConstant(ConstantExpression node, object? value) {
             if (value is null) {
                 return node.Value is null;
             }
@@ -102,7 +104,7 @@ namespace Microsoft.Scripting.Generation {
             return value.Equals(node.Value);
         }
 
-        private static bool Check(TypeBinaryExpression node, object value) {
+        private static bool Check(TypeBinaryExpression node, object? value) {
             // allow constant TypeIs expressions to be optimized away
             if (value is bool b && b) {
                 return node.TypeOperand.IsAssignableFrom(node.Expression.Type);
