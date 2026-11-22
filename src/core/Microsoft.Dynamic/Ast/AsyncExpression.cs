@@ -5,6 +5,8 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +44,8 @@ namespace Microsoft.Scripting.Ast {
                                   Expression? observer = null,
                                   Expression? cancellationToken = null,
                                   DebugContext? debugContext = null,
-                                  DebugLambdaInfo? debugLambdaInfo = null) {
+                                  DebugLambdaInfo? debugLambdaInfo = null,
+                                  ReadOnlyCollection<ParameterExpression>? debugVariables = null) {
             Name = name;
             Body = body;
             Interrupts = interrupts ?? Utils.DefaultInterrupts;
@@ -50,6 +53,7 @@ namespace Microsoft.Scripting.Ast {
             CancellationToken = cancellationToken ?? Utils.DefaultCancellationToken;
             DebugContext = debugContext;
             DebugLambdaInfo = debugLambdaInfo;
+            DebugVariables = debugVariables ?? ReadOnlyCollection<ParameterExpression>.Empty;
         }
 
         /// <summary>
@@ -62,12 +66,42 @@ namespace Microsoft.Scripting.Ast {
         internal DebugLambdaInfo? DebugLambdaInfo { get; }
 
         /// <summary>
+        ///   The variables of the enclosing scopes that the frame of the traced body exposes.
+        /// </summary>
+        /// <remarks>
+        ///   See <see cref="WithDebugInfo(DebugContext, DebugLambdaInfo, IEnumerable{ParameterExpression})"/>.
+        /// </remarks>
+        internal ReadOnlyCollection<ParameterExpression> DebugVariables { get; }
+
+        /// <summary>
         ///   Returns a copy of this node that instruments its body for tracing under the given debug context.
         /// </summary>
-        public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo) {
+        /// <remarks>
+        ///   The frame of the traced body exposes the variables the body declares, but none of the enclosing scopes.
+        /// </remarks>
+        public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo)
+            => WithDebugInfo(debugContext, debugLambdaInfo, ReadOnlyCollection<ParameterExpression>.Empty);
+
+        /// <summary>
+        ///   Returns a copy of this node that instruments its body for tracing under the given debug context, with a frame that also
+        ///   exposes the given variables of the enclosing scopes.
+        /// </summary>
+        /// <remarks>
+        ///   The body has no lambda scope of its own, so the locals of the function it implements are typically variables of the enclosing
+        ///   scopes, which the body accesses through closure (see <see cref="AsyncExpression"/>). Like the parameters of a lambda, they are
+        ///   visible at every location of the body. They are named and hidden according to <paramref name="debugLambdaInfo"/>.
+        /// </remarks>
+        /// <param name="variables">
+        ///   Variables in scope where this node is evaluated, typically the parameters and locals of the enclosing lambda, in the order the
+        ///   frame lists them.
+        /// </param>
+        public AsyncExpression WithDebugInfo(DebugContext debugContext, DebugLambdaInfo debugLambdaInfo, IEnumerable<ParameterExpression> variables) {
             ContractUtils.RequiresNotNull(debugContext, nameof(debugContext));
             ContractUtils.RequiresNotNull(debugLambdaInfo, nameof(debugLambdaInfo));
-            return new AsyncExpression(Name, Body, Interrupts, Observer, CancellationToken, debugContext, debugLambdaInfo);
+            ContractUtils.RequiresNotNull(variables, nameof(variables));
+            ReadOnlyCollection<ParameterExpression> debugVariables = variables.ToReadOnlyCollection();
+            ContractUtils.RequiresNotNullItems(debugVariables, nameof(variables));
+            return new AsyncExpression(Name, Body, Interrupts, Observer, CancellationToken, debugContext, debugLambdaInfo, debugVariables);
         }
 
         /// <summary>
@@ -88,7 +122,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.RequiresNotNull(observer, nameof(observer));
             ContractUtils.RequiresReferenceAssignable(observer, typeof(IObserver<AsyncBodyEvent>), nameof(observer));
             if (Utils.HasObserver(Observer)) throw new InvalidOperationException("The async expression already has an observer.");
-            return new AsyncExpression(Name, Body, Interrupts, observer, CancellationToken, DebugContext, DebugLambdaInfo);
+            return new AsyncExpression(Name, Body, Interrupts, observer, CancellationToken, DebugContext, DebugLambdaInfo, DebugVariables);
         }
 
         /// <summary>
@@ -128,8 +162,9 @@ namespace Microsoft.Scripting.Ast {
             Expression i = visitor.Visit(Interrupts);
             Expression o = visitor.Visit(Observer);
             Expression ct = visitor.Visit(CancellationToken);
-            if (b == Body && i == Interrupts && o == Observer && ct == CancellationToken) return this;
-            return new AsyncExpression(Name, b, i, o, ct, DebugContext, DebugLambdaInfo);
+            ReadOnlyCollection<ParameterExpression> v = visitor.VisitAndConvert(DebugVariables, nameof(VisitChildren));
+            if (b == Body && i == Interrupts && o == Observer && ct == CancellationToken && v == DebugVariables) return this;
+            return new AsyncExpression(Name, b, i, o, ct, DebugContext, DebugLambdaInfo, v);
         }
     }
 
