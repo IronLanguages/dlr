@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 #pragma warning disable 612, 618
 
@@ -34,7 +36,7 @@ namespace Microsoft.Scripting.ComInterop {
         private static readonly Dictionary<VarEnum, Type> _ComToManagedPrimitiveTypes = CreateComToManagedPrimitiveTypes();
         private static readonly IList<IList<VarEnum>> _ComPrimitiveTypeFamilies = CreateComPrimitiveTypeFamilies();
 
-        internal VarEnumSelector(Type[] explicitArgTypes) {
+        internal VarEnumSelector(Type?[] explicitArgTypes) {
             _variantBuilders = new VariantBuilder[explicitArgTypes.Length];
 
             for (int i = 0; i < explicitArgTypes.Length; i++) {
@@ -363,7 +365,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// <summary>
         /// Get the COM Variant type that argument should be marshaled as for a call to COM
         /// </summary>
-        private static VariantBuilder GetVariantBuilder(Type argumentType) {
+        private static VariantBuilder GetVariantBuilder(Type? argumentType) {
             //argumentType is coming from MarshalType, null means the dynamic object holds
             //a null value and not byref
             if (argumentType is null) {
@@ -377,7 +379,7 @@ namespace Microsoft.Scripting.ComInterop {
             ArgBuilder argBuilder;
 
             if (argumentType.IsByRef) {
-                Type elementType = argumentType.GetElementType();
+                Type elementType = argumentType.GetElementType()!; // by-ref types have an element type
 
                 VarEnum elementVarEnum;
                 if (elementType == typeof(object) || elementType == typeof(DBNull)) {

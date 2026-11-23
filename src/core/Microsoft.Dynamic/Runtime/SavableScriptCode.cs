@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 
 using System;
@@ -41,18 +43,18 @@ namespace Microsoft.Scripting {
             }
         }
 
-        public static void SaveToAssembly(string assemblyName, IDictionary<string, object> assemblyAttributes, params SavableScriptCode[] codes) {
+        public static void SaveToAssembly(string assemblyName, IDictionary<string, object>? assemblyAttributes, params SavableScriptCode[] codes) {
             ContractUtils.RequiresNotNull(assemblyName, nameof(assemblyName));
             ContractUtils.RequiresNotNullItems(codes, nameof(codes));
 
 #if FEATURE_FILESYSTEM
             // break the assemblyName into it's dir/name/extension
-            string dir = Path.GetDirectoryName(assemblyName);
+            string? dir = Path.GetDirectoryName(assemblyName);
             if (String.IsNullOrEmpty(dir)) {
                 dir = Environment.CurrentDirectory;
             }
 #else
-            string dir = null;
+            string? dir = null;
 #endif
 
             string name = Path.GetFileNameWithoutExtension(assemblyName);
@@ -66,7 +68,7 @@ namespace Microsoft.Scripting {
 
             Dictionary<Type, List<CodeInfo>> langCtxBuilders = new Dictionary<Type, List<CodeInfo>>();
             foreach (SavableScriptCode sc in codes) {
-                if (!langCtxBuilders.TryGetValue(sc.LanguageContext.GetType(), out List<CodeInfo> builders)) {
+                if (!langCtxBuilders.TryGetValue(sc.LanguageContext.GetType(), out List<CodeInfo>? builders)) {
                     langCtxBuilders[sc.LanguageContext.GetType()] = builders = new List<CodeInfo>();
                 }
 
@@ -134,7 +136,7 @@ namespace Microsoft.Scripting {
             ilgen.Emit(OpCodes.Ret);
 
             mb.SetCustomAttribute(new CustomAttributeBuilder(
-                typeof(DlrCachedCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes),
+                typeof(DlrCachedCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes)!, // the attribute has a parameterless constructor
                 ArrayUtils.EmptyObjects
             ));
 
@@ -170,26 +172,31 @@ namespace Microsoft.Scripting {
             ContractUtils.RequiresNotNull(assembly, nameof(assembly));
 
             // get the type which has our cached code...
-            Type t = assembly.GetType("DLRCachedCode");
+            Type? t = assembly.GetType("DLRCachedCode");
             if (t is null) {
                 return Array.Empty<ScriptCode>();
             }
 
             List<ScriptCode> codes = new List<ScriptCode>();
 
-            MethodInfo mi = t.GetMethod("GetScriptCodeInfo");
-            if (mi.IsSpecialName && mi.IsDefined(typeof(DlrCachedCodeAttribute), false)) {
-                var infos = (MutableTuple<Type[], Delegate[][], string[][], string[][]>)mi.Invoke(null, ArrayUtils.EmptyObjects);
+            MethodInfo? mi = t.GetMethod("GetScriptCodeInfo");
+            if (mi is not null && mi.IsSpecialName && mi.IsDefined(typeof(DlrCachedCodeAttribute), false)) {
+                // GetScriptCodeInfo, as emitted by SaveToAssembly, returns a new tuple with all items set
+                var infos = (MutableTuple<Type[], Delegate[][], string[][], string?[][]>)mi.Invoke(null, ArrayUtils.EmptyObjects)!;
+                Type[] languageTypes = infos.Item000!;
+                Delegate[][] allMethods = infos.Item001!;
+                string[][] allNames = infos.Item002!;
+                string?[][] allCustomData = infos.Item003!;
 
-                for (int i = 0; i < infos.Item000.Length; i++) {
-                    Type curType = infos.Item000[i];
+                for (int i = 0; i < languageTypes.Length; i++) {
+                    Type curType = languageTypes[i];
                     LanguageContext lc = runtime.GetLanguage(curType);
 
-                    Debug.Assert(infos.Item001[i].Length == infos.Item002[i].Length);
+                    Debug.Assert(allMethods[i].Length == allNames[i].Length);
 
-                    Delegate[] methods = infos.Item001[i];
-                    string[] names = infos.Item002[i];
-                    string[] customData = infos.Item003[i];
+                    Delegate[] methods = allMethods[i];
+                    string[] names = allNames[i];
+                    string?[] customData = allCustomData[i];
 
                     for (int j = 0; j < methods.Length; j++) {
                         codes.Add(lc.LoadCompiledCode(methods[j], names[j], customData[j]));

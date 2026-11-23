@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -40,7 +42,7 @@ namespace Microsoft.Scripting.Ast {
             return CoalesceInternal(left, right, isTrue, true, out temp);
         }
 
-        private static Expression CoalesceInternal(Expression left, Expression right, MethodInfo isTrue, bool isReverse, out ParameterExpression temp) {
+        private static Expression CoalesceInternal(Expression left, Expression right, MethodInfo? isTrue, bool isReverse, out ParameterExpression temp) {
             ContractUtils.RequiresNotNull(left, nameof(left));
             ContractUtils.RequiresNotNull(right, nameof(right));
 

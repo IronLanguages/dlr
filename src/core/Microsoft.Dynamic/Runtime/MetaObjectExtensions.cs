@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -78,7 +80,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public static DynamicMetaObject Clone(this DynamicMetaObject self, Expression newExpression, BindingRestrictions newRestrictions) {
             return (self.HasValue) ? 
-                new DynamicMetaObject(newExpression, newRestrictions, self.Value) :
+                new DynamicMetaObject(newExpression, newRestrictions, self.Value!) : // null is a valid value despite the annotation
                 new DynamicMetaObject(newExpression, newRestrictions);
         }
 
@@ -97,7 +99,7 @@ namespace Microsoft.Scripting.Runtime {
         ///Returns Microsoft.Scripting.Runtime.DynamicNull if the object contains a null value,
         ///otherwise, returns self.RuntimeType
         /// </summary>
-        public static Type GetRuntimeType(this DynamicMetaObject self) {
+        public static Type? GetRuntimeType(this DynamicMetaObject self) {
             if (self.Value is null && self.HasValue) {
                 return typeof(DynamicNull);
             }

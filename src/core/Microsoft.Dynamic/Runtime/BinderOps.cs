@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Helper function to combine an object array with a sequence of additional parameters that has been splatted for a function call.
         /// </summary>
-        public static object[] GetCombinedParameters(object[] initialArgs, object additionalArgs) {
+        public static object?[] GetCombinedParameters(object?[] initialArgs, object? additionalArgs) {
             return additionalArgs switch {
                 ICollection listArgs => [..initialArgs, ..listArgs],
                 IEnumerable ie => [..initialArgs, ..ie],
@@ -32,7 +34,7 @@ namespace Microsoft.Scripting.Runtime {
             };
         }
 
-        public static Dictionary<TKey, TValue> MakeDictionary<TKey, TValue>(string[] names, object[] values) {
+        public static Dictionary<TKey, TValue> MakeDictionary<TKey, TValue>(string[] names, object?[] values) where TKey : notnull {
             Debug.Assert(typeof(TKey) == typeof(string) || typeof(TKey) == typeof(object));
 
             Dictionary<TKey, TValue> res = new Dictionary<TKey, TValue>(names.Length);
@@ -49,20 +51,20 @@ namespace Microsoft.Scripting.Runtime {
             return res;
         }
 
-        public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object[] values) {
+        public static IReadOnlyDictionary<TKey, TValue> MakeReadOnlyDictionary<TKey, TValue>(string[] names, object?[] values) where TKey : notnull {
             if (names.Length == 0) {
                 return ReadOnlyDictionary<TKey, TValue>.Empty;
             }
             return MakeDictionary<TKey, TValue>(names, values);
         }
 
-        public static ArgumentTypeException BadArgumentsForOperation(ExpressionType op, params object[] args) {
+        public static ArgumentTypeException BadArgumentsForOperation(ExpressionType op, params object?[] args) {
             StringBuilder message = new StringBuilder("unsupported operand type(s) for operation ");
             message.Append(op.ToString());
             message.Append(": ");
             string comma = "";
 
-            foreach (object o in args) {
+            foreach (object? o in args) {
                 message.Append(comma);
                 message.Append(CompilerHelpers.GetType(o));
                 comma = ", ";
@@ -159,24 +161,24 @@ namespace Microsoft.Scripting.Runtime {
             return new ArgumentTypeException($"{name}() argument after * must be a sequence, not {typeName}");
         }
 
-        public static object InvokeMethod(MethodBase mb, object obj, object[] args) {
+        public static object? InvokeMethod(MethodBase mb, object? obj, object?[] args) {
             try {
                 return mb.Invoke(obj, args);
             } catch (TargetInvocationException tie) {
-                throw tie.InnerException;
+                throw tie.InnerException!; // reflection wraps the exception thrown by the invoked method
             }
         }
 
-        public static object InvokeConstructor(ConstructorInfo ci, object[] args) {
+        public static object InvokeConstructor(ConstructorInfo ci, object?[] args) {
             try {
                 return ci.Invoke(args);
             } catch (TargetInvocationException tie) {
-                throw tie.InnerException;
+                throw tie.InnerException!; // reflection wraps the exception thrown by the invoked constructor
             }
         }
 
         // TODO: just emit this in the generated code
-        public static bool CheckDictionaryMembers(IDictionary dict, string[] names, Type[] types) {
+        public static bool CheckDictionaryMembers(IDictionary dict, string[] names, Type[]? types) {
             if (dict.Count != names.Length) return false;
 
             for (int i = 0; i < names.Length; i++) {
@@ -211,13 +213,13 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <param name="eventInfo"></param>
         /// <returns></returns>
-        public static Type GetEventHandlerType(EventInfo eventInfo) {
+        public static Type? GetEventHandlerType(EventInfo eventInfo) {
             ContractUtils.RequiresNotNull(eventInfo, nameof(eventInfo));
             return eventInfo.EventHandlerType;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")] // TODO: fix
-        public static void SetEvent(EventTracker eventTracker, object value) {
+        public static void SetEvent(EventTracker eventTracker, object? value) {
             if (value is EventTracker et) {
                 if (et != eventTracker) {
                     throw new ArgumentException(String.Format("expected event from {0}.{1}, got event from {2}.{3}",

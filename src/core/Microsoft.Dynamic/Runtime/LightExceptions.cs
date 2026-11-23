@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -35,7 +36,7 @@ namespace Microsoft.Scripting.Runtime {
     /// via 2-pass exception handling.
     /// </summary>
     public static class LightExceptions {
-        internal static MethodInfo _checkAndThrow = new Func<object, object>(LightExceptions.CheckAndThrow).GetMethodInfo();
+        internal static MethodInfo _checkAndThrow = new Func<object?, object?>(LightExceptions.CheckAndThrow).GetMethodInfo();
 
         /// <summary>
         /// Rewrites the provided expression to support light exceptions.  
@@ -136,7 +137,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Throws the exception if the value represents a light exception
         /// </summary>
-        public static object CheckAndThrow(object value) {
+        public static object? CheckAndThrow(object? value) {
             if (value is LightException lightEx) {
                 ThrowException(lightEx);
             }
@@ -160,7 +161,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Checks to see if the provided value is a light exception.
         /// </summary>
-        public static bool IsLightException(object value) {
+        public static bool IsLightException(object? value) {
             return value is LightException;
         }
 
@@ -170,8 +171,8 @@ namespace Microsoft.Scripting.Runtime {
         /// 
         /// Used for throwing the exception at non-light exception boundaries.  
         /// </summary>
-        public static Exception GetLightException(object exceptionValue) {
-            LightException lightEx = exceptionValue as LightException;
+        public static Exception? GetLightException(object? exceptionValue) {
+            LightException? lightEx = exceptionValue as LightException;
             return lightEx?.Exception;
         }
 
@@ -195,7 +196,7 @@ namespace Microsoft.Scripting.Runtime {
             public readonly Exception Exception;
 
             public LightException(Exception exception) {
-                Debug.Assert(exception is not null);
+                Assert.NotNull(exception);
 
                 Exception = exception;
             }

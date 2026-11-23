@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -52,7 +54,7 @@ namespace Microsoft.Scripting.Ast {
         /// Returns an expression that boxes a given value. Uses boxed objects cache for Int32 and Boolean types.
         /// </summary>
         public static Expression Box(Expression expression) {
-            MethodInfo m;
+            MethodInfo? m;
             if (expression.Type == typeof(int)) {
                 m = ScriptingRuntimeHelpers.Int32ToObjectMethod;
             } else if (expression.Type == typeof(bool)) {

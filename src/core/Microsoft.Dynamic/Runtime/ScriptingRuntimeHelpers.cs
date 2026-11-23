@@ -161,9 +161,9 @@ namespace Microsoft.Scripting.Runtime {
         /// </summary>
         /// <param name="eventInfo"></param>
         /// <returns></returns>
-        public static Type GetEventHandlerType(EventInfo eventInfo) {
+        public static Type? GetEventHandlerType(EventInfo eventInfo) {
             ContractUtils.RequiresNotNull(eventInfo, nameof(eventInfo));
-            return eventInfo.EventHandlerType!; // only custom EventInfo implementations can lack a handler type
+            return eventInfo.EventHandlerType;
         }
 
         public static IList<string> GetStringMembers(IList<object> members) {

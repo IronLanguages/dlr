@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_COM
 using System.Linq.Expressions;
 
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Utils;
 
@@ -19,15 +20,15 @@ namespace Microsoft.Scripting.ComInterop {
         // Can the number of arguments to a given event change each call?
         // If not, we don't need this level of indirection--we could cache a
         // delegate that does the splatting.
-        internal CallSite<Func<CallSite, object, object[], object>> _site;
+        internal CallSite<Func<CallSite, object, object?[], object?>>? _site;
 
         internal SplatCallSite(object callable) {
-            Debug.Assert(callable is not null);
+            Assert.NotNull(callable);
             _callable = callable;
         }
 
-        internal object Invoke(object[] args) {
-            Debug.Assert(args is not null);
+        internal object? Invoke(object?[] args) {
+            Assert.NotNull(args);
 
             // If it is a delegate, just let DynamicInvoke do the binding.
             if (_callable is Delegate d) {
@@ -35,7 +36,7 @@ namespace Microsoft.Scripting.ComInterop {
             }
 
             // Otherwise, create a CallSite and invoke it.
-            _site ??= CallSite<Func<CallSite, object, object[], object>>.Create(SplatInvokeBinder.Instance);
+            _site ??= CallSite<Func<CallSite, object, object?[], object?>>.Create(SplatInvokeBinder.Instance);
 
             return _site.Target(_site, _callable, args);
         }

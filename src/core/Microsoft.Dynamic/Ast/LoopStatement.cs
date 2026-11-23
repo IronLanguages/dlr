@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -13,11 +15,11 @@ namespace Microsoft.Scripting.Ast {
     /// Factory methods.
     /// </summary>
     public static partial class Utils {
-        public static LoopExpression While(Expression test, Expression body, Expression @else) {
+        public static LoopExpression While(Expression test, Expression body, Expression? @else) {
             return Loop(test, null, body, @else, null, null);
         }
 
-        public static LoopExpression While(Expression test, Expression body, Expression @else, LabelTarget @break, LabelTarget @continue) {
+        public static LoopExpression While(Expression test, Expression body, Expression? @else, LabelTarget? @break, LabelTarget? @continue) {
             return Loop(test, null, body, @else, @break, @continue);
         }
 
@@ -25,15 +27,15 @@ namespace Microsoft.Scripting.Ast {
             return Expression.Loop(body, null, null);
         }
 
-        public static LoopExpression Infinite(Expression body, LabelTarget @break, LabelTarget @continue) {
+        public static LoopExpression Infinite(Expression body, LabelTarget? @break, LabelTarget? @continue) {
             return Expression.Loop(body, @break, @continue);
         }
 
-        public static LoopExpression Loop(Expression test, Expression increment, Expression body, Expression @else) {
+        public static LoopExpression Loop(Expression? test, Expression? increment, Expression body, Expression? @else) {
             return Loop(test, increment, body, @else, null, null);
         }
 
-        public static LoopExpression Loop(Expression test, Expression increment, Expression body, Expression @else, LabelTarget @break, LabelTarget @continue) {
+        public static LoopExpression Loop(Expression? test, Expression? increment, Expression body, Expression? @else, LabelTarget? @break, LabelTarget? @continue) {
             ContractUtils.RequiresNotNull(body, nameof(body));
             if (test is not null) {
                 ContractUtils.Requires(test.Type == typeof(bool), nameof(test), "Test must be boolean");
@@ -62,7 +64,7 @@ namespace Microsoft.Scripting.Ast {
                             Utils.Empty(),
                             Expression.Block(
                                 @else ?? Empty(),
-                                Expression.Break(@break)
+                                Expression.Break(@break!) // set above when there is a test
                             )
                         )
                         : Empty(),

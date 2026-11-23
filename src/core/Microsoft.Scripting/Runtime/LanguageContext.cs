@@ -199,7 +199,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <remarks>Could also set the code properties and line/file mappings on the source unit.</remarks>
         public abstract ScriptCode? CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink);
 
-        public virtual ScriptCode? LoadCompiledCode(Delegate method, string path, string customData) {
+        public virtual ScriptCode LoadCompiledCode(Delegate method, string path, string? customData) {
             throw new NotSupportedException();
         }
 

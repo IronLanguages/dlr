@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.Scripting.Utils;
 
@@ -16,7 +19,7 @@ namespace Microsoft.Scripting.Runtime {
         /// <summary>
         /// Explicitly casts the object to a given type (and returns it as object)
         /// </summary>
-        public static object Explicit(object o, Type to) {
+        public static object? Explicit(object? o, Type to) {
             if (o is null) {
                 // Null objects can be only cast to Nullable<T> or any reference type
                 if (to.IsValueType) {
@@ -48,11 +51,12 @@ namespace Microsoft.Scripting.Runtime {
             throw new InvalidCastException($"Cannot cast {type.Name} to {to.Name}");
         }
 
-        public static T Explicit<T>(object o) {
-            return (T)Explicit(o, typeof(T));
+        [return: MaybeNull]
+        public static T Explicit<T>(object? o) {
+            return (T?)Explicit(o, typeof(T));
         }
 
-        private static object ExplicitCastToValueType(object o, Type to) {
+        private static object? ExplicitCastToValueType(object o, Type to) {
             Debug.Assert(o is not null);
             Debug.Assert(to.IsValueType);
 
@@ -91,12 +95,12 @@ namespace Microsoft.Scripting.Runtime {
             throw new InvalidCastException();
         }
 
-        private static object NewNullableInstanceSlow(Type type) {
+        private static object? NewNullableInstanceSlow(Type type) {
             Type concrete = NullableType.MakeGenericType(type);
             return Activator.CreateInstance(concrete);
         }
 
-        private static InvalidCastException InvalidCast(object o, string typeName) {
+        private static InvalidCastException InvalidCast(object? o, string typeName) {
             return new InvalidCastException($"Cannot cast {o?.GetType().Name ?? "(null)"} to {typeName}");
         }
     }

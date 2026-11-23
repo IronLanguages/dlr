@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -48,7 +50,7 @@ namespace Microsoft.Scripting.Runtime {
         private readonly Type[] _parameterTypes;
         private readonly MethodInfo _method;
         private readonly InvokeBinder _invokeBinder;
-        private readonly ConvertBinder _convertBinder;
+        private readonly ConvertBinder? _convertBinder; // null for void return type
 
         public DelegateInfo(LanguageContext context, Type returnType, Type[] parameters) {
             Assert.NotNull(returnType);
@@ -57,7 +59,7 @@ namespace Microsoft.Scripting.Runtime {
             _returnType = returnType;
             _parameterTypes = parameters;
 
-            PerfTrack.NoteEvent(PerfTrack.Categories.DelegateCreate, ToString());
+            PerfTrack.NoteEvent(PerfTrack.Categories.DelegateCreate, ToString()!); // not overridden, so it is the type name
 
             if (_returnType != typeof(void)) {
                 _convertBinder = context.CreateConvertBinder(_returnType, true);
@@ -77,9 +79,9 @@ namespace Microsoft.Scripting.Runtime {
         public Delegate CreateDelegate(Type delegateType, object dynamicObject) {
             Assert.NotNull(delegateType, dynamicObject);
 
-            object[] closure;
+            object?[]? closure;
             lock (_closureMap) {
-                if (!_closureMap.TryGetValue(dynamicObject, out WeakReference weakClosure) || (closure = (object[])weakClosure.Target) is null) {
+                if (!_closureMap.TryGetValue(dynamicObject, out WeakReference? weakClosure) || (closure = (object?[]?)weakClosure.Target) is null) {
 
                     closure = new[] { TargetPlaceHolder, CallSitePlaceHolder, ConvertSitePlaceHolder };
                     _closureMap[dynamicObject] = new WeakReference(closure);
@@ -88,8 +90,8 @@ namespace Microsoft.Scripting.Runtime {
 
                     CallSite callSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(siteTypes), _invokeBinder);
 
-                    CallSite convertSite = null;
-                    if (_returnType != typeof(void)) {
+                    CallSite? convertSite = null;
+                    if (_convertBinder is not null) {
                         convertSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(typeof(object), _returnType), _convertBinder);
                     }
 
@@ -122,15 +124,11 @@ namespace Microsoft.Scripting.Runtime {
             CallSite callSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(siteTypes), _invokeBinder);
             Type siteType = callSite.GetType();
 
-            Type convertSiteType = null;
-
-            if (_returnType != typeof(void)) {
+            FieldInfo? convertTarget = null;
+            if (_convertBinder is not null) {
                 CallSite convertSite = CallSite.Create(DynamicSiteHelpers.MakeCallSiteDelegate(typeof(object), _returnType), _convertBinder);
-                convertSiteType = convertSite.GetType();
-            }
+                Type convertSiteType = convertSite.GetType();
 
-            FieldInfo convertTarget = null;
-            if (_returnType != typeof(void)) {
                 // load up the conversion logic on the stack
                 LocalBuilder convertSiteLocal = cg.DeclareLocal(convertSiteType);
                 EmitConstantGet(cg, ConvertSiteIndex, convertSiteType);
@@ -138,7 +136,7 @@ namespace Microsoft.Scripting.Runtime {
                 cg.Emit(OpCodes.Dup);
                 cg.Emit(OpCodes.Stloc, convertSiteLocal);
 
-                convertTarget = convertSiteType.GetDeclaredField("Target");
+                convertTarget = convertSiteType.GetDeclaredField(nameof(CallSite<>.Target))!;
                 cg.EmitFieldGet(convertTarget);
                 cg.Emit(OpCodes.Ldloc, convertSiteLocal);
             }
@@ -149,7 +147,7 @@ namespace Microsoft.Scripting.Runtime {
             cg.Emit(OpCodes.Dup);
             cg.Emit(OpCodes.Stloc, site);
 
-            FieldInfo target = siteType.GetDeclaredField("Target");
+            FieldInfo target = siteType.GetDeclaredField(nameof(CallSite<>.Target))!;
             cg.EmitFieldGet(target);
             cg.Emit(OpCodes.Ldloc, site);
 
@@ -157,7 +155,7 @@ namespace Microsoft.Scripting.Runtime {
 
             for (int i = 0; i < _parameterTypes.Length; i++) {
                 if (_parameterTypes[i].IsByRef) {
-                    ReturnFixer rf = ReturnFixer.EmitArgument(cg, i + 1, _parameterTypes[i]);
+                    ReturnFixer? rf = ReturnFixer.EmitArgument(cg, i + 1, _parameterTypes[i]);
                     if (rf is not null) fixers.Add(rf);
                 } else {
                     cg.EmitLoadArg(i + 1);
@@ -168,7 +166,7 @@ namespace Microsoft.Scripting.Runtime {
             cg.EmitCall(target.FieldType, "Invoke");
 
             // emit the invoke for the convert
-            if (_returnType == typeof(void)) {
+            if (convertTarget is null) {
                 cg.Emit(OpCodes.Pop);
             } else {
                 cg.EmitCall(convertTarget.FieldType, "Invoke");

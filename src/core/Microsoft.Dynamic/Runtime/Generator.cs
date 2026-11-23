@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace Microsoft.Scripting.Runtime {
     }
 
     // TODO: does this need to be public?
-    public delegate void GeneratorNext<T>(ref int state, ref T current);
+    public delegate void GeneratorNext<T>(ref int state, ref T? current);
 
     internal class GeneratorEnumerable<T> : IEnumerable<T> {
         protected readonly Func<GeneratorNext<T>> _next;
@@ -37,7 +39,7 @@ namespace Microsoft.Scripting.Runtime {
 
     internal class GeneratorEnumerator<T> : IEnumerator<T> {
         private readonly GeneratorNext<T> _next;
-        private T _current;
+        private T? _current;
         protected int _state;
 
         internal GeneratorEnumerator(GeneratorNext<T> next) {
@@ -45,14 +47,14 @@ namespace Microsoft.Scripting.Runtime {
             _state = GeneratorRewriter.NotStarted;
         }
 
-        T IEnumerator<T>.Current => _current;
+        T IEnumerator<T>.Current => _current!; // undefined unless MoveNext returned true, as for any IEnumerator<T>
 
         bool IEnumerator.MoveNext() {
             _next(ref _state, ref _current);
             return _state != GeneratorRewriter.Finished;
         }
 
-        object IEnumerator.Current => ((IEnumerator<T>)this).Current;
+        object? IEnumerator.Current => ((IEnumerator<T>)this).Current;
 
         void IEnumerator.Reset() {
             throw new NotSupportedException();

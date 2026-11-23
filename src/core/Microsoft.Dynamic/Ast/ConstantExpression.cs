@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq.Expressions;
 using System.Numerics;
@@ -18,7 +20,7 @@ namespace Microsoft.Scripting.Ast {
         private static readonly ConstantExpression FalseLiteral = Expression.Constant(false, typeof(bool));
         private static readonly ConstantExpression NullLiteral = Expression.Constant(null, typeof(object));
         private static readonly ConstantExpression EmptyStringLiteral = Expression.Constant(String.Empty, typeof(string));
-        private static readonly ConstantExpression[] IntCache = new ConstantExpression[100];
+        private static readonly ConstantExpression?[] IntCache = new ConstantExpression?[100];
 
         /// <summary>
         /// Wraps the given value in a WeakReference and returns a tree that will retrieve
@@ -28,16 +30,16 @@ namespace Microsoft.Scripting.Ast {
             System.Diagnostics.Debug.Assert(value is not Expression);
             return Expression.Property(
                 Constant(new WeakReference(value)),
-                typeof(WeakReference).GetDeclaredProperty("Target")
+                typeof(WeakReference).GetDeclaredProperty(nameof(WeakReference.Target))!
             );
         }
 
-        public static ConstantExpression Constant(object value, Type type) {
+        public static ConstantExpression Constant(object? value, Type type) {
             return Expression.Constant(value, type);
         }
 
         // The helper API should return ConstantExpression after SymbolConstantExpression goes away
-        public static Expression Constant(object value) {
+        public static Expression Constant(object? value) {
             switch (value) {
                 case null:
                     return NullLiteral;
@@ -67,7 +69,7 @@ namespace Microsoft.Scripting.Ast {
                                 int x = (int)value;
                                 int cacheIndex = unchecked(x + 2);
                                 if (cacheIndex >= 0 && cacheIndex < IntCache.Length) {
-                                    ConstantExpression res;
+                                    ConstantExpression? res;
                                     if ((res = IntCache[cacheIndex]) is null) {
                                         IntCache[cacheIndex] = res = Constant(x, typeof(int));
                                     }

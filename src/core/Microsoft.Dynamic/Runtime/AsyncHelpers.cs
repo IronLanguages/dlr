@@ -327,7 +327,7 @@ namespace Microsoft.Scripting.Runtime {
             // The runtime type may be a Task<TResult> subclass (e.g. AsyncStateMachineBox<TStateMachine,TResult>, or RuntimeAsyncTask<T>);
             // so find Task<TResult>.Result through inheritance hierarchy.
             // This may be incorrect in the unlikely (and bad) case if the subclass shadows Result (e.g. new T2 Result {...} - not in BCL/CLR)
-            var prop = t.GetProperty("Result");
+            var prop = t.GetProperty(nameof(Task<>.Result));
 
             // Non-generic Task subclass that still wasn't caught above (defensive — shouldn't happen given IsGenericType).
             if (prop is null) return null;

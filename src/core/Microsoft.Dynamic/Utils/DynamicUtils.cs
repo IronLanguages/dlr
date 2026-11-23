@@ -103,7 +103,7 @@ namespace Microsoft.Scripting.Utils {
                     Expression.Invoke(
                         Expression.Property(
                             invokePrms[0],
-                            typeof(CallSite<T>).GetDeclaredProperty("Update")!
+                            typeof(CallSite<T>).GetDeclaredProperty(nameof(CallSite<T>.Update))!
                         ),
                         invokePrms.ToReadOnlyCollection()
                     )
