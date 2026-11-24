@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_LCG
 
 using System;
@@ -61,8 +63,8 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private MethodInfo CreateMethod() {
-            Type t = _tb.CreateTypeInfo();
-            return t.GetMethod(_mb.Name);
+            Type t = _tb.CreateTypeInfo()!; // only a module's global type yields null
+            return t.GetMethod(_mb.Name) ?? throw new InvalidOperationException($"Method '{_mb.Name}' not found on the created type.");
         }
 
         public override MethodInfo Finish() {

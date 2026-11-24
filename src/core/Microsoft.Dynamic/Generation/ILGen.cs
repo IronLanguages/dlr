@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_LCG
 
 #if FEATURE_PDBEMIT
@@ -11,6 +13,7 @@ using System.Diagnostics.SymbolStore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -247,7 +250,7 @@ namespace Microsoft.Scripting.Generation {
         /// <summary>
         /// Emits a call or a virtual call to the varargs method.
         /// </summary>
-        public virtual void EmitCall(OpCode opcode, MethodInfo methodInfo, Type[] optionalParameterTypes) {
+        public virtual void EmitCall(OpCode opcode, MethodInfo methodInfo, Type[]? optionalParameterTypes) {
             _ilg.EmitCall(opcode, methodInfo, optionalParameterTypes);
         }
 
@@ -255,7 +258,7 @@ namespace Microsoft.Scripting.Generation {
         /// <summary>
         /// Emits an unmanaged indirect call instruction.
         /// </summary>
-        public virtual void EmitCalli(OpCode opcode, CallingConvention unmanagedCallConv, Type returnType, Type[] parameterTypes) {
+        public virtual void EmitCalli(OpCode opcode, CallingConvention unmanagedCallConv, Type? returnType, Type[]? parameterTypes) {
             _ilg.EmitCalli(opcode, unmanagedCallConv, returnType, parameterTypes);
         }
 #endif
@@ -263,7 +266,7 @@ namespace Microsoft.Scripting.Generation {
         /// <summary>
         /// Emits a managed indirect call instruction.
         /// </summary>
-        public virtual void EmitCalli(OpCode opcode, CallingConventions callingConvention, Type returnType, Type[] parameterTypes, Type[] optionalParameterTypes) {
+        public virtual void EmitCalli(OpCode opcode, CallingConventions callingConvention, Type? returnType, Type[]? parameterTypes, Type[]? optionalParameterTypes) {
             _ilg.EmitCalli(opcode, callingConvention, returnType, parameterTypes, optionalParameterTypes);
         }
 
@@ -537,7 +540,7 @@ namespace Microsoft.Scripting.Generation {
                 throw Error.CantReadProperty();
             }
 
-            EmitCall(pi.GetGetMethod());
+            EmitCall(pi.GetGetMethod() ?? throw Error.CantReadProperty());
         }
 
         public void EmitPropertySet(PropertyInfo pi) {
@@ -547,7 +550,7 @@ namespace Microsoft.Scripting.Generation {
                 throw Error.CantWriteProperty();
             }
 
-            EmitCall(pi.GetSetMethod());
+            EmitCall(pi.GetSetMethod() ?? throw Error.CantWriteProperty());
         }
 
         public void EmitFieldAddress(FieldInfo fi) {
@@ -584,8 +587,9 @@ namespace Microsoft.Scripting.Generation {
         public void EmitNew(ConstructorInfo ci) {
             ContractUtils.RequiresNotNull(ci, nameof(ci));
 
-            if (ci.DeclaringType.ContainsGenericParameters) {
-                throw Error.IllegalNew_GenericParams(ci.DeclaringType);
+            Type declaringType = ci.DeclaringType!; // constructors are always declared on a type
+            if (declaringType.ContainsGenericParameters) {
+                throw Error.IllegalNew_GenericParams(declaringType);
             }
 
             Emit(OpCodes.Newobj, ci);
@@ -596,7 +600,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
-            ConstructorInfo ci = type.GetConstructor(paramTypes);
+            ConstructorInfo? ci = type.GetConstructor(paramTypes);
             ContractUtils.Requires(ci is not null, nameof(type), Strings.TypeDoesNotHaveConstructorForTheSignature);
             EmitNew(ci);
         }
@@ -604,7 +608,7 @@ namespace Microsoft.Scripting.Generation {
         public void EmitCall(MethodInfo mi) {
             ContractUtils.RequiresNotNull(mi, nameof(mi));
 
-            if (mi.IsVirtual && !mi.DeclaringType.IsValueType) {
+            if (mi.IsVirtual && !mi.DeclaringType!.IsValueType) { // virtual methods are declared on a type
                 Emit(OpCodes.Callvirt, mi);
             } else {
                 Emit(OpCodes.Call, mi);
@@ -615,7 +619,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(name, nameof(name));
 
-            MethodInfo mi = type.GetMethod(name);
+            MethodInfo? mi = type.GetMethod(name);
             ContractUtils.Requires(mi is not null, nameof(type), Strings.TypeDoesNotHaveMethodForName);
 
             EmitCall(mi);
@@ -626,7 +630,7 @@ namespace Microsoft.Scripting.Generation {
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNull(paramTypes, nameof(paramTypes));
 
-            MethodInfo mi = type.GetMethod(name, paramTypes);
+            MethodInfo? mi = type.GetMethod(name, paramTypes);
             ContractUtils.Requires(mi is not null, nameof(type), Strings.TypeDoesNotHaveMethodForNameSignature);
 
             EmitCall(mi);
@@ -748,7 +752,7 @@ namespace Microsoft.Scripting.Generation {
             Emit(OpCodes.Ldc_R4, value);
         }
 
-        private void EmitSimpleConstant(object value) {
+        private void EmitSimpleConstant(object? value) {
             if (!TryEmitConstant(value, value?.GetType() ?? typeof(object))) {
                 throw Error.CanotEmitConstant(value, value.GetType());
             }
@@ -758,7 +762,7 @@ namespace Microsoft.Scripting.Generation {
         //
         // Note: we support emitting a lot more things as IL constants than
         // Linq does
-        internal bool TryEmitConstant(object value, Type type) {
+        internal bool TryEmitConstant([NotNullWhen(false)] object? value, Type type) {
             if (value is null) {
                 // Smarter than the Linq implementation which uses the initobj
                 // pattern for all value types (works, but requires a local and
@@ -780,12 +784,12 @@ namespace Microsoft.Scripting.Generation {
 
             if (value is MethodBase mb && ShouldLdtoken(mb)) {
                 Emit(OpCodes.Ldtoken, mb);
-                Type dt = mb.DeclaringType;
+                Type? dt = mb.DeclaringType;
                 if (dt is not null && dt.IsGenericType) {
                     Emit(OpCodes.Ldtoken, dt);
-                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
+                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) })!);
                 } else {
-                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle) }));
+                    EmitCall(typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle) })!);
                 }
                 type = TypeUtils.GetConstantType(type);
                 if (type != typeof(MethodBase)) {
@@ -813,7 +817,7 @@ namespace Microsoft.Scripting.Generation {
                 return false;
             }
 
-            Type dt = mb.DeclaringType;
+            Type? dt = mb.DeclaringType;
             return dt is null || ShouldLdtoken(dt);
         }
 
@@ -906,7 +910,7 @@ namespace Microsoft.Scripting.Generation {
                 if (to.IsNullableType()) {
                     Type nonNullableTo = to.GetNonNullableType();
                     if (TryEmitCast(from, nonNullableTo, true)) {
-                        EmitNew(to.GetConstructor(new Type[] { nonNullableTo }));
+                        EmitNew(to.GetConstructor(new Type[] { nonNullableTo })!); // Nullable<T>(T)
                     } else {
                         return false;
                     }
@@ -1057,16 +1061,16 @@ namespace Microsoft.Scripting.Generation {
                     var label = DefineLabel();
                     var end = DefineLabel();
                     Emit(OpCodes.Brtrue_S, label);
-                    Emit(OpCodes.Ldsfld, typeof(ScriptingRuntimeHelpers).GetDeclaredField("False"));
+                    Emit(OpCodes.Ldsfld, typeof(ScriptingRuntimeHelpers).GetDeclaredField(nameof(ScriptingRuntimeHelpers.False))!);
                     Emit(OpCodes.Br_S, end);
                     MarkLabel(label);
-                    Emit(OpCodes.Ldsfld, typeof(ScriptingRuntimeHelpers).GetDeclaredField("True"));
+                    Emit(OpCodes.Ldsfld, typeof(ScriptingRuntimeHelpers).GetDeclaredField(nameof(ScriptingRuntimeHelpers.True))!);
                     MarkLabel(end);
                 } else {
                     Emit(OpCodes.Box, type);
                 }
             } else if (type.IsGenericParameter) {
-                EmitCall(typeof(GeneratorOps).GetMethod(nameof(GeneratorOps.BoxGeneric)).MakeGenericMethod(type));
+                EmitCall(typeof(GeneratorOps).GetMethod(nameof(GeneratorOps.BoxGeneric))!.MakeGenericMethod(type));
             }
         }
 
@@ -1272,11 +1276,9 @@ namespace Microsoft.Scripting.Generation {
             Debug.Assert(TypeUtils.IsNullableType(typeTo));
             Label labIfNull = default(Label);
             Label labEnd = default(Label);
-            LocalBuilder locFrom = null;
-            LocalBuilder locTo = null;
-            locFrom = DeclareLocal(typeFrom);
+            LocalBuilder locFrom = DeclareLocal(typeFrom);
             Emit(OpCodes.Stloc, locFrom);
-            locTo = DeclareLocal(typeTo);
+            LocalBuilder locTo = DeclareLocal(typeTo);
             // test for null
             Emit(OpCodes.Ldloca, locFrom);
             EmitHasValue(typeFrom);
@@ -1288,7 +1290,7 @@ namespace Microsoft.Scripting.Generation {
             Type nnTypeTo = typeTo.GetNonNullableType();
             EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked);
             // construct result type
-            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo })!; // Nullable<T>(T)
             Emit(OpCodes.Newobj, ci);
             Emit(OpCodes.Stloc, locTo);
             labEnd = DefineLabel();
@@ -1308,7 +1310,7 @@ namespace Microsoft.Scripting.Generation {
             LocalBuilder locTo = DeclareLocal(typeTo);
             Type nnTypeTo = typeTo.GetNonNullableType();
             EmitConvertToType(typeFrom, nnTypeTo, isChecked);
-            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo })!; // Nullable<T>(T)
             Emit(OpCodes.Newobj, ci);
             Emit(OpCodes.Stloc, locTo);
             Emit(OpCodes.Ldloc, locTo);
@@ -1329,8 +1331,7 @@ namespace Microsoft.Scripting.Generation {
             Debug.Assert(TypeUtils.IsNullableType(typeFrom));
             Debug.Assert(!TypeUtils.IsNullableType(typeTo));
             Debug.Assert(typeTo.IsValueType);
-            LocalBuilder locFrom = null;
-            locFrom = DeclareLocal(typeFrom);
+            LocalBuilder locFrom = DeclareLocal(typeFrom);
             Emit(OpCodes.Stloc, locFrom);
             Emit(OpCodes.Ldloca, locFrom);
             EmitGetValue(typeFrom);
@@ -1361,21 +1362,21 @@ namespace Microsoft.Scripting.Generation {
 
         //CONFORMING
         internal void EmitHasValue(Type nullableType) {
-            MethodInfo mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public)!; // nullableType is Nullable<T>
             Debug.Assert(nullableType.IsValueType);
             Emit(OpCodes.Call, mi);
         }
 
         //CONFORMING
         internal void EmitGetValue(Type nullableType) {
-            MethodInfo mi = nullableType.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+            MethodInfo mi = nullableType.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public)!; // nullableType is Nullable<T>
             Debug.Assert(nullableType.IsValueType);
             Emit(OpCodes.Call, mi);
         }
 
         //CONFORMING
         internal void EmitGetValueOrDefault(Type nullableType) {
-            MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", ReflectionUtils.EmptyTypes);
+            MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", ReflectionUtils.EmptyTypes)!; // nullableType is Nullable<T>
             Debug.Assert(nullableType.IsValueType);
             Emit(OpCodes.Call, mi);
         }
@@ -1433,7 +1434,7 @@ namespace Microsoft.Scripting.Generation {
 
             int rank = arrayType.GetArrayRank();
             if (rank == 1) {
-                Emit(OpCodes.Newarr, arrayType.GetElementType());
+                Emit(OpCodes.Newarr, arrayType.GetElementType()!); // checked to be an array above
             } else {
                 Type[] types = new Type[rank];
                 for (int i = 0; i < rank; i++) {
@@ -1452,11 +1453,11 @@ namespace Microsoft.Scripting.Generation {
                 if (Int32.MinValue <= value && value <= Int32.MaxValue) {
                     int intValue = Decimal.ToInt32(value);
                     EmitInt(intValue);
-                    EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(int) }));
+                    EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(int) })!); // decimal(int)
                 } else if (Int64.MinValue <= value && value <= Int64.MaxValue) {
                     long longValue = Decimal.ToInt64(value);
                     EmitLong(longValue);
-                    EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(long) }));
+                    EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(long) })!); // decimal(long)
                 } else {
                     EmitDecimalBits(value);
                 }
@@ -1472,7 +1473,7 @@ namespace Microsoft.Scripting.Generation {
             EmitInt(bits[2]);
             EmitBoolean((bits[3] & 0x80000000) != 0);
             EmitByte((byte)(bits[3] >> 16));
-            EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) }));
+            EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) })!); // decimal(int, int, int, bool, byte)
         }
 
         /// <summary>
@@ -1534,7 +1535,7 @@ namespace Microsoft.Scripting.Generation {
 
                 case TypeCode.Decimal:
                     Emit(OpCodes.Ldc_I4_0);
-                    Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(new Type[] { typeof(int) }));
+                    Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(new Type[] { typeof(int) })!); // decimal(int)
                     break;
 
                 default:
@@ -1550,7 +1551,7 @@ namespace Microsoft.Scripting.Generation {
                 case TypeCode.Object:
                     if (type == typeof(object)) {
                         // parameter of type object receives the actual Missing value
-                        Emit(OpCodes.Ldsfld, typeof(Missing).GetDeclaredField("Value"));
+                        Emit(OpCodes.Ldsfld, typeof(Missing).GetDeclaredField(nameof(Missing.Value))!);
                     } else if (!type.IsValueType) {
                         // reference type
                         EmitNull();
@@ -1594,7 +1595,7 @@ namespace Microsoft.Scripting.Generation {
                     break;
 
                 case TypeCode.Decimal:
-                    EmitFieldGet(typeof(Decimal).GetDeclaredField("Zero"));
+                    EmitFieldGet(typeof(Decimal).GetDeclaredField(nameof(Decimal.Zero))!);
                     break;
 
                 case TypeCode.DateTime:
@@ -1615,9 +1616,9 @@ namespace Microsoft.Scripting.Generation {
         #region LocalTemps
 
         internal LocalBuilder GetLocal(Type type) {
-            Debug.Assert(type is not null);
+            Assert.NotNull(type);
 
-            if (_freeLocals.TryDequeue(type, out LocalBuilder local)) {
+            if (_freeLocals.TryDequeue(type, out LocalBuilder? local)) {
                 Debug.Assert(type == local.LocalType);
                 return local;
             }
@@ -1626,7 +1627,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         // TODO: make "local" a ref param and null it out
-        internal void FreeLocal(LocalBuilder local) {
+        internal void FreeLocal(LocalBuilder? local) {
             if (local is not null) {
                 _freeLocals.Enqueue(local.LocalType, local);
             }
@@ -1636,19 +1637,19 @@ namespace Microsoft.Scripting.Generation {
     }
 
     public static partial class GeneratorOps {
-        public static object BoxGeneric<T>(T value) {
+        public static object? BoxGeneric<T>(T value) {
             // Duplicates functionality of ILGen.EmitBoxing at runtime for templated types
             Type type = typeof(T);
             if (type == typeof(int)) {
-                return ScriptingRuntimeHelpers.Int32ToObject((int)(object)value);
+                return ScriptingRuntimeHelpers.Int32ToObject((int)(object)value!); // T is int, so value is not null
             }
 
             if (type == typeof(bool)) {
-                bool bValue = (bool)(object)value;
+                bool bValue = (bool)(object)value!; // T is bool, so value is not null
                 return bValue ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
             }
 
-            return (object)value;
+            return (object?)value;
         }
     }
 }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Diagnostics;
@@ -24,7 +26,8 @@ namespace Microsoft.Scripting.Generation {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         internal static Type MakeDelegate(Type[] types) {
-            Debug.Assert(types is not null && types.Length > 0);
+            Assert.NotNull(types);
+            Debug.Assert(types.Length > 0);
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>

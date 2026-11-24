@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -12,7 +14,7 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Generation {
     internal static partial class DelegateHelpers {
 
-        private static Dictionary<ICollection<Type>, Type> _DelegateTypes;
+        private static Dictionary<ICollection<Type>, Type>? _DelegateTypes;
 
         private static Type MakeCustomDelegate(Type[] types) {
             if (_DelegateTypes is null) {
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting.Generation {
             }
 
             bool found;
-            Type type;
+            Type? type;
 
             //
             // LOCK to retrieve the delegate type, if any
@@ -47,7 +49,7 @@ namespace Microsoft.Scripting.Generation {
             // LOCK to insert new delegate into the cache. If we already have one (racing threads), use the one from the cache
             //
             lock (_DelegateTypes) {
-                if (_DelegateTypes.TryGetValue(types, out Type conflict) && conflict is not null) {
+                if (_DelegateTypes.TryGetValue(types, out Type? conflict) && conflict is not null) {
                     type = conflict;
                 } else {
                     _DelegateTypes[types] = type;

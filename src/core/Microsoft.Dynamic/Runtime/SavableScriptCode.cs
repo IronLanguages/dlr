@@ -90,7 +90,7 @@ namespace Microsoft.Scripting {
             // lang ctx array
             ilgen.EmitArray(typeof(Type), langsWithBuilders.Length, (index) => {
                 ilgen.Emit(OpCodes.Ldtoken, langsWithBuilders[index].Key);
-                ilgen.EmitCall(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[] { typeof(RuntimeTypeHandle) }));
+                ilgen.EmitCall(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[] { typeof(RuntimeTypeHandle) })!);
             });
 
             // builders array of array
@@ -112,7 +112,7 @@ namespace Microsoft.Scripting {
                 List<CodeInfo> builders = langsWithBuilders[index].Value;
 
                 ilgen.EmitArray(typeof(string), builders.Count, (innerIndex) => {
-                    ilgen.EmitString(builders[innerIndex].Code.SourceUnit.Path);
+                    ilgen.EmitString(builders[innerIndex].Code.SourceUnit.Path ?? throw new ArgumentException("Code without a source path cannot be saved.", nameof(codes)));
                 });
             });
 
