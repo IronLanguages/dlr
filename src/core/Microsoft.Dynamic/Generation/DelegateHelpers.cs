@@ -34,7 +34,7 @@ namespace Microsoft.Scripting.Generation {
                 found = _DelegateTypes.TryGetValue(types, out type);
             }
 
-            if (!found && type is not null) {
+            if (found && type is not null) {
                 return type;
             }
 
