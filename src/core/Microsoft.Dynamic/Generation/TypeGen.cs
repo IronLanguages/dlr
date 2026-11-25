@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 
 using System;
@@ -11,7 +13,7 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Generation {
     public sealed class TypeGen {
-        private ILGen _initGen;                        // The IL generator for the .cctor()
+        private ILGen? _initGen;                       // The IL generator for the .cctor()
 
         /// <summary>
         /// Gets the Compiler associated with the Type Initializer (cctor) creating it if necessary.
@@ -40,7 +42,7 @@ namespace Microsoft.Scripting.Generation {
 
         public Type FinishType() {
             _initGen?.Emit(OpCodes.Ret);
-            Type ret = TypeBuilder.CreateTypeInfo();
+            Type ret = TypeBuilder.CreateTypeInfo()!; // only a module's global type yields null
             return ret;
         }
 
@@ -60,7 +62,7 @@ namespace Microsoft.Scripting.Generation {
 
             Type[] baseSignature = baseMethod.GetParameters().Map(static p => p.ParameterType);
             MethodBuilder mb = TypeBuilder.DefineMethod(
-                baseMethod.DeclaringType.Name + "." + baseMethod.Name,
+                baseMethod.DeclaringType!.Name + "." + baseMethod.Name, // an overridable method is always declared on a type
                 attrs,
                 baseMethod.ReturnType,
                 baseSignature);

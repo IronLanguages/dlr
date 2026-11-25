@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -26,17 +28,17 @@ namespace Microsoft.Scripting.Generation {
 
 #if FEATURE_REFEMIT
 
-        private AssemblyGen _assembly;
-        private AssemblyGen _debugAssembly;
+        private AssemblyGen? _assembly;
+        private AssemblyGen? _debugAssembly;
 
         // TODO: options should be internal
-        private string _snippetsDirectory;
+        private string? _snippetsDirectory;
         private bool _saveSnippets;
 
         /// <summary>
         /// Directory where snippet assembly will be saved if SaveSnippets is set.
         /// </summary>
-        public string SnippetsDirectory {
+        public string? SnippetsDirectory {
             get { return _snippetsDirectory; }
         }
 
@@ -53,7 +55,7 @@ namespace Microsoft.Scripting.Generation {
                 GetOrCreateAssembly(emitSymbols, ref _assembly);
         }
 
-        private AssemblyGen GetOrCreateAssembly(bool emitSymbols, ref AssemblyGen assembly) {
+        private AssemblyGen GetOrCreateAssembly(bool emitSymbols, ref AssemblyGen? assembly) {
             if (assembly is null) {
                 string suffix = (emitSymbols) ? ".debug" : "";
                 suffix += ".scripting";
@@ -63,7 +65,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
         private AssemblyGen CreateNewAssembly(string nameSuffix, bool emitSymbols) {
-            string dir = null;
+            string? dir = null;
 
 #if FEATURE_ASSEMBLYBUILDER_SAVE
             if (_saveSnippets) {
@@ -94,11 +96,11 @@ namespace Microsoft.Scripting.Generation {
         }
 #endif
 
-        public static void SetSaveAssemblies(bool enable, string directory) {
+        public static void SetSaveAssemblies(bool enable, string? directory) {
             Shared.ConfigureSaveAssemblies(enable, directory);
         }
 
-        private void ConfigureSaveAssemblies(bool enable, string directory) {
+        private void ConfigureSaveAssemblies(bool enable, string? directory) {
             _saveSnippets = enable;
             _snippetsDirectory = directory;
         }
@@ -118,14 +120,14 @@ namespace Microsoft.Scripting.Generation {
             // 3) Verify inner ring assemblies.
             // 4) Verify outer ring assemblies.
             Assembly core = typeof(Expression).Assembly;
-            Type assemblyGen = core.GetType(typeof(Expression).Namespace + ".Compiler.AssemblyGen");
+            Type? assemblyGen = core.GetType(typeof(Expression).Namespace + ".Compiler.AssemblyGen");
             //The type may not exist.
-            string[] coreAssemblyLocations = null;
+            string[]? coreAssemblyLocations = null;
             if (assemblyGen is not null) {
-                MethodInfo saveAssemblies = assemblyGen.GetMethod("SaveAssembliesToDisk", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo? saveAssemblies = assemblyGen.GetMethod("SaveAssembliesToDisk", BindingFlags.NonPublic | BindingFlags.Static);
                 //The method may not exist.
                 if (saveAssemblies is not null) {
-                    coreAssemblyLocations = (string[])saveAssemblies.Invoke(null, null);
+                    coreAssemblyLocations = (string[]?)saveAssemblies.Invoke(null, null);
                 }
             }
 
@@ -152,7 +154,7 @@ namespace Microsoft.Scripting.Generation {
 
             // first save all assemblies to disk:
             if (_assembly is not null) {
-                string assemblyLocation = _assembly.SaveAssembly();
+                string? assemblyLocation = _assembly.SaveAssembly();
                 if (assemblyLocation is not null) {
                     assemlyLocations.Add(assemblyLocation);
                 }
@@ -160,7 +162,7 @@ namespace Microsoft.Scripting.Generation {
             }
 
             if (_debugAssembly is not null) {
-                string debugAssemblyLocation = _debugAssembly.SaveAssembly();
+                string? debugAssemblyLocation = _debugAssembly.SaveAssembly();
                 if (debugAssemblyLocation is not null) {
                     assemlyLocations.Add(debugAssemblyLocation);
                 }
@@ -198,7 +200,7 @@ namespace Microsoft.Scripting.Generation {
                 MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, 
                 CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
             tb.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, returnType, argTypes).SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-            return tb.CreateTypeInfo();
+            return tb.CreateTypeInfo()!; // only a module's global type yields null
 
         }
 

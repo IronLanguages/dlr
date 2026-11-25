@@ -48,8 +48,8 @@ namespace Microsoft.Scripting.Generation {
         internal void FixReturn(ILGen cg) {
             cg.EmitLoadArg(_argIndex);
             cg.Emit(OpCodes.Ldloc, _refSlot);
-            cg.Emit(OpCodes.Ldfld, _refSlot.LocalType.GetDeclaredField(nameof(StrongBox<>.Value)));
-            cg.EmitStoreValueIndirect(_argType.GetElementType());
+            cg.Emit(OpCodes.Ldfld, _refSlot.LocalType.GetDeclaredField(nameof(StrongBox<>.Value))!);
+            cg.EmitStoreValueIndirect(_argType.GetElementType()!); // EmitArgument creates fixers only for by-ref types
         }
     }
 }

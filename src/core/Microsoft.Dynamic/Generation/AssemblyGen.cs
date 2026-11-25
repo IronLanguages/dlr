@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 
 using System;
@@ -25,8 +27,8 @@ namespace Microsoft.Scripting.Generation {
         private readonly bool _isDebuggable;
 
 #if FEATURE_ASSEMBLYBUILDER_SAVE
-        private readonly string _outFileName;       // can be null iff !SaveAndReloadAssemblies
-        private readonly string _outDir;            // null means the current directory
+        private readonly string? _outFileName;      // can be null iff !SaveAndReloadAssemblies
+        private readonly string? _outDir;           // null means the current directory
         private const string peverify_exe = "peverify.exe";
 #endif
 
@@ -41,8 +43,9 @@ namespace Microsoft.Scripting.Generation {
             }
         }
 
-        public AssemblyGen(AssemblyName name, string outDir, string outFileExtension, bool isDebuggable, IDictionary<string, object> attrs=null) {
+        public AssemblyGen(AssemblyName name, string? outDir, string? outFileExtension, bool isDebuggable, IDictionary<string, object>? attrs=null) {
             ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.Requires(name.Name is not null, nameof(name), Strings.InvalidAsmNameOrExtension);
 
 #if FEATURE_ASSEMBLYBUILDER_SAVE
             outFileExtension ??= ".dll";
@@ -77,7 +80,7 @@ namespace Microsoft.Scripting.Generation {
                         continue;
                     }
 
-                    ConstructorInfo ctor = null; 
+                    ConstructorInfo? ctor = null;
                     switch(attr.Key) {
                         case "assemblyFileVersion":
                             ctor = typeof(AssemblyFileVersionAttribute).GetConstructor(new[] { typeof(string) });
@@ -132,7 +135,7 @@ namespace Microsoft.Scripting.Generation {
             Type[] argTypes = new Type[] { typeof(DebuggableAttribute.DebuggingModes) };
             Object[] argValues = new Object[] { attrs };
 
-            var debuggableCtor = typeof(DebuggableAttribute).GetConstructor(argTypes);
+            var debuggableCtor = typeof(DebuggableAttribute).GetConstructor(argTypes)!; // DebuggableAttribute(DebuggingModes)
 
             _myAssembly.SetCustomAttribute(new CustomAttributeBuilder(debuggableCtor, argValues));
             _myModule.SetCustomAttribute(new CustomAttributeBuilder(debuggableCtor, argValues));
@@ -140,7 +143,7 @@ namespace Microsoft.Scripting.Generation {
 
         #region Dump and Verify
 
-        public string SaveAssembly() {
+        public string? SaveAssembly() {
 #if FEATURE_ASSEMBLYBUILDER_SAVE
             _myAssembly.Save(_outFileName, PortableExecutableKinds.ILOnly, ImageFileMachine.I386);
             return Path.Combine(_outDir, _outFileName);
@@ -163,15 +166,15 @@ namespace Microsoft.Scripting.Generation {
             Debug.WriteLine("Verifying generated IL: " + fileLocation);
             string outDir = Path.GetDirectoryName(fileLocation);
             string outFileName = Path.GetFileName(fileLocation);
-            string peverifyPath = FindPeverify();
+            string? peverifyPath = FindPeverify();
             if (peverifyPath is null) {
                 Debug.WriteLine("PEVerify not available");
                 return;
             }
 
             int exitCode = 0;
-            string strOut = null;
-            string verifyFile = null;
+            string? strOut = null;
+            string? verifyFile = null;
 
             try {
                 string pythonPath = new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName;
@@ -230,7 +233,7 @@ namespace Microsoft.Scripting.Generation {
                 Console.WriteLine("Verification failed w/ exit code {0}: {1}", exitCode, strOut);
                 throw Error.VerificationException(
                     outFileName,
-                    verifyFile,
+                    verifyFile ?? "",
                     strOut ?? "");
             }
 
@@ -241,7 +244,7 @@ namespace Microsoft.Scripting.Generation {
         }
 
 #if FEATURE_ASSEMBLYBUILDER_SAVE
-        internal static string FindPeverify() {
+        internal static string? FindPeverify() {
             string path = System.Environment.GetEnvironmentVariable("PATH");
             string[] dirs = path.Split(';');
             foreach (string dir in dirs) {
@@ -347,7 +350,7 @@ namespace Microsoft.Scripting.Generation {
             TypeBuilder builder = DefineType(name, typeof(MulticastDelegate), DelegateAttributes, false);
             builder.DefineConstructor(CtorAttributes, CallingConventions.Standard, _DelegateCtorSignature).SetImplementationFlags(ImplAttributes);
             builder.DefineMethod("Invoke", InvokeAttributes, returnType, parameters).SetImplementationFlags(ImplAttributes);
-            return builder.CreateTypeInfo();
+            return builder.CreateTypeInfo()!; // only a module's global type yields null
         }
     }
 }
