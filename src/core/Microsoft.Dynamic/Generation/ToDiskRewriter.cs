@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_REFEMIT
 using System.Linq.Expressions;
 
@@ -9,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -24,10 +27,10 @@ namespace Microsoft.Scripting.Generation {
     /// </summary>
     internal sealed class ToDiskRewriter : DynamicExpressionVisitor {
         private static int _uniqueNameId;
-        private List<Expression> _constants;
-        private Dictionary<object, Expression> _constantCache;
-        private ParameterExpression _constantPool;
-        private Dictionary<Type, Type> _delegateTypes;
+        private List<Expression>? _constants;
+        private Dictionary<object, Expression>? _constantCache;
+        private ParameterExpression? _constantPool;
+        private Dictionary<Type, Type>? _delegateTypes;
         private int _depth;
         private readonly TypeGen _typeGen;
         
@@ -54,6 +57,8 @@ namespace Microsoft.Scripting.Generation {
                 var body = node.Body;
 
                 if (_constants is not null) {
+                    Assert.NotNull(_constantPool); // initialized together with _constants in EnsureConstantPool
+
                     // Rewrite the constants, they can contain embedded
                     // CodeContextExpressions
                     for (int i = 0; i < _constants.Count; i++) {
@@ -114,7 +119,7 @@ namespace Microsoft.Scripting.Generation {
             if (node.Value is IExpressionSerializable exprSerializable) {
                 EnsureConstantPool();
 
-                if (!_constantCache.TryGetValue(node.Value, out Expression res)) {
+                if (!_constantCache.TryGetValue(node.Value, out Expression? res)) {
                     Expression serialized = exprSerializable.CreateExpression();
                     _constants.Add(serialized);
 
@@ -129,8 +134,10 @@ namespace Microsoft.Scripting.Generation {
 
             if (node.Value is string[] strings) {
                 if (strings.Length == 0) {
-                    return Expression.Field(null, typeof(ArrayUtils).GetDeclaredField("EmptyStrings"));
+                    return Expression.Field(null, typeof(ArrayUtils).GetDeclaredField(nameof(ArrayUtils.EmptyStrings))!);
                 }
+
+                EnsureConstantPool();
 
                 _constants.Add(
                     Expression.NewArrayInit(
@@ -154,7 +161,7 @@ namespace Microsoft.Scripting.Generation {
         // delegate, we need to replace it with a new delegate type that can be
         // saved to disk
         protected override Expression VisitDynamic(DynamicExpression node) {
-            if (RewriteDelegate(node.DelegateType, out Type delegateType)) {
+            if (RewriteDelegate(node.DelegateType, out Type? delegateType)) {
                 node = DynamicExpression.MakeDynamic(delegateType, node.Binder, node.Arguments);
             }
 
@@ -162,7 +169,7 @@ namespace Microsoft.Scripting.Generation {
             return Visit(CompilerHelpers.Reduce(node));
         }
 
-        private bool RewriteDelegate(Type delegateType, out Type newDelegateType) {
+        private bool RewriteDelegate(Type delegateType, [NotNullWhen(true)] out Type? newDelegateType) {
             if (!ShouldRewriteDelegate(delegateType)) {
                 newDelegateType = null;
                 return false;
@@ -172,7 +179,7 @@ namespace Microsoft.Scripting.Generation {
 
             // TODO: should caching move to AssemblyGen?
             if (!_delegateTypes.TryGetValue(delegateType, out newDelegateType)) {
-                MethodInfo invoke = delegateType.GetMethod("Invoke");
+                MethodInfo invoke = delegateType.GetMethod("Invoke")!; // delegate types have an Invoke method
 
                 newDelegateType = _typeGen.AssemblyGen.MakeDelegateType(
                     delegateType.Name,
@@ -200,11 +207,9 @@ namespace Microsoft.Scripting.Generation {
             // transient. If that option is turned on, always replace delegates
             // that live in another AssemblyBuilder
 #if FEATURE_REFEMIT_FULL
-            var module = delegateType.Module as ModuleBuilder;
-
-            if (module is null) {
+            if (delegateType.Module is not ModuleBuilder module) {
                 if (delegateType.Module.GetType() == typeof(ModuleBuilder).Assembly.GetType("System.Reflection.Emit.InternalModuleBuilder")) {
-                    if ((bool)delegateType.Module.GetType().InvokeMember("IsTransientInternal", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, delegateType.Module, null)) {
+                    if ((bool)delegateType.Module.GetType().InvokeMember("IsTransientInternal", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, delegateType.Module, null)!) { // IsTransientInternal returns bool
                         return true;
                     }
                 }
@@ -216,7 +221,7 @@ namespace Microsoft.Scripting.Generation {
                 return true;
             }
 
-            if (Snippets.Shared.SaveSnippets && module.Assembly != _typeGen.AssemblyGen.AssemblyBuilder) {
+            if (Snippets.Shared.SaveSnippets && delegateType.Module.Assembly != _typeGen.AssemblyGen.AssemblyBuilder) {
                 return true;
             }
 
@@ -236,7 +241,7 @@ namespace Microsoft.Scripting.Generation {
 
             Type siteType = site.GetType();
 
-            _constants.Add(Expression.Call(siteType.GetMethod("Create"), serializer.CreateExpression()));
+            _constants.Add(Expression.Call(siteType.GetMethod(nameof(CallSite<>.Create))!, serializer.CreateExpression())); // siteType is CallSite<T>
 
             // rewrite the node...
             return Visit(
@@ -247,14 +252,15 @@ namespace Microsoft.Scripting.Generation {
             );
         }
 
+        [MemberNotNull(nameof(_constantPool))]
+        [MemberNotNull(nameof(_constants))]
+        [MemberNotNull(nameof(_constantCache))]
         private void EnsureConstantPool() {
             // add the initialization code that we'll generate later into the outermost
             // lambda and then return an index into the array we'll be creating.
-            if (_constantPool is null) {
-                _constantPool = Expression.Variable(typeof(object[]), "$constantPool");
-                _constants = new List<Expression>();
-                _constantCache = new Dictionary<object, Expression>();
-            }
+            _constantPool ??= Expression.Variable(typeof(object[]), "$constantPool");
+            _constants ??= new List<Expression>();
+            _constantCache ??= new Dictionary<object, Expression>();
         }
     }
 }

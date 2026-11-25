@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.Scripting.Utils;
 
@@ -14,19 +17,19 @@ namespace Microsoft.Scripting.Runtime {
     /// <summary>
     /// Abstract base class used for optimized thread-safe dictionaries which have a set
     /// of pre-defined string keys.
-    /// 
+    /// <br/><br/>
     /// Implementers derive from this class and override the GetExtraKeys, TrySetExtraValue, 
     /// and TryGetExtraValue methods. When looking up a value first the extra keys will be 
     /// searched using the optimized Try*ExtraValue functions.  If the value isn't found there
     /// then the value is stored in the underlying .NET dictionary.
-    /// 
+    /// <br/><br/>
     /// This dictionary can store object values in addition to string values.  It also supports
-    /// null keys.
+    /// null keys, which must be first wrapped by the caller using <see cref="NullToObj"/>.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public abstract class CustomStringDictionary : IDictionary, IDictionary<object, object> {
+    public abstract class CustomStringDictionary : IDictionary, IDictionary<object, object?> {
 
-        private Dictionary<object, object> _data;
+        private Dictionary<object, object?>? _data;
         private static readonly object _nullObject = new();
 
         /// <summary>
@@ -39,24 +42,25 @@ namespace Microsoft.Scripting.Runtime {
         /// Try to set the extra value and return true if the specified key was found in the 
         /// list of extra values.
         /// </summary>
-        protected internal abstract bool TrySetExtraValue(string key, object value);
+        protected internal abstract bool TrySetExtraValue(string key, object? value);
 
         /// <summary>
         /// Try to get the extra value and returns true if the specified key was found in the
         /// list of extra values.  Returns true even if the value is Uninitialized.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate")]
-        protected internal abstract bool TryGetExtraValue(string key, out object value);
+        protected internal abstract bool TryGetExtraValue(string key, out object? value);
 
+        [MemberNotNull(nameof(_data))]
         private void InitializeData() {
             Debug.Assert(_data is null);
 
-            _data = new Dictionary<object, object>();
+            _data = new Dictionary<object, object?>();
         }
 
         #region IDictionary<object, object> Members
 
-        void IDictionary<object, object>.Add(object key, object value) {
+        void IDictionary<object, object?>.Add(object key, object? value) {
             if (key is string strKey) {
                 lock (this) {
                     if (_data is null) InitializeData();
@@ -69,19 +73,19 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        private void AddObjectKey(object key, object value) {
+        private void AddObjectKey(object key, object? value) {
             if (_data is null) {
                 InitializeData();
             }
             _data[key] = value;
         }
 
-        bool IDictionary<object, object>.ContainsKey(object key) {
+        bool IDictionary<object, object?>.ContainsKey(object key) {
             lock (this) {
                 if (_data is null) {
                     return false;
                 }
-                object dummy;
+                object? dummy;
                 return _data.TryGetValue(key, out dummy);
             }
         }
@@ -96,7 +100,7 @@ namespace Microsoft.Scripting.Runtime {
                 }
 
                 foreach (var key in GetExtraKeys()) {
-                    if (TryGetExtraValue(key, out object dummy) && dummy != Uninitialized.Instance) {
+                    if (TryGetExtraValue(key, out object? dummy) && dummy != Uninitialized.Instance) {
                         res.Add(key);
                     }
                 }
@@ -105,7 +109,7 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        bool IDictionary<object, object>.Remove(object key) {
+        bool IDictionary<object, object?>.Remove(object key) {
             if (key is string strKey) {
                 lock (this) {
                     if (TrySetExtraValue(strKey, Uninitialized.Instance)) return true;
@@ -119,10 +123,10 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         private bool RemoveObjectKey(object key) {
-            return _data.Remove(key);
+            return _data is not null && _data.Remove(key);
         }
 
-        public bool TryGetValue(object key, out object value) {
+        public bool TryGetValue(object key, out object? value) {
             if (key is string strKey) {
                 lock (this) {
                     if (TryGetExtraValue(strKey, out value) && value != Uninitialized.Instance) return true;
@@ -135,7 +139,7 @@ namespace Microsoft.Scripting.Runtime {
             return TryGetObjectValue(key, out value);
         }
 
-        private bool TryGetObjectValue(object key, out object value) {
+        private bool TryGetObjectValue(object key, out object? value) {
             if (_data is null) {
                 value = null;
                 return false;
@@ -143,9 +147,9 @@ namespace Microsoft.Scripting.Runtime {
             return _data.TryGetValue(key, out value);
         }
 
-        ICollection<object> IDictionary<object, object>.Values {
+        ICollection<object?> IDictionary<object, object?>.Values {
             get {
-                List<object> res = new List<object>();
+                List<object?> res = new List<object?>();
                 lock (this) {
                     if (_data is not null) {
                         res.AddRange(_data.Values);
@@ -153,7 +157,7 @@ namespace Microsoft.Scripting.Runtime {
                 }
 
                 foreach (var key in GetExtraKeys()) {
-                    if (TryGetExtraValue(key, out object value) && value != Uninitialized.Instance) {
+                    if (TryGetExtraValue(key, out object? value) && value != Uninitialized.Instance) {
                         res.Add(value);
                     }
                 }
@@ -163,9 +167,9 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
-        public object this[object key] {
+        public object? this[object key] {
             get {
-                object res;
+                object? res;
                 if (key is string strKey) {
                     lock (this) {
                         if (TryGetExtraValue(strKey, out res) && res is not Uninitialized) return res;
@@ -201,7 +205,7 @@ namespace Microsoft.Scripting.Runtime {
 
         #region ICollection<KeyValuePair<string,object>> Members
 
-        public void Add(KeyValuePair<object, object> item) {
+        public void Add(KeyValuePair<object, object?> item) {
             throw new NotImplementedException();
         }
 
@@ -214,15 +218,15 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public bool Contains(KeyValuePair<object, object> item) {
+        public bool Contains(KeyValuePair<object, object?> item) {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(KeyValuePair<object, object>[] array, int arrayIndex) {
+        public void CopyTo(KeyValuePair<object, object?>[] array, int arrayIndex) {
             ContractUtils.RequiresNotNull(array, nameof(array));
             ContractUtils.RequiresArrayRange(array, arrayIndex, Count, nameof(arrayIndex), nameof(Count));
 
-            foreach (KeyValuePair<object, object> kvp in ((IEnumerable<KeyValuePair<object, object>>)this)) {
+            foreach (KeyValuePair<object, object?> kvp in ((IEnumerable<KeyValuePair<object, object?>>)this)) {
                 array[arrayIndex++] = kvp;
             }
         }
@@ -233,7 +237,7 @@ namespace Microsoft.Scripting.Runtime {
 
                 lock (this) {
                     foreach (var key in GetExtraKeys()) {
-                        if (TryGetExtraValue(key, out object dummy) && dummy != Uninitialized.Instance) count++;
+                        if (TryGetExtraValue(key, out object? dummy) && dummy != Uninitialized.Instance) count++;
                     }
                 }
 
@@ -243,7 +247,7 @@ namespace Microsoft.Scripting.Runtime {
 
         public bool IsReadOnly => false;
 
-        public bool Remove(KeyValuePair<object, object> item) {
+        public bool Remove(KeyValuePair<object, object?> item) {
             throw new NotImplementedException();
         }
 
@@ -264,16 +268,16 @@ namespace Microsoft.Scripting.Runtime {
 
         #region IEnumerable<KeyValuePair<object,object>> Members
 
-        IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator() {
+        IEnumerator<KeyValuePair<object, object?>> IEnumerable<KeyValuePair<object, object?>>.GetEnumerator() {
             if (_data is not null) {
-                foreach (KeyValuePair<object, object> o in _data) {
+                foreach (KeyValuePair<object, object?> o in _data) {
                     yield return o;
                 }
             }
 
             foreach (var o in GetExtraKeys()) {
-                if (TryGetExtraValue(o, out object val) && val != Uninitialized.Instance) {
-                    yield return new KeyValuePair<object, object>(o, val);
+                if (TryGetExtraValue(o, out object? val) && val != Uninitialized.Instance) {
+                    yield return new KeyValuePair<object, object?>(o, val);
                 }
             }
         }
@@ -283,10 +287,10 @@ namespace Microsoft.Scripting.Runtime {
         #region IEnumerable Members
 
         public IEnumerator GetEnumerator() {
-            List<object> l = new List<object>(this.Keys);
+            List<object?> l = new List<object?>(this.Keys);
             for (int i = 0; i < l.Count; i++) {
-                object baseVal = l[i];
-                object nullVal = l[i] = CustomStringDictionary.ObjToNull(l[i]);
+                object? baseVal = l[i];
+                object? nullVal = l[i] = CustomStringDictionary.ObjToNull(l[i]);
                 if (baseVal != nullVal) {
                     // we've transformed null, stop looking
                     break;
@@ -299,13 +303,13 @@ namespace Microsoft.Scripting.Runtime {
 
         #region IDictionary Members
 
-        void IDictionary.Add(object key, object value) {
-            ((IDictionary<object, object>)this).Add(key, value);
+        void IDictionary.Add(object key, object? value) {
+            ((IDictionary<object, object?>)this).Add(key, value);
         }
 
         public bool Contains(object key) {
-            object dummy;
-            return ((IDictionary<object, object>)this).TryGetValue(key, out dummy);
+            object? dummy;
+            return ((IDictionary<object, object?>)this).TryGetValue(key, out dummy);
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator() {
@@ -324,7 +328,7 @@ namespace Microsoft.Scripting.Runtime {
 
         ICollection IDictionary.Keys {
             get {
-                return new List<object>(((IDictionary<object, object>)this).Keys);
+                return new List<object>(((IDictionary<object, object?>)this).Keys);
             }
         }
 
@@ -334,7 +338,7 @@ namespace Microsoft.Scripting.Runtime {
 
         ICollection IDictionary.Values {
             get {
-                return new List<object>(((IDictionary<object, object>)this).Values);
+                return new List<object?>(((IDictionary<object, object?>)this).Values);
             }
         }
 
@@ -346,16 +350,16 @@ namespace Microsoft.Scripting.Runtime {
             throw Error.DictionaryNotHashable();
         }
 
-        public virtual bool ValueEquals(object other) {
+        public virtual bool ValueEquals(object? other) {
             if (object.ReferenceEquals(this, other)) return true;
 
-            IDictionary<object, object> oth = other as IDictionary<object, object>;
-            IDictionary<object, object> ths = this as IDictionary<object, object>;
+            IDictionary<object, object?>? oth = other as IDictionary<object, object?>;
+            IDictionary<object, object?> ths = this;
 
             if (oth?.Count != ths.Count) return false;
 
-            foreach (KeyValuePair<object, object> o in ths) {
-                if (!oth.TryGetValue(o.Key, out object res))
+            foreach (KeyValuePair<object, object?> o in ths) {
+                if (!oth.TryGetValue(o.Key, out object? res))
                     return false;
                     if (res is not null) {
                         if (!res.Equals(o.Value)) return false;
@@ -381,17 +385,17 @@ namespace Microsoft.Scripting.Runtime {
             }
         }
 
-        public static object NullToObj(object o) {
+        public static object NullToObj(object? o) {
             if (o is null) return _nullObject;
             return o;
         }
 
-        public static object ObjToNull(object o) {
+        public static object? ObjToNull(object? o) {
             if (o == _nullObject) return null;
             return o;
         }
 
-        public static bool IsNullObject(object o) {
+        public static bool IsNullObject(object? o) {
             return o == _nullObject;
         }
     }
