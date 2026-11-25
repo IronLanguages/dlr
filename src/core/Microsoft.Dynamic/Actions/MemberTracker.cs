@@ -191,7 +191,7 @@ namespace Microsoft.Scripting.Actions {
         /// trackers can override this to provide their own behaviors when bound to an instance.
         /// </summary>
         protected internal virtual DynamicMetaObject SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance) {
-            return SetValue(resolverFactory, binder, instanceType, instance);
+            return SetValue(resolverFactory, binder, instanceType, value);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Microsoft.Scripting.Actions {
         /// trackers can override this to provide their own behaviors when bound to an instance.
         /// </summary>
         protected internal virtual DynamicMetaObject SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance, DynamicMetaObject errorSuggestion) {
-            return SetValue(resolverFactory, binder, instanceType, instance, errorSuggestion);
+            return SetValue(resolverFactory, binder, instanceType, value, errorSuggestion);
         }
 
 
