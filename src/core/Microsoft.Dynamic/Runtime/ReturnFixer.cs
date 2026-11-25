@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_LCG
 
 using System;
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting.Generation {
             _argType = argType;
         }
 
-        internal static ReturnFixer EmitArgument(ILGen cg, int argIndex, Type argType) {
+        internal static ReturnFixer? EmitArgument(ILGen cg, int argIndex, Type argType) {
             cg.EmitLoadArg(argIndex);
 
             if (!argType.IsByRef) {
@@ -32,7 +34,7 @@ namespace Microsoft.Scripting.Generation {
                 return null;
             }
 
-            Type elementType = argType.GetElementType();
+            Type elementType = argType.GetElementType()!; // by-ref types have an element type
             cg.EmitLoadValueIndirect(elementType);
             Type concreteType = typeof(StrongBox<>).MakeGenericType(elementType);
             cg.EmitNew(concreteType, new Type[] { elementType });
@@ -46,7 +48,7 @@ namespace Microsoft.Scripting.Generation {
         internal void FixReturn(ILGen cg) {
             cg.EmitLoadArg(_argIndex);
             cg.Emit(OpCodes.Ldloc, _refSlot);
-            cg.Emit(OpCodes.Ldfld, _refSlot.LocalType.GetDeclaredField("Value"));
+            cg.Emit(OpCodes.Ldfld, _refSlot.LocalType.GetDeclaredField(nameof(StrongBox<>.Value)));
             cg.EmitStoreValueIndirect(_argType.GetElementType());
         }
     }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
@@ -21,7 +23,7 @@ namespace Microsoft.Scripting.Ast {
 
             ReadOnlyCollection<Expression> initializerList = initializers.ToReadOnlyCollection();
 
-            Expression[] clone = null;
+            Expression[]? clone = null;
             for (int i = 0; i < initializerList.Count; i++) {
                 Expression initializer = initializerList[i];
                 ContractUtils.RequiresNotNull(initializer, nameof(initializers));

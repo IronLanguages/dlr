@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System.Diagnostics;
@@ -37,13 +39,13 @@ namespace Microsoft.Scripting.Ast {
 #if DEBUG
         private static MethodCallExpression CallDebugWriteLine(string marker) {
             return Expression.Call(
-                typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }),
+                typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) })!, // Debug.WriteLine(string) exists
                 Constant(marker)
             );
         }
 #endif
 
-        public static Expression AddDebugInfo(Expression expression, SymbolDocumentInfo document, SourceLocation start, SourceLocation end) {
+        public static Expression AddDebugInfo(Expression expression, SymbolDocumentInfo? document, SourceLocation start, SourceLocation end) {
             if (document is null || !start.IsValid || !end.IsValid) {
                 return expression;
             }

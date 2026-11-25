@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Linq.Expressions;
 
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reflection;
 using System.Dynamic;
 using Microsoft.Scripting.Utils;
@@ -31,7 +32,7 @@ namespace Microsoft.Scripting.Ast {
         /// The helper to create the AST method call node. Will add conversions (Utils.Convert)
         /// to parameters and instance if necessary.
         /// </summary>
-        public static MethodCallExpression SimpleCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
+        public static MethodCallExpression SimpleCallHelper(Expression? instance, MethodInfo method, params Expression[] arguments) {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.Requires(instance is not null ^ method.IsStatic, nameof(instance));
             ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
@@ -41,7 +42,7 @@ namespace Microsoft.Scripting.Ast {
             ContractUtils.Requires(arguments.Length == parameters.Length, nameof(arguments), "Incorrect number of arguments");
 
             if (instance is not null) {
-                instance = Convert(instance, method.DeclaringType);
+                instance = Convert(instance, method.DeclaringType!); // instance methods have a declaring type
             }
 
             Expression[] convertedArguments = ArgumentConvertHelper(arguments, parameters);
@@ -62,10 +63,9 @@ namespace Microsoft.Scripting.Ast {
         }
 
         private static Expression[] ArgumentConvertHelper(Expression[] arguments, ParameterInfo[] parameters) {
-            Debug.Assert(arguments is not null);
-            Debug.Assert(parameters is not null);
+            Assert.NotNull(arguments, parameters);
 
-            Expression[] clone = null;
+            Expression[]? clone = null;
             for (int arg = 0; arg < arguments.Length; arg++) {
                 Expression argument = arguments[arg];
                 if (!CompatibleParameterTypes(parameters[arg].ParameterType, argument.Type)) {
@@ -89,7 +89,7 @@ namespace Microsoft.Scripting.Ast {
         private static Expression ArgumentConvertHelper(Expression argument, Type type) {
             if (argument.Type != type) {
                 if (type.IsByRef) {
-                    type = type.GetElementType();
+                    type = type.GetElementType()!; // by-ref types have an element type
                 }
                 if (argument.Type != type) {
                     argument = Convert(argument, type);
@@ -121,7 +121,7 @@ namespace Microsoft.Scripting.Ast {
 
         // FxCop is wrong on this one. "method" is required as MethodInfo by the call to "Call" factory
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-        public static Expression ComplexCallHelper(Expression instance, MethodInfo method, params Expression[] arguments) {
+        public static Expression ComplexCallHelper(Expression? instance, MethodInfo method, params Expression[] arguments) {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNullItems(arguments, nameof(arguments));
             ContractUtils.Requires(instance is not null ^ method.IsStatic, nameof(instance));
@@ -130,10 +130,10 @@ namespace Microsoft.Scripting.Ast {
             bool hasParamArray = parameters.Length > 0 && parameters[parameters.Length - 1].IsParamArray();
 
             if (instance is not null) {
-                instance = Convert(instance, method.DeclaringType);
+                instance = Convert(instance, method.DeclaringType!); // instance methods have a declaring type
             }
 
-            Expression[] clone = null;
+            Expression[]? clone = null;
 
             int current = 0;    // current parameter being populated
             int consumed = 0;   // arguments so far consumed
@@ -152,7 +152,7 @@ namespace Microsoft.Scripting.Ast {
                             CompatibleParameterTypes(parameter.ParameterType, arguments[consumed].Type)) {
                             argument = arguments[consumed++];
                         } else {
-                            Type elementType = parameter.ParameterType.GetElementType();
+                            Type elementType = parameter.ParameterType.GetElementType()!; // params arrays have an element type
                             Expression[] paramArray = new Expression[arguments.Length - consumed];
                             int paramIndex = 0;
                             while (consumed < arguments.Length) {
@@ -162,7 +162,7 @@ namespace Microsoft.Scripting.Ast {
                         }
                     } else {
                         // No. Create an empty array.
-                        argument = Expression.NewArrayInit(parameter.ParameterType.GetElementType());
+                        argument = Expression.NewArrayInit(parameter.ParameterType.GetElementType()!); // params arrays have an element type
                     }
                 } else {
                     if (consumed < arguments.Length) {

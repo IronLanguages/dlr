@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 #if FEATURE_CODEDOM
 
 using System.CodeDom;
@@ -17,19 +19,19 @@ namespace Microsoft.Scripting.Runtime {
         protected static readonly object SourceSpanKey = typeof(SourceSpan);
 
         // Stores the code as it is generated
-        protected PositionTrackingWriter Writer { get; private set; }
+        protected PositionTrackingWriter Writer { get; private set; } = new();
 
         protected abstract void WriteExpressionStatement(CodeExpressionStatement s);
         protected abstract void WriteFunctionDefinition(CodeMemberMethod func);
         protected abstract string QuoteString(string val);
 
-        public SourceUnit GenerateCode(CodeMemberMethod codeDom, LanguageContext context, string path, SourceCodeKind kind) {
+        public SourceUnit GenerateCode(CodeMemberMethod codeDom, LanguageContext context, string? path, SourceCodeKind kind) {
             ContractUtils.RequiresNotNull(codeDom, nameof(codeDom));
             ContractUtils.RequiresNotNull(context, nameof(context));
             ContractUtils.Requires(path is null || path.Length > 0, nameof(path));
 
             // Convert the CodeDom to source code
-            Writer?.Close();
+            Writer.Close();
             Writer = new PositionTrackingWriter();
 
             WriteFunctionDefinition(codeDom);
@@ -37,7 +39,7 @@ namespace Microsoft.Scripting.Runtime {
             return CreateSourceUnit(context, path, kind);
         }
 
-        private SourceUnit CreateSourceUnit(LanguageContext context, string path, SourceCodeKind kind) {
+        private SourceUnit CreateSourceUnit(LanguageContext context, string? path, SourceCodeKind kind) {
             string code = Writer.ToString();
             SourceUnit src = context.CreateSnippet(code, path, kind);
             src.SetLineMapping(Writer.GetLineMap());
@@ -91,7 +93,7 @@ namespace Microsoft.Scripting.Runtime {
         }
 
         protected void WritePrimitiveExpression(CodePrimitiveExpression e) {
-            object val = e.Value;
+            object? val = e.Value;
 
             if (val is string strVal) {
                 Writer.Write(QuoteString(strVal));
