@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,11 +30,11 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// </summary>
     public sealed class MethodCandidate {
         private readonly List<ParameterWrapper> _parameters;
-        private readonly ParameterWrapper _paramsDict;
+        private readonly ParameterWrapper? _paramsDict;
         private readonly InstanceBuilder _instanceBuilder;
 
-        internal MethodCandidate(OverloadResolver resolver, OverloadInfo method, List<ParameterWrapper> parameters, ParameterWrapper paramsDict,
-            ReturnBuilder returnBuilder, InstanceBuilder instanceBuilder, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions> restrictions) {
+        internal MethodCandidate(OverloadResolver resolver, OverloadInfo method, List<ParameterWrapper> parameters, ParameterWrapper? paramsDict,
+            ReturnBuilder returnBuilder, InstanceBuilder instanceBuilder, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions>? restrictions) {
 
             Assert.NotNull(resolver, method, instanceBuilder, returnBuilder);
             Assert.NotNullItems(parameters);
@@ -52,7 +54,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             parameters.TrimExcess();
         }
 
-        internal MethodCandidate ReplaceMethod(OverloadInfo newMethod, List<ParameterWrapper> parameters, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions> restrictions) {
+        internal MethodCandidate ReplaceMethod(OverloadInfo newMethod, List<ParameterWrapper> parameters, IList<ArgBuilder> argBuilders, Dictionary<DynamicMetaObject, BindingRestrictions>? restrictions) {
             return new MethodCandidate(Resolver, newMethod, parameters, _paramsDict, ReturnBuilder, _instanceBuilder, argBuilders, restrictions);
         }
 
@@ -61,10 +63,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         public OverloadResolver Resolver { get; }
 
         [Obsolete("Use Overload instead")]
-        public MethodBase Method => Overload.ReflectionInfo;
+        public MethodBase? Method => Overload.ReflectionInfo;
 
         public OverloadInfo Overload { get; }
-        internal Dictionary<DynamicMetaObject, BindingRestrictions> Restrictions { get; }
+        internal Dictionary<DynamicMetaObject, BindingRestrictions>? Restrictions { get; }
 
         public Type ReturnType => ReturnBuilder.ReturnType;
 
@@ -132,7 +134,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// The basic idea here is to figure out which parameters map to params or a dictionary params and
         /// fill in those spots w/ extra ParameterWrapper's.  
         /// </summary>
-        internal MethodCandidate MakeParamsExtended(int count, IList<string> names) {
+        internal MethodCandidate? MakeParamsExtended(int count, IList<string> names) {
             Debug.Assert(Overload.IsVariadic);
 
             List<ParameterWrapper> newParameters = new List<ParameterWrapper>(count);
@@ -146,7 +148,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             // if we don't have a param array we'll have a param dict which is type object
-            ParameterWrapper paramsArrayParameter = null;
+            ParameterWrapper? paramsArrayParameter = null;
             int paramsArrayIndex = -1;
 
             for (int i = 0; i < _parameters.Count; i++) {
@@ -165,7 +167,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (paramsArrayIndex != -1) {
+            if (paramsArrayParameter is not null) {
                 ParameterWrapper expanded = paramsArrayParameter.Expand();
                 while (newParameters.Count < (count - unusedNames.Count)) {
                     newParameters.Insert(System.Math.Min(paramsArrayIndex, newParameters.Count), expanded);
@@ -173,11 +175,12 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             if (_paramsDict is not null) {
-                var flags = (Overload.ProhibitsNullItems(_paramsDict.ParameterInfo.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
+                ParameterInfo paramsDictInfo = _paramsDict.ParameterInfo ?? throw new InvalidOperationException("Params dictionary parameter without ParameterInfo.");
+                var flags = (Overload.ProhibitsNullItems(paramsDictInfo.Position) ? ParameterBindingFlags.ProhibitNull : 0) |
                             (_paramsDict.IsHidden ? ParameterBindingFlags.IsHidden : 0);
 
                 foreach (string name in unusedNames) {
-                    newParameters.Add(new ParameterWrapper(_paramsDict.ParameterInfo, typeof(object), name, flags));
+                    newParameters.Add(new ParameterWrapper(paramsDictInfo, typeof(object), name, flags));
                 }
             } else if (unusedNames.Count != 0) {
                 // unbound kw args and no where to put them, can't call...
@@ -201,7 +204,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             // current argument that we consume, initially skip this if we have it.
             int curArg = Overload.IsStatic ? 0 : 1;
             int kwIndex = -1;
-            ArgBuilder paramsDictBuilder = null;
+            ArgBuilder? paramsDictBuilder = null;
 
             foreach (ArgBuilder ab in ArgBuilders) {
                 // TODO: define a virtual method on ArgBuilder implementing this functionality:
@@ -217,7 +220,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                         newArgBuilders.Add(new ParamsArgBuilder(
                             sab.ParameterInfo,
-                            sab.Type.GetElementType(),
+                            sab.Type.GetElementType()!, // params array parameter type is an array
                             curArg,
                             paramsUsed
                         ));
@@ -241,8 +244,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            if (kwIndex != -1) {
-                newArgBuilders.Insert(kwIndex, new ParamsDictArgBuilder(paramsDictBuilder.ParameterInfo, curArg, names, nameIndices));
+            if (paramsDictBuilder is not null) {
+                ParameterInfo paramsDictInfo = paramsDictBuilder.ParameterInfo ?? throw new InvalidOperationException("Params dictionary parameter without ParameterInfo.");
+                newArgBuilders.Insert(kwIndex, new ParamsDictArgBuilder(paramsDictInfo, curArg, names, nameIndices));
             }
 
             return new MethodCandidate(Resolver, Overload, parameters, null, ReturnBuilder, _instanceBuilder, newArgBuilders, null);
@@ -261,7 +265,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public Type[] GetParameterTypes() {
             List<Type> res = new List<Type>(ArgBuilders.Count);
             for (int i = 0; i < ArgBuilders.Count; i++) {
-                Type t = ArgBuilders[i].Type;
+                Type? t = ArgBuilders[i].Type;
                 if (t is not null) {
                     res.Add(t);
                 }
@@ -273,10 +277,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region MakeExpression
 
         internal Expression MakeExpression(RestrictedArguments restrictedArgs) {
-            Expression[] callArgs = GetArgumentExpressions(restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs);
+            Expression[] callArgs = GetArgumentExpressions(restrictedArgs, out bool[] usageMarkers, out Expression[]? spilledArgs);
 
             Expression call;
-            MethodBase mb = Overload.ReflectionInfo;
+            MethodBase? mb = Overload.ReflectionInfo;
 
             // TODO: make MakeExpression virtual on OverloadInfo?
             if (mb is null) {
@@ -284,11 +288,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
 
             if (mb is MethodInfo mi) {
-                Expression instance;
+                Expression? instance;
                 if (mi.IsStatic) {
                     instance = null;
                 } else {
-                    Debug.Assert(mi is not null);
+                    Assert.NotNull(mi);
                     instance = _instanceBuilder.ToExpression(ref mi, Resolver, restrictedArgs, usageMarkers);
                     Debug.Assert(instance is not null, "Can't skip instance expression");
                 }
@@ -297,7 +301,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     call = AstUtils.SimpleCallHelper(instance, mi, callArgs);
                 } else {
                     call = Expression.Call(
-                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeMethod)),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeMethod))!,
                         AstUtils.Constant(mi),
                         instance is not null ? AstUtils.Convert(instance, typeof(object)) : AstUtils.Constant(null),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
@@ -309,7 +313,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     call = AstUtils.SimpleNewHelper(ci, callArgs);
                 } else {
                     call = Expression.Call(
-                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeConstructor)),
+                        typeof(BinderOps).GetMethod(nameof(BinderOps.InvokeConstructor))!,
                         AstUtils.Constant(ci),
                         AstUtils.NewArrayHelper(typeof(object), callArgs)
                     );
@@ -322,9 +326,9 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             Expression ret = ReturnBuilder.ToExpression(Resolver, ArgBuilders, restrictedArgs, call);
 
-            List<Expression> updates = null;
+            List<Expression>? updates = null;
             for (int i = 0; i < ArgBuilders.Count; i++) {
-                Expression next = ArgBuilders[i].UpdateFromReturn(Resolver, restrictedArgs);
+                Expression? next = ArgBuilders[i].UpdateFromReturn(Resolver, restrictedArgs);
                 if (next is not null) {
                     updates ??= new List<Expression>();
                     updates.Add(next);
@@ -350,7 +354,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return ret;
         }
 
-        private Expression[] GetArgumentExpressions(RestrictedArguments restrictedArgs, out bool[] usageMarkers, out Expression[] spilledArgs) {
+        private Expression[] GetArgumentExpressions(RestrictedArguments restrictedArgs, out bool[] usageMarkers, out Expression[]? spilledArgs) {
             int minPriority = int.MaxValue;
             int maxPriority = int.MinValue;
             foreach (ArgBuilder ab in ArgBuilders) {
@@ -358,8 +362,8 @@ namespace Microsoft.Scripting.Actions.Calls {
                 maxPriority = Math.Max(maxPriority, ab.Priority);
             }
 
-            var args = new Expression[ArgBuilders.Count];
-            Expression[] actualArgs = null;
+            var args = new Expression?[ArgBuilders.Count];
+            Expression?[]? actualArgs = null;
             usageMarkers = new bool[restrictedArgs.Length];
             for (int priority = minPriority; priority <= maxPriority; priority++) {
                 for (int i = 0; i < ArgBuilders.Count; i++) {
@@ -367,7 +371,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         args[i] = ArgBuilders[i].ToExpression(Resolver, restrictedArgs, usageMarkers);
 
                         // see if this has a temp that needs to be passed as the actual argument
-                        Expression byref = ArgBuilders[i].ByRefArgument;
+                        Expression? byref = ArgBuilders[i].ByRefArgument;
                         if (byref is not null) {
                             actualArgs ??= new Expression[ArgBuilders.Count];
                             actualArgs[i] = byref;
@@ -378,9 +382,10 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             if (actualArgs is not null) {
                 for (int i = 0; i < args.Length; i++) {
-                    if (args[i] is not null && actualArgs[i] is null) {
-                        actualArgs[i] = Resolver.GetTemporary(args[i].Type, null);
-                        args[i] = Expression.Assign(actualArgs[i], args[i]);
+                    if (args[i] is Expression arg && actualArgs[i] is null) {
+                        ParameterExpression temp = Resolver.GetTemporary(arg.Type, null);
+                        actualArgs[i] = temp;
+                        args[i] = Expression.Assign(temp, arg);
                     }
                 }
 
@@ -392,7 +397,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return RemoveNulls(args);
         }
 
-        private static Expression[] RemoveNulls(Expression[] args) {
+        private static Expression[] RemoveNulls(Expression?[] args) {
             int newLength = args.Length;
             for (int i = 0; i < args.Length; i++) {
                 if (args[i] is null) {
@@ -402,8 +407,8 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             var result = new Expression[newLength];
             for (int i = 0, j = 0; i < args.Length; i++) {
-                if (args[i] is not null) {
-                    result[j++] = args[i];
+                if (args[i] is Expression arg) {
+                    result[j++] = arg;
                 }
             }
             return result;
@@ -412,7 +417,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         #endregion
 
         public override string ToString() {
-            return $"MethodCandidate({Overload.ReflectionInfo} on {Overload.DeclaringType.FullName})";
+            return $"MethodCandidate({Overload.ReflectionInfo} on {Overload.DeclaringType?.FullName})";
         }
     }
 }

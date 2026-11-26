@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using Microsoft.Scripting.Utils;
@@ -37,12 +40,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// ParameterInfo is not available.
         /// </summary>
         [Obsolete("Use ParameterBindingAttributes overload")]
-        public ParameterWrapper(Type type, string name, bool prohibitNull)
+        public ParameterWrapper(Type type, string? name, bool prohibitNull)
             : this(null, type, name, prohibitNull, false, false, false) {
         }
 
         [Obsolete("Use ParameterBindingAttributes overload")]
-        public ParameterWrapper(ParameterInfo info, Type type, string name, bool prohibitNull, bool isParams, bool isParamsDict, bool isHidden) 
+        public ParameterWrapper(ParameterInfo? info, Type type, string? name, bool prohibitNull, bool isParams, bool isParamsDict, bool isHidden) 
             : this(info, type, name, 
             (prohibitNull ? ParameterBindingFlags.ProhibitNull : 0) |
             (isParams ? ParameterBindingFlags.IsParamArray : 0) |
@@ -50,7 +53,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             (isHidden ? ParameterBindingFlags.IsHidden : 0)) {
         }
 
-        public ParameterWrapper(ParameterInfo info, Type type, string name, ParameterBindingFlags flags) {
+        public ParameterWrapper(ParameterInfo? info, Type type, string? name, ParameterBindingFlags flags) {
             ContractUtils.RequiresNotNull(type, nameof(type));
             
             Type = type;
@@ -68,7 +71,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public Type Type { get; }
 
-        public ParameterInfo ParameterInfo { get; }
+        public ParameterInfo? ParameterInfo { get; }
 
         public string Name { get; }
 
@@ -80,6 +83,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public bool IsHidden => (_flags & ParameterBindingFlags.IsHidden) != 0;
 
+        [MemberNotNullWhen(true, nameof(ParameterInfo))]
         public bool IsByRef => ParameterInfo is not null && ParameterInfo.ParameterType.IsByRef;
 
         /// <summary>
@@ -108,7 +112,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         internal ParameterWrapper Expand() {
             Debug.Assert(IsParamsArray);
-            return new ParameterWrapper(ParameterInfo, Type.GetElementType(), null, 
+            return new ParameterWrapper(ParameterInfo, Type.GetElementType()!, null, // params array parameter type is an array
                 (ProhibitNullItems ? ParameterBindingFlags.ProhibitNull : 0) | 
                 (IsHidden ? ParameterBindingFlags.IsHidden : 0)
             );

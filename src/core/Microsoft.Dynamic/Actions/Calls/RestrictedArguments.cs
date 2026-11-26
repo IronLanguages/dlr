@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,9 +15,9 @@ using Microsoft.Scripting.Utils;
 namespace Microsoft.Scripting.Actions.Calls {
     public sealed class RestrictedArguments {
         private readonly DynamicMetaObject[] _objects;
-        private readonly Type[] _types;
+        private readonly Type?[] _types;
 
-        public RestrictedArguments(DynamicMetaObject[] objects, Type[] types, bool hasUntypedRestrictions) {
+        public RestrictedArguments(DynamicMetaObject[] objects, Type?[] types, bool hasUntypedRestrictions) {
             Assert.NotNullItems(objects);
             Assert.NotNull(types);
             Debug.Assert(objects.Length == types.Length);
@@ -31,7 +33,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return _objects[i];
         }
 
-        public Type GetType(int i) {
+        public Type? GetType(int i) {
             return _types[i];
         }
 
@@ -48,8 +50,8 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new ReadOnlyCollection<DynamicMetaObject>(_objects);
         }
 
-        public IList<Type> GetTypes() {
-            return new ReadOnlyCollection<Type>(_types);
+        public IList<Type?> GetTypes() {
+            return new ReadOnlyCollection<Type?>(_types);
         }
     }
 }

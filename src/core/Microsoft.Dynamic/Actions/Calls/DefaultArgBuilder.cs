@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -26,17 +28,18 @@ namespace Microsoft.Scripting.Actions.Calls {
         public override int ConsumedArgumentCount => 0;
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
-            object value = ParameterInfo.GetDefaultValue();
+            ParameterInfo info = ParameterInfo!; // the constructor requires a non-null ParameterInfo
+            object? value = info.GetDefaultValue();
             if (value is Missing) {
-                value = CompilerHelpers.GetMissingValue(ParameterInfo.ParameterType);
+                value = CompilerHelpers.GetMissingValue(info.ParameterType);
             }
 
-            if (ParameterInfo.ParameterType.IsByRef) {
-                return AstUtils.Constant(value, ParameterInfo.ParameterType.GetElementType());
+            if (info.ParameterType.IsByRef) {
+                return AstUtils.Constant(value, info.ParameterType.GetElementType()!); // by-ref types have an element type
             }
 
-            var metaValue = new DynamicMetaObject(AstUtils.Constant(value), BindingRestrictions.Empty, value);
-            return resolver.Convert(metaValue, CompilerHelpers.GetType(value), ParameterInfo, ParameterInfo.ParameterType);
+            var metaValue = new DynamicMetaObject(AstUtils.Constant(value), BindingRestrictions.Empty, value!); // null is a valid value despite the annotation
+            return resolver.Convert(metaValue, CompilerHelpers.GetType(value), info, info.ParameterType);
         }
     }
 }

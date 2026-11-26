@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -33,7 +35,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             : this(info, info.ParameterType, index, info.IsParamArray(), info.IsParamDictionary()) {
         }
         
-        public SimpleArgBuilder(ParameterInfo info, Type parameterType, int index, bool isParams, bool isParamsDict)
+        public SimpleArgBuilder(ParameterInfo? info, Type parameterType, int index, bool isParams, bool isParamsDict)
             : base(info) {
             ContractUtils.Requires(index >= 0);
             ContractUtils.RequiresNotNull(parameterType, nameof(parameterType));

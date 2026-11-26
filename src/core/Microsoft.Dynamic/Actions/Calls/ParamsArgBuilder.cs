@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Dynamic;
@@ -18,7 +20,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private readonly int _expandedCount;
         private readonly Type _elementType;
 
-        internal ParamsArgBuilder(ParameterInfo info, Type elementType, int start, int expandedCount) 
+        internal ParamsArgBuilder(ParameterInfo? info, Type elementType, int start, int expandedCount) 
             : base(info) {
 
             Assert.NotNull(elementType);
@@ -105,7 +107,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public override Type Type => _elementType.MakeArrayType();
 
         public override ArgBuilder Clone(ParameterInfo newType) {
-            return new ParamsArgBuilder(newType, newType.ParameterType.GetElementType(), _start, _expandedCount);
+            return new ParamsArgBuilder(newType, newType.ParameterType.GetElementType() ?? throw new ArgumentException("Expected an array parameter.", nameof(newType)), _start, _expandedCount);
         }
     }
 }

@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -12,14 +15,14 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// updated return value is returned as one of the resulting return values.
     /// </summary>
     internal sealed class ReturnReferenceArgBuilder : SimpleArgBuilder {
-        private ParameterExpression _tmp;
+        private ParameterExpression? _tmp;
 
         public ReturnReferenceArgBuilder(ParameterInfo info, int index)
-            : base(info, info.ParameterType.GetElementType(), index, false, false) {
+            : base(info, info.ParameterType.GetElementType() ?? throw new ArgumentException("Expected a by-ref parameter.", nameof(info)), index, false, false) {
         }
 
         protected override SimpleArgBuilder Copy(int newIndex) {
-            return new ReturnReferenceArgBuilder(ParameterInfo, newIndex);
+            return new ReturnReferenceArgBuilder(ParameterInfo!, newIndex); // the constructor requires a non-null ParameterInfo
         }
 
         public override ArgBuilder Clone(ParameterInfo newType) {
@@ -33,10 +36,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         internal override Expression ToReturnExpression(OverloadResolver resolver) {
-            return _tmp;
+            return _tmp ?? throw new InvalidOperationException("The argument expression has not been built yet.");
         }
 
-        internal override Expression ByRefArgument => _tmp;
+        internal override Expression? ByRefArgument => _tmp;
 
         public override int Priority => 5;
     }

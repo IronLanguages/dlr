@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +38,7 @@ namespace Microsoft.Scripting.Actions {
         private readonly IList<DynamicMetaObject> _args;
         private readonly CallSignature _signature;
         private readonly CallTypes _callType;
-        private DynamicMetaObject _invalidSplattee;
+        private DynamicMetaObject? _invalidSplattee;
         private static readonly DefaultOverloadResolverFactory _factory = new(DefaultBinder.Instance);
 
         // instance method call:
@@ -68,13 +70,13 @@ namespace Microsoft.Scripting.Actions {
 
         public CallTypes CallType => _callType;
 
-        protected internal override BitArray MapSpecialParameters(ParameterMapping mapping) {
+        protected internal override BitArray? MapSpecialParameters(ParameterMapping mapping) {
             //  CallType        call-site   m static                  m instance         m operator/extension
             //  implicit inst.  T.m(a,b)    Ast.Call(null, [a, b])    Ast.Call(a, [b])   Ast.Call(null, [a, b])
             //  none            a.m(b)      Ast.Call(null, [b])       Ast.Call(a, [b])   Ast.Call(null, [a, b])
 
             if (!mapping.Overload.IsStatic) {
-                var type = mapping.Overload.DeclaringType;
+                var type = mapping.Overload.DeclaringType!; // instance methods have a declaring type
                 var flags = ParameterBindingFlags.ProhibitNull | (_callType == CallTypes.ImplicitInstance ? ParameterBindingFlags.IsHidden : 0);
 
                 mapping.AddParameter(new ParameterWrapper(null, type, null, flags));
@@ -120,7 +122,7 @@ namespace Microsoft.Scripting.Actions {
                     for (int i = 0; i < _signature.ArgumentCount; i++) {
                         if (_signature.GetArgumentKind(i) == ArgumentType.Named) {
                             objects.Add(GetArgument(i));
-                            names.Add(_signature.GetArgumentName(i));
+                            names.Add(_signature.GetArgumentName(i) ?? throw new InvalidOperationException("Named argument without a name."));
                         }
                     }
                 }
@@ -145,7 +147,7 @@ namespace Microsoft.Scripting.Actions {
                 && !parameter.IsParamArray() && !parameter.IsParamDictionary();
         }
 
-        protected override ActualArguments CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit) {
+        protected override ActualArguments? CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit) {
             var res = new List<DynamicMetaObject>();
 
             if (CallType == CallTypes.ImplicitInstance) {
@@ -177,7 +179,7 @@ namespace Microsoft.Scripting.Actions {
                                             arg.Expression,
                                             typeof(IList<object>)
                                         ),
-                                        typeof(IList<object>).GetMethod("get_Item"),
+                                        typeof(IList<object>).GetMethod("get_Item")!, // IList<T> has an indexer
                                         AstUtils.Constant(j)
                                     )
                                 )
@@ -204,20 +206,20 @@ namespace Microsoft.Scripting.Actions {
             Debug.Assert(_signature.HasDictionaryArgument());
 
             DynamicMetaObject dictMo = GetArgument(_signature.IndexOf(ArgumentType.Dictionary));
-            IDictionary dict = (IDictionary)dictMo.Value;
+            IDictionary dict = (IDictionary?)dictMo.Value ?? throw new InvalidOperationException("Dictionary argument is null.");
             IDictionaryEnumerator dictEnum = dict.GetEnumerator();
             while (dictEnum.MoveNext()) {
                 DictionaryEntry de = dictEnum.Entry;
 
-                string strKey = de.Key is string s ? s : de.Key is Extensible<string> es ? es.Value : null;
+                string? strKey = de.Key is string s ? s : de.Key is Extensible<string> es ? es.Value : null;
                 if (strKey is not null) {
                     splattedNames.Add(strKey);
                     splattedArgs.Add(
                         DynamicMetaObject.Create(
-                            de.Value,
+                            de.Value!, // null is a valid value despite the annotation
                             Ast.Call(
                                 AstUtils.Convert(dictMo.Expression, typeof(IDictionary)),
-                                typeof(IDictionary).GetMethod("get_Item"),
+                                typeof(IDictionary).GetMethod("get_Item")!, // IDictionary has an indexer
                                 AstUtils.Constant(strKey)
                             )
                         )
@@ -231,7 +233,7 @@ namespace Microsoft.Scripting.Actions {
             throw Assert.Unreachable;
         }
 
-        protected override object GetSplattedItem(int index) {
+        protected override object? GetSplattedItem(int index) {
             // lazy splatting not used:
             throw Assert.Unreachable;
         }
@@ -248,9 +250,9 @@ namespace Microsoft.Scripting.Actions {
 
         private ErrorInfo MakeInvalidSplatteeError(BindingTarget target) {
             return ErrorInfo.FromException(
-                Ast.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.InvalidSplatteeError)), 
+                Ast.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.InvalidSplatteeError))!, 
                     AstUtils.Constant(target.Name),
-                    AstUtils.Constant(Binder.GetTypeName(_invalidSplattee.GetLimitType()))
+                    AstUtils.Constant(Binder.GetTypeName(_invalidSplattee!.GetLimitType())) // checked by MakeInvalidParametersError
                 )
             );
         }

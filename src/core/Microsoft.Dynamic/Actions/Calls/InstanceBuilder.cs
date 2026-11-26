@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -40,7 +42,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             hasBeenUsed[_index] = true;
 
             GetCallableMethod(args, ref method);
-            return resolver.Convert(args.GetObject(_index), args.GetType(_index), null, method.DeclaringType);
+            return resolver.Convert(args.GetObject(_index), args.GetType(_index), null, method.DeclaringType!); // instance methods always have a declaring type
         }
 
         private void GetCallableMethod(RestrictedArguments args, ref MethodInfo method) {

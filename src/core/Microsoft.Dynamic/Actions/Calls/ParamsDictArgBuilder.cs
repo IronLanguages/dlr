@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,7 +40,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public override int Priority => 3;
 
         protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
-            Type dictType = ParameterInfo.ParameterType;
+            Type dictType = Type;
             var names = ConstantNames();
             var expressions = GetParameters(args, hasBeenUsed);
 
@@ -55,7 +57,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new InvalidOperationException($"Unsupported param dictionary type: {dictType.FullName}");
         }
 
-        public override Type Type => ParameterInfo.ParameterType;
+        public override Type Type => ParameterInfo!.ParameterType; // the constructor requires a non-null ParameterInfo
 
         private List<Expression> GetParameters(RestrictedArguments args, bool[] hasBeenUsed) {
             List<Expression> res = new List<Expression>(_nameIndexes.Length);
@@ -90,14 +92,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private Func<string[], object[], object> GetCreationDelegate(Type dictType) {
-            Func<string[], object[], object> func = null;
+            Func<string[], object[], object>? func = null;
 
             if (dictType.IsGenericType) {
-                Type[] genArgs = dictType.GetGenericTypeArguments();
+                Type[] genArgs = dictType.GetGenericArguments();
                 if (dictType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)) {
 
                     if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
-                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary)).MakeGenericMethod(genArgs);
+                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeReadOnlyDictionary))!.MakeGenericMethod(genArgs);
 
                         func = target.CreateDelegate<Func<string[], object[], object>>();
                     }
@@ -105,7 +107,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                            dictType.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
 
                     if (genArgs[0] == typeof(string) || genArgs[0] == typeof(object)) {
-                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeDictionary)).MakeGenericMethod(genArgs);
+                        MethodInfo target = typeof(BinderOps).GetMethod(nameof(BinderOps.MakeDictionary))!.MakeGenericMethod(genArgs);
 
                         func = target.CreateDelegate<Func<string[], object[], object>>();
                     }

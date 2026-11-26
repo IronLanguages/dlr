@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -18,9 +20,9 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// the reason the call failed.
     /// </summary>
     public sealed class BindingTarget {
-        private readonly CallFailure[] _callFailures;                                     // if failed on conversion the various conversion failures for all overloads
-        private readonly MethodCandidate[] _ambiguousMatches;                             // list of methods which are ambiguous to bind to.
-        private readonly int[] _expectedArgs;                                             // gets the acceptable number of parameters which can be passed to the method.
+        private readonly CallFailure[]? _callFailures;                                    // if failed on conversion the various conversion failures for all overloads
+        private readonly MethodCandidate[]? _ambiguousMatches;                            // list of methods which are ambiguous to bind to.
+        private readonly int[]? _expectedArgs;                                            // gets the acceptable number of parameters which can be passed to the method.
 
         /// <summary>
         /// Creates a new BindingTarget when the method binding has succeeded.
@@ -98,12 +100,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Returns the method if the binding succeeded, or null if no method was applicable.
         /// </summary>
         [Obsolete("Use Overload instead")]
-        public MethodBase Method => MethodCandidate?.Overload.ReflectionInfo;
+        public MethodBase? Method => MethodCandidate?.Overload.ReflectionInfo;
 
         /// <summary>
         /// Returns the selected overload if the binding succeeded, or null if no one was applicable.
         /// </summary>
-        public OverloadInfo Overload => MethodCandidate?.Overload;
+        public OverloadInfo? Overload => MethodCandidate?.Overload;
 
         /// <summary>
         /// Gets the name of the method as supplied to the OverloadResolver.
@@ -113,22 +115,22 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Returns the MethodTarget if the binding succeeded, or null if no method was applicable.
         /// </summary>
-        public MethodCandidate MethodCandidate { get; }
+        public MethodCandidate? MethodCandidate { get; }
 
         /// <summary>
         /// Returns the methods which don't have any matches or null if Result == BindingResult.AmbiguousMatch
         /// </summary>
-        public IEnumerable<MethodCandidate> AmbiguousMatches => _ambiguousMatches;
+        public IEnumerable<MethodCandidate>? AmbiguousMatches => _ambiguousMatches;
 
         /// <summary>
         /// Returns the methods and their associated conversion failures if Result == BindingResult.CallFailure.
         /// </summary>
-        public ICollection<CallFailure> CallFailures => _callFailures;
+        public ICollection<CallFailure>? CallFailures => _callFailures;
 
         /// <summary>
         /// Returns the acceptable number of arguments which can be passed to the method if Result == BindingResult.IncorrectArgumentCount.
         /// </summary>
-        public IList<int> ExpectedArgumentCount => _expectedArgs;
+        public IList<int>? ExpectedArgumentCount => _expectedArgs;
 
         /// <summary>
         /// Returns the total number of arguments provided to the call. 0 if the call succeeded or failed for a reason other
@@ -142,12 +144,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// The members of the array correspond to each of the arguments.  All members of the array
         /// have a value.
         /// </summary>
-        public RestrictedArguments RestrictedArguments { get; }
+        public RestrictedArguments? RestrictedArguments { get; }
 
         /// <summary>
         /// Returns the return type of the binding, or null if no method was applicable.
         /// </summary>
-        public Type ReturnType => MethodCandidate?.ReturnType;
+        public Type? ReturnType => MethodCandidate?.ReturnType;
 
         /// <summary>
         /// Gets the NarrowingLevel of the method if the call succeeded.

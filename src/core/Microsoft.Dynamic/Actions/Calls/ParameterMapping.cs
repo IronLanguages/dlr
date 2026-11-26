@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,14 +22,14 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private readonly List<ParameterWrapper> _parameters;
         private readonly List<ArgBuilder> _arguments;
-        private List<int> _returnArgs;
-        private InstanceBuilder _instanceBuilder;
-        private ReturnBuilder _returnBuilder;
+        private List<int>? _returnArgs;
+        private InstanceBuilder? _instanceBuilder;
+        private ReturnBuilder? _returnBuilder;
 
-        private readonly List<ArgBuilder> _defaultArguments;
+        private readonly List<ArgBuilder?> _defaultArguments;
         private bool _hasByRef;
         private bool _hasDefaults;
-        private ParameterWrapper _paramsDict;
+        private ParameterWrapper? _paramsDict;
 
         public OverloadInfo Overload { get; }
 
@@ -36,7 +39,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         public int ArgIndex { get; private set; }
 
         [Obsolete("Use Overload.ReflectionInfo instead")]
-        public MethodBase Method => Overload.ReflectionInfo;
+        public MethodBase? Method => Overload.ReflectionInfo;
 
         [Obsolete("Use Overload.Parameters instead")]
         public ParameterInfo[] ParameterInfos => ArrayUtils.MakeArray(Overload.Parameters);
@@ -48,7 +51,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _argNames = argNames;
             _parameters = new List<ParameterWrapper>();
             _arguments = new List<ArgBuilder>(method.ParameterCount);
-            _defaultArguments = new List<ArgBuilder>();
+            _defaultArguments = new List<ArgBuilder?>();
 	    }
 
         internal void MapParameters(bool reduceByRef) {
@@ -59,7 +62,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 }
             }
 
-            BitArray specialParameters = _resolver.MapSpecialParameters(this);
+            BitArray? specialParameters = _resolver.MapSpecialParameters(this);
 
             _instanceBuilder ??= new InstanceBuilder(-1);
 
@@ -76,7 +79,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _returnBuilder = MakeReturnBuilder(specialParameters);
         }
 
-        private static bool IsSpecialParameter(BitArray specialParameters, int infoIndex) {
+        private static bool IsSpecialParameter(BitArray? specialParameters, int infoIndex) {
             return specialParameters is not null && infoIndex < specialParameters.Length && specialParameters[infoIndex];
         }
 
@@ -101,7 +104,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public void MapParameter(ParameterInfo pi) {
             int indexForArgBuilder;
-            int nameIndex = _resolver.AllowByKeywordArgument(Overload, pi) ? _argNames.IndexOf(pi.Name) : -1;
+            int nameIndex = _resolver.AllowByKeywordArgument(Overload, pi) && pi.Name is not null ? _argNames.IndexOf(pi.Name) : -1;
             if (nameIndex == -1) {
                 // positional argument, we simply consume the next argument
                 indexForArgBuilder = ArgIndex++;
@@ -136,10 +139,10 @@ namespace Microsoft.Scripting.Actions.Calls {
             ArgBuilder ab;
             if (pi.ParameterType.IsByRef) {
                 _hasByRef = true;
-                Type elementType = pi.ParameterType.GetElementType();
+                Type elementType = pi.ParameterType.GetElementType()!; // by-ref types have an element type
                 Type refType = typeof(StrongBox<>).MakeGenericType(elementType);
                 _parameters.Add(new ParameterWrapper(pi, refType, pi.Name, ParameterBindingFlags.ProhibitNull));
-                ab = new ReferenceArgBuilder(pi, elementType, refType, indexForArgBuilder);
+                ab = new ReferenceArgBuilder(pi, elementType, indexForArgBuilder);
             } else if (pi.Position == 0 && Overload.IsExtension) {
                 _parameters.Add(new ParameterWrapper(pi, pi.ParameterType, pi.Name, ParameterBindingFlags.IsHidden));
                 ab = new SimpleArgBuilder(pi, pi.ParameterType, indexForArgBuilder, false, false);
@@ -159,7 +162,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// Maps out parameters to return args and ref parameters to ones that don't accept StrongBox.
         /// </summary>
         private void MapParameterReduceByRef(ParameterInfo pi) {
-            Debug.Assert(_returnArgs is not null);
+            Assert.NotNull(_returnArgs);
 
             // TODO:
             // Is this reduction necessary? What if 
@@ -170,7 +173,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             int nameIndex = -1;
             if (!pi.IsOutParameter()) {
-                nameIndex = _argNames.IndexOf(pi.Name);
+                nameIndex = pi.Name is not null ? _argNames.IndexOf(pi.Name) : -1;
                 if (nameIndex == -1) {
                     indexForArgBuilder = ArgIndex++;
                 }
@@ -185,7 +188,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 if ((pi.Attributes & (ParameterAttributes.In | ParameterAttributes.Out)) != ParameterAttributes.In) {
                     _returnArgs.Add(_arguments.Count);
                 }
-                _parameters.Add(new ParameterWrapper(pi, pi.ParameterType.GetElementType(), pi.Name, ParameterBindingFlags.None));
+                _parameters.Add(new ParameterWrapper(pi, pi.ParameterType.GetElementType()!, pi.Name, ParameterBindingFlags.None)); // by-ref types have an element type
                 ab = new ReturnReferenceArgBuilder(pi, indexForArgBuilder);
             } else {
                 ab = AddSimpleParameterMapping(pi, indexForArgBuilder);
@@ -227,10 +230,11 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         internal MethodCandidate CreateCandidate() {
+            EnsureParametersMapped();
             return new MethodCandidate(_resolver, Overload, _parameters, _paramsDict, _returnBuilder, _instanceBuilder, _arguments, null);
         }
 
-        internal MethodCandidate CreateByRefReducedCandidate() {
+        internal MethodCandidate? CreateByRefReducedCandidate() {
             if (!_hasByRef) {
                 return null;
             }
@@ -260,6 +264,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private MethodCandidate CreateDefaultCandidate(int defaultsUsed) {
+            EnsureParametersMapped();
+
             List<ArgBuilder> defaultArgBuilders = new List<ArgBuilder>(_arguments);
             List<ParameterWrapper> necessaryParams = _parameters.GetRange(0, _parameters.Count - defaultsUsed);
 
@@ -267,8 +273,8 @@ namespace Microsoft.Scripting.Actions.Calls {
                 int readIndex = _defaultArguments.Count - defaultsUsed + curDefault;
                 int writeIndex = defaultArgBuilders.Count - defaultsUsed + curDefault;
 
-                if (_defaultArguments[readIndex] is not null) {
-                    defaultArgBuilders[writeIndex] = _defaultArguments[readIndex];
+                if (_defaultArguments[readIndex] is ArgBuilder defaultArgBuilder) {
+                    defaultArgBuilders[writeIndex] = defaultArgBuilder;
                 } else {
                     necessaryParams.Add(_parameters[_parameters.Count - defaultsUsed + curDefault]);
                 }
@@ -285,11 +291,19 @@ namespace Microsoft.Scripting.Actions.Calls {
             return new MethodCandidate(_resolver, Overload, necessaryParams, _paramsDict, _returnBuilder, _instanceBuilder, defaultArgBuilders, null);
         }
 
+        [MemberNotNull(nameof(_instanceBuilder))]
+        [MemberNotNull(nameof(_returnBuilder))]
+        private void EnsureParametersMapped() {
+            if (_instanceBuilder is null || _returnBuilder is null) {
+                throw new InvalidOperationException("Parameters have not been mapped yet.");
+            }
+        }
+
         #endregion
 
         #region ReturnBuilder, Member Assigned Arguments
 
-        private ReturnBuilder MakeReturnBuilder(BitArray specialParameters) {
+        private ReturnBuilder MakeReturnBuilder(BitArray? specialParameters) {
             ReturnBuilder returnBuilder = (_returnArgs is not null) ?
                 new ByRefReturnBuilder(_returnArgs) :
                 new ReturnBuilder(Overload.ReturnType);
@@ -324,7 +338,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             List<MemberInfo> bindableMembers = new List<MemberInfo>();
 
             foreach (string name in unusedNames) {
-                Type curType = returnType;
+                Type? curType = returnType;
                 MemberInfo[] mis = curType.GetInheritedMembers(name).ToArray();
                 while (mis.Length != 1 && curType is not null) {
                     // see if we have a single member defined as the closest level
@@ -346,7 +360,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return bindableMembers;
         }
 
-        private List<string> GetUnusedArgNames(BitArray specialParameters) {
+        private List<string> GetUnusedArgNames(BitArray? specialParameters) {
             List<string> unusedNames = new List<string>();
             foreach (string name in _argNames) {
                 bool found = false;
