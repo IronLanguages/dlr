@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -40,8 +42,8 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public override string ToString() {
             return
-                _candidates.Count > 1 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType.FullName}, <{_candidates.Count-1} more>)" :
-                _candidates.Count > 0 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType.FullName})" :
+                _candidates.Count > 1 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType?.FullName}, <{_candidates.Count-1} more>)" :
+                _candidates.Count > 0 ? $"{_arity}: ({_candidates[0].Overload.Name} on {_candidates[0].Overload.DeclaringType?.FullName})" :
                 $"{_arity}: (<empty>)";
         }
     }

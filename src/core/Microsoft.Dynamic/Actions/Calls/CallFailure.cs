@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -26,9 +28,9 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// MethodTarget is always set and indicates the method which failed to bind.
     /// </summary>
     public sealed class CallFailure {
-        private readonly ConversionResult[] _results;
-        private readonly string[] _keywordArgs;
-        private readonly int[] _positionalArgs;
+        private readonly ConversionResult[]? _results;
+        private readonly string[]? _keywordArgs;
+        private readonly int[]? _positionalArgs;
 
         internal CallFailure(MethodCandidate candidate, ConversionResult[] results) {
             Candidate = candidate;
@@ -43,7 +45,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             _positionalArgs = EmptyArray<int>.Instance;
         }
 
-        internal CallFailure(MethodCandidate candidate, string[] keywordArgs, int[] positionalArgs) {
+        internal CallFailure(MethodCandidate candidate, string[] keywordArgs, int[]? positionalArgs) {
             Candidate = candidate;
             Reason = CallFailureReason.DuplicateKeyword;
             _keywordArgs = keywordArgs;
@@ -76,14 +78,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// being converted.
         /// This property has a meaningful value only when Reason == ConversionFailure
         /// </summary>
-        public IList<ConversionResult> ConversionResults => _results;
+        public IList<ConversionResult>? ConversionResults => _results;
 
         /// <summary>
         /// Gets the list of keyword arguments that were either duplicated or
         /// unassignable.
         /// This property has a meaningful value only when Reason == UnassignableKeyword or DuplicateKeyword
         /// </summary>
-        public IList<string> KeywordArguments => _keywordArgs;
+        public IList<string>? KeywordArguments => _keywordArgs;
 
         /// <summary>
         /// Gets 1-based positions of positional arguments that were duplicated
@@ -92,6 +94,6 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// The list may be shorter than KeywordArguments, in such case all missing elements are assumed 0.
         /// This property has a meaningful value only when Reason == DuplicateKeyword
         /// </summary>
-        public IList<int> PositionalArguments => _positionalArgs;
+        public IList<int>? PositionalArguments => _positionalArgs;
     }
 }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -51,7 +53,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return ((SimpleArgBuilder)builder).Index == 0;
         }
 
-        protected internal override Expression ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
+        protected internal override Expression? ToExpression(OverloadResolver resolver, RestrictedArguments args, bool[] hasBeenUsed) {
             Debug.Assert(BuilderExpectsSingleParameter(_builder));
 
             int index = GetKeywordIndex(args.Length);
@@ -60,13 +62,13 @@ namespace Microsoft.Scripting.Actions.Calls {
             return _builder.ToExpression(resolver, MakeRestrictedArg(args, index), new bool[1]);
         }
 
-        public override Type Type => _builder.Type;
+        public override Type? Type => _builder.Type;
 
         internal override Expression ToReturnExpression(OverloadResolver resolver) {
             return _builder.ToReturnExpression(resolver);
         }
 
-        internal override Expression UpdateFromReturn(OverloadResolver resolver, RestrictedArguments args) {
+        internal override Expression? UpdateFromReturn(OverloadResolver resolver, RestrictedArguments args) {
             int index = GetKeywordIndex(args.Length);
             return _builder.UpdateFromReturn(resolver, MakeRestrictedArg(args, index));
         }
@@ -79,10 +81,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             return paramCount - _kwArgCount + _kwArgIndex;
         }
 
-        internal override Expression ByRefArgument => _builder.ByRefArgument;
+        internal override Expression? ByRefArgument => _builder.ByRefArgument;
 
-        public override ArgBuilder Clone(ParameterInfo newType) {
-            return new KeywordArgBuilder(_builder.Clone(newType), _kwArgCount, _kwArgIndex);
+        public override ArgBuilder? Clone(ParameterInfo newType) {
+            ArgBuilder? builder = _builder.Clone(newType);
+            return builder is not null ? new KeywordArgBuilder(builder, _kwArgCount, _kwArgIndex) : null;
         }
     }
 }

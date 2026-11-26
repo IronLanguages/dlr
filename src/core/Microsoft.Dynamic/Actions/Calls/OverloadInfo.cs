@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,7 +31,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Null for constructors.
         /// </summary>
-        public abstract ParameterInfo ReturnParameter { get; }
+        public abstract ParameterInfo? ReturnParameter { get; }
 
         public virtual bool ProhibitsNull(int parameterIndex) {
             return Parameters[parameterIndex].ProhibitsNull();
@@ -47,7 +49,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             return Parameters[parameterIndex].IsParamDictionary();
         }
 
-        public abstract Type DeclaringType { get; }
+        /// <summary>
+        /// Null for global (module-level) methods and dynamic methods.
+        /// </summary>
+        public abstract Type? DeclaringType { get; }
+
         public abstract Type ReturnType { get; }
         public abstract MethodAttributes Attributes { get; }
         public abstract bool IsConstructor { get; }
@@ -66,9 +72,9 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public virtual CallingConventions CallingConvention => CallingConventions.Standard;
 
-        public virtual MethodBase ReflectionInfo => null;
+        public virtual MethodBase? ReflectionInfo => null;
 
-        private object DebugString => (object)ReflectionInfo ?? Name;
+        private object DebugString => (object?)ReflectionInfo ?? Name;
 
         // TODO: remove
         public virtual bool IsInstanceFactory => IsConstructor;
@@ -116,8 +122,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private readonly MethodBase _method;
-        private ReadOnlyCollection<ParameterInfo> _parameters; // lazy
-        private ReadOnlyCollection<Type> _genericArguments; // lazy
+        private ReadOnlyCollection<ParameterInfo>? _parameters; // lazy
+        private ReadOnlyCollection<Type>? _genericArguments; // lazy
         private _Flags _flags; // lazy
 
         public ReflectionOverloadInfo(MethodBase method) {
@@ -130,11 +136,11 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public override IList<ParameterInfo> Parameters => _parameters ??= new ReadOnlyCollection<ParameterInfo>(_method.GetParameters());
 
-        public override ParameterInfo ReturnParameter => (_method as MethodInfo)?.ReturnParameter;
+        public override ParameterInfo? ReturnParameter => (_method as MethodInfo)?.ReturnParameter;
 
         public override IList<Type> GenericArguments => _genericArguments ??= new ReadOnlyCollection<Type>(_method.GetGenericArguments());
 
-        public override Type DeclaringType => _method.DeclaringType;
+        public override Type? DeclaringType => _method.DeclaringType;
 
         public override Type ReturnType => _method.GetReturnType();
 

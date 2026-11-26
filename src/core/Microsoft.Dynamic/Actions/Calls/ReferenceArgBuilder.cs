@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -20,20 +22,20 @@ namespace Microsoft.Scripting.Actions.Calls {
     /// </summary>
     internal sealed class ReferenceArgBuilder : SimpleArgBuilder {
         private readonly Type _elementType;
-        private ParameterExpression _tmp;
+        private ParameterExpression? _tmp;
 
-        public ReferenceArgBuilder(ParameterInfo info, Type elementType, Type strongBox, int index)
-            : base(info, strongBox, index, false, false) {
+        public ReferenceArgBuilder(ParameterInfo info, Type elementType, int index)
+            : base(info, typeof(StrongBox<>).MakeGenericType(elementType), index, false, false) {
             _elementType = elementType;
         }
 
         protected override SimpleArgBuilder Copy(int newIndex) {
-            return new ReferenceArgBuilder(ParameterInfo, _elementType, Type, newIndex);
+            return new ReferenceArgBuilder(ParameterInfo!, _elementType, newIndex); // the constructor requires a non-null ParameterInfo
         }
 
         public override ArgBuilder Clone(ParameterInfo newType) {
-            Type elementType = newType.ParameterType.GetElementType();
-            return new ReferenceArgBuilder(newType, elementType, typeof(StrongBox<>).MakeGenericType(elementType), Index);
+            Type elementType = newType.ParameterType.GetElementType() ?? throw new ArgumentException("Expected a by-ref parameter.", nameof(newType));
+            return new ReferenceArgBuilder(newType, elementType, Index);
         }
 
         public override int Priority => 5;
@@ -51,7 +53,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     _tmp,
                     Expression.Field(
                         AstUtils.Convert(arg, Type),
-                        Type.GetDeclaredField("Value")
+                        Type.GetDeclaredField("Value")! // Type is StrongBox<_elementType>
                     )
                 ),
                 Expression.Throw(
@@ -69,12 +71,12 @@ namespace Microsoft.Scripting.Actions.Calls {
             return Expression.Assign(
                 Expression.Field(
                     Expression.Convert(args.GetObject(Index).Expression, Type),
-                    Type.GetDeclaredField("Value")
+                    Type.GetDeclaredField("Value")! // Type is StrongBox<_elementType>
                 ),
-                _tmp
+                _tmp ?? throw new InvalidOperationException("The argument expression has not been built yet.")
             );
         }
 
-        internal override Expression ByRefArgument => _tmp;
+        internal override Expression? ByRefArgument => _tmp;
     }
 }

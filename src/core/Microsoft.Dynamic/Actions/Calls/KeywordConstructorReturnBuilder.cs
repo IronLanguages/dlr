@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -56,7 +58,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                         sets.Add(
                             Expression.Convert(
                                 Expression.Call(
-                                    typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError)),
+                                    typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError))!,
                                     AstUtils.Constant(true),
                                     AstUtils.Constant(fi.Name)
                                 ),
@@ -77,7 +79,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                             sets.Add(
                                 Expression.Convert(
                                     Expression.Call(
-                                        typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError)),
+                                        typeof(ScriptingRuntimeHelpers).GetMethod(nameof(ScriptingRuntimeHelpers.ReadOnlyAssignError))!,
                                         AstUtils.Constant(false),
                                         AstUtils.Constant(pi.Name)
                                     ),

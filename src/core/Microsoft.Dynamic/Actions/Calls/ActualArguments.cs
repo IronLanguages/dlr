@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 
@@ -78,7 +81,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// named arguments and their corresponding parameters. Checks for duplicate and unbound named arguments.
         /// Ensures that for all i: namedArgs[i] binds to parameters[args.Length + bindingPermutation[i]] 
         /// </summary>
-        internal bool TryBindNamedArguments(MethodCandidate method, out ArgumentBinding binding, out CallFailure failure) {
+        internal bool TryBindNamedArguments(MethodCandidate method, out ArgumentBinding binding, [NotNullWhen(false)] out CallFailure? failure) {
             if (NamedArguments.Count == 0) {
                 binding = new ArgumentBinding(Arguments.Count);
                 failure = null;
@@ -92,9 +95,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                 permutation[i] = -1;
             }
 
-            List<string> unboundNames = null;
-            List<string> duppedNames = null;
-            List<int> duppedPositionals = null;
+            List<string>? unboundNames = null;
+            List<string>? duppedNames = null;
+            List<int>? duppedPositionals = null;
 
             int positionalArgCount = Arguments.Count;
 

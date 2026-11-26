@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,12 +19,12 @@ namespace Microsoft.Scripting.Actions.Calls {
     internal sealed class OutArgBuilder : ArgBuilder {
         private readonly Type _parameterType;
         private readonly bool _isRef;
-        private ParameterExpression _tmp;
+        private ParameterExpression? _tmp;
 
         public OutArgBuilder(ParameterInfo info) 
             : base(info) {
 
-            _parameterType = info.ParameterType.IsByRef ? info.ParameterType.GetElementType() : info.ParameterType;
+            _parameterType = info.ParameterType.IsByRef ? info.ParameterType.GetElementType()! : info.ParameterType; // by-ref types have an element type
             _isRef = info.ParameterType.IsByRef;
         }
 
@@ -40,13 +42,13 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         internal override Expression ToReturnExpression(OverloadResolver resolver) {
             if (_isRef) {
-                return _tmp;
+                return _tmp ?? throw new InvalidOperationException("The argument expression has not been built yet.");
             }
 
             return GetDefaultValue();
         }
 
-        internal override Expression ByRefArgument => _isRef ? _tmp : null;
+        internal override Expression? ByRefArgument => _isRef ? _tmp : null;
 
         private Expression GetDefaultValue() {
             if (_parameterType.IsValueType) {

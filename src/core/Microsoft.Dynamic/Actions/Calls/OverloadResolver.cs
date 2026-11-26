@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -60,16 +63,16 @@ namespace Microsoft.Scripting.Actions.Calls {
     public abstract partial class OverloadResolver {
 
         // built as target sets are built:
-        private string _methodName;
+        private string _methodName = null!;                      // set by ResolveOverload before use
         private NarrowingLevel _minLevel, _maxLevel;             // specifies the minimum and maximum narrowing levels for conversions during binding
-        private IList<string> _argNames;
-        private Dictionary<int, CandidateSet> _candidateSets;    // the methods as they map from # of arguments -> the possible CandidateSet's.
-        private List<MethodCandidate> _paramsCandidates;         // the methods which are params methods which need special treatment because they don't have fixed # of args
+        private IList<string> _argNames = null!;                 // set by ResolveOverload before use
+        private Dictionary<int, CandidateSet>? _candidateSets;   // the methods as they map from # of arguments -> the possible CandidateSet's.
+        private List<MethodCandidate>? _paramsCandidates;        // the methods which are params methods which need special treatment because they don't have fixed # of args
         
         // built as arguments are processed:
-        private ActualArguments _actualArguments;
+        private ActualArguments? _actualArguments;
         private int _maxAccessedCollapsedArg;
-        private List<ParameterExpression> _temps;
+        private List<ParameterExpression>? _temps;
 
         protected OverloadResolver(ActionBinder binder) {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
@@ -80,9 +83,9 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         public ActionBinder Binder { get; }
 
-        internal List<ParameterExpression> Temps => _temps;
+        internal List<ParameterExpression>? Temps => _temps;
 
-        internal ParameterExpression GetTemporary(Type type, string name) {
+        internal ParameterExpression GetTemporary(Type type, string? name) {
             Assert.NotNull(type);
 
             _temps ??= new List<ParameterExpression>();
@@ -158,7 +161,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         protected internal virtual bool AllowMemberInitialization(OverloadInfo method) {
 #pragma warning disable 618 // obsolete
-            return AllowKeywordArgumentSetting(method.ReflectionInfo);
+            return method.ReflectionInfo is MethodBase mb && AllowKeywordArgumentSetting(mb);
 #pragma warning restore 618
         }
 
@@ -208,9 +211,9 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// A default mapping will be constructed for the remaining parameters (cleared bits).
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
-        protected internal virtual BitArray MapSpecialParameters(ParameterMapping mapping) {
+        protected internal virtual BitArray? MapSpecialParameters(ParameterMapping mapping) {
             if (!mapping.Overload.IsStatic) {
-                var type = mapping.Overload.DeclaringType;
+                var type = mapping.Overload.DeclaringType!; // instance methods have a declaring type
                 mapping.AddParameter(new ParameterWrapper(null, type, null, ParameterBindingFlags.ProhibitNull));
                 mapping.AddInstanceBuilder(new InstanceBuilder(mapping.ArgIndex));
             }
@@ -220,7 +223,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         private void BuildCandidateSets(IEnumerable<OverloadInfo> methods) {
             Debug.Assert(_candidateSets is null);
-            Debug.Assert(_argNames is not null);
+            Assert.NotNull(_argNames);
 
             _candidateSets = new Dictionary<int, CandidateSet>();
 
@@ -235,7 +238,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 // other overloads of the method
                 foreach (MethodCandidate candidate in _paramsCandidates) {
                     foreach (int count in _candidateSets.Keys) {
-                        MethodCandidate target = candidate.MakeParamsExtended(count, _argNames);
+                        MethodCandidate? target = candidate.MakeParamsExtended(count, _argNames);
                         if (target is not null) {
                             AddTarget(target);
                         }
@@ -244,11 +247,11 @@ namespace Microsoft.Scripting.Actions.Calls {
             }
         }
 
-        private CandidateSet GetCandidateSet() {
-            Debug.Assert(_candidateSets is not null && _actualArguments is not null);
+        private CandidateSet? GetCandidateSet() {
+            Assert.NotNull(_candidateSets, _actualArguments);
 
             // Use precomputed set if arguments are fully expanded and we have one:
-            if (_actualArguments.CollapsedCount == 0 && _candidateSets.TryGetValue(_actualArguments.Count, out CandidateSet result)) {
+            if (_actualArguments.CollapsedCount == 0 && _candidateSets.TryGetValue(_actualArguments.Count, out CandidateSet? result)) {
                 return result;
             }
 
@@ -267,7 +270,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             var set = new CandidateSet(count);
             if (_paramsCandidates is not null) {
                 foreach (MethodCandidate maker in _paramsCandidates) {
-                    MethodCandidate target = maker.MakeParamsExtended(count, _argNames);
+                    MethodCandidate? target = maker.MakeParamsExtended(count, _argNames);
                     if (target is not null) {
                         set.Add(target);
                     }
@@ -278,8 +281,10 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private void AddTarget(MethodCandidate target) {
+            Assert.NotNull(_candidateSets); // created by BuildCandidateSets
+
             int count = target.ParameterCount;
-            if (!_candidateSets.TryGetValue(count, out CandidateSet set)) {
+            if (!_candidateSets.TryGetValue(count, out CandidateSet? set)) {
                 set = new CandidateSet(count);
                 _candidateSets[count] = set;
             }
@@ -344,20 +349,21 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// <summary>
         /// Return null if arguments cannot be constructed and overload resolution should produce an error.
         /// </summary>
-        protected abstract ActualArguments CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit);
+        protected abstract ActualArguments? CreateActualArguments(IList<DynamicMetaObject> namedArgs, IList<string> argNames, int preSplatLimit, int postSplatLimit);
 
         #endregion
 
         #region Step 3: Resolution
 
         internal BindingTarget MakeBindingTarget(CandidateSet targetSet) {
-            List<CallFailure> failures = null;
-            List<CallFailure> nameBindingFailures = null;
+            List<CallFailure>? failures = null;
+            List<CallFailure>? nameBindingFailures = null;
 
             // get candidates whose named arguments can be bind to the parameters:
             var potential = EnsureMatchingNamedArgs(targetSet.Candidates, ref nameBindingFailures);
 
             if (potential.Count == 0) {
+                Assert.NotNull(nameBindingFailures); // ResolveOverload ensures that targetSet has a candidate without params dictionary
                 return MakeFailedBindingTarget(nameBindingFailures.ToArray());
             }
 
@@ -406,14 +412,14 @@ namespace Microsoft.Scripting.Actions.Calls {
             return MakeFailedBindingTarget(failures.ToArray());
         }
 
-        private List<ApplicableCandidate> EnsureMatchingNamedArgs(List<MethodCandidate> candidates, ref List<CallFailure> failures) {
+        private List<ApplicableCandidate> EnsureMatchingNamedArgs(List<MethodCandidate> candidates, ref List<CallFailure>? failures) {
             var result = new List<ApplicableCandidate>();
             foreach (MethodCandidate candidate in candidates) {
                 // skip params dictionaries - we want to only pick up the methods normalized
                 // to have argument names (which we created because the MethodBinder gets 
                 // created w/ keyword arguments).
                 if (!candidate.HasParamsDictionary) {
-                    if (_actualArguments.TryBindNamedArguments(candidate, out ArgumentBinding namesBinding, out CallFailure callFailure)) {
+                    if (GetActualArguments().TryBindNamedArguments(candidate, out ArgumentBinding namesBinding, out CallFailure? callFailure)) {
                         result.Add(new ApplicableCandidate(candidate, namesBinding));
                     } else {
                         AddFailure(ref failures, callFailure);
@@ -424,7 +430,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private List<ApplicableCandidate> SelectCandidatesWithConvertibleArgs(List<ApplicableCandidate> candidates, NarrowingLevel level, 
-            ref List<CallFailure> failures) {
+            ref List<CallFailure>? failures) {
 
             bool hasGenericCandidates = false;
             var result = new List<ApplicableCandidate>();
@@ -434,7 +440,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                     continue;
                 }
 
-                if (TryConvertArguments(candidate.Method, candidate.ArgumentBinding, level, out CallFailure callFailure)) {
+                if (TryConvertArguments(candidate.Method, candidate.ArgumentBinding, level, out CallFailure? callFailure)) {
                     result.Add(candidate);
                 } else {
                     AddFailure(ref failures, callFailure);
@@ -448,9 +454,9 @@ namespace Microsoft.Scripting.Actions.Calls {
                         continue;
                     }
 
-                    MethodCandidate newCandidate = TypeInferer.InferGenericMethod(candidate, _actualArguments);
+                    MethodCandidate? newCandidate = TypeInferer.InferGenericMethod(candidate, GetActualArguments());
                     if (newCandidate is not null) {
-                        if (TryConvertArguments(newCandidate, candidate.ArgumentBinding, level, out CallFailure callFailure)) {
+                        if (TryConvertArguments(newCandidate, candidate.ArgumentBinding, level, out CallFailure? callFailure)) {
                             result.Add(new ApplicableCandidate(newCandidate, candidate.ArgumentBinding));
                         } else {
                             AddFailure(ref failures, callFailure);
@@ -465,15 +471,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private List<ApplicableCandidate> SelectCandidatesWithConvertibleCollapsedArgs(List<ApplicableCandidate> candidates,
-            NarrowingLevel level, ref List<CallFailure> failures) {
+            NarrowingLevel level, ref List<CallFailure>? failures) {
 
-            if (_actualArguments.CollapsedCount == 0) {
+            if (GetActualArguments().CollapsedCount == 0) {
                 return candidates;
             }
 
             var result = new List<ApplicableCandidate>();
             foreach (ApplicableCandidate candidate in candidates) {
-                if (TryConvertCollapsedArguments(candidate.Method, level, out CallFailure callFailure)) {
+                if (TryConvertCollapsedArguments(candidate.Method, level, out CallFailure? callFailure)) {
                     result.Add(candidate);
                 } else {
                     AddFailure(ref failures, callFailure);
@@ -482,25 +488,26 @@ namespace Microsoft.Scripting.Actions.Calls {
             return result;
         }
 
-        private static void AddFailure(ref List<CallFailure> failures, CallFailure failure) {
+        private static void AddFailure(ref List<CallFailure>? failures, CallFailure failure) {
             failures ??= new List<CallFailure>(1);
             failures.Add(failure);
         }
 
-        private bool TryConvertArguments(MethodCandidate candidate, ArgumentBinding namesBinding, NarrowingLevel narrowingLevel, out CallFailure failure) {
-            Debug.Assert(_actualArguments.Count == candidate.ParameterCount);
+        private bool TryConvertArguments(MethodCandidate candidate, ArgumentBinding namesBinding, NarrowingLevel narrowingLevel, [NotNullWhen(false)] out CallFailure? failure) {
+            var actualArgs = GetActualArguments();
+            Debug.Assert(actualArgs.Count == candidate.ParameterCount);
 
-            BitArray hasConversion = new BitArray(_actualArguments.Count);
+            BitArray hasConversion = new BitArray(actualArgs.Count);
 
             bool success = true;
-            for (int i = 0; i < _actualArguments.Count; i++) {
-                success &= (hasConversion[i] = CanConvertFrom(_actualArguments[i].GetLimitType(), _actualArguments[i], candidate.GetParameter(i, namesBinding), narrowingLevel));
+            for (int i = 0; i < actualArgs.Count; i++) {
+                success &= (hasConversion[i] = CanConvertFrom(actualArgs[i].GetLimitType(), actualArgs[i], candidate.GetParameter(i, namesBinding), narrowingLevel));
             }
 
             if (!success) {
-                var conversionResults = new ConversionResult[_actualArguments.Count];
-                for (int i = 0; i < _actualArguments.Count; i++) {
-                    conversionResults[i] = new ConversionResult(_actualArguments[i].Value, _actualArguments[i].GetLimitType(), candidate.GetParameter(i, namesBinding).Type, !hasConversion[i]);
+                var conversionResults = new ConversionResult[actualArgs.Count];
+                for (int i = 0; i < actualArgs.Count; i++) {
+                    conversionResults[i] = new ConversionResult(actualArgs[i].Value, actualArgs[i].GetLimitType(), candidate.GetParameter(i, namesBinding).Type, !hasConversion[i]);
                 }
                 failure = new CallFailure(candidate, conversionResults);
             } else {
@@ -510,15 +517,16 @@ namespace Microsoft.Scripting.Actions.Calls {
             return success;
         }
 
-        private bool TryConvertCollapsedArguments(MethodCandidate candidate, NarrowingLevel narrowingLevel, out CallFailure failure) {
-            Debug.Assert(_actualArguments.CollapsedCount > 0);
+        private bool TryConvertCollapsedArguments(MethodCandidate candidate, NarrowingLevel narrowingLevel, [NotNullWhen(false)] out CallFailure? failure) {
+            var actualArgs = GetActualArguments();
+            Debug.Assert(actualArgs.CollapsedCount > 0);
 
             // There must be at least one expanded parameter preceding splat index (see MethodBinder.GetSplatLimits):
-            ParameterWrapper parameter = candidate.GetParameter(_actualArguments.SplatIndex - 1);
+            ParameterWrapper parameter = candidate.GetParameter(actualArgs.SplatIndex - 1);
             Debug.Assert(parameter.ParameterInfo is not null && candidate.Overload.IsParamArray(parameter.ParameterInfo.Position));
 
-            for (int i = 0; i < _actualArguments.CollapsedCount; i++) {
-                object value = GetCollapsedArgumentValue(i);
+            for (int i = 0; i < actualArgs.CollapsedCount; i++) {
+                object? value = GetCollapsedArgumentValue(i);
                 Type argType = CompilerHelpers.GetType(value);
 
                 if (!CanConvertFrom(argType, null, parameter, narrowingLevel)) {
@@ -532,14 +540,15 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private RestrictedArguments GetRestrictedArgs(ApplicableCandidate selectedCandidate, IList<ApplicableCandidate> candidates, int targetSetSize) {
-            Debug.Assert(selectedCandidate.Method.ParameterCount == _actualArguments.Count);
+            var actualArgs = GetActualArguments();
+            Debug.Assert(selectedCandidate.Method.ParameterCount == actualArgs.Count);
 
-            int argCount = _actualArguments.Count;
+            int argCount = actualArgs.Count;
             var restrictedArgs = new DynamicMetaObject[argCount];
-            var types = new Type[argCount];
+            var types = new Type?[argCount];
             bool hasAdditionalRestrictions = false;
             for (int i = 0; i < argCount; i++) {
-                var arg = _actualArguments[i];
+                var arg = actualArgs[i];
 
                 if (targetSetSize > 0 && IsOverloadedOnParameter(i, argCount, candidates) ||
                     !selectedCandidate.GetParameter(i).Type.IsAssignableFrom(arg.Expression.Type)) {
@@ -552,7 +561,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
                 if (selectedCandidate.Method.Restrictions is not null && selectedCandidate.Method.Restrictions.TryGetValue(
                         arg,
-                        out BindingRestrictions additionalRestrictions)) {
+                        out BindingRestrictions? additionalRestrictions)) {
                     hasAdditionalRestrictions = true;
                     restrictedArgs[i] = new DynamicMetaObject(
                         restrictedArgs[i].Expression,
@@ -578,7 +587,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private static bool IsOverloadedOnParameter(int argIndex, int argCount, IList<ApplicableCandidate> overloads) {
             Debug.Assert(argIndex >= 0);
 
-            Type seenParametersType = null;
+            Type? seenParametersType = null;
             foreach (var overload in overloads) {
                 int parameterCount = overload.Method.ParameterCount;
                 if (parameterCount == 0) {
@@ -602,14 +611,14 @@ namespace Microsoft.Scripting.Actions.Calls {
                             // better sometimes.
                             return true;
                         }
-                        parameterType = lastParameter.Type.GetElementType();
+                        parameterType = lastParameter.Type.GetElementType()!; // params array parameter type is an array
                     } else if (parameter.Type.ContainsGenericParameters) {
                         return true;
                     } else {
                         parameterType = parameter.Type;
                     }
                 } else if (lastParameter.IsParamsArray) {
-                    parameterType = lastParameter.Type.GetElementType();
+                    parameterType = lastParameter.Type.GetElementType()!; // params array parameter type is an array
                 } else {
                     continue;
                 }
@@ -830,7 +839,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return Candidate.Ambiguous;
         }
 
-        private ApplicableCandidate SelectBestCandidate(List<ApplicableCandidate> candidates, NarrowingLevel level) {
+        private ApplicableCandidate? SelectBestCandidate(List<ApplicableCandidate> candidates, NarrowingLevel level) {
             foreach (var candidate in candidates) {
                 if (IsBest(candidate, candidates, level)) {
                     return candidate;
@@ -844,7 +853,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             return new BindingTarget(
                 _methodName,
-                _actualArguments.VisibleCount,
+                GetActualArguments().VisibleCount,
                 result.Method,
                 level,
                 GetRestrictedArgs(result, potentialCandidates, targetSet.Arity)
@@ -852,7 +861,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private BindingTarget MakeFailedBindingTarget(CallFailure[] failures) {
-            return new BindingTarget(_methodName, _actualArguments.VisibleCount, failures);
+            return new BindingTarget(_methodName, GetActualArguments().VisibleCount, failures);
         }
 
         private BindingTarget MakeAmbiguousBindingTarget(List<ApplicableCandidate> result) {
@@ -861,7 +870,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 methods[i] = result[i].Method;
             }
 
-            return new BindingTarget(_methodName, _actualArguments.VisibleCount, methods);
+            return new BindingTarget(_methodName, GetActualArguments().VisibleCount, methods);
         }
 
         #endregion
@@ -876,7 +885,7 @@ namespace Microsoft.Scripting.Actions.Calls {
             return CanConvertFrom(parameter1.Type, null, parameter2, NarrowingLevel.None);
         }
 
-        public virtual bool CanConvertFrom(Type fromType, DynamicMetaObject fromArgument, ParameterWrapper toParameter, NarrowingLevel level) {
+        public virtual bool CanConvertFrom(Type fromType, DynamicMetaObject? fromArgument, ParameterWrapper toParameter, NarrowingLevel level) {
             Assert.NotNull(fromType, toParameter);
 
             Type toType = toParameter.Type;
@@ -917,7 +926,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         // TODO: revisit
-        public virtual Expression Convert(DynamicMetaObject metaObject, Type restrictedType, ParameterInfo info, Type toType) {
+        public virtual Expression Convert(DynamicMetaObject metaObject, Type? restrictedType, ParameterInfo? info, Type toType) {
             Assert.NotNull(metaObject, toType);
 
             return Binder.ConvertExpression(metaObject.Expression, toType, ConversionResultKind.ExplicitCast, null);
@@ -933,6 +942,8 @@ namespace Microsoft.Scripting.Actions.Calls {
         #region Step 5: Results, Errors
         
         private int[] GetExpectedArgCounts() {
+            Assert.NotNull(_candidateSets); // built in step 1
+
             if (_candidateSets.Count == 0 && _paramsCandidates is null) {
                 return EmptyArray<int>.Instance;
             }
@@ -992,7 +1003,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private static ErrorInfo MakeIncorrectArgumentCountError(BindingTarget target) {
             int minArgs = Int32.MaxValue;
             int maxArgs = Int32.MinValue;
-            foreach (int argCnt in target.ExpectedArgumentCount) {
+            foreach (int argCnt in target.ExpectedArgumentCount ?? throw new InvalidOperationException()) {
                 minArgs = System.Math.Min(minArgs, argCnt);
                 maxArgs = System.Math.Max(maxArgs, argCnt);
             }
@@ -1001,7 +1012,7 @@ namespace Microsoft.Scripting.Actions.Calls {
                 Expression.Call(
                     typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForIncorrectArgumentCount), new Type[] {
                                 typeof(string), typeof(int), typeof(int) , typeof(int), typeof(int), typeof(bool), typeof(bool)
-                            }),
+                            })!,
                     AstUtils.Constant(target.Name, typeof(string)),  // name
                     AstUtils.Constant(minArgs),                      // min formal normal arg cnt
                     AstUtils.Constant(maxArgs),                      // max formal normal arg cnt
@@ -1016,7 +1027,7 @@ namespace Microsoft.Scripting.Actions.Calls {
         private ErrorInfo MakeAmbiguousCallError(BindingTarget target) {
             StringBuilder sb = new StringBuilder("Multiple targets could match: ");
             string outerComma = "";
-            foreach (MethodCandidate candidate in target.AmbiguousMatches) {
+            foreach (MethodCandidate candidate in target.AmbiguousMatches ?? throw new InvalidOperationException()) {
                 Type[] types = candidate.GetParameterTypes();
                 string innerComma = "";
 
@@ -1035,21 +1046,21 @@ namespace Microsoft.Scripting.Actions.Calls {
 
             return ErrorInfo.FromException(
                 Expression.Call(
-                    typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)),
+                    typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError))!,
                     AstUtils.Constant(sb.ToString(), typeof(string))
                 )
             );
         }
 
         private ErrorInfo MakeCallFailureError(BindingTarget target) {
-            foreach (CallFailure cf in target.CallFailures) {
+            foreach (CallFailure cf in target.CallFailures ?? throw new InvalidOperationException()) {
                 switch (cf.Reason) {
                     case CallFailureReason.ConversionFailure:
-                        foreach (ConversionResult cr in cf.ConversionResults) {
+                        foreach (ConversionResult cr in cf.ConversionResults ?? throw new InvalidOperationException()) {
                             if (cr.Failed) {
                                 return ErrorInfo.FromException(
                                     Expression.Call(
-                                        typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)),
+                                        typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError))!,
                                         AstUtils.Constant(
                                             $"expected {Binder.GetTypeName(cr.To)}, got {cr.GetArgumentTypeName(Binder)}")
                                     )
@@ -1058,43 +1069,45 @@ namespace Microsoft.Scripting.Actions.Calls {
                         }
                         break;
                     case CallFailureReason.DuplicateKeyword:
-                        int duppedIdx = cf.PositionalArguments.FindIndex(static p => p != 0);
+                        IList<int> duppedPositionals = cf.PositionalArguments ?? throw new InvalidOperationException();
+                        IList<string> duppedKeywords = cf.KeywordArguments ?? throw new InvalidOperationException();
+                        int duppedIdx = duppedPositionals.FindIndex(static p => p != 0);
                         return duppedIdx >= 0 ?
                             ErrorInfo.FromException(
                                 Expression.Call(
-                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateArgument)),
+                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateArgument))!,
                                     AstUtils.Constant(target.Name, typeof(string)),
                                     AstUtils.Constant(
-                                        cf.PositionalArguments[duppedIdx],
+                                        duppedPositionals[duppedIdx],
                                         typeof(int)),
                                     AstUtils.Constant(
-                                        cf.KeywordArguments[duppedIdx],
+                                        duppedKeywords[duppedIdx],
                                         typeof(string)) // TODO: Report all bad arguments?
                                 )
                             )
                           : ErrorInfo.FromException(
                                 Expression.Call(
-                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateKeywordArgument)),
+                                    typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForDuplicateKeywordArgument))!,
                                     AstUtils.Constant(target.Name, typeof(string)),
                                     AstUtils.Constant(
-                                        cf.KeywordArguments[0],
+                                        duppedKeywords[0],
                                         typeof(string)) // TODO: Report all bad arguments?
                                 )
                             );
                     case CallFailureReason.UnassignableKeyword:
                         return ErrorInfo.FromException(
                             Expression.Call(
-                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForExtraKeywordArgument)),
+                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForExtraKeywordArgument))!,
                                 AstUtils.Constant(target.Name, typeof(string)),
                                 AstUtils.Constant(
-                                    cf.KeywordArguments[0],
+                                    (cf.KeywordArguments ?? throw new InvalidOperationException())[0],
                                     typeof(string)) // TODO: Report all bad arguments?
                             )
                         );
                     case CallFailureReason.TypeInference:
                         return ErrorInfo.FromException(
                             Expression.Call(
-                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForNonInferrableMethod)),
+                                typeof(BinderOps).GetMethod(nameof(BinderOps.TypeErrorForNonInferrableMethod))!,
                                 AstUtils.Constant(target.Name, typeof(string))
                             )
                         );
@@ -1105,12 +1118,12 @@ namespace Microsoft.Scripting.Actions.Calls {
         }
 
         private ErrorInfo MakeInvalidArgumentsError() {
-            return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError)), AstUtils.Constant("Invalid arguments.")));
+            return ErrorInfo.FromException(Expression.Call(typeof(BinderOps).GetMethod(nameof(BinderOps.SimpleTypeError))!, AstUtils.Constant("Invalid arguments.")));
         }
 
         private static ErrorInfo MakeNoCallableMethodError() {
             return ErrorInfo.FromException(
-                Expression.New(typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) }), AstUtils.Constant("No callable method."))
+                Expression.New(typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) })!, AstUtils.Constant("No callable method."))
             );
         }
 
@@ -1120,7 +1133,7 @@ namespace Microsoft.Scripting.Actions.Calls {
 
         // Get minimal number of arguments that must precede/follow splat mark in actual arguments.
         private void GetSplatLimits(out int preSplatLimit, out int postSplatLimit) {
-            Debug.Assert(_candidateSets is not null);
+            Assert.NotNull(_candidateSets);
 
             if (_paramsCandidates is not null) {
                 int preCount = -1;
@@ -1153,14 +1166,14 @@ namespace Microsoft.Scripting.Actions.Calls {
         /// </summary>
         internal Expression GetSplattedItemExpression(Expression indexExpression) {
             // TODO: move up?
-            return Expression.Call(GetSplattedExpression(), typeof(IList).GetMethod("get_Item"), indexExpression);
+            return Expression.Call(GetSplattedExpression(), typeof(IList).GetMethod("get_Item")!, indexExpression); // IList has an indexer
         }
 
         protected abstract Expression GetSplattedExpression();
-        protected abstract object GetSplattedItem(int index);
+        protected abstract object? GetSplattedItem(int index);
 
-        internal object GetCollapsedArgumentValue(int collapsedArgIndex) {
-            var result = GetSplattedItem(_actualArguments.ToSplattedItemIndex(collapsedArgIndex));
+        internal object? GetCollapsedArgumentValue(int collapsedArgIndex) {
+            var result = GetSplattedItem(GetActualArguments().ToSplattedItemIndex(collapsedArgIndex));
             _maxAccessedCollapsedArg = System.Math.Max(_maxAccessedCollapsedArg, collapsedArgIndex);
             return result;
         }
@@ -1169,24 +1182,25 @@ namespace Microsoft.Scripting.Actions.Calls {
             get { return _maxAccessedCollapsedArg; }
         }
 
-        internal Type[] GetAccessedCollapsedArgTypes() {
-            Type[] types = new Type[_maxAccessedCollapsedArg + 1];
+        internal Type?[] GetAccessedCollapsedArgTypes() {
+            var actualArgs = GetActualArguments();
+            Type?[] types = new Type?[_maxAccessedCollapsedArg + 1];
             for (int i = 0; i < types.Length; i++) {
-                var arg = GetSplattedItem(_actualArguments.ToSplattedItemIndex(i));
+                var arg = GetSplattedItem(actualArgs.ToSplattedItemIndex(i));
                 types[i] = arg?.GetType();
             }
             return types;
         }
 
         // TODO: move up?
-        public Expression GetCollapsedArgsCondition() {
+        public Expression? GetCollapsedArgsCondition() {
             // collapsed args:
             if (_maxAccessedCollapsedArg >= 0) {
-                Type[] collapsedTypes = GetAccessedCollapsedArgTypes();
+                Type?[] collapsedTypes = GetAccessedCollapsedArgTypes();
 
-                return Expression.Call(null, typeof(CompilerHelpers).GetMethod(nameof(CompilerHelpers.TypesEqual)),
+                return Expression.Call(null, typeof(CompilerHelpers).GetMethod(nameof(CompilerHelpers.TypesEqual))!,
                     GetSplattedExpression(),
-                    AstUtils.Constant(_actualArguments.ToSplattedItemIndex(0)),
+                    AstUtils.Constant(GetActualArguments().ToSplattedItemIndex(0)),
                     Expression.Constant(collapsedTypes)
                 );
             }
