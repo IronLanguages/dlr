@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Microsoft.Scripting.Utils;
@@ -15,7 +18,7 @@ namespace Microsoft.Scripting.Runtime {
     public sealed class LocalsDictionary : CustomStringDictionary {
         private readonly IRuntimeVariables _locals;
         private readonly string[] _symbols;
-        private Dictionary<string, int> _boxes;
+        private Dictionary<string, int>? _boxes;
 
         public LocalsDictionary(IRuntimeVariables locals, string[] symbols) {
             Assert.NotNull(locals, symbols);
@@ -23,6 +26,7 @@ namespace Microsoft.Scripting.Runtime {
             _symbols = symbols;
         }
 
+        [MemberNotNull(nameof(_boxes))]
         private void EnsureBoxes() {
             if (_boxes is null) {
                 int count = _symbols.Length;
@@ -38,7 +42,7 @@ namespace Microsoft.Scripting.Runtime {
             return _symbols;
         }
 
-        protected internal override bool TrySetExtraValue(string key, object value) {
+        protected internal override bool TrySetExtraValue(string key, object? value) {
             EnsureBoxes();
 
             if (_boxes.TryGetValue(key, out int index)) {
@@ -49,7 +53,7 @@ namespace Microsoft.Scripting.Runtime {
             return false;
         }
 
-        protected internal override bool TryGetExtraValue(string key, out object value) {
+        protected internal override bool TryGetExtraValue(string key, out object? value) {
             EnsureBoxes();
 
             if (_boxes.TryGetValue(key, out int index)) {
