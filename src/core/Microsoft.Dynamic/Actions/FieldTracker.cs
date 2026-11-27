@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Dynamic;
@@ -21,7 +23,7 @@ namespace Microsoft.Scripting.Actions {
             _field = field;
         }
 
-        public override Type DeclaringType => _field.DeclaringType;
+        public override Type? DeclaringType => _field.DeclaringType;
 
         public override TrackerTypes MemberType => TrackerTypes.Field;
 
@@ -40,12 +42,12 @@ namespace Microsoft.Scripting.Actions {
         public FieldInfo Field => _field;
 
         public override string ToString() {
-            return _field.ToString();
+            return _field.ToString() ?? string.Empty;
         }
 
         #region Public expression builders
 
-        public override DynamicMetaObject GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type) {
+        public override DynamicMetaObject? GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type) {
             if (Field.IsLiteral) {
                 return new DynamicMetaObject(
                     AstUtils.Constant(Field.GetValue(null), typeof(object)),
@@ -58,11 +60,11 @@ namespace Microsoft.Scripting.Actions {
                 return binder.ReturnMemberTracker(type, this);
             }
 
-            if (Field.DeclaringType.ContainsGenericParameters) {
+            if (Field.DeclaringType is { ContainsGenericParameters: true }) {
                 return null;
             }
 
-            if (IsPublic && DeclaringType.IsPublic) {
+            if (IsPublic && DeclaringType is { IsPublic: true }) {
                 return new DynamicMetaObject(
                     Expression.Convert(Expression.Field(null, Field), typeof(object)),
                     BindingRestrictions.Empty
@@ -72,17 +74,17 @@ namespace Microsoft.Scripting.Actions {
             return new DynamicMetaObject(
                 Expression.Call(
                     AstUtils.Convert(AstUtils.Constant(Field), typeof(FieldInfo)),
-                    typeof(FieldInfo).GetMethod(nameof(FieldInfo.GetValue)),
+                    typeof(FieldInfo).GetMethod(nameof(FieldInfo.GetValue))!,
                     AstUtils.Constant(null)
                 ),
                 BindingRestrictions.Empty
             );
         }
 
-        public override ErrorInfo GetError(ActionBinder binder, Type instanceType) {
+        public override ErrorInfo? GetError(ActionBinder binder, Type instanceType) {
             // FieldTracker only has one error - accessing a static field from 
             // a generic type.
-            Debug.Assert(Field.DeclaringType.ContainsGenericParameters);
+            Debug.Assert(Field.DeclaringType is { ContainsGenericParameters: true });
 
             return binder.MakeContainsGenericParametersError(this);
         }
@@ -91,12 +93,12 @@ namespace Microsoft.Scripting.Actions {
 
         #region Internal expression builders
 
-        protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
-            if (IsPublic && DeclaringType.IsVisible) {
+        protected internal override DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
+            if (IsPublic && Field.DeclaringType is { IsVisible: true } declaringType) {
                 return new DynamicMetaObject(
                     AstUtils.Convert(
                         Expression.Field(
-                            AstUtils.Convert(instance.Expression, Field.DeclaringType),
+                            AstUtils.Convert(instance.Expression, declaringType),
                             Field
                         ),
                         typeof(object)                    

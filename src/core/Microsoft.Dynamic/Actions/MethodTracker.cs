@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Dynamic;
 using System.Linq.Expressions;
@@ -28,7 +30,7 @@ namespace Microsoft.Scripting.Actions {
             IsStatic = isStatic;
         }
 
-        public override Type DeclaringType => _method.DeclaringType;
+        public override Type? DeclaringType => _method.DeclaringType;
 
         public override TrackerTypes MemberType => TrackerTypes.Method;
 
@@ -41,7 +43,7 @@ namespace Microsoft.Scripting.Actions {
         public bool IsStatic { get; }
 
         public override string ToString() {
-            return _method.ToString();
+            return _method.ToString() ?? string.Empty;
         }
 
         public override MemberTracker BindToInstance(DynamicMetaObject instance) {
@@ -52,12 +54,12 @@ namespace Microsoft.Scripting.Actions {
             return new BoundMemberTracker(this, instance);
         }
 
-        protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
+        protected internal override DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
             return binder.ReturnMemberTracker(type, BindToInstance(instance));
         }
 
-        internal override DynamicMetaObject Call(OverloadResolverFactory resolverFactory, ActionBinder binder, params DynamicMetaObject[] arguments) {
-            if (Method.IsPublic && Method.DeclaringType.IsVisible) {
+        internal override DynamicMetaObject? Call(OverloadResolverFactory resolverFactory, ActionBinder binder, params DynamicMetaObject[] arguments) {
+            if (Method.IsPublic && Method.DeclaringType is { IsVisible: true }) {
                 return binder.MakeCallExpression(resolverFactory, Method, arguments);
             }
 
@@ -67,7 +69,7 @@ namespace Microsoft.Scripting.Actions {
                         Expression.Convert(
                             Expression.Call(
                                 AstUtils.Constant(Method),
-                                typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
+                                typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) })!,
                                 AstUtils.Constant(null),
                                 AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(arguments, static x => x.Expression))
                             ),
@@ -84,7 +86,7 @@ namespace Microsoft.Scripting.Actions {
                 Expression.Convert(
                     Expression.Call(
                         AstUtils.Constant(Method),
-                        typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) }),
+                        typeof(MethodInfo).GetMethod(nameof(MethodInfo.Invoke), new Type[] { typeof(object), typeof(object[]) })!,
                         arguments[0].Expression,
                         AstUtils.NewArrayHelper(typeof(object), ArrayUtils.ConvertAll(ArrayUtils.RemoveFirst(arguments), static x => x.Expression))
                     ),

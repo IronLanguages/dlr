@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Reflection;
 using System.Threading;
@@ -24,7 +26,7 @@ namespace Microsoft.Scripting.Actions {
     /// </summary>
     public class MethodGroup : MemberTracker {
         private readonly MethodTracker[] _methods;
-        private Dictionary<TypeList, MethodGroup> _boundGenerics;
+        private Dictionary<TypeList, MethodGroup>? _boundGenerics;
 
         internal MethodGroup(params MethodTracker[] methods) {
             _methods = methods;
@@ -32,7 +34,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override TrackerTypes MemberType => TrackerTypes.MethodGroup;
 
-        public override Type DeclaringType => _methods[0].DeclaringType;
+        public override Type? DeclaringType => _methods[0].DeclaringType;
 
         public override string Name => _methods[0].Name;
 
@@ -72,7 +74,7 @@ namespace Microsoft.Scripting.Actions {
             return this;
         }
 
-        protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
+        protected internal override DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
             return binder.ReturnMemberTracker(type, BindToInstance(instance));
         }
 
@@ -80,11 +82,11 @@ namespace Microsoft.Scripting.Actions {
         /// Returns a BuiltinFunction bound to the provided type arguments.  Returns null if the binding
         /// cannot be performed.
         /// </summary>
-        public MethodGroup MakeGenericMethod(Type[] types) {
+        public MethodGroup? MakeGenericMethod(Type[] types) {
             TypeList tl = new TypeList(types);
 
             // check for cached method first...
-            MethodGroup mg;
+            MethodGroup? mg;
             if (_boundGenerics is not null) {
                 lock (_boundGenerics) {
                     if (_boundGenerics.TryGetValue(tl, out mg)) {
@@ -119,9 +121,10 @@ namespace Microsoft.Scripting.Actions {
             return mg;
         }
 
+        [MemberNotNull(nameof(_boundGenerics))]
         private void EnsureBoundGenericDict() {
             if (_boundGenerics is null) {
-                Interlocked.CompareExchange<Dictionary<TypeList, MethodGroup>>(
+                Interlocked.CompareExchange<Dictionary<TypeList, MethodGroup>?>(
                     ref _boundGenerics,
                     new Dictionary<TypeList, MethodGroup>(1),
                     null);
@@ -132,11 +135,11 @@ namespace Microsoft.Scripting.Actions {
             private readonly Type[] _types;
 
             public TypeList(Type[] types) {
-                Debug.Assert(types is not null);
+                Utils.Assert.NotNull(types);
                 _types = types;
             }
 
-            public override bool Equals(object obj) {
+            public override bool Equals(object? obj) {
                 if (obj is not TypeList tl || _types.Length != tl._types.Length) return false;
 
                 for (int i = 0; i < _types.Length; i++) {

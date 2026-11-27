@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -39,23 +41,23 @@ namespace Microsoft.Scripting.Actions {
         /// returns the package associated with the specified namespace and
         /// updates the associated module to mark the package as imported.
         /// </summary>
-        public NamespaceTracker TryGetPackage(string name) {
+        public NamespaceTracker? TryGetPackage(string name) {
             if (TryGetPackageAny(name) is NamespaceTracker pm) {
                 return pm;
             }
             return null;
         }
 
-        public MemberTracker TryGetPackageAny(string name) {
-            if (TryGetValue(name, out MemberTracker ret)) {
+        public MemberTracker? TryGetPackageAny(string name) {
+            if (TryGetValue(name, out MemberTracker? ret)) {
                 return ret;
             }
             return null;
         }
 
-        public MemberTracker TryGetPackageLazy(string name) {
+        public MemberTracker? TryGetPackageLazy(string name) {
             lock (HierarchyLock) {
-                if (_dict.TryGetValue(name, out MemberTracker ret)) {
+                if (_dict.TryGetValue(name, out MemberTracker? ret)) {
                     return ret;
                 }
                 return null;
@@ -99,7 +101,7 @@ namespace Microsoft.Scripting.Actions {
 
                 foreach (Type type in ReflectionUtils.GetAllTypesFromAssembly(interopAssembly, false)) {
                     if (type.IsImport && type.IsInterface) {
-                        if (_comTypeCache.TryGetValue(type.GUID, out Type existing)) {
+                        if (_comTypeCache.TryGetValue(type.GUID, out Type? existing)) {
                             if (!existing.IsDefined(typeof(CoClassAttribute), false)) {
                                 // prefer the type w/ CoClassAttribute on it.  Example:
                                 //    MS.Office.Interop.Excel.Worksheet 

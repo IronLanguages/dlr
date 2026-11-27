@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Reflection;
 
@@ -10,9 +12,9 @@ using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.Actions {
     public class ExtensionPropertyTracker : PropertyTracker {
-        private readonly MethodInfo _getter, _setter, _deleter;
+        private readonly MethodInfo? _getter, _setter, _deleter;
 
-        public ExtensionPropertyTracker(string name, MethodInfo getter, MethodInfo setter, MethodInfo deleter, Type declaringType) {
+        public ExtensionPropertyTracker(string name, MethodInfo? getter, MethodInfo? setter, MethodInfo? deleter, Type declaringType) {
             Name = name; 
             _getter = getter; 
             _setter = setter;
@@ -24,39 +26,39 @@ namespace Microsoft.Scripting.Actions {
 
         public override Type DeclaringType { get; }
 
-        public override bool IsStatic => IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true));
+        public override bool IsStatic => IsStaticProperty(GetGetMethod(true) ?? GetSetMethod(true) ?? GetDeleteMethod(true));
 
-        public override MethodInfo GetGetMethod() {
+        public override MethodInfo? GetGetMethod() {
             if (_getter is not null && _getter.IsPrivate) return null;
 
             return _getter;
         }
 
-        public override MethodInfo GetSetMethod() {
+        public override MethodInfo? GetSetMethod() {
             if (_setter is not null && _setter.IsPrivate) return null;
 
             return _setter;
         }
 
-        public override MethodInfo GetGetMethod(bool privateMembers) {
+        public override MethodInfo? GetGetMethod(bool privateMembers) {
             if (privateMembers) return _getter;
 
             return GetGetMethod();
         }
 
-        public override MethodInfo GetSetMethod(bool privateMembers) {
+        public override MethodInfo? GetSetMethod(bool privateMembers) {
             if (privateMembers) return _setter;
 
             return GetSetMethod();
         }
 
-        public override MethodInfo GetDeleteMethod() {
+        public override MethodInfo? GetDeleteMethod() {
             if (_deleter is not null && _deleter.IsPrivate) return null;
 
             return _deleter;
         }
 
-        public override MethodInfo GetDeleteMethod(bool privateMembers) {
+        public override MethodInfo? GetDeleteMethod(bool privateMembers) {
             return privateMembers ? _deleter : GetDeleteMethod();
         }
 
@@ -64,15 +66,16 @@ namespace Microsoft.Scripting.Actions {
             return EmptyArray<ParameterInfo>.Instance;
         }
 
-        private static bool IsStaticProperty(MethodInfo method) {
-            return method.IsDefined(typeof(StaticExtensionMethodAttribute), false);
+        private static bool IsStaticProperty(MethodInfo? method) {
+            return method is not null && method.IsDefined(typeof(StaticExtensionMethodAttribute), false);
         }
 
         public override Type PropertyType {
             get {
                 if (_getter is not null) return _getter.ReturnType;
 
-                ParameterInfo[] pis = _setter.GetParameters();
+                MethodInfo setter = _setter ?? throw new InvalidOperationException("Extension property has neither a getter nor a setter.");
+                ParameterInfo[] pis = setter.GetParameters();
                 return pis[pis.Length - 1].ParameterType;
             }
         }
