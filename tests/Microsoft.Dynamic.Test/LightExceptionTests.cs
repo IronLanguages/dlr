@@ -8,12 +8,15 @@ using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 
 using NUnit.Framework;
+
+using AstUtils = Microsoft.Scripting.Ast.Utils;
 
 namespace Microsoft.Dynamic.Test {
     [TestFixture]
@@ -298,5 +301,66 @@ namespace Microsoft.Dynamic.Test {
         public static void IronPython2_Gh563() {
             LightExceptions.Rewrite(Expression.Constant(3.14, typeof(double))).Reduce();
         }
+
+        // try { light throw } catch (Exception) { "caught" }, as a host emits it for a try statement
+        private static Expression CatchLightThrow() {
+            return LightExceptions.RewriteExternal(
+                Expression.TryCatch(
+                    LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightThrowingCall)))),
+                    Expression.Catch(typeof(Exception), Expression.Constant("caught", typeof(object)))
+                )
+            );
+        }
+
+        private static Expression LightThrowInvalidOp() {
+            return LightExceptions.CheckAndThrow(Expression.Call(typeof(LightExceptionTests).GetMethod(nameof(LightThrowingCallInvalidOp))));
+        }
+
+        // Rewrites a lambda returning the value of a node whose body is an inner method, and compiles it both ways.
+        private static IEnumerable<Func<object>> RewriteAndCompile(Expression node) {
+            var lambda = (Expression<Func<object>>)LightExceptions.Rewrite(Expression.Lambda<Func<object>>(node));
+            yield return lambda.Compile();
+            yield return lambda.LightCompile();
+        }
+
+        [Test]
+        public static void RewriteGenerator() {
+            var label = Expression.Label(typeof(object), "yield");
+            var node = AstUtils.Generator(label, Expression.Block(typeof(void), AstUtils.YieldReturn(label, CatchLightThrow()), LightThrowInvalidOp()));
+
+            foreach (var generator in RewriteAndCompile(node)) {
+                using var enumerator = ((IEnumerable<object>)generator()).GetEnumerator();
+                Assert.That(enumerator.MoveNext());
+                Assert.That(enumerator.Current, Is.EqualTo("caught"));
+                Assert.That(() => enumerator.MoveNext(), Throws.InvalidOperationException);
+            }
+        }
+
+        [Test]
+        public static void RewriteAsync() {
+            foreach (var coroutine in RewriteAndCompile(AstUtils.Async("test", CatchLightThrow()))) {
+                Assert.That(((Task<object>)coroutine()).GetAwaiter().GetResult(), Is.EqualTo("caught"));
+            }
+
+            foreach (var coroutine in RewriteAndCompile(AstUtils.Async("test", LightThrowInvalidOp()))) {
+                var task = (Task<object>)coroutine();
+                Assert.That(() => task.GetAwaiter().GetResult(), Throws.InvalidOperationException);
+            }
+        }
+
+#if NET
+        [Test]
+        public static void RewriteAsyncEnumerable() {
+            var label = Expression.Label(typeof(object), "yield");
+            var node = AstUtils.AsyncEnumerable("test", Expression.Block(AstUtils.YieldReturn(label, CatchLightThrow()), LightThrowInvalidOp()), label);
+
+            foreach (var generator in RewriteAndCompile(node)) {
+                var enumerator = ((IAsyncEnumerable<object>)generator()).GetAsyncEnumerator();
+                Assert.That(enumerator.MoveNextAsync().AsTask().GetAwaiter().GetResult());
+                Assert.That(enumerator.Current, Is.EqualTo("caught"));
+                Assert.That(() => enumerator.MoveNextAsync().AsTask().GetAwaiter().GetResult(), Throws.InvalidOperationException);
+            }
+        }
+#endif
     }
 }

@@ -540,15 +540,11 @@ namespace Microsoft.Scripting.Ast {
                 return VisitYield(yield);
             }
 
-            // Lowered async nodes (AsyncExpression / AsyncEnumerableExpression) carry their own generator
-            // label and are reduced — with their await/yield points rewritten — in their own context so skip here.
+            // Nested generator and async nodes carry their own generator label and are reduced — with their
+            // await/yield points rewritten — in their own context so skip here.
             // Tracing into an async body does not need this rewriter either: the node instruments its own body when
             // reduced, if it carries a debug hook (AsyncExpression.WithDebugInfo).
-            if (node is AsyncExpression
-#if NET
-                or AsyncEnumerableExpression
-#endif
-                ) {
+            if (Utils.IsInnerMethod(node)) {
                 return node;
             }
 

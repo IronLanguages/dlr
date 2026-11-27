@@ -108,5 +108,17 @@ namespace Microsoft.Scripting.Ast {
 
         internal static Expression DefaultCancellationToken
             => field ??= Expression.Default(typeof(CancellationToken));
+
+        // Whether the node reduces its body to a lambda of its own, as generators and async functions do.
+        // A visitor that doesn't walk into nested lambdas, because the labels, handlers or locals it works with
+        // belong to one method, shouldn't walk into such a body either.
+        internal static bool IsInnerMethod(Expression node) {
+#if NET
+            if (node is AsyncEnumerableExpression) {
+                return true;
+            }
+#endif
+            return node is GeneratorExpression or AsyncExpression;
+        }
     }
 }
