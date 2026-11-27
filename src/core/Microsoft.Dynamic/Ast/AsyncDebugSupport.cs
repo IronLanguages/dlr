@@ -285,12 +285,8 @@ namespace Microsoft.Scripting.Ast {
             }
 
             protected override Expression VisitExtension(Expression node) {
-                // A nested async node is sliced into its own state machine against its own label; leave it opaque.
-                if (node is AsyncExpression or GeneratorExpression
-#if NET
-                    or AsyncEnumerableExpression
-#endif
-                    ) {
+                // A nested generator or async node is sliced into its own state machine against its own label; leave it opaque.
+                if (Utils.IsInnerMethod(node)) {
                     return node;
                 }
                 if (node is YieldExpression { Value: not null } yield && yield.Target == _yieldLabel) {

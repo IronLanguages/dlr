@@ -107,6 +107,12 @@ namespace Microsoft.Scripting.Ast {
         }
 
         protected override Expression VisitExtension(Expression node) {
+            // new top-level code once reduced, don't rewrite it either. Its other children aren't
+            // rewritten as a result, which is fine: they throw real exceptions, which are still caught.
+            if (Utils.IsInnerMethod(node)) {
+                return node;
+            }
+
             // Check if the extension is light exception aware.
             if (node is ILightExceptionAwareExpression lightAware) {
                 var newNode = lightAware.ReduceForLightExceptions();

@@ -153,7 +153,16 @@ namespace Microsoft.Scripting.Ast {
                 _exceptionSlot = exceptionSlot;
             }
 
+            protected override Expression VisitLambda<T>(Expression<T> node) {
+                // Don't descend into nested lambdas — their awaits belong to their own state machine.
+                return node;
+            }
+
             protected override Expression VisitExtension(Expression node) {
+                // Nor into nested generator and async nodes, for the same reason.
+                if (Utils.IsInnerMethod(node)) {
+                    return node;
+                }
                 if (node is AwaitExpression aw) {
                     Expression operand = Visit(aw.Operand);
                     Expression boxed = operand.Type == typeof(object) ? operand : Expression.Convert(operand, typeof(object));

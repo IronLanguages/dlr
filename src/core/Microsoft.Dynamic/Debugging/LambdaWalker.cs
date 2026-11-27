@@ -51,13 +51,9 @@ namespace Microsoft.Scripting.Debugging {
         }
 
         protected override MSAst.Expression VisitExtension(MSAst.Expression node) {
-            // Explicitely don't walk lowered async nodes (AsyncExpression / AsyncEnumerableExpression).
+            // Explicitely don't walk nested generator and async nodes.
             // Handle them separately (locals belong to their own context).
-            if (node is Microsoft.Scripting.Ast.AsyncExpression
-#if NET
-                or Microsoft.Scripting.Ast.AsyncEnumerableExpression
-#endif
-                ) {
+            if (Microsoft.Scripting.Ast.Utils.IsInnerMethod(node)) {
                 return node;
             }
             return base.VisitExtension(node);
