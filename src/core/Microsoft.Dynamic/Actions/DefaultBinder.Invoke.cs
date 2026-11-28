@@ -112,7 +112,7 @@ namespace Microsoft.Scripting.Actions {
         /// 
         /// If this object is a delegate we bind to the Invoke method.
         /// If this object is a MemberGroup or MethodGroup we bind to the methods in the member group.
-        /// If this object is a BoundMemberTracker we bind to the methods with the bound instance.
+        /// If this object is a RuntimeBoundMemberTracker we bind to the methods with the bound instance.
         /// If the underlying type has defined an operator Call method we'll bind to that method.
         /// </summary>
         private TargetInfo GetTargetInfo(DynamicMetaObject target, DynamicMetaObject[] args) {
@@ -123,7 +123,8 @@ namespace Microsoft.Scripting.Actions {
                 TryGetDelegateTargets(target, args, objTarget as Delegate) ??
                 TryGetMemberGroupTargets(target, args, objTarget as MemberGroup) ??
                 TryGetMethodGroupTargets(target, args, objTarget as MethodGroup) ??
-                TryGetBoundMemberTargets(target, args, objTarget as BoundMemberTracker) ??
+                TryGetBoundMemberTargets(target, args, objTarget as RuntimeBoundMemberTracker) ??
+                TryGetObsoleteBoundMemberTargets(target, args, objTarget as BoundMemberTracker) ??
                 TryGetOperatorTargets(target, args, target);
         }
 
@@ -163,53 +164,80 @@ namespace Microsoft.Scripting.Actions {
         }
 
         /// <summary>
-        /// Binds to the BoundMemberTracker and uses the instance in the tracker and restricts
+        /// Binds to the RuntimeBoundMemberTracker and uses the instance in the tracker and restricts
         /// based upon the object instance type.
         /// </summary>
-        private static TargetInfo TryGetBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, BoundMemberTracker bmt) {
-            if (bmt is not null) {
-                Debug.Assert(bmt.Instance is null); // should be null for trackers that leak to user code
-
-                MethodBase[] targets;
-
-                // instance is pulled from the BoundMemberTracker and restricted to the correct
-                // type.
-                DynamicMetaObject instance = new DynamicMetaObject(
-                    AstUtils.Convert(
-                        Expression.Property(
-                            Expression.Convert(self.Expression, typeof(BoundMemberTracker)),
-                            typeof(BoundMemberTracker).GetDeclaredProperty("ObjectInstance")
-                        ),
-                        bmt.BoundTo.DeclaringType
-                    ),
-                    self.Restrictions
-                ).Restrict(CompilerHelpers.GetType(bmt.ObjectInstance));
-
-                // we also add a restriction to make sure we're going to the same BoundMemberTracker
-                BindingRestrictions restrictions = BindingRestrictions.GetExpressionRestriction(
-                    Expression.Equal(
-                        Expression.Property(
-                            Expression.Convert(self.Expression, typeof(BoundMemberTracker)),
-                            typeof(BoundMemberTracker).GetDeclaredProperty("BoundTo")
-                        ),
-                        AstUtils.Constant(bmt.BoundTo)
-                    )
-                );
-
-                switch (bmt.BoundTo.MemberType) {
-                    case TrackerTypes.MethodGroup:
-                        targets = ((MethodGroup)bmt.BoundTo).GetMethodBases();
-                        break;
-                    case TrackerTypes.Method:
-                        targets = new MethodBase[] { ((MethodTracker)bmt.BoundTo).Method };
-                        break;
-                    default:
-                        throw new InvalidOperationException(); // nothing else binds yet
-                }
-
-                return new TargetInfo(instance, args, restrictions, targets);
+        private static TargetInfo TryGetBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, RuntimeBoundMemberTracker bmt) {
+            if (bmt is null) {
+                return null;
             }
-            return null;
+
+            Expression tracker = Expression.Convert(self.Expression, typeof(RuntimeBoundMemberTracker));
+            return MakeBoundMemberTargets(
+                self,
+                args,
+                bmt.BoundTo,
+                Expression.Property(tracker, typeof(RuntimeBoundMemberTracker).GetDeclaredProperty(nameof(RuntimeBoundMemberTracker.BoundTo))),
+                bmt.Instance,
+                Expression.Property(tracker, typeof(RuntimeBoundMemberTracker).GetDeclaredProperty(nameof(RuntimeBoundMemberTracker.Instance)))
+            );
+        }
+
+        /// <summary>
+        /// Binds to a BoundMemberTracker created over a run-time instance object with the obsolete constructor,
+        /// in the same way as to a RuntimeBoundMemberTracker.
+        /// </summary>
+        private static TargetInfo TryGetObsoleteBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, BoundMemberTracker bmt) {
+            if (bmt is null) {
+                return null;
+            }
+
+            Debug.Assert(bmt.Instance is null); // should be null for trackers that leak to user code
+
+            Expression tracker = Expression.Convert(self.Expression, typeof(BoundMemberTracker));
+#pragma warning disable CS0618 // Type or member is obsolete
+            return MakeBoundMemberTargets(
+                self,
+                args,
+                bmt.BoundTo,
+                Expression.Property(tracker, typeof(BoundMemberTracker).GetDeclaredProperty(nameof(BoundMemberTracker.BoundTo))),
+                bmt.ObjectInstance,
+                Expression.Property(tracker, typeof(BoundMemberTracker).GetDeclaredProperty(nameof(BoundMemberTracker.ObjectInstance)))
+            );
+#pragma warning restore CS0618
+        }
+
+        /// <summary>
+        /// Binds to the methods of a member bound to a run-time instance object.
+        ///
+        /// The expressions read the bound member and the instance from the tracker that self evaluates to.
+        /// </summary>
+        private static TargetInfo MakeBoundMemberTargets(DynamicMetaObject self, DynamicMetaObject[] args, MemberTracker boundTo, Expression boundToExpression, object instanceValue, Expression instanceExpression) {
+            MethodBase[] targets;
+
+            // instance is pulled from the tracker and restricted to the correct type.
+            DynamicMetaObject instance = new DynamicMetaObject(
+                AstUtils.Convert(instanceExpression, boundTo.DeclaringType),
+                self.Restrictions
+            ).Restrict(CompilerHelpers.GetType(instanceValue));
+
+            // we also add a restriction to make sure we're going to the same bound member
+            BindingRestrictions restrictions = BindingRestrictions.GetExpressionRestriction(
+                Expression.Equal(boundToExpression, AstUtils.Constant(boundTo))
+            );
+
+            switch (boundTo.MemberType) {
+                case TrackerTypes.MethodGroup:
+                    targets = ((MethodGroup)boundTo).GetMethodBases();
+                    break;
+                case TrackerTypes.Method:
+                    targets = new MethodBase[] { ((MethodTracker)boundTo).Method };
+                    break;
+                default:
+                    throw new InvalidOperationException(); // nothing else binds yet
+            }
+
+            return new TargetInfo(instance, args, restrictions, targets);
         }
 
         /// <summary>

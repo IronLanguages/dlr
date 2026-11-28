@@ -10,13 +10,21 @@ using System.Dynamic;
 using Microsoft.Scripting.Actions.Calls;
 
 namespace Microsoft.Scripting.Actions {
-    // TODO: Split into binding-time (over DynamicMetaObject) and run-time (over object? value) bound member trackers
+    /// <summary>
+    ///   Represents a member bound to an instance at binding time.
+    /// </summary>
+    /// <remarks>
+    ///   The instance is a <see cref="DynamicMetaObject"/>, so getting or setting the value of the tracker forwards
+    ///   to the bound member with that instance. Use <see cref="RuntimeBoundMemberTracker"/> to bind a member
+    ///   to a run-time instance object.
+    /// </remarks>
     public class BoundMemberTracker : MemberTracker {
         public BoundMemberTracker(MemberTracker tracker, DynamicMetaObject instance) {
             BoundTo = tracker;
             Instance = instance;
         }
 
+        [Obsolete("Use RuntimeBoundMemberTracker to bind a member to a run-time instance object.")]
         public BoundMemberTracker(MemberTracker tracker, object? instance) {
             BoundTo = tracker;
             ObjectInstance = instance;
@@ -28,8 +36,16 @@ namespace Microsoft.Scripting.Actions {
 
         public override string Name => BoundTo.Name;
 
+        /// <summary>
+        ///   Gets the instance the member is bound to.
+        /// </summary>
+        /// <remarks>
+        ///   It is <see langword="null"/> only if the tracker was created over a run-time instance object
+        ///   with the obsolete constructor.
+        /// </remarks>
         public DynamicMetaObject? Instance { get; }
 
+        [Obsolete("Use RuntimeBoundMemberTracker.Instance to get the run-time instance object a member is bound to.")]
         public object? ObjectInstance { get; }
 
         public MemberTracker BoundTo { get; }

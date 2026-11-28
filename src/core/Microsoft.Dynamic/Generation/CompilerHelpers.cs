@@ -525,10 +525,12 @@ namespace Microsoft.Scripting.Generation {
                 return new MethodBase[] { mi };
             }
 
-            if (typeof(BoundMemberTracker).IsAssignableFrom(t)) {
-                BoundMemberTracker bmt = (BoundMemberTracker)obj!; // t is the type of obj, so obj is not null
+            if (typeof(RuntimeBoundMemberTracker).IsAssignableFrom(t)) {
+                RuntimeBoundMemberTracker bmt = (RuntimeBoundMemberTracker)obj!; // t is the type of obj, so obj is not null
                 if (bmt.BoundTo.MemberType == TrackerTypes.Method) {
                 }
+            } else if (typeof(BoundMemberTracker).IsAssignableFrom(t)) {
+                // created over a run-time instance object with the obsolete constructor
             } else if (typeof(MethodGroup).IsAssignableFrom(t)) {
             } else if (typeof(MemberGroup).IsAssignableFrom(t)) {
             } else {

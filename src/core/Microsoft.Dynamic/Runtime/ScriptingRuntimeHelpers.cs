@@ -188,10 +188,12 @@ namespace Microsoft.Scripting.Runtime {
                 return;
             }
 
-            if (value is not BoundMemberTracker bmt) {
-                throw Error.ExpectedBoundEvent(CompilerHelpers.GetType(value).Name);
-            }
-            if (bmt.BoundTo is not EventTracker boundEvent) throw Error.ExpectedBoundEvent(bmt.BoundTo.MemberType.ToString());
+            MemberTracker boundTo = value switch {
+                RuntimeBoundMemberTracker rbmt => rbmt.BoundTo,
+                BoundMemberTracker bmt => bmt.BoundTo, // created over a run-time instance object with the obsolete constructor
+                _ => throw Error.ExpectedBoundEvent(CompilerHelpers.GetType(value).Name)
+            };
+            if (boundTo is not EventTracker boundEvent) throw Error.ExpectedBoundEvent(boundTo.MemberType.ToString());
 
             if (boundEvent != eventTracker) throw Error.UnexpectedEvent(
                 eventTracker.DeclaringType.Name,

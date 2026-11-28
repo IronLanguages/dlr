@@ -30,7 +30,7 @@ namespace Microsoft.Scripting.Actions {
         TypeGroup = 0x100,
         /// <summary> Specifies that the member is a custom meber, represetning a CustomTracker </summary>
         Custom = 0x200,
-        /// <summary> Specifies that the member is a bound to an instance, representing a BoundMemberTracker</summary>        
+        /// <summary> Specifies that the member is a bound to an instance, representing a BoundMemberTracker or RuntimeBoundMemberTracker</summary>
         Bound = 0x400,
         //
         // Summary:
