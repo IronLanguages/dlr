@@ -191,13 +191,13 @@ namespace Microsoft.Scripting.Runtime {
             if (value is not BoundMemberTracker bmt) {
                 throw Error.ExpectedBoundEvent(CompilerHelpers.GetType(value).Name);
             }
-            if (bmt.BoundTo.MemberType != TrackerTypes.Event) throw Error.ExpectedBoundEvent(bmt.BoundTo.MemberType.ToString());
+            if (bmt.BoundTo is not EventTracker boundEvent) throw Error.ExpectedBoundEvent(bmt.BoundTo.MemberType.ToString());
 
-            if (bmt.BoundTo != eventTracker) throw Error.UnexpectedEvent(
+            if (boundEvent != eventTracker) throw Error.UnexpectedEvent(
                 eventTracker.DeclaringType.Name,
                 eventTracker.Name,
-                bmt.BoundTo.DeclaringType.Name,
-                bmt.BoundTo.Name);
+                boundEvent.DeclaringType.Name,
+                boundEvent.Name);
         }
 
         // TODO: just emit this in the generated code

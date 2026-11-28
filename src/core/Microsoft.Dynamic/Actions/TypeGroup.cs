@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -80,8 +83,8 @@ namespace Microsoft.Scripting.Actions {
             return members.ToArray();
         }
 
-        public TypeTracker GetTypeForArity(int arity) {
-            if (!_typesByArity.TryGetValue(arity, out Type typeWithMatchingArity)) {
+        public TypeTracker? GetTypeForArity(int arity) {
+            if (!_typesByArity.TryGetValue(arity, out Type? typeWithMatchingArity)) {
                 return null;
             }
             return TypeTracker.GetTypeTracker(typeWithMatchingArity);
@@ -90,8 +93,8 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="existingTypeEntity">The merged list so far. Could be null</param>
         /// <param name="newType">The new type(s) to add to the merged list</param>
         /// <returns>The merged list.  Could be a TypeTracker or TypeGroup</returns>
-        public static TypeTracker UpdateTypeEntity(TypeTracker existingTypeEntity, TypeTracker newType) {
-            Debug.Assert(newType is not null);
+        public static TypeTracker UpdateTypeEntity(TypeTracker? existingTypeEntity, TypeTracker newType) {
+            Assert.NotNull(newType);
             Debug.Assert(existingTypeEntity is null || (existingTypeEntity is NestedTypeTracker) || (existingTypeEntity is TypeGroup));
 
             if (existingTypeEntity is null) {
@@ -109,7 +112,7 @@ namespace Microsoft.Scripting.Actions {
                 return new TypeGroup(existingType.Type, existingArity, newType.Type, newArity);
             }
 
-            return new TypeGroup(newType.Type, existingTypeEntity as TypeGroup);
+            return new TypeGroup(newType.Type, (TypeGroup)existingTypeEntity);
         }
 
         /// <summary> Gets the arity of generic parameters</summary>
@@ -124,14 +127,14 @@ namespace Microsoft.Scripting.Actions {
 
         /// <exception cref="TypeLoadException">No non-generic type is represented by this group.</exception>
         public Type GetNonGenericType() {
-            if (TryGetNonGenericType(out Type nonGenericType)) {
+            if (TryGetNonGenericType(out Type? nonGenericType)) {
                 return nonGenericType;
             }
 
             throw Error.NonGenericWithGenericGroup(Name);
         }
 
-        public bool TryGetNonGenericType(out Type nonGenericType) {
+        public bool TryGetNonGenericType([NotNullWhen(true)] out Type? nonGenericType) {
             return _typesByArity.TryGetValue(0, out nonGenericType);
         }
 
@@ -156,7 +159,7 @@ namespace Microsoft.Scripting.Actions {
         /// <summary>
         /// This returns the DeclaringType of all the types in the TypeGroup
         /// </summary>
-        public override Type DeclaringType => SampleType.DeclaringType;
+        public override Type? DeclaringType => SampleType.DeclaringType;
 
         /// <summary>
         /// This returns the base name of the TypeGroup (the name shared by all types minus arity)

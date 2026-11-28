@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,19 +24,19 @@ namespace Microsoft.Scripting.Actions {
         // We use _staticTarget for a static event (it is bound to its declaring type).
         // Each pair in the list holds on the stub handler that was added to the event delegate chain and the callable 
         // object that is passed to +=/-= operators. 
-        private WeakDictionary<object, NormalHandlerList> _handlerLists;
+        private WeakDictionary<object, NormalHandlerList>? _handlerLists;
         private static readonly object _staticTarget = new();
 
         private readonly EventInfo _eventInfo;
-        private MethodInfo _addMethod;
-        private MethodInfo _removeMethod;
+        private MethodInfo? _addMethod;
+        private MethodInfo? _removeMethod;
 
         internal EventTracker(EventInfo eventInfo) {
             Assert.NotNull(eventInfo);
             _eventInfo = eventInfo;
         }
 
-        public override Type DeclaringType => _eventInfo.DeclaringType;
+        public override Type DeclaringType => _eventInfo.DeclaringType!; // events cannot be global, they are always declared on a type
 
         public override TrackerTypes MemberType => TrackerTypes.Event;
 
@@ -44,13 +46,13 @@ namespace Microsoft.Scripting.Actions {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public MethodInfo GetCallableAddMethod() {
-            _addMethod ??= _eventInfo.GetAddMethod(true);
+            _addMethod ??= _eventInfo.GetAddMethod(true)!; // the CLI requires every event to have an add accessor
             return _addMethod;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public MethodInfo GetCallableRemoveMethod() {
-            _removeMethod ??= _eventInfo.GetRemoveMethod(true);
+            _removeMethod ??= _eventInfo.GetRemoveMethod(true)!; // the CLI requires every event to have a remove accessor
             return _removeMethod;
         }
 
@@ -61,14 +63,15 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         public bool IsStatic {
             get {
-                MethodInfo mi = Event.GetAddMethod(false) ??
+                MethodInfo? mi = Event.GetAddMethod(false) ??
                     Event.GetRemoveMethod(false) ??
                     Event.GetRaiseMethod(false) ??
                     Event.GetAddMethod(true) ??
                     Event.GetRemoveMethod(true) ??
                     Event.GetRaiseMethod(true);
+                Assert.NotNull(mi); // the CLI requires every event to have an add accessor
 
-                MethodInfo m;
+                MethodInfo? m;
                 Debug.Assert(
                     ((m = Event.GetAddMethod(true)) is null || m.IsStatic == mi.IsStatic) &&
                     ((m = Event.GetRaiseMethod(true)) is null || m.IsStatic == mi.IsStatic) &&
@@ -80,7 +83,7 @@ namespace Microsoft.Scripting.Actions {
             }
         }
 
-        protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
+        protected internal override DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
             return binder.ReturnMemberTracker(type, new BoundMemberTracker(this, instance));
         }
 
@@ -93,23 +96,24 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public override string ToString() {
-            return _eventInfo.ToString();
+            return _eventInfo.ToString() ?? string.Empty;
         }
 
-        public void AddHandler(object target, object handler, DynamicDelegateCreator delegateCreator) {
+        public void AddHandler(object? target, object handler, DynamicDelegateCreator delegateCreator) {
             ContractUtils.RequiresNotNull(handler, nameof(handler));
             ContractUtils.RequiresNotNull(delegateCreator, nameof(delegateCreator));
 
             Delegate delegateHandler;
-            HandlerList stubs;
+            HandlerList? stubs;
+            Type handlerType = _eventInfo.EventHandlerType!; // the delegate type of the event's add accessor, which always exists
 
             // we can add event directly (signature does match):
-            if (_eventInfo.EventHandlerType.IsAssignableFrom(handler.GetType())) {
+            if (handlerType.IsAssignableFrom(handler.GetType())) {
                 delegateHandler = (Delegate)handler;
                 stubs = null;
             } else {
                 // create signature converting stub:
-                delegateHandler = delegateCreator.GetDelegate(handler, _eventInfo.EventHandlerType);
+                delegateHandler = delegateCreator.GetDelegate(handler, handlerType);
                 stubs = GetHandlerList(target);
             }
 
@@ -126,12 +130,12 @@ namespace Microsoft.Scripting.Actions {
             stubs?.AddHandler(handler, delegateHandler);
         }
 
-        public void RemoveHandler(object target, object handler, IEqualityComparer<object> objectComparer) {
+        public void RemoveHandler(object? target, object handler, IEqualityComparer<object> objectComparer) {
             ContractUtils.RequiresNotNull(handler, nameof(handler));
             ContractUtils.RequiresNotNull(objectComparer, nameof(objectComparer));
 
-            Delegate delegateHandler;
-            if (_eventInfo.EventHandlerType.IsAssignableFrom(handler.GetType())) {
+            Delegate? delegateHandler;
+            if (_eventInfo.EventHandlerType!.IsAssignableFrom(handler.GetType())) { // the delegate type of the event's add accessor, which always exists
                 delegateHandler = (Delegate)handler;
             } else {
                 delegateHandler = GetHandlerList(target).RemoveHandler(handler, objectComparer);
@@ -144,7 +148,7 @@ namespace Microsoft.Scripting.Actions {
 
         #region Private Implementation Details
 
-        private HandlerList GetHandlerList(object instance) {
+        private HandlerList GetHandlerList(object? instance) {
 #if FEATURE_COM
             if (TypeUtils.IsComObject(instance)) {
                 return GetComHandlerList(instance);
@@ -162,7 +166,7 @@ namespace Microsoft.Scripting.Actions {
             }
 
             lock (_handlerLists) {
-                if (_handlerLists.TryGetValue(instance, out NormalHandlerList result)) {
+                if (_handlerLists.TryGetValue(instance, out NormalHandlerList? result)) {
                     return result;
                 }
 
@@ -184,10 +188,10 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         private HandlerList GetComHandlerList(object instance) {
-            HandlerList hl = (HandlerList)Marshal.GetComObjectData(instance, this);
+            HandlerList? hl = (HandlerList?)Marshal.GetComObjectData(instance, this);
             if (hl is null) {
                 lock (_staticTarget) {
-                    hl = (HandlerList)Marshal.GetComObjectData(instance, this);
+                    hl = (HandlerList?)Marshal.GetComObjectData(instance, this);
                     if (hl is null) {
                         hl = new ComHandlerList();
                         if (!Marshal.SetComObjectData(instance, this, hl)) {
@@ -211,7 +215,7 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private abstract class HandlerList {
             public abstract void AddHandler(object callableObject, Delegate handler);
-            public abstract Delegate RemoveHandler(object callableObject, IEqualityComparer<object> comparer);
+            public abstract Delegate? RemoveHandler(object callableObject, IEqualityComparer<object> comparer);
         }
 
         private sealed class ComHandlerList : HandlerList {
@@ -225,7 +229,7 @@ namespace Microsoft.Scripting.Actions {
                 _handlers.Add(new KeyValuePair<object, object>(callableObject, handler));
             }
 
-            public override Delegate RemoveHandler(object callableObject, IEqualityComparer<object> comparer) {
+            public override Delegate? RemoveHandler(object callableObject, IEqualityComparer<object> comparer) {
                 List<KeyValuePair<object, object>> copyOfHandlers = _handlers.GetCopyForRead();
                 for (int i = copyOfHandlers.Count - 1; i >= 0; i--) {
                     object key = copyOfHandlers[i].Key;
@@ -257,11 +261,11 @@ namespace Microsoft.Scripting.Actions {
                 _handlers.Add(new KeyValuePair<WeakReference, WeakReference>(new WeakReference(callableObject), new WeakReference(handler)));
             }
 
-            public override Delegate RemoveHandler(object callableObject, IEqualityComparer<object> comparer) {
+            public override Delegate? RemoveHandler(object callableObject, IEqualityComparer<object> comparer) {
                 List<KeyValuePair<WeakReference, WeakReference>> copyOfHandlers = _handlers.GetCopyForRead();
                 for (int i = copyOfHandlers.Count - 1; i >= 0; i--) {
-                    object key = copyOfHandlers[i].Key.Target;
-                    object value = copyOfHandlers[i].Value.Target;
+                    object? key = copyOfHandlers[i].Key.Target;
+                    object? value = copyOfHandlers[i].Value.Target;
 
                     if (key is not null && value is not null && comparer.Equals(key, callableObject)) {
                         Delegate handler = (Delegate)value;

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Dynamic;
 using System.Reflection;
@@ -21,16 +23,26 @@ namespace Microsoft.Scripting.Actions {
     public abstract class PropertyTracker : MemberTracker {
         public override TrackerTypes MemberType => TrackerTypes.Property;
 
-        public abstract MethodInfo GetGetMethod();
-        public abstract MethodInfo GetSetMethod();
-        public abstract MethodInfo GetGetMethod(bool privateMembers);
-        public abstract MethodInfo GetSetMethod(bool privateMembers);
+        /// <summary>
+        /// The logical declaring type of the property.
+        /// </summary>
+        /// <remarks>
+        /// Unlike methods and fields, properties cannot be global, so this is never null.
+        /// </remarks>
+        public abstract override Type DeclaringType {
+            get;
+        }
 
-        public virtual MethodInfo GetDeleteMethod() {
+        public abstract MethodInfo? GetGetMethod();
+        public abstract MethodInfo? GetSetMethod();
+        public abstract MethodInfo? GetGetMethod(bool privateMembers);
+        public abstract MethodInfo? GetSetMethod(bool privateMembers);
+
+        public virtual MethodInfo? GetDeleteMethod() {
             return null;
         }
 
-        public virtual MethodInfo GetDeleteMethod(bool privateMembers) {
+        public virtual MethodInfo? GetDeleteMethod(bool privateMembers) {
             return null;
         }
 
@@ -46,19 +58,19 @@ namespace Microsoft.Scripting.Actions {
 
         #region Public expression builders
 
-        public override DynamicMetaObject GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
+        public override DynamicMetaObject? GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
             if (!IsStatic || GetIndexParameters().Length > 0) {
                 // need to bind to a value or parameters to get the value.
                 return binder.ReturnMemberTracker(instanceType, this);
             }
 
-            MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
+            MethodInfo? getter = ResolveGetter(instanceType, binder.PrivateBinding);
             if (getter is null || getter.ContainsGenericParameters) {
                 // no usable getter
                 return null;
             }
 
-            if (getter.IsPublic && getter.DeclaringType.IsPublic) {
+            if (getter.IsPublic && getter.DeclaringType is { IsPublic: true }) {
                 return binder.MakeCallExpression(resolverFactory, getter);
             }
 
@@ -66,8 +78,8 @@ namespace Microsoft.Scripting.Actions {
             return MemberTracker.FromMemberInfo(getter).Call(resolverFactory, binder);
         }
 
-        public override ErrorInfo GetError(ActionBinder binder, Type instanceType) {
-            MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
+        public override ErrorInfo? GetError(ActionBinder binder, Type instanceType) {
+            MethodInfo? getter = ResolveGetter(instanceType, binder.PrivateBinding);
 
             if (getter is null) {
                 return binder.MakeMissingMemberErrorInfo(DeclaringType, Name);
@@ -84,8 +96,8 @@ namespace Microsoft.Scripting.Actions {
 
         #region Internal expression builders
 
-        protected internal override DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
-            if (instance is not null && IsStatic) {
+        protected internal override DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type type, DynamicMetaObject instance) {
+            if (IsStatic) {
                 return null;
             }
 
@@ -94,7 +106,7 @@ namespace Microsoft.Scripting.Actions {
                 return binder.ReturnMemberTracker(type, BindToInstance(instance));
             }
 
-            MethodInfo getter = GetGetMethod(true);
+            MethodInfo? getter = GetGetMethod(true);
             if (getter is null || getter.ContainsGenericParameters) {
                 // no usable getter
                 return null;
@@ -112,8 +124,8 @@ namespace Microsoft.Scripting.Actions {
             return DefaultBinder.MakeError(defaultBinder.MakeNonPublicMemberGetError(resolverFactory, this, type, instance), BindingRestrictions.Empty, typeof(object));
         }
 
-        public override ErrorInfo GetBoundError(ActionBinder binder, DynamicMetaObject instance, Type instanceType) {
-            MethodInfo getter = ResolveGetter(instanceType, binder.PrivateBinding);
+        public override ErrorInfo? GetBoundError(ActionBinder binder, DynamicMetaObject instance, Type instanceType) {
+            MethodInfo? getter = ResolveGetter(instanceType, binder.PrivateBinding);
 
             if (getter is null) {
                 return binder.MakeMissingMemberErrorInfo(DeclaringType, Name);
@@ -138,8 +150,8 @@ namespace Microsoft.Scripting.Actions {
 
         #region Private expression builder helpers
 
-        private MethodInfo ResolveGetter(Type instanceType, bool privateBinding) {
-            MethodInfo getter = GetGetMethod(true);
+        private MethodInfo? ResolveGetter(Type instanceType, bool privateBinding) {
+            MethodInfo? getter = GetGetMethod(true);
             if (getter is not null) {
                 getter = CompilerHelpers.TryGetCallableMethod(instanceType, getter);
                 if (privateBinding || CompilerHelpers.IsVisible(getter)) {

@@ -6,6 +6,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -345,7 +346,7 @@ namespace Microsoft.Scripting.Utils {
         }
 
         // we can't use System.Runtime.InteropServices.Marshal.IsComObject(obj) since it doesn't work in partial trust
-        public static bool IsComObject(object? obj) {
+        public static bool IsComObject([NotNullWhen(true)] object? obj) {
 #if NETCOREAPP || NETSTANDARD
             return obj is not null && Marshal.IsComObject(obj);
 #else
@@ -357,7 +358,7 @@ namespace Microsoft.Scripting.Utils {
             return false;
         }
 
-        public static bool IsComObject(object? obj) {
+        public static bool IsComObject([NotNullWhen(true)] object? obj) {
             return false;
         }
 #endif

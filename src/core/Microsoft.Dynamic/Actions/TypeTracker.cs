@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +52,7 @@ namespace Microsoft.Scripting.Actions {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
         public static explicit operator Type(TypeTracker tracker) {
             if (tracker is TypeGroup tg) {
-                if (!tg.TryGetNonGenericType(out Type res)) {
+                if (!tg.TryGetNonGenericType(out Type? res)) {
                     throw ScriptingRuntimeHelpers.SimpleTypeError("expected non-generic type, got generic-only type");
                 }
                 return res;
@@ -61,7 +63,7 @@ namespace Microsoft.Scripting.Actions {
         private static readonly Dictionary<Type, TypeTracker> _typeCache = new();
 
         public static TypeTracker GetTypeTracker(Type type) {
-            TypeTracker res;
+            TypeTracker? res;
 
             lock (_typeCache) {
                 if (!_typeCache.TryGetValue(type, out res)) {

@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
@@ -25,15 +28,15 @@ namespace Microsoft.Scripting.Actions {
         internal readonly List<Assembly> _packageAssemblies = new();
         internal readonly Dictionary<Assembly, TypeNames> _typeNames = new();
 
-        private readonly string _fullName; // null for the TopReflectedPackage
-        private TopNamespaceTracker _topPackage;
+        private readonly string? _fullName; // null for the TopReflectedPackage
+        private TopNamespaceTracker? _topPackage;
         private int _id;
 
         private static int _masterId;
 
         #region Protected API Surface
 
-        protected NamespaceTracker(string name) {
+        protected NamespaceTracker(string? name) {
             UpdateId();
             _fullName = name;
         }
@@ -52,7 +55,7 @@ namespace Microsoft.Scripting.Actions {
             Debug.Assert(childName.IndexOf('.') == -1); // This is the simple name, not the full name
             Debug.Assert(_packageAssemblies.Contains(assem)); // Parent namespace must contain all the assemblies of the child
 
-            if (_dict.TryGetValue(childName, out MemberTracker ret)) {
+            if (_dict.TryGetValue(childName, out MemberTracker? ret)) {
                 // If we have a module, then we add the assembly to the InnerModule
                 // If it's not a module, we'll wipe it out below, eg "def System(): pass" then
                 // "import System" will result in the namespace being visible.
@@ -72,7 +75,7 @@ namespace Microsoft.Scripting.Actions {
             // lock is held when this is called
             Assert.NotNull(childName, assem);
             NamespaceTracker rp = new NamespaceTracker(GetFullChildName(childName));
-            rp.SetTopPackage(_topPackage);
+            rp.SetTopPackage(TopPackage);
             rp._packageAssemblies.Add(assem);
 
             _dict[childName] = rp;
@@ -89,9 +92,9 @@ namespace Microsoft.Scripting.Actions {
             return _fullName + "." + childName;
         }
 
-        private static Type LoadType(Assembly assem, string fullTypeName) {
+        private static Type? LoadType(Assembly assem, string fullTypeName) {
             Assert.NotNull(assem, fullTypeName);
-            Type type = assem.GetType(fullTypeName);
+            Type? type = assem.GetType(fullTypeName);
             // We should ignore nested types. They will be loaded when the containing type is loaded
             Debug.Assert(type is null || !type.IsNested());
             return type;
@@ -102,16 +105,16 @@ namespace Microsoft.Scripting.Actions {
             Assert.NotNull(typeName, assem);
             Debug.Assert(typeName.IndexOf('.') == -1); // This is the simple name, not the full name
 
-            if (!_typeNames.TryGetValue(assem, out TypeNames typeNames)) {
+            if (!_typeNames.TryGetValue(assem, out TypeNames? typeNames)) {
                 typeNames = new TypeNames(assem, _fullName);
                 _typeNames[assem] = typeNames;
             }
             typeNames.AddTypeName(typeName);
 
             string normalizedTypeName = ReflectionUtils.GetNormalizedTypeName(typeName);
-            if (_dict.TryGetValue(normalizedTypeName, out MemberTracker existingValue)) {
+            if (_dict.TryGetValue(normalizedTypeName, out MemberTracker? existingValue)) {
                 // A similarly named type, namespace, or module already exists.
-                Type newType = LoadType(assem, GetFullChildName(typeName));
+                Type? newType = LoadType(assem, GetFullChildName(typeName));
 
                 if (newType is not null) {
                     if (existingValue is not TypeTracker existingTypeEntity) {
@@ -132,7 +135,7 @@ namespace Microsoft.Scripting.Actions {
         private void LoadAllTypes() {
             foreach (TypeNames typeNameList in _typeNames.Values) {
                 foreach (string typeName in typeNameList.GetNormalizedTypeNames()) {
-                    if (!TryGetValue(typeName, out object _)) {
+                    if (!TryGetValue(typeName, out object? _)) {
                         Debug.Assert(false, "We should never get here as TryGetMember should raise a TypeLoadException");
                         throw new TypeLoadException(typeName);
                     }
@@ -142,22 +145,25 @@ namespace Microsoft.Scripting.Actions {
 
         #endregion
 
-        public override string Name => _fullName;
+        /// <summary>
+        /// Gets the full name of the namespace. For the top-level namespace, this is an empty string.
+        /// </summary>
+        public override string Name => _fullName ?? string.Empty;
 
         protected void DiscoverAllTypes(Assembly assem) {
             // lock is held when this is called
             Assert.NotNull(assem);
 
-            NamespaceTracker previousPackage = null;
-            string previousFullNamespace = string.Empty; // Note that String.Empty is not a valid namespace
+            NamespaceTracker? previousPackage = null;
+            string? previousFullNamespace = string.Empty; // Note that String.Empty is not a valid namespace
 
-            foreach (TypeName typeName in AssemblyTypeNames.GetTypeNames(assem, _topPackage.DomainManager.Configuration.PrivateBinding)) {
+            foreach (TypeName typeName in AssemblyTypeNames.GetTypeNames(assem, TopPackage.DomainManager.Configuration.PrivateBinding)) {
                 NamespaceTracker package;
                 Debug.Assert(typeName.Namespace?.Length != 0);
                 if (typeName.Namespace == previousFullNamespace) {
                     // We have a cache hit. We dont need to call GetOrMakePackageHierarchy (which generates
                     // a fair amount of temporary substrings)
-                    package = previousPackage;
+                    package = previousPackage!; // set on the first miss; String.Empty never matches, so the first iteration always misses
                 } else {
                     package = GetOrMakePackageHierarchy(assem, typeName.Namespace);
                     previousFullNamespace = typeName.Namespace;
@@ -174,7 +180,7 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="assem"></param>
         /// <param name="fullNamespace">Full namespace name. It can be null (for top-level types)</param>
         /// <returns></returns>
-        private NamespaceTracker GetOrMakePackageHierarchy(Assembly assem, string fullNamespace) {
+        private NamespaceTracker GetOrMakePackageHierarchy(Assembly assem, string? fullNamespace) {
             // lock is held when this is called
             Assert.NotNull(assem);
 
@@ -199,17 +205,17 @@ namespace Microsoft.Scripting.Actions {
         /// 2. Previous calls to GetCustomMemberNames (eg. "from foo import *" in Python) would not have included this type.
         /// 3. This does not deal with new namespaces added to the assembly
         /// </summary>
-        private MemberTracker CheckForUnlistedType(string nameString) {
+        private MemberTracker? CheckForUnlistedType(string nameString) {
             Assert.NotNull(nameString);
 
             string fullTypeName = GetFullChildName(nameString);
             foreach (Assembly assem in _packageAssemblies) {
-                Type type = assem.GetType(fullTypeName);
+                Type? type = assem.GetType(fullTypeName);
                 if (type is null || type.IsNested()) {
                     continue;
                 }
 
-                bool publishType = type.IsPublic || _topPackage.DomainManager.Configuration.PrivateBinding;
+                bool publishType = type.IsPublic || TopPackage.DomainManager.Configuration.PrivateBinding;
                 if (!publishType) {
                     continue;
                 }
@@ -223,21 +229,21 @@ namespace Microsoft.Scripting.Actions {
 
         #region IAttributesCollection Members
 
-        public bool TryGetValue(string name, out object value) {
-            bool res = TryGetValue(name, out MemberTracker tmp);
+        public bool TryGetValue(string name, [NotNullWhen(true)] out object? value) {
+            bool res = TryGetValue(name, out MemberTracker? tmp);
             value = tmp;
             return res;
         }
 
-        public bool TryGetValue(string name, out MemberTracker value) {
-            lock (_topPackage.HierarchyLock) {
+        public bool TryGetValue(string name, [NotNullWhen(true)] out MemberTracker? value) {
+            lock (TopPackage.HierarchyLock) {
                 LoadNamespaces();
 
                 if (_dict.TryGetValue(name, out value)) {
                     return true;
                 }
 
-                MemberTracker existingTypeEntity = null;
+                MemberTracker? existingTypeEntity = null;
 
                 if (name.IndexOf('.') != -1) {
                     value = null;
@@ -251,7 +257,7 @@ namespace Microsoft.Scripting.Actions {
                         continue;
                     }
 
-                    existingTypeEntity = kvp.Value.UpdateTypeEntity((TypeTracker)existingTypeEntity, name);
+                    existingTypeEntity = kvp.Value.UpdateTypeEntity((TypeTracker?)existingTypeEntity, name);
                 }
 
                 existingTypeEntity ??= CheckForUnlistedType(name);
@@ -267,13 +273,13 @@ namespace Microsoft.Scripting.Actions {
         }
 
         public bool ContainsKey(string name) {
-            return TryGetValue(name, out MemberTracker _);
+            return TryGetValue(name, out MemberTracker? _);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public object this[string name] {
             get {
-                if (TryGetValue(name, out object res)) {
+                if (TryGetValue(name, out object? res)) {
                     return res;
                 }
                 throw new KeyNotFoundException();
@@ -286,7 +292,7 @@ namespace Microsoft.Scripting.Actions {
             get {
                 LoadNamespaces();
 
-                lock (_topPackage.HierarchyLock) {
+                lock (TopPackage.HierarchyLock) {
                     var res = new List<string>();
                     return (ICollection<string>)AddKeys(res);
                 }
@@ -344,6 +350,8 @@ namespace Microsoft.Scripting.Actions {
             _topPackage = pkg;
         }
 
+        private TopNamespaceTracker TopPackage => _topPackage ?? throw new InvalidOperationException("The top namespace tracker has not been set.");
+
         /// <summary>
         /// This stores all the public non-nested type names in a single namespace and from a single assembly.
         /// This allows inspection of the namespace without eagerly loading all the types. Eagerly loading
@@ -355,9 +363,9 @@ namespace Microsoft.Scripting.Actions {
             private readonly Dictionary<string, List<string>> _genericTypeNames = new();
 
             private readonly Assembly _assembly;
-            private readonly string _fullNamespace;
+            private readonly string? _fullNamespace;
 
-            internal TypeNames(Assembly assembly, string fullNamespace) {
+            internal TypeNames(Assembly assembly, string? fullNamespace) {
                 _assembly = assembly;
                 _fullNamespace = fullNamespace;
             }
@@ -369,22 +377,22 @@ namespace Microsoft.Scripting.Actions {
                 return _simpleTypeNames.Contains(normalizedTypeName) || _genericTypeNames.ContainsKey(normalizedTypeName);
             }
 
-            internal MemberTracker UpdateTypeEntity(TypeTracker existingTypeEntity, string normalizedTypeName) {
+            internal MemberTracker? UpdateTypeEntity(TypeTracker? existingTypeEntity, string normalizedTypeName) {
                 Debug.Assert(normalizedTypeName.IndexOf('.') == -1); // This is the simple name, not the full name
                 Debug.Assert(ReflectionUtils.GetNormalizedTypeName(normalizedTypeName) == normalizedTypeName);
 
                 // Look for a non-generic type
                 if (_simpleTypeNames.Contains(normalizedTypeName)) {
-                    Type newType = LoadType(_assembly, GetFullChildName(normalizedTypeName));
+                    Type? newType = LoadType(_assembly, GetFullChildName(normalizedTypeName));
                     if (newType is not null) {
                         existingTypeEntity = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
                     }
                 }
 
                 // Look for generic types
-                if (_genericTypeNames.TryGetValue(normalizedTypeName, out List<string> actualNames)) {
+                if (_genericTypeNames.TryGetValue(normalizedTypeName, out List<string>? actualNames)) {
                     foreach (string actualName in actualNames) {
-                        Type newType = LoadType(_assembly, GetFullChildName(actualName));
+                        Type? newType = LoadType(_assembly, GetFullChildName(actualName));
                         if (newType is not null) {
                             existingTypeEntity = TypeGroup.UpdateTypeEntity(existingTypeEntity, TypeTracker.GetTypeTracker(newType));
                         }
@@ -401,7 +409,7 @@ namespace Microsoft.Scripting.Actions {
                 if (normalizedName == typeName) {
                     _simpleTypeNames.Add(typeName);
                 } else {
-                    if (!_genericTypeNames.TryGetValue(normalizedName, out List<string> actualNames)) {
+                    if (!_genericTypeNames.TryGetValue(normalizedName, out List<string>? actualNames)) {
                         actualNames = new List<string>();
                         _genericTypeNames[normalizedName] = actualNames;
                     }
@@ -435,7 +443,7 @@ namespace Microsoft.Scripting.Actions {
         public IList<string> GetMemberNames() {
             LoadNamespaces();
 
-            lock (_topPackage.HierarchyLock) {
+            lock (TopPackage.HierarchyLock) {
 
                 List<string> res = new List<string>();
                 AddKeys(res);
@@ -448,7 +456,7 @@ namespace Microsoft.Scripting.Actions {
 
         public override TrackerTypes MemberType => TrackerTypes.Namespace;
 
-        public override Type DeclaringType => null;
+        public override Type? DeclaringType => null;
 
         private void UpdateId() {
             _id = Interlocked.Increment(ref _masterId);
@@ -459,7 +467,7 @@ namespace Microsoft.Scripting.Actions {
             UpdateId();
 
             foreach (KeyValuePair<string, MemberTracker> kvp in _dict) {
-                NamespaceTracker ns = kvp.Value as NamespaceTracker;
+                NamespaceTracker? ns = kvp.Value as NamespaceTracker;
                 ns?.UpdateSubtreeIds();
             }
         }

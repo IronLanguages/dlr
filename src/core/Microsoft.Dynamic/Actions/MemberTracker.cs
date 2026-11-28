@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -36,9 +38,9 @@ namespace Microsoft.Scripting.Actions {
         /// </summary>
         private sealed class MemberKey {
             private readonly MemberInfo Member;
-            private readonly Type Extending;
+            private readonly Type? Extending;
 
-            public MemberKey(MemberInfo member, Type extending) {
+            public MemberKey(MemberInfo member, Type? extending) {
                 Member = member;
                 Extending = extending;
             }
@@ -51,7 +53,7 @@ namespace Microsoft.Scripting.Actions {
                 return res;
             }
 
-            public override bool Equals(object obj) {
+            public override bool Equals(object? obj) {
                 if (obj is not MemberKey other) return false;
 
                 return other.Member == Member &&
@@ -70,9 +72,10 @@ namespace Microsoft.Scripting.Actions {
         }
 
         /// <summary>
-        /// The logical declaring type of the member.
+        /// The logical declaring type of the member, or null if the member is not declared within a type
+        /// (e.g. a namespace or a top-level type).
         /// </summary>
-        public abstract Type DeclaringType {
+        public abstract Type? DeclaringType {
             get;
         }
 
@@ -87,12 +90,12 @@ namespace Microsoft.Scripting.Actions {
             return FromMemberInfo(member, null);
         }
 
-        public static MemberTracker FromMemberInfo(MemberInfo member, Type extending) {
+        public static MemberTracker FromMemberInfo(MemberInfo member, Type? extending) {
             ContractUtils.RequiresNotNull(member, nameof(member));
 
             lock (_trackers) {
                 MemberKey key = new MemberKey(member, extending);
-                if (_trackers.TryGetValue(key, out MemberTracker res)) {
+                if (_trackers.TryGetValue(key, out MemberTracker? res)) {
                     return res;
                 }
 
@@ -121,7 +124,7 @@ namespace Microsoft.Scripting.Actions {
         /// Returns null if it's an error to get the value.  The caller can then call GetErrorForGet to get 
         /// the correct error Expression (or null if they should provide a default).
         /// </summary>
-        public virtual DynamicMetaObject GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
+        public virtual DynamicMetaObject? GetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType) {
             return binder.ReturnMemberTracker(instanceType, this);
         }
 
@@ -131,7 +134,7 @@ namespace Microsoft.Scripting.Actions {
         /// Returns null if it's an error to assign to.  The caller can then call GetErrorForSet to
         /// get the correct error Expression (or null if a default error should be provided).
         /// </summary>
-        public virtual DynamicMetaObject SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value) {
+        public virtual DynamicMetaObject? SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value) {
             return null;
         }
 
@@ -141,7 +144,7 @@ namespace Microsoft.Scripting.Actions {
         /// Returns null if it's an error to assign to.  The caller can then call GetErrorForSet to
         /// get the correct error Expression (or null if a default error should be provided).
         /// </summary>
-        public virtual DynamicMetaObject SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject errorSuggestion) {
+        public virtual DynamicMetaObject? SetValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject? errorSuggestion) {
             return SetValue(resolverFactory, binder, instanceType, value);
         }
 
@@ -152,7 +155,7 @@ namespace Microsoft.Scripting.Actions {
         /// GetErrorsForDoCall to get the correct error Expression (or null if a default error should be provided).
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Call")] // TODO: fix
-        internal virtual DynamicMetaObject Call(OverloadResolverFactory resolverFactory, ActionBinder binder, params DynamicMetaObject[] arguments) {
+        internal virtual DynamicMetaObject? Call(OverloadResolverFactory resolverFactory, ActionBinder binder, params DynamicMetaObject[] arguments) {
             return null;
         }
 
@@ -165,7 +168,7 @@ namespace Microsoft.Scripting.Actions {
         /// 
         /// A null return value indicates that the default error message should be provided by the caller.
         /// </summary>
-        public virtual ErrorInfo GetError(ActionBinder binder, Type instanceType) {
+        public virtual ErrorInfo? GetError(ActionBinder binder, Type instanceType) {
             return null;
         }
 
@@ -174,7 +177,7 @@ namespace Microsoft.Scripting.Actions {
         /// 
         /// A null return value indicates that the default error message should be provided by the caller.
         /// </summary>
-        public virtual ErrorInfo GetBoundError(ActionBinder binder, DynamicMetaObject instance, Type instanceType) {
+        public virtual ErrorInfo? GetBoundError(ActionBinder binder, DynamicMetaObject instance, Type instanceType) {
             return null;
         }
 
@@ -182,7 +185,7 @@ namespace Microsoft.Scripting.Actions {
         /// Helper for getting values that have been bound.  Called from BoundMemberTracker.  Custom member
         /// trackers can override this to provide their own behaviors when bound to an instance.
         /// </summary>
-        protected internal virtual DynamicMetaObject GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject instance) {
+        protected internal virtual DynamicMetaObject? GetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject instance) {
             return GetValue(resolverFactory, binder, instanceType);
         }
 
@@ -190,7 +193,7 @@ namespace Microsoft.Scripting.Actions {
         /// Helper for setting values that have been bound.  Called from BoundMemberTracker.  Custom member
         /// trackers can override this to provide their own behaviors when bound to an instance.
         /// </summary>
-        protected internal virtual DynamicMetaObject SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance) {
+        protected internal virtual DynamicMetaObject? SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance) {
             return SetValue(resolverFactory, binder, instanceType, value);
         }
 
@@ -198,7 +201,7 @@ namespace Microsoft.Scripting.Actions {
         /// Helper for setting values that have been bound.  Called from BoundMemberTracker.  Custom member
         /// trackers can override this to provide their own behaviors when bound to an instance.
         /// </summary>
-        protected internal virtual DynamicMetaObject SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance, DynamicMetaObject errorSuggestion) {
+        protected internal virtual DynamicMetaObject? SetBoundValue(OverloadResolverFactory resolverFactory, ActionBinder binder, Type instanceType, DynamicMetaObject value, DynamicMetaObject instance, DynamicMetaObject? errorSuggestion) {
             return SetValue(resolverFactory, binder, instanceType, value, errorSuggestion);
         }
 

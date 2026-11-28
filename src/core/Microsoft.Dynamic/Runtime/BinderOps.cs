@@ -232,10 +232,10 @@ namespace Microsoft.Scripting.Runtime {
             }
 
             if (value is not BoundMemberTracker bmt) throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name);
-            if (bmt.BoundTo.MemberType != TrackerTypes.Event) throw new ArgumentTypeException("expected bound event, got " + bmt.BoundTo.MemberType.ToString());
+            if (bmt.BoundTo is not EventTracker boundEvent) throw new ArgumentTypeException("expected bound event, got " + bmt.BoundTo.MemberType.ToString());
 
-            if (bmt.BoundTo != eventTracker) throw new ArgumentException(
-                $"expected event from {eventTracker.DeclaringType.Name}.{eventTracker.Name}, got event from {bmt.BoundTo.DeclaringType.Name}.{bmt.BoundTo.Name}");
+            if (boundEvent != eventTracker) throw new ArgumentException(
+                $"expected event from {eventTracker.DeclaringType.Name}.{eventTracker.Name}, got event from {boundEvent.DeclaringType.Name}.{boundEvent.Name}");
         }
     }
 }
