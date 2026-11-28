@@ -231,8 +231,12 @@ namespace Microsoft.Scripting.Runtime {
                 return;
             }
 
-            if (value is not BoundMemberTracker bmt) throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name);
-            if (bmt.BoundTo is not EventTracker boundEvent) throw new ArgumentTypeException("expected bound event, got " + bmt.BoundTo.MemberType.ToString());
+            MemberTracker boundTo = value switch {
+                RuntimeBoundMemberTracker rbmt => rbmt.BoundTo,
+                BoundMemberTracker bmt => bmt.BoundTo, // created over a run-time instance object with the obsolete constructor
+                _ => throw new ArgumentTypeException("expected bound event, got " + CompilerHelpers.GetType(value).Name)
+            };
+            if (boundTo is not EventTracker boundEvent) throw new ArgumentTypeException("expected bound event, got " + boundTo.MemberType.ToString());
 
             if (boundEvent != eventTracker) throw new ArgumentException(
                 $"expected event from {eventTracker.DeclaringType.Name}.{eventTracker.Name}, got event from {boundEvent.DeclaringType.Name}.{boundEvent.Name}");

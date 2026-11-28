@@ -381,11 +381,10 @@ namespace Microsoft.Scripting.Actions {
         /// <param name="type">Tthe type which the memberTrack was accessed from</param>
         /// <returns></returns>
         public virtual DynamicMetaObject ReturnMemberTracker(Type type, MemberTracker memberTracker) {
-            if (memberTracker.MemberType == TrackerTypes.Bound) {
-                BoundMemberTracker bmt = (BoundMemberTracker)memberTracker;
+            if (memberTracker is BoundMemberTracker bmt) {
                 return new DynamicMetaObject(
                     Expression.New(
-                        typeof(BoundMemberTracker).GetConstructor(new[] { typeof(MemberTracker), typeof(object) }),
+                        typeof(RuntimeBoundMemberTracker).GetConstructor(new[] { typeof(MemberTracker), typeof(object) }),
                         AstUtils.Constant(bmt.BoundTo),
                         bmt.Instance.Expression
                     ),
